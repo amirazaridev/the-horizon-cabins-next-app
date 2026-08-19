@@ -2,11 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import heroImageUrl from "@/assets/images/hero-section-bg.png";
 
-gsap.registerPlugin(ScrollTrigger);
+
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -57,8 +56,8 @@ export default function Hero() {
 
       tl.to(
         dotRef.current,
-        { scale: 1, duration: 0.5, ease: "back.out(2)" },
-        0.8,
+        { scale: 1, duration: 0.5, ease: "back.out(3)" },
+        1.5,
       );
 
       tl.to(
@@ -183,17 +182,15 @@ export default function Hero() {
           </div>
         </div>
 
-        <h1 className="mb-8 text-5xl leading-[0.9] font-bold tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
+        <h1 className="mb-8 text-5xl leading-[0.9] font-bold tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl xl:text-8xl 2xl:text-9xl">
           <span ref={titleTheRef} className="inline-block overflow-hidden">
-            <span className="inline-block">هورایزن</span>
+            هورایزن
           </span>
           <br />
           <span ref={titleHorizonRef} className="inline-block overflow-hidden">
-            <span className="inline-block">
-              کابین‌
-              <span ref={dotRef} className="inline-block text-amber-400">
-                .
-              </span>
+            کابین‌
+            <span ref={dotRef} className="text-primary-400 inline-block">
+              .
             </span>
           </span>
         </h1>
@@ -201,11 +198,11 @@ export default function Hero() {
         <div className="mb-8 flex items-center justify-center gap-6">
           <div
             ref={lineLeftRef}
-            className="h-px w-16 origin-right bg-gradient-to-r from-transparent to-amber-400/50 md:w-24"
+            className="to-primary-400/50 h-px w-16 origin-right bg-linear-to-r from-transparent md:w-24"
           />
           <div
             ref={lineRightRef}
-            className="h-px w-16 origin-left bg-gradient-to-l from-transparent to-amber-400/50 md:w-24"
+            className="to-primary-400/50 h-px w-16 origin-left bg-linear-to-l from-transparent md:w-24"
           />
         </div>
 
@@ -222,10 +219,7 @@ export default function Hero() {
           ref={ctaRef}
           className="flex flex-col justify-center gap-3 px-4 sm:flex-row sm:gap-4"
         >
-          <a
-            href="#cabins"
-            className="group relative overflow-hidden rounded-full bg-amber-400 px-8 py-4 font-semibold text-black transition-all duration-300 hover:shadow-lg hover:shadow-amber-400/30"
-          >
+          <button className="group bg-primary-400 hover:shadow-primary-400/30 relative overflow-hidden rounded-full px-8 py-4 font-semibold text-black transition-all duration-300 hover:shadow-lg">
             <span className="relative z-10 flex items-center justify-center gap-2">
               مشاهده کابین‌ها
               <svg
@@ -242,7 +236,7 @@ export default function Hero() {
                 />
               </svg>
             </span>
-          </a>
+          </button>
           <a
             href="#about"
             className="rounded-full border border-white/20 px-8 py-4 font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/10"
@@ -254,13 +248,13 @@ export default function Hero() {
 
       <div
         ref={scrollIndicatorRef}
-        className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2"
+        className="absolute bottom-0 left-1/2 z-20 -translate-x-1/2"
       >
         <div className="flex flex-col items-center gap-2">
           <span className="text-xs tracking-widest text-white/40">
             اسکرول کنید
           </span>
-          <div className="h-8 w-px bg-gradient-to-b from-amber-400/50 to-transparent" />
+          <div className="from-primary-400/50 h-8 w-px bg-linear-to-b to-transparent" />
         </div>
       </div>
     </section>

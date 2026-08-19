@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Navbar from "@/components/ui/Navbar";
 
 const iranYekan = localFont({
   src: [
@@ -77,7 +78,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       dir="rtl"
       className={`${iranYekan.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
+      <body className="bg-background text-foreground flex min-h-full flex-col">
+        <Navbar />
+
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,18 +1,17 @@
-import About from "@/components/About";
-import Amenities from "@/components/Amenities";
-import Cabins from "@/components/Cabins";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
-import Gallery from "@/components/Gallery";
-import GsapProvider from "@/components/GsapProvider";
-import Hero from "@/components/Hero";
-import Navbar from "@/components/Navbar";
-import Testimonials from "@/components/Testimonials";
+import About from "@/components/landing/About";
+import Amenities from "@/components/landing/Amenities";
+import Cabins from "@/components/landing/Cabins";
+import Contact from "@/components/landing/Contact";
+import Footer from "@/components/ui/Footer";
+import Gallery from "@/components/landing/Gallery";
+import GsapProvider from "@/components/ui/GsapProvider";
+import Hero from "@/components/landing/Hero";
+import Navbar from "@/components/ui/Navbar";
+import Testimonials from "@/components/landing/Testimonials";
 
 export default function Home() {
   return (
     <GsapProvider>
-      <Navbar />
       <main className="flex-1">
         <Hero />
         <About />

@@ -2,9 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -28,7 +26,7 @@ export default function About() {
             end: "bottom 20%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
 
       gsap.fromTo(
@@ -46,7 +44,7 @@ export default function About() {
             end: "bottom 20%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
 
       gsap.fromTo(
@@ -63,7 +61,7 @@ export default function About() {
             end: "bottom 20%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
 
       gsap.to(imageRef.current, {
@@ -84,64 +82,65 @@ export default function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="py-24 md:py-32 px-6 bg-slate-900 relative overflow-hidden"
+      className="relative overflow-hidden bg-slate-900 px-6 py-24 md:py-32"
       dir="rtl"
     >
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-amber-400 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400 rounded-full blur-[150px]" />
+        <div className="bg-primary-400 absolute top-0 left-0 h-96 w-96 rounded-full blur-[150px]" />
+        <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-blue-400 blur-[150px]" />
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div ref={headingRef} className="text-center mb-16">
-          <span className="text-amber-400 text-sm font-medium tracking-wider">
+      <div className="relative z-10 mx-auto max-w-7xl">
+        <div ref={headingRef} className="mb-16 text-center">
+          <span className="text-primary-400 text-sm font-medium tracking-wider">
             داستان ما
           </span>
-          <h2 className="text-4xl md:text-6xl font-bold text-white mt-4">
+          <h2 className="mt-4 text-4xl font-bold text-white md:text-6xl">
             جایی که طبیعت
             <br />
-            <span className="text-amber-400">به لوکس بودن</span>
+            <span className="text-primary-400">به لوکس بودن</span>
             <br />
-            <span className="text-amber-400">می‌رسد</span>
+            <span className="text-primary-400">می‌رسد</span>
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid items-center gap-12 md:grid-cols-2">
           <div ref={imageRef} className="relative order-2 md:order-1">
-            <div className="aspect-[4/5] rounded-2xl overflow-hidden relative">
+            <div className="relative aspect-4/5 overflow-hidden rounded-2xl">
               <img
                 src="https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?q=80&w=2070&auto=format&fit=crop"
                 alt="منظره کابین کوهستانی"
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
+                
               />
             </div>
-            <div className="absolute -bottom-6 -left-2 md:-left-6 bg-amber-400 text-black p-4 md:p-6 rounded-2xl">
-              <p className="text-2xl md:text-3xl font-bold">۱۵+</p>
-              <p className="text-xs md:text-sm font-medium">سال تجربه</p>
+            <div className="bg-primary-400 absolute -bottom-6 -left-2 rounded-2xl p-4 text-black md:-left-6 md:p-6">
+              <p className="text-2xl font-bold md:text-3xl">۱۵+</p>
+              <p className="text-xs font-medium md:text-sm">سال تجربه</p>
             </div>
           </div>
 
-          <div ref={contentRef} className="space-y-6 order-1 md:order-2">
+          <div ref={contentRef} className="order-1 space-y-6 md:order-2">
             <h3 className="text-3xl font-bold text-white">
               پناهگاهی در دل کوهستان
             </h3>
-            <p className="text-white/60 leading-relaxed">
+            <p className="leading-relaxed text-white/60">
               کابین‌های هورایزن پناهگاهی بی‌نظیر از زندگی روزمره هستند. این مکان
               در میان جنگل‌های بکر و قله‌های باشکوه قرار گرفته و ترکیبی کامل از
               جذابیت روستایی و راحتی مدرن را ارائه می‌دهد.
             </p>
-            <p className="text-white/60 leading-relaxed">
+            <p className="leading-relaxed text-white/60">
               هر کابین با دقت طراحی شده تا ارتباط شما با طبیعت را به حداکثر
-              برساند و در عین حال تمام امکانات مدرن را در دسترس شما قرار دهد.
-              با منظره‌های چشمگیر از خواب بیدار شوید، هوای تازه کوهستان را تنفس
+              برساند و در عین حال تمام امکانات مدرن را در دسترس شما قرار دهد. با
+              منظره‌های چشمگیر از خواب بیدار شوید، هوای تازه کوهستان را تنفس
               کنید و خاطراتی ماندگار بسازید.
             </p>
 
             <div className="grid grid-cols-2 gap-6 pt-6">
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-amber-400/10 rounded-xl flex items-center justify-center">
+                <div className="bg-primary-400/10 flex h-12 w-12 items-center justify-center rounded-xl">
                   <svg
-                    className="w-6 h-6 text-amber-400"
+                    className="text-primary-400 h-6 w-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -158,9 +157,9 @@ export default function About() {
                 <p className="text-sm text-white/50">امکانات لوکس</p>
               </div>
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-amber-400/10 rounded-xl flex items-center justify-center">
+                <div className="bg-primary-400/10 flex h-12 w-12 items-center justify-center rounded-xl">
                   <svg
-                    className="w-6 h-6 text-amber-400"
+                    className="text-primary-400 h-6 w-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -177,9 +176,9 @@ export default function About() {
                 <p className="text-sm text-white/50">منظره کوهستان</p>
               </div>
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-amber-400/10 rounded-xl flex items-center justify-center">
+                <div className="bg-primary-400/10 flex h-12 w-12 items-center justify-center rounded-xl">
                   <svg
-                    className="w-6 h-6 text-amber-400"
+                    className="text-primary-400 h-6 w-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -196,9 +195,9 @@ export default function About() {
                 <p className="text-sm text-white/50">اسپا و استراحت</p>
               </div>
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-amber-400/10 rounded-xl flex items-center justify-center">
+                <div className="bg-primary-400/10 flex h-12 w-12 items-center justify-center rounded-xl">
                   <svg
-                    className="w-6 h-6 text-amber-400"
+                    className="text-primary-400 h-6 w-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
