@@ -6,7 +6,7 @@ import Footer from "@/components/ui/Footer";
 import Gallery from "@/components/landing/Gallery";
 import GsapProvider from "@/components/ui/GsapProvider";
 import Hero from "@/components/landing/Hero";
-import Navbar from "@/components/ui/Navbar";
+import Navbar from "@/components/ui/navbar";
 import Testimonials from "@/components/landing/Testimonials";
 
 export default function Home() {

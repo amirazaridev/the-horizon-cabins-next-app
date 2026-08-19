@@ -151,7 +151,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section
+    <header
       ref={heroRef}
       id="hero"
       className="relative flex h-screen items-center justify-center overflow-hidden pt-9"
@@ -257,6 +257,6 @@ export default function Hero() {
           <div className="from-primary-400/50 h-8 w-px bg-linear-to-b to-transparent" />
         </div>
       </div>
-    </section>
+    </header>
   );
 }
