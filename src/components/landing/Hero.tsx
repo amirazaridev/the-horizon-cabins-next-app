@@ -4,8 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import Image from "next/image";
 import heroImageUrl from "@/assets/images/hero-section-bg.png";
-
-
+import { MoveLeft } from "lucide-react";
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -153,7 +152,6 @@ export default function Hero() {
   return (
     <header
       ref={heroRef}
-      id="hero"
       className="relative flex h-screen items-center justify-center overflow-hidden pt-9"
     >
       <div
@@ -166,7 +164,6 @@ export default function Hero() {
           alt="hero-section-image"
           src={heroImageUrl}
           priority
-          placeholder="blur"
         />
       </div>
 
@@ -182,12 +179,11 @@ export default function Hero() {
           </div>
         </div>
 
-        <h1 className="mb-8 text-5xl leading-[0.9] font-bold tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl xl:text-8xl 2xl:text-9xl">
-          <span ref={titleTheRef} className="inline-block overflow-hidden">
+        <h1 className="mb-8 flex flex-col gap-y-6 text-5xl leading-[0.9] font-bold tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl xl:text-8xl 2xl:text-9xl">
+          <span ref={titleTheRef} className="overflow-hidden">
             هورایزن
           </span>
-          <br />
-          <span ref={titleHorizonRef} className="inline-block overflow-hidden">
+          <span ref={titleHorizonRef} className="overflow-hidden">
             کابین‌
             <span ref={dotRef} className="text-primary-400 inline-block">
               .
@@ -195,15 +191,9 @@ export default function Hero() {
           </span>
         </h1>
 
-        <div className="mb-8 flex items-center justify-center gap-6">
-          <div
-            ref={lineLeftRef}
-            className="to-primary-400/50 h-px w-16 origin-right bg-linear-to-r from-transparent md:w-24"
-          />
-          <div
-            ref={lineRightRef}
-            className="to-primary-400/50 h-px w-16 origin-left bg-linear-to-l from-transparent md:w-24"
-          />
+        <div className="*:to-primary-400/50 mb-8 flex items-center justify-center gap-6 *:h-px *:w-16 *:from-transparent *:md:w-24">
+          <div ref={lineLeftRef} className="origin-right bg-linear-to-r" />
+          <div ref={lineRightRef} className="origin-left bg-linear-to-l" />
         </div>
 
         <p
@@ -222,19 +212,10 @@ export default function Hero() {
           <button className="group bg-primary-400 hover:shadow-primary-400/30 relative overflow-hidden rounded-full px-8 py-4 font-semibold text-black transition-all duration-300 hover:shadow-lg">
             <span className="relative z-10 flex items-center justify-center gap-2">
               مشاهده کابین‌ها
-              <svg
-                className="h-4 w-4 rotate-180 transition-transform duration-300 group-hover:-translate-x-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
+              <MoveLeft
+                strokeWidth={2}
+                className="size-4 transition-transform duration-300 group-hover:-translate-x-1"
+              />
             </span>
           </button>
           <a

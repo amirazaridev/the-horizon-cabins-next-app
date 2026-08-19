@@ -11,6 +11,7 @@
 
   --color-primary-400: #fbbf24;
   --color-primary-500: #f59e0b;
+  /* --color-text-gray:#; */
 
   --default-font-family: var(--font-iranyekan);
 }

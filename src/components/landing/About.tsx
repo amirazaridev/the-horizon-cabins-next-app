@@ -2,7 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-
+import Container from "../ui/Container";
+import Image from "next/image";
+import imageURL from "@/assets/images/about-section.png";
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -81,16 +83,9 @@ export default function About() {
   return (
     <section
       ref={sectionRef}
-      id="about"
-      className="relative overflow-hidden bg-slate-900 px-6 py-24 md:py-32"
-      dir="rtl"
+      className="relative overflow-hidden bg-slate-900 px-10 py-24 md:py-32"
     >
-      <div className="absolute inset-0 opacity-5">
-        <div className="bg-primary-400 absolute top-0 left-0 h-96 w-96 rounded-full blur-[150px]" />
-        <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-blue-400 blur-[150px]" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-7xl">
+      <Container className="relative z-10">
         <div ref={headingRef} className="mb-16 text-center">
           <span className="text-primary-400 text-sm font-medium tracking-wider">
             داستان ما
@@ -105,14 +100,9 @@ export default function About() {
         </div>
 
         <div className="grid items-center gap-12 md:grid-cols-2">
-          <div ref={imageRef} className="relative order-2 md:order-1">
+          <div ref={imageRef} className="relative order-1 md:order-1">
             <div className="relative aspect-4/5 overflow-hidden rounded-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?q=80&w=2070&auto=format&fit=crop"
-                alt="منظره کابین کوهستانی"
-                className="h-full w-full object-cover"
-                
-              />
+              <Image src={imageURL} className="object-cover" fill alt="منظره کابین کوهستانی"/>
             </div>
             <div className="bg-primary-400 absolute -bottom-6 -left-2 rounded-2xl p-4 text-black md:-left-6 md:p-6">
               <p className="text-2xl font-bold md:text-3xl">۱۵+</p>
@@ -120,7 +110,7 @@ export default function About() {
             </div>
           </div>
 
-          <div ref={contentRef} className="order-1 space-y-6 md:order-2">
+          <div ref={contentRef} className="order-2 space-y-6 md:order-1">
             <h3 className="text-3xl font-bold text-white">
               پناهگاهی در دل کوهستان
             </h3>
@@ -216,7 +206,7 @@ export default function About() {
             </div>
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
