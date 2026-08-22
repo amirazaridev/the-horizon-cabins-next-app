@@ -1,0 +1,43 @@
+@keyframes sd-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sd-draw {
+  0% {
+    stroke-dasharray: 1 150;
+    stroke-dashoffset: 0;
+    opacity: 0.6;
+  }
+  50% {
+    stroke-dasharray: 90 150;
+    stroke-dashoffset: -35;
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 1 150;
+    stroke-dashoffset: -124;
+    opacity: 0.6;
+  }
+}
+@keyframes sd-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 0.45;
+    transform: translateY(0);
+  }
+}
+
+.animate-sd-spin {
+  animation: sd-spin 2s linear infinite;
+}
+.animate-sd-draw {
+  animation: sd-draw 1.5s ease-in-out infinite;
+}
+.animate-sd-label-in {
+  animation: sd-label-in .4s ease-out both;
+  animation-delay: ".3s";
+}

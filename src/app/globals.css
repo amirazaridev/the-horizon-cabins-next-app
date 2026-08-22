@@ -7,11 +7,14 @@
 
 @theme {
   --color-background: #020617;
+  --color-background-2:var(--color-slate-900);
   --color-foreground: #f8fafc;
 
   --color-primary-400: #fbbf24;
   --color-primary-500: #f59e0b;
-  /* --color-text-gray:#; */
+
+  --color-text:#fff;
+  --color-text-gray:var(--color-zinc-400);
 
   --default-font-family: var(--font-iranyekan);
 }
@@ -55,6 +58,7 @@
   }
 }
 
+
 @layer utilities {
   .animate-float {
     animation: float 6s ease-in-out infinite;
@@ -62,4 +66,5 @@
   .perspective-1000 {
     perspective: 1000px;
   }
+
 }

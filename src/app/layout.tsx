@@ -16,7 +16,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       dir="rtl"
       className={`${fonts.variable} h-full antialiased`}
     >
-      <body className="bg-background text-foreground flex min-h-full flex-col">
+      <body className="bg-background text-foreground flex min-h-full flex-col justify-between">
         <Layout>{children}</Layout>
       </body>
     </html>

@@ -1,4 +1,4 @@
-import { ComponentProps, PropsWithChildren, type ReactNode } from "react";
+import { ComponentProps, type ReactNode } from "react";
 
 type Props = ComponentProps<"div">;
 

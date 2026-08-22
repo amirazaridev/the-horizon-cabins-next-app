@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import useAmenitiesAnimation from "../hooks/useAmenitiesAnimation";
 
 
 const amenities = [
@@ -65,8 +66,8 @@ const amenities = [
         />
       </svg>
     ),
-    title: "اسپا و سلامتی",
-    description: "اسپای کامل با ماساژ سنگ داغ",
+    title: "تراس تماشای ستارگان",
+    description: "فضای اختصاصی برای تماشای آسمان شب",
   },
   {
     icon: (
@@ -84,7 +85,7 @@ const amenities = [
         />
       </svg>
     ),
-    title: "استخر بی‌نهایت",
+    title: "استخر",
     description: "استخر روباز گرم با پس‌زمینه کوهستان",
   },
   {
@@ -104,7 +105,7 @@ const amenities = [
       </svg>
     ),
     title: "آشپزخانه کامل",
-    description: "آشپزخانه مجهز با لوازم پریمیوم",
+    description: "آشپزخانه مجهز با لوازم با کیفیت",
   },
   {
     icon: (
@@ -122,67 +123,18 @@ const amenities = [
         />
       </svg>
     ),
-    title: "خانه هوشمند",
-    description: "همه چیز را با صدا یا گوشی خود کنترل کنید",
+    title: "استخر",
+    description: "استخر روباز گرم با پس‌زمینه کوهستان",
   },
 ];
 
-export default function Amenities() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".amenities-title",
-        { y: 60, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: ".amenities-title",
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-
-      const items = document.querySelectorAll(".amenity-item");
-      items.forEach((item, index) => {
-        gsap.fromTo(
-          item,
-          {
-            y: 60,
-            opacity: 0,
-            scale: 0.9,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: item,
-              start: "top 90%",
-              toggleActions: "play none none reverse",
-            },
-            delay: index * 0.1,
-          }
-        );
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
+export default function AmenitiesSection() {
+  const {sectionRef} = useAmenitiesAnimation()
+  
   return (
     <section
       ref={sectionRef}
-      id="amenities"
-      className="py-24 md:py-32 px-6 bg-slate-900 relative overflow-hidden"
-      dir="rtl"
+      className="py-24 md:py-32 px-6 bg-background-2 relative overflow-hidden"
     >
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-400/5 rounded-full blur-[200px]" />

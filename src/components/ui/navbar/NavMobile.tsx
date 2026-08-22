@@ -4,6 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import NavbarItem from "./NavbarItem";
 import { X } from "lucide-react";
 import gsap from "gsap";
+import { usePathname } from "next/navigation";
 
 type Props = { handleCloseMenu: () => void; isOpen: boolean };
 
@@ -13,6 +14,7 @@ export default function NavMobile({
 }: Props): ReactNode {
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -103,6 +105,7 @@ export default function NavMobile({
             <ul className="flex flex-col gap-1">
               {NAV_ITEMS.map((link) => (
                 <NavbarItem
+                  active={pathname === link.href}
                   closeMenu={closeMenu}
                   forAndroid={true}
                   href={link.href}

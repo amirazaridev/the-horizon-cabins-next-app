@@ -2,83 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import Container from "../ui/Container";
+import Container from "../../../components/ui/Container";
 import Image from "next/image";
 import imageURL from "@/assets/images/about-section.png";
+import useAboutAnimation from "../hooks/useAboutAnimation";
 
-export default function About() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headingRef.current,
-        { y: 60, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: headingRef.current,
-            start: "top 85%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-
-      gsap.fromTo(
-        imageRef.current,
-        { x: 100, opacity: 0, scale: 0.9 },
-        {
-          x: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1.2,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: imageRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-
-      gsap.fromTo(
-        contentRef.current,
-        { x: -100, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 1.2,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-
-      gsap.to(imageRef.current, {
-        y: -40,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 2,
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+export default function AboutSection() {
+  const { contentRef, headingRef, imageRef, sectionRef } = useAboutAnimation();
 
   return (
     <section
@@ -90,19 +20,24 @@ export default function About() {
           <span className="text-primary-400 text-sm font-medium tracking-wider">
             داستان ما
           </span>
-          <h2 className="mt-4 text-4xl font-bold text-white md:text-6xl">
+          <h2 className="text-text mt-4 text-4xl font-bold md:text-6xl">
             جایی که طبیعت
             <br />
-            <span className="text-primary-400">به لوکس بودن</span>
-            <br />
-            <span className="text-primary-400">می‌رسد</span>
+            <span className="text-primary-400">
+              به لوکس بودن <br /> می‌رسد
+            </span>
           </h2>
         </div>
 
         <div className="grid items-center gap-12 md:grid-cols-2">
           <div ref={imageRef} className="relative order-1 md:order-1">
             <div className="relative aspect-4/5 overflow-hidden rounded-2xl">
-              <Image src={imageURL} className="object-cover" fill alt="منظره کابین کوهستانی"/>
+              <Image
+                src={imageURL}
+                className="object-cover"
+                fill
+                alt="منظره کابین کوهستانی"
+              />
             </div>
             <div className="bg-primary-400 absolute -bottom-6 -left-2 rounded-2xl p-4 text-black md:-left-6 md:p-6">
               <p className="text-2xl font-bold md:text-3xl">۱۵+</p>
@@ -111,15 +46,15 @@ export default function About() {
           </div>
 
           <div ref={contentRef} className="order-2 space-y-6 md:order-1">
-            <h3 className="text-3xl font-bold text-white">
+            <h3 className="text-text text-3xl font-bold">
               پناهگاهی در دل کوهستان
             </h3>
-            <p className="leading-relaxed text-white/60">
+            <p className="text-text-gray leading-relaxed">
               کابین‌های هورایزن پناهگاهی بی‌نظیر از زندگی روزمره هستند. این مکان
               در میان جنگل‌های بکر و قله‌های باشکوه قرار گرفته و ترکیبی کامل از
               جذابیت روستایی و راحتی مدرن را ارائه می‌دهد.
             </p>
-            <p className="leading-relaxed text-white/60">
+            <p className="text-text-gray leading-relaxed">
               هر کابین با دقت طراحی شده تا ارتباط شما با طبیعت را به حداکثر
               برساند و در عین حال تمام امکانات مدرن را در دسترس شما قرار دهد. با
               منظره‌های چشمگیر از خواب بیدار شوید، هوای تازه کوهستان را تنفس
@@ -143,8 +78,8 @@ export default function About() {
                     />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-white">پریمیوم</h4>
-                <p className="text-sm text-white/50">امکانات لوکس</p>
+                <h4 className="text-text font-semibold">پریمیوم</h4>
+                <p className="text-text-gray text-sm">امکانات لوکس</p>
               </div>
               <div className="space-y-2">
                 <div className="bg-primary-400/10 flex h-12 w-12 items-center justify-center rounded-xl">
@@ -162,8 +97,8 @@ export default function About() {
                     />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-white">دیدنی</h4>
-                <p className="text-sm text-white/50">منظره کوهستان</p>
+                <h4 className="text-text font-semibold">دیدنی</h4>
+                <p className="text-text-gray text-sm">منظره کوهستان</p>
               </div>
               <div className="space-y-2">
                 <div className="bg-primary-400/10 flex h-12 w-12 items-center justify-center rounded-xl">
@@ -181,8 +116,8 @@ export default function About() {
                     />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-white">آرامش</h4>
-                <p className="text-sm text-white/50">اسپا و استراحت</p>
+                <h4 className="text-text font-semibold">آرامش</h4>
+                <p className="text-text-gray text-sm">اسپا و استراحت</p>
               </div>
               <div className="space-y-2">
                 <div className="bg-primary-400/10 flex h-12 w-12 items-center justify-center rounded-xl">
@@ -200,8 +135,8 @@ export default function About() {
                     />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-white">تفریحات</h4>
-                <p className="text-sm text-white/50">سرگرمی در تمام فصول</p>
+                <h4 className="text-text font-semibold">تفریحات</h4>
+                <p className="text-text-gray text-sm">سرگرمی در تمام فصول</p>
               </div>
             </div>
           </div>
