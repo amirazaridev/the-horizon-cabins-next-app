@@ -95,7 +95,7 @@ export default function CabinDetail({ cabin }: { cabin: Cabin }): ReactNode {
 
       <div className="mt-12 grid gap-12 lg:grid-cols-5">
         <div className="lg:col-span-3">
-          <h2 className="mb-4 text-xl font-bold text-white">درباره این کابین</h2>
+          <h2 className="mb-4 text-xl font-bold text-white">درباره این اقامتگاه</h2>
           <p className="leading-loose text-white/60">{cabin.description}</p>
 
           <h2 className="mt-10 mb-5 text-xl font-bold text-white">ویژگی‌ها</h2>
@@ -122,7 +122,6 @@ export default function CabinDetail({ cabin }: { cabin: Cabin }): ReactNode {
             ))}
           </ul>
         </div>
-
         <aside className="lg:col-span-2">
           <div className="sticky top-24 rounded-3xl p-[1px] bg-gradient-to-br from-primary-400/40 via-white/10 to-transparent">
             <div className="relative overflow-hidden rounded-3xl bg-slate-900/80 p-7 backdrop-blur-sm md:p-8">
@@ -168,7 +167,7 @@ export default function CabinDetail({ cabin }: { cabin: Cabin }): ReactNode {
 
               <div className="relative mt-6 flex flex-col gap-3">
                 <Button shape="xl" fullWidth>
-                  رزرو این کابین
+                  رزرو این اقامتگاه
                   <MoveLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-1" />
                 </Button>
                 <Button href="tel:+989000000000" variant="outline" shape="xl">

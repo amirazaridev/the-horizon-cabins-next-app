@@ -8,7 +8,9 @@ const cabins = [
   {
     id: 1,
     name: "پناهگاه آلپاین",
-    price: "$299",
+    price: 299,
+    discount: 15,
+    capacity: 4,
     image:
       "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?q=80&w=2070&auto=format&fit=crop",
     features: ["۲ اتاق خواب", "منظره کوه", "وان آب گرم"],
@@ -17,7 +19,8 @@ const cabins = [
   {
     id: 2,
     name: "پناهگاه جنگلی",
-    price: "$399",
+    price: 399,
+    capacity: 6,
     image:
       "https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=2070&auto=format&fit=crop",
     features: ["۳ اتاق خواب", "دید پانوراما", "شومینه"],
@@ -26,7 +29,9 @@ const cabins = [
   {
     id: 3,
     name: "قله لوکس",
-    price: "$549",
+    price: 549,
+    discount: 10,
+    capacity: 10,
     image:
       "https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=2070&auto=format&fit=crop",
     features: ["۴ اتاق خواب", "استخر خصوصی", "سونا"],
@@ -62,6 +67,8 @@ export default function CabinsSection() {
               key={cabin.id}
               name={cabin.name}
               price={cabin.price}
+              discount={cabin.discount}
+              capacity={cabin.capacity}
               image={cabin.image}
               imageAlt={cabin.name}
               features={cabin.features}

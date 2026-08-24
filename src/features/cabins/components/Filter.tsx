@@ -5,7 +5,7 @@ import { useTransition, useRef, useEffect } from "react";
 import { type ReactNode } from "react";
 
 const filterOptions = [
-  { title: "همه کابین‌ها", value: "all" },
+  { title: "همه سوئیت‌ها", value: "all" },
   { title: "۱ تا ۳ مهمان", value: "small" },
   { title: "۴ تا ۷ مهمان", value: "medium" },
   { title: "۸ تا ۱۲ مهمان", value: "large" },

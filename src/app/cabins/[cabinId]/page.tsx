@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import CabinDetail from "@/features/cabins/components/CabinDetail";
 import { getCabin } from "@/features/cabins/lib/data-service";
+import Navigate from "@/components/ui/Navigate";
 
 type Props = { params: Promise<{ cabinId: string }> };
 
@@ -25,22 +26,15 @@ export default async function CabinPage({ params }: Props): Promise<ReactNode> {
   if (!cabin) notFound();
 
   return (
-    <section className="min-h-screen bg-slate-950 py-10 sm:py-14" dir="rtl">
-      <Container>
-        <nav className="mb-6 flex items-center gap-1.5 text-sm text-text-gray">
-          <Link href="/" className="transition-colors hover:text-primary-400">
-            خانه
-          </Link>
-          <ChevronRight className="size-4" />
-          <Link
-            href="/cabins"
-            className="transition-colors hover:text-primary-400"
-          >
-            کابین‌ها
-          </Link>
-          <ChevronRight className="size-4" />
-          <span className="text-white/80">{cabin.name}</span>
-        </nav>
+    <section className="min-h-screen bg-slate-950 py-10 sm:py-14">
+      <Container variant="cabin-detail">
+        <Navigate
+          paths={[
+            { id: 1, title: "خانه", href: "/" },
+            { id: 2, title: "کابین‌ها", href: "/cabins" },
+            { id: 3, title: cabin.name, isSpan: true },
+          ]}
+        />
 
         <CabinDetail cabin={cabin} />
       </Container>

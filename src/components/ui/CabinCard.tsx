@@ -1,10 +1,13 @@
 import { type StaticImageData } from "next/image";
 import Link from "next/link";
+import { Users } from "lucide-react";
 import { type ReactNode } from "react";
 
 export interface CabinCardProps {
   name: string;
-  price: string;
+  price: number;
+  discount?: number;
+  capacity?: number;
   image: string | StaticImageData;
   imageAlt?: string;
   features?: string[];
@@ -12,12 +15,14 @@ export interface CabinCardProps {
   href?: string;
   className?: string;
   children?: ReactNode;
-  animation?: "none" | "hover" | "scroll" | "landing";
+  animation?: "none" | "hover";
 }
 
 export default function CabinCard({
   name,
   price,
+  discount,
+  capacity,
   image,
   imageAlt,
   features = [],
@@ -27,16 +32,41 @@ export default function CabinCard({
   children,
   animation = "hover",
 }: CabinCardProps): ReactNode {
-  const baseClasses = "group relative overflow-hidden rounded-3xl border border-white/5 bg-slate-900";
+  const baseClasses =
+    "group relative overflow-hidden rounded-3xl border border-white/5 bg-slate-900";
 
   const animationClasses = {
     none: "transition-all duration-300",
-    hover: "transition-all duration-500 hover:border-primary-400/30 hover:shadow-2xl hover:shadow-primary-400/10",
-    scroll: "transition-all duration-500",
-    landing: "transition-all duration-500 hover:border-primary-400/30 hover:shadow-2xl hover:shadow-primary-400/10",
+    hover:
+      "transition-all duration-500 hover:border-primary-400/30 hover:shadow-2xl hover:shadow-primary-400/10",
   };
 
   const cardClasses = `${baseClasses} ${animationClasses[animation]} ${className}`;
+
+  const hasDiscount = Boolean(discount && discount > 0);
+  const discountPercent = hasDiscount ? (discount as number) : 0;
+  const discountedPrice = hasDiscount
+    ? Math.round(price * (1 - discountPercent / 100))
+    : price;
+
+  const priceBadge = (
+    <div className="absolute top-4 right-4 flex items-center gap-2" dir="ltr">
+      {hasDiscount && (
+        <span className="rounded-full bg-slate-900/80 px-4 py-1.5 text-sm font-medium text-white/60 line-through backdrop-blur-sm">
+          ${price}
+        </span>
+      )}
+      <span className="bg-primary-400 rounded-full px-4 py-1.5 text-sm font-bold text-black">
+        ${discountedPrice}/هر شب
+      </span>
+    </div>
+  );
+
+  const discountBadge = hasDiscount ? (
+    <span className="absolute top-4 left-4 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white">
+      {discountPercent}٪ تخفیف
+    </span>
+  ) : null;
 
   const cardContent = (
     <div className={cardClasses}>
@@ -47,23 +77,31 @@ export default function CabinCard({
           src={typeof image === "string" ? image : image.src}
         />
         <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-transparent to-transparent" />
-        <div className="absolute top-4 right-4 rounded-full bg-primary-400 px-4 py-1.5 text-sm font-bold text-black">
-          {price}/هر شب
-        </div>
+        {priceBadge}
+        {discountBadge}
       </div>
 
       <div className="p-5 sm:p-6">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-xl sm:text-2xl font-bold text-white">{name}</h3>
-          {size && <span className="text-xs sm:text-sm text-white/40">{size}</span>}
+          <h3 className="text-xl font-bold text-white sm:text-2xl">{name}</h3>
+          {size && (
+            <span className="text-xs text-white/40 sm:text-sm">{size}</span>
+          )}
         </div>
+
+        {capacity !== undefined && (
+          <div className="text-text-gray mb-3 flex items-center gap-2 text-sm">
+            <Users className="text-primary-400 size-4" />
+            <span>ظرفیت تا {capacity.toLocaleString("fa-IR")} نفر</span>
+          </div>
+        )}
 
         {features.length > 0 && (
           <div className="mb-6 flex flex-wrap gap-2">
             {features.map((feature, i) => (
               <span
                 key={i}
-                className="rounded-full bg-white/5 px-3 py-1 text-xs sm:text-sm text-white/60"
+                className="rounded-full bg-white/5 px-3 py-1 text-xs text-white/60 sm:text-sm"
               >
                 {feature}
               </span>
@@ -72,7 +110,7 @@ export default function CabinCard({
         )}
 
         {children || (
-          <button className="w-full rounded-xl border border-white/10 bg-white/5 py-3 font-semibold text-white transition-all duration-300 hover:border-primary-400 hover:bg-primary-400 hover:text-black">
+          <button className="hover:border-primary-400 hover:bg-primary-400 w-full rounded-xl border border-white/10 bg-white/5 py-3 font-semibold text-white transition-all duration-300 hover:text-black">
             مشاهده جزئیات
           </button>
         )}

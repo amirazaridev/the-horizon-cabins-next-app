@@ -18,7 +18,7 @@ export default function AboutSection() {
       className="relative overflow-hidden bg-slate-900 px-10 py-24 md:py-32"
     >
       <Container className="relative z-10">
-        <SectionTitle ref={headingRef} subTitle="داستان ما"  title="جایی که طبیعت" titlePri={<>به لوکس بودن <br /> می‌رسد</>}/>
+        <SectionTitle ref={headingRef} subTitle="داستان ما"  title="جایی که طبیعت ایران" titlePri={<>به لوکس بودن <br /> می‌رسد</>}/>
 
         <div className="grid items-center gap-12 md:grid-cols-2">
           <div ref={imageRef} className="relative order-1 md:order-1">
@@ -27,7 +27,7 @@ export default function AboutSection() {
                 src={imageURL}
                 className="object-cover"
                 fill
-                alt="منظره کابین کوهستانی"
+                alt="سوئیت چوبی در دل طبیعت ایران"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
@@ -39,18 +39,19 @@ export default function AboutSection() {
 
           <div ref={contentRef} className="order-2 space-y-6 md:order-1">
             <h3 className="text-text text-3xl font-bold">
-              سوئیت در دل جنگل
+              از جنگل‌های هیرکانی تا ساحل خزر
             </h3>
             <p className="text-text-gray leading-relaxed">
-              کابین‌های هورایزن سوئیت هایی بی‌نظیر از زندگی روزمره هستند. این مکان
-              در میان جنگل‌های بکر و قله‌های باشکوه قرار گرفته و ترکیبی کامل از
-              جذابیت روستایی و راحتی مدرن را ارائه می‌دهد.
+              سوئیت‌های هورایزن، پناهگاهی متفاوت برای گریز از زندگی روزمره
+              هستند؛ از سوئیت‌های چوبی میان جنگل‌های هزارساله‌ی هیرکانی در شمال
+              گرفته تا اقامتگاه‌های ساحلی کنار دریای خزر و بوم‌گردی‌های آرام در
+              شرق کشور. هر مقصد، ترکیبی از سادگی روستایی و آسایش مدرن است.
             </p>
             <p className="text-text-gray leading-relaxed">
-              هر کابین با دقت طراحی شده تا ارتباط شما با طبیعت را به حداکثر
-              برساند و در عین حال تمام امکانات مدرن را در دسترس شما قرار دهد. با
-              منظره‌های چشمگیر از خواب بیدار شوید، هوای تازه کوهستان را تنفس
-              کنید و خاطراتی ماندگار بسازید.
+              هر سوئیت با دقت طراحی شده تا ارتباط شما با طبیعت ایران را به
+              حداکثر برساند؛ صبح با صدای پرندگان جنگل بیدار شوید، غروب بر ساحل
+              شنی تماشا کنید و شب زیر آسمان پرستاره‌ی کویر بخوابید. خاطره‌ای
+              ماندگار از سفری ایرانی، در انتظار شماست.
             </p>
 
             <FeatureList />

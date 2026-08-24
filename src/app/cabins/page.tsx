@@ -7,9 +7,9 @@ import Container from "@/components/ui/Container";
 import BadgeTitle from "@/components/ui/BadgeTitle";
 
 export const metadata: Metadata = {
-  title: "کابین‌های لوکس | هورایزن کابینز",
+  title: "سوئیت‌های لوکس | هورایزن کابینز",
   description:
-    "مجموعه کامل کابین‌های لوکس در قلب طبیعت. از پناهگاه‌های صمیمی تا ویلاهای hoàng gia با امکانات کامل.",
+    "مجموعه کامل سوئیت‌ها و اقامتگاه‌های لوکس در طبیعت ایران؛ از سوئیت‌های چوبی جنگل‌های هیرکانی تا اقامتگاه‌های ساحلی خزر.",
 };
 
 export default async function CabinsPage({
@@ -24,19 +24,19 @@ export default async function CabinsPage({
       <Container>
         <div className="mx-auto mb-12 max-w-4xl text-center sm:mb-16">
           <div className="mb-8 inline-flex">
-            <BadgeTitle>مجموعه کابین ها</BadgeTitle>
+            <BadgeTitle>مجموعه سوئیت‌ها</BadgeTitle>
           </div>
           <h1 className="mb-6 text-4xl leading-[1.1] font-bold text-white sm:text-5xl md:text-6xl lg:text-7xl">
-            کابین‌های
+            سوئیت‌های
             <br />
             <span className="text-primary-400">لوکس</span>
             <span className="text-white">.</span>
           </h1>
           <p className="mx-auto max-w-3xl text-lg leading-relaxed text-white/60 sm:text-xl">
-            مجموعه‌ای منحصر به فرد از کابین‌های لوکس در قلب طبیعت بکر. از
-            پناهگاه‌های صمیمی برای دو نفر تا ویلاهای hoàng gia برای Familien
-            بزرگ. هر کابین با دقت طراحی شده تا تجربه‌ای فراموش‌نشدنی از آسایش و
-            لوکس را فراهم آورد.
+            مجموعه‌ای منحصربه‌فرد از اقامتگاه‌های لوکس در طبیعت ایران؛ از
+            سوئیت‌های چوبی در دل جنگل‌های هیرکانی شمال تا سوئیت‌های ساحلی کنار
+            دریای خزر و بوم‌گردی‌های آرام شرق کشور. هر اقامتگاه با دقت طراحی
+            شده تا تجربه‌ای فراموش‌نشدنی از آسایش و طبیعت را برای شما رقم بزند.
           </p>
         </div>
 

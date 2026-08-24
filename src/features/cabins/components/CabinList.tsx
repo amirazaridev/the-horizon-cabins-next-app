@@ -1,5 +1,6 @@
 import CabinCard from "@/components/ui/CabinCard";
 import { getCabins, filterCabins } from "../lib/data-service";
+import { notFound } from "next/navigation";
 
 interface CabinListProps {
   filter: string;
@@ -10,17 +11,7 @@ export default async function CabinList({ filter }: CabinListProps) {
   const filteredCabin = filterCabins(cabins, filter);
 
   if (!filteredCabin.length) {
-    return (
-      <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
-        <div className="mb-4 text-6xl">🏔️</div>
-        <h3 className="mb-2 text-xl font-semibold text-white">
-          کابینی یافت نشد
-        </h3>
-        <p className="text-white/50">
-          برای این دسته‌بندی کابینی موجود نیست. فیلتر را تغییر دهید.
-        </p>
-      </div>
-    );
+    return notFound();
   }
 
   return (
@@ -29,7 +20,9 @@ export default async function CabinList({ filter }: CabinListProps) {
         <CabinCard
           key={cabin.id}
           name={cabin.name}
-          price={`$${cabin.price}`}
+          price={cabin.price}
+          discount={cabin.discount}
+          capacity={cabin.maxCapacity}
           image={cabin.image}
           imageAlt={cabin.name}
           features={cabin.features}

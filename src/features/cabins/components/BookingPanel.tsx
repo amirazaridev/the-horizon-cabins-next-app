@@ -55,7 +55,7 @@ export default function BookingPanel({ cabin }: { cabin: Cabin }): ReactNode {
         <div className="relative mt-auto pt-6">
           <div className="flex flex-col gap-3">
             <Button shape="xl" fullWidth>
-              رزرو این کابین
+              رزرو این اقامتگاه
               <MoveLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-1" />
             </Button>
             <Button href="tel:+989000000000" variant="outline" shape="xl">
