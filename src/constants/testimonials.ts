@@ -1,4 +1,13 @@
-export const COMMENTS = [
+export type Testimonial = {
+  id: number;
+  name: string;
+  role: string;
+  image: string;
+  text: string;
+  rating: number;
+};
+
+export const TESTIMONIALS: Testimonial[] = [
   {
     id: 1,
     name: "سارا محمدی",

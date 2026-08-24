@@ -1,13 +1,25 @@
 "use client";
+
+import useSectionReveal from "@/features/landing/hooks/useSectionReveal";
 import BackDropBlur from "@/components/ui/BackDropBlur";
-import useTestimonialsAnimation from "./useTestimonialsAnimation";
 import SectionTitle from "../SectionTitle";
 import Container from "@/components/ui/Container";
-import Options from "./Options";
+import TestimonialCard from "./TestimonialCard";
+import { TESTIMONIALS } from "@/constants/testimonials";
 
+const REVEAL_TARGETS = [
+  { selector: ".testimonials-title" },
+  {
+    selector: ".testimonial-card",
+    y: 80,
+    rotateX: 10,
+    stagger: 0.15,
+    start: "top 90%",
+  },
+];
 
 export default function TestimonialsSection() {
-  const { sectionRef } = useTestimonialsAnimation();
+  const { sectionRef } = useSectionReveal(REVEAL_TARGETS);
 
   return (
     <section
@@ -24,7 +36,11 @@ export default function TestimonialsSection() {
           titlePri="چه می‌گویند"
         />
 
-        <Options />
+        <div className="grid gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3">
+          {TESTIMONIALS.map((testimonial) => (
+            <TestimonialCard key={testimonial.id} {...testimonial} />
+          ))}
+        </div>
       </Container>
     </section>
   );

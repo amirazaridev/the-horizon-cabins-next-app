@@ -1,11 +1,11 @@
+import GsapProvider from "@/components/ui/GsapProvider";
 import AboutSection from "@/features/landing/AboutSection";
 import AmenitiesSection from "@/features/landing/AmenitiesSection";
 import CabinsSection from "@/features/landing/CabinsSection";
-import Contact from "@/features/landing/ContactSection";
-import Gallery from "@/features/landing/GallerySection";
-import GsapProvider from "@/components/ui/GsapProvider";
-import Testimonials from "@/features/landing/TestimonialsSection";
+import ContactSection from "@/features/landing/ContactSection";
+import GallerySection from "@/features/landing/GallerySection";
 import HeroSection from "@/features/landing/HeroSection";
+import TestimonialsSection from "@/features/landing/TestimonialsSection";
 
 export default function Home() {
   return (
@@ -15,9 +15,9 @@ export default function Home() {
         <AboutSection />
         <CabinsSection />
         <AmenitiesSection />
-        <Gallery />
-        <Testimonials />
-        <Contact />
+        <GallerySection />
+        <TestimonialsSection />
+        <ContactSection />
       </main>
     </GsapProvider>
   );

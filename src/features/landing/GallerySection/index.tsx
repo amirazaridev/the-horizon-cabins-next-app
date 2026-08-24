@@ -1,14 +1,26 @@
 "use client";
 
-import { IMAGES } from "@/constants/gallery-images-section";
 import SectionTitle from "../SectionTitle";
-import useGalleryAnimation from "./useGalleryAnimation";
-import Image from "next/image";
+import useSectionReveal, {
+  type RevealTarget,
+} from "@/features/landing/hooks/useSectionReveal";
 import Container from "@/components/ui/Container";
 import GalleryItem from "./GalleryItem";
+import { GALLERY_IMAGES } from "@/constants/gallery-images";
+
+const REVEAL_TARGETS: RevealTarget[] = [
+  { selector: ".gallery-title" },
+  {
+    selector: ".gallery-item",
+    y: 80,
+    scale: 0.95,
+    start: "top 90%",
+    parallaxChildSelector: "img",
+  },
+];
 
 export default function GallerySection() {
-  const { sectionRef } = useGalleryAnimation();
+  const { sectionRef } = useSectionReveal(REVEAL_TARGETS);
 
   return (
     <section
@@ -25,7 +37,7 @@ export default function GallerySection() {
         />
 
         <ul className="grid auto-rows-37.5 grid-cols-2 gap-3 sm:auto-rows-50 md:auto-rows-62.5 md:grid-cols-3 md:gap-6">
-          {IMAGES.map((img) => (
+          {GALLERY_IMAGES.map((img) => (
             <GalleryItem {...img} key={img.id} />
           ))}
         </ul>

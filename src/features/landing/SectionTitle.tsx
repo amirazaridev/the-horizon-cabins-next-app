@@ -19,26 +19,28 @@ export default function SectionTitle({
   className = "",
   forCabin = false,
 }: Props): ReactNode {
+  const eyebrowClass = forCabin ? "section-title-eyebrow " : "";
+  const lineClass = forCabin ? "section-title-line " : "";
+  const subtextClass = forCabin ? "section-title-subtext " : "";
+
   return (
     <div ref={ref} className={`mb-16 text-center ${className}`}>
       <span
-        className={`text-primary-400 text-sm font-medium tracking-wider ${forCabin ? "cabins-subtext" : ""}`}
+        className={`${eyebrowClass}text-primary-400 text-sm font-medium tracking-wider`}
       >
         {subTitle}
       </span>
-      <h2
-        className={`text-text mt-4 text-4xl font-bold md:text-6xl ${forCabin ? "cabins-heading-line" : ""}`}
-      >
-        {title}
+      <h2 className="text-text mt-4 text-4xl font-bold md:text-6xl">
+        <span className={lineClass}>{title}</span>
         <br />
-        <span
-          className={`text-primary-400 ${forCabin ? "cabins-eyebrow" : ""}`}
-        >
-          {titlePri}
-        </span>
+        <span className={`${lineClass}text-primary-400`}>{titlePri}</span>
       </h2>
       {parag && (
-        <p className={`mx-auto mt-4 max-w-2xl text-white/50`}>{parag}</p>
+        <p
+          className={`${subtextClass}mx-auto mt-4 max-w-2xl text-white/50`}
+        >
+          {parag}
+        </p>
       )}
     </div>
   );

@@ -1,16 +1,11 @@
 import { type ReactNode } from "react";
-import Stars from "../Stars";
+import Stars from "./Stars";
 import CardContainer from "@/components/ui/CardContainer";
+import type { Testimonial } from "@/constants/testimonials";
 
-type Props = {
-  rating: number;
-  text: string;
-  image: string;
-  name: string;
-  role: string;
-};
+type Props = Testimonial;
 
-export default function Option({
+export default function TestimonialCard({
   rating,
   text,
   image,
@@ -19,7 +14,7 @@ export default function Option({
 }: Props): ReactNode {
   return (
     <CardContainer className="testimonial-card hover:border-primary-400/20">
-      <Stars countFill={rating} />
+      <Stars filledCount={rating} />
 
       <p className="text-text-gray mb-8 leading-relaxed">«{text}»</p>
 

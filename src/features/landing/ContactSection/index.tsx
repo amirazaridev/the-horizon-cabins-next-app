@@ -2,24 +2,28 @@
 
 import Button from "@/components/ui/Button";
 import {
-  CalendarRange,
   Clock,
   Headset,
-  KeyRound,
   Mail,
   MapPin,
   MoveLeft,
   Phone,
   TreePine,
 } from "lucide-react";
-import useContactAnimation from "./useContactAnimation";
+import useSectionReveal from "@/features/landing/hooks/useSectionReveal";
 import BackDropBlur from "@/components/ui/BackDropBlur";
 import Container from "@/components/ui/Container";
 import SectionTitle from "../SectionTitle";
 import CardContainer from "@/components/ui/CardContainer";
+import { BOOKING_STEPS, WORKING_HOURS } from "@/constants/contact-section";
+
+const REVEAL_TARGETS = [
+  { selector: ".contact-content" },
+  { selector: ".contact-cta", y: 80, delay: 0.2 },
+];
 
 export default function ContactSection() {
-  const { sectionRef } = useContactAnimation();
+  const { sectionRef } = useSectionReveal(REVEAL_TARGETS);
 
   return (
     <section
@@ -56,24 +60,8 @@ export default function ContactSection() {
             </p>
 
             <div className="mt-8 space-y-5">
-              {[
-                {
-                  icon: TreePine,
-                  title: "کابین خود را انتخاب کنید",
-                  desc: "بین کابین‌های چوبی، یخچالی و جنگلی یکی را برگزینید",
-                },
-                {
-                  icon: CalendarRange,
-                  title: "تاریخ ورود و خروج را مشخص کنید",
-                  desc: "تقویم موجودی هر کابین را زنده می‌بینید",
-                },
-                {
-                  icon: KeyRound,
-                  title: "رزرو را نهایی کنید",
-                  desc: "تأیید آنی دریافت می‌کنید؛ ما منتظرتان هستیم",
-                },
-              ].map((step, i) => (
-                <div key={i} className="group flex items-start gap-4">
+              {BOOKING_STEPS.map((step, i) => (
+                <div key={step.title} className="group flex items-start gap-4">
                   <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-slate-800/80 transition-colors duration-300">
                     <step.icon className="text-primary-400 size-5" />
                     <span className="bg-primary-400 absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full text-[10px] font-bold text-black">
@@ -150,11 +138,7 @@ export default function ContactSection() {
                 <h3 className="text-text text-lg font-semibold">ساعات کاری</h3>
               </div>
               <div className="space-y-3">
-                {[
-                  { name: "پذیرش", time: "۲۴ ساعته" },
-                  { name: "اسپا", time: "۹ صبح تا ۱۰ شب" },
-                  { name: "رستوران", time: "۷ صبح تا ۱۱ شب" },
-                ].map((item) => (
+                {WORKING_HOURS.map((item) => (
                   <div
                     key={item.name}
                     className="text-text-gray flex justify-between border-b border-white/5 pb-2 last:border-0 last:pb-0"

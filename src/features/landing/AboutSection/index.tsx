@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import Container from "@/components/ui/Container";
 import imageURL from "@/assets/images/about-section.png";
-import Options from "@/features/landing/AboutSection/Options";
+import FeatureList from "@/features/landing/AboutSection/FeatureList";
 import useAboutAnimation from "@/features/landing/AboutSection/useAboutAnimation";
 import SectionTitle from "../SectionTitle";
 
@@ -28,6 +28,7 @@ export default function AboutSection() {
                 className="object-cover"
                 fill
                 alt="منظره کابین کوهستانی"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
             <div className="bg-primary-400 absolute -bottom-6 -left-2 rounded-2xl p-4 text-black md:-left-6 md:p-6">
@@ -38,10 +39,10 @@ export default function AboutSection() {
 
           <div ref={contentRef} className="order-2 space-y-6 md:order-1">
             <h3 className="text-text text-3xl font-bold">
-              پناهگاهی در دل کوهستان
+              سوئیت در دل جنگل
             </h3>
             <p className="text-text-gray leading-relaxed">
-              کابین‌های هورایزن پناهگاهی بی‌نظیر از زندگی روزمره هستند. این مکان
+              کابین‌های هورایزن سوئیت هایی بی‌نظیر از زندگی روزمره هستند. این مکان
               در میان جنگل‌های بکر و قله‌های باشکوه قرار گرفته و ترکیبی کامل از
               جذابیت روستایی و راحتی مدرن را ارائه می‌دهد.
             </p>
@@ -52,7 +53,7 @@ export default function AboutSection() {
               کنید و خاطراتی ماندگار بسازید.
             </p>
 
-            <Options />
+            <FeatureList />
           </div>
         </div>
       </Container>

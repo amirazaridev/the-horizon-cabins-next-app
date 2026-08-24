@@ -83,9 +83,9 @@ export default function HeroSection() {
               className="size-4 transition-transform duration-300 group-hover:-translate-x-1"
             />
           </Button>
-          <a href="#about">
-            <Button variant="outline">بیشتر بدانید</Button>
-          </a>
+          <Button href="#about" variant="outline">
+            بیشتر بدانید
+          </Button>
         </div>
       </div>
 

@@ -43,11 +43,8 @@ export default function CabinCard({
       <div className="relative aspect-4/3 overflow-hidden">
         <img
           className="object-cover transition-transform duration-700 group-hover:scale-110"
-          
-          
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           alt={imageAlt || name}
-          src={image}
+          src={typeof image === "string" ? image : image.src}
         />
         <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-transparent to-transparent" />
         <div className="absolute top-4 right-4 rounded-full bg-primary-400 px-4 py-1.5 text-sm font-bold text-black">

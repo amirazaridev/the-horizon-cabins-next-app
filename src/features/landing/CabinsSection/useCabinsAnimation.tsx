@@ -22,14 +22,14 @@ export default function useCabinsAnimation() {
       });
 
       titleTl
-        .from(".cabins-eyebrow", {
+        .from(".section-title-eyebrow", {
           y: 24,
           opacity: 0,
           duration: 0.6,
           ease: "power3.out",
         })
         .from(
-          ".cabins-heading-line",
+          ".section-title-line",
           {
             y: 40,
             opacity: 0,
@@ -40,7 +40,7 @@ export default function useCabinsAnimation() {
           "-=0.35",
         )
         .from(
-          ".cabins-subtext",
+          ".section-title-subtext",
           { y: 20, opacity: 0, duration: 0.6, ease: "power3.out" },
           "-=0.4",
         );

@@ -1,7 +1,7 @@
-import { TOption } from "@/types/TOptionLandingPage";
+import { LandingOption } from "@/types/landing-option";
 import { Balloon, Earth, Heart, Sparkle } from "lucide-react";
 
-export const OPTIONS_ABOUT : TOption[] = [
+export const ABOUT_FEATURES: LandingOption[] = [
   {
     id: 1,
     title: "پریمیوم",

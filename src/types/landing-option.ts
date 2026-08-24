@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export type TOption = {
+export type LandingOption = {
   id: number;
   title: string;
   parag: string;

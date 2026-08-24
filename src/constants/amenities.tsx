@@ -1,7 +1,7 @@
-import { TOption } from "@/types/TOptionLandingPage";
+import { LandingOption } from "@/types/landing-option";
 import { BrickWallFire, CookingPot, Moon, WavesLadder } from "lucide-react";
 
-export const OPTION_AMENITIES: TOption[] = [
+export const AMENITIES: LandingOption[] = [
   {
     id: 1,
     icon: <BrickWallFire />,

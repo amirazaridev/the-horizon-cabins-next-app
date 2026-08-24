@@ -18,12 +18,14 @@ export default function NavbarItem({
 }: Props): ReactNode {
   if (forAndroid)
     return (
-      <li
-        className={`${active ? "text-primary-400 bg-white/5" : "hover:text-primary-400 text-white/80 hover:bg-white/5"} rounded-lg px-4 py-3 text-lg font-medium transition-colors`}
-        onClick={closeMenu}
-      >
-        <Link href={href}>{label}</Link>
-      </li>
+      <Link href={href}>
+        <li
+          className={`${active ? "text-primary-400 bg-white/5" : "hover:text-primary-400 text-white/80 hover:bg-white/5"} rounded-lg px-4 py-3 text-lg font-medium transition-colors`}
+          onClick={closeMenu}
+        >
+          {label}
+        </li>
+      </Link>
     );
 
   return (

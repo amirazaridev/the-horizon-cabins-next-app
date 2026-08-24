@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import CabinCard from "@/components/ui/CabinCard";
 import Container from "@/components/ui/Container";
 import useCabinsAnimation from "@/features/landing/CabinsSection/useCabinsAnimation";
@@ -6,28 +6,31 @@ import SectionTitle from "../SectionTitle";
 
 const cabins = [
   {
+    id: 1,
     name: "پناهگاه آلپاین",
     price: "$299",
     image:
       "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?q=80&w=2070&auto=format&fit=crop",
     features: ["۲ اتاق خواب", "منظره کوه", "وان آب گرم"],
-    size: "۱۲۰ متر مربع",
+    size: "۱۲۰",
   },
   {
+    id: 2,
     name: "پناهگاه جنگلی",
     price: "$399",
     image:
       "https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=2070&auto=format&fit=crop",
     features: ["۳ اتاق خواب", "دید پانوراما", "شومینه"],
-    size: "۱۸۰ متر مربع",
+    size: "۱۸۰",
   },
   {
+    id: 3,
     name: "قله لوکس",
     price: "$549",
     image:
       "https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=2070&auto=format&fit=crop",
     features: ["۴ اتاق خواب", "استخر خصوصی", "سونا"],
-    size: "۲۵۰ متر مربع",
+    size: "۲۵۰",
   },
 ];
 
@@ -41,7 +44,7 @@ export default function CabinsSection() {
     >
       <Container>
         <SectionTitle
-          forCabin={true}
+          forCabin
           className="cabins-title"
           subTitle="کابین‌های ما"
           title="پناهگاه خودتان"
@@ -56,14 +59,14 @@ export default function CabinsSection() {
         >
           {cabins.map((cabin) => (
             <CabinCard
-              key={cabin.image}
+              key={cabin.id}
               name={cabin.name}
-              price={`$${cabin.price}`}
+              price={cabin.price}
               image={cabin.image}
               imageAlt={cabin.name}
               features={cabin.features}
               size={`${cabin.size} متر مربع`}
-              href={`/cabins/${cabin.image}`}
+              href={`/cabins/${cabin.id}`}
               animation="hover"
             />
           ))}

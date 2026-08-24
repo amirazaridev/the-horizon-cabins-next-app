@@ -1,14 +1,16 @@
 import { type ReactNode } from "react";
 
-type Props = { countFill: number };
+type Props = { filledCount: number; total?: number };
 
-export default function Stars({ countFill }: Props): ReactNode {
+export default function Stars({ filledCount, total = 5 }: Props): ReactNode {
   return (
     <div className="mb-6 flex gap-1">
-      {[...Array(countFill)].map((_, i) => (
+      {Array.from({ length: total }, (_, i) => (
         <svg
           key={i}
-          className="text-primary-400 size-5"
+          className={`size-5 ${
+            i < filledCount ? "text-primary-400" : "text-white/15"
+          }`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >

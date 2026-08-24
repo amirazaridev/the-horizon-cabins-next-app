@@ -1,5 +1,4 @@
 import { ZoomIn } from "lucide-react";
-import Image from "next/image";
 import { type ReactNode } from "react";
 
 type Props = { span: string; src: string; id: number };
