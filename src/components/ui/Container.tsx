@@ -8,7 +8,7 @@ export default function Container({
   ...otherProps
 }: Props): ReactNode {
   return (
-    <div className={`mx-auto max-w-7xl ${className}`} {...otherProps}>
+    <div className={`mx-auto max-w-7xl px-5 md:px-0 ${className}`} {...otherProps}>
       {children}
     </div>
   );

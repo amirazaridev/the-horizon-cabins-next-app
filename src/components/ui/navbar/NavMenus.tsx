@@ -1,18 +1,15 @@
 import { TextAlignJustify } from "lucide-react";
-import Link from "next/link";
 import { type ReactNode } from "react";
+import Button from "../Button";
 
-type Props = {onClickMenu : () => void};
+type Props = { onClickMenu: () => void };
 
-export default function NavMenus({onClickMenu}: Props): ReactNode {
+export default function NavMenus({ onClickMenu }: Props): ReactNode {
   return (
     <div className="flex items-center gap-3">
-      <Link
-        href="/contact"
-        className="bg-primary-500 hover:bg-primary-400 hidden rounded-full px-5 py-2.5 text-sm font-semibold text-black transition-colors duration-300 md:inline-flex lg:px-6"
-      >
-        رزرو کنید
-      </Link>
+      <div className="hidden md:block">
+        <Button size="md"> ورود | ثبت‌نام</Button>
+      </div>
 
       <button
         onClick={onClickMenu}

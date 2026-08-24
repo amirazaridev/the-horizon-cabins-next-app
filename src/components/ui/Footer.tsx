@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
+import { useRef } from "react";
 
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
@@ -30,30 +29,30 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="py-12 px-6 bg-slate-950 border-t border-white/5"
+      className="bg-background border-t border-white/5 px-6 py-12"
       dir="rtl"
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
           <div className="col-span-2 md:col-span-2">
             <a href="#hero" className="text-2xl font-bold text-white">
               هورایزن
-              <span className="text-amber-400">.</span>
+              <span className="text-primary-400">.</span>
             </a>
-            <p className="text-white/50 mt-4 max-w-md leading-relaxed">
+            <p className="text-text-gray mt-4 max-w-md leading-relaxed">
               از شلوغی شهر فاصله بگیرید و در دل کوهستان، لوکس بودن را تجربه
               کنید. طبیعت را هرگز مثل قبل تجربه نکرده‌اید.
             </p>
-            <div className="flex gap-4 mt-6">
+            <div className="mt-6 flex gap-4">
               {["facebook", "instagram", "twitter", "youtube"].map((social) => (
                 <a
                   key={social}
                   href="#"
-                  className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-white/50 hover:bg-amber-400 hover:text-black transition-all duration-300"
+                  className="hover:bg-primary-400 flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white/50 transition-all duration-300 hover:text-black"
                 >
                   <span className="sr-only">{social}</span>
                   <svg
-                    className="w-5 h-5"
+                    className="h-5 w-5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -65,29 +64,25 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-white mb-4">لینک‌های سریع</h4>
+            <h4 className="mb-4 font-semibold text-white">لینک‌های سریع</h4>
             <ul className="space-y-3">
-              {[
-                "درباره ما",
-                "کابین‌ها",
-                "امکانات",
-                "گالری",
-                "تماس",
-              ].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-white/50 hover:text-amber-400 transition-colors"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              {["درباره ما", "کابین‌ها", "امکانات", "گالری", "تماس"].map(
+                (link) => (
+                  <li key={link}>
+                    <a
+                      href="#"
+                      className="text-text-gray hover:text-primary-400 transition-colors"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ),
+              )}
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold text-white mb-4">قانونی</h4>
+            <h4 className="text-text mb-4 font-semibold">قانونی</h4>
             <ul className="space-y-3">
               {[
                 "حریم خصوصی",
@@ -98,7 +93,7 @@ export default function Footer() {
                 <li key={link}>
                   <a
                     href="#"
-                    className="text-white/50 hover:text-amber-400 transition-colors"
+                    className="text-text-gray hover:text-primary-400 transition-colors"
                   >
                     {link}
                   </a>
@@ -108,8 +103,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/5 text-center">
-          <p className="text-white/30 text-sm">
+        <div className="border-t border-white/5 pt-8 text-center">
+          <p className="text-sm text-white/30">
             © {new Date().getFullYear()} کابین‌های هورایزن. تمامی حقوق محفوظ
             است.
           </p>

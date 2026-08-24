@@ -19,7 +19,7 @@ export default function NavbarItem({
   if (forAndroid)
     return (
       <li
-        className={`${active ? "text-primary-400 bg-white/5" : "hover:text-primary-400 text-white/80 hover:bg-white/5"} rounded-lg px-4 py-3 text-lg font-medium  transition-colors `}
+        className={`${active ? "text-primary-400 bg-white/5" : "hover:text-primary-400 text-white/80 hover:bg-white/5"} rounded-lg px-4 py-3 text-lg font-medium transition-colors`}
         onClick={closeMenu}
       >
         <Link href={href}>{label}</Link>
@@ -27,11 +27,15 @@ export default function NavbarItem({
     );
 
   return (
-    <li className={`group ${active ? "text-primary-400" : "hover:text-primary-400 text-white/70"}  relative text-sm font-medium  transition-colors duration-300`}>
-      <Link href={href}>
+    <Link href={href}>
+      <li
+        className={`group ${active ? "text-primary-400" : "hover:text-primary-400 text-white/70"} relative text-sm font-medium transition-colors duration-300`}
+      >
         {label}
-        <span className={`bg-primary-400 absolute right-0 -bottom-1 h-0.5 w-0 transition-all duration-300  ${active?"w-full":"group-hover:w-full"}`} />
-      </Link>
-    </li>
+        <span
+          className={`bg-primary-400 absolute right-0 -bottom-1 h-0.5 w-0 transition-all duration-300 ${active ? "w-full" : "group-hover:w-full"}`}
+        />
+      </li>
+    </Link>
   );
 }

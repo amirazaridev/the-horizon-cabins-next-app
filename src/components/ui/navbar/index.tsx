@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
-import NavbarItem from "@/components/ui/navbar/NavbarItem";
+import NavbarItem from "@/components/ui/Navbar/NavbarItem";
 import Logo from "@/components/ui/Logo";
-import NavMenus from "@/components/ui/navbar/NavMenus";
-import NavMobile from "@/components/ui/navbar/NavMobile";
+import NavMenus from "@/components/ui/Navbar/NavMenus";
+import NavMobile from "@/components/ui/Navbar/NavMobile";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { usePathname } from "next/navigation";
 import Container from "../Container";
@@ -19,7 +19,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const nav = navRef.current;
-    
+
     if (!nav || !isLandingPage) return;
 
     gsap.set(nav, { y: -100, opacity: 0 });
@@ -31,10 +31,8 @@ export default function Navbar() {
       ease: "power3.out",
       delay: 0.5,
     });
-
-    
   }, [isLandingPage]);
-  useEffect(()=>{
+  useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
         navRef.current?.classList.add(
@@ -57,8 +55,7 @@ export default function Navbar() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  },[])
-
+  }, []);
 
   return (
     <>
@@ -71,7 +68,12 @@ export default function Navbar() {
 
           <ul className="hidden items-center gap-6 md:flex lg:gap-8">
             {NAV_ITEMS.map((link) => (
-              <NavbarItem active={pathName === link.href} key={link.href} href={link.href} label={link.label} />
+              <NavbarItem
+                active={pathName === link.href}
+                key={link.href}
+                href={link.href}
+                label={link.label}
+              />
             ))}
           </ul>
 

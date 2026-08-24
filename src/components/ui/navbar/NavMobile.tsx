@@ -5,6 +5,7 @@ import NavbarItem from "./NavbarItem";
 import { X } from "lucide-react";
 import gsap from "gsap";
 import { usePathname } from "next/navigation";
+import Button from "../Button";
 
 type Props = { handleCloseMenu: () => void; isOpen: boolean };
 
@@ -117,13 +118,7 @@ export default function NavMobile({
           </div>
 
           <div className="border-t border-white/10 p-5">
-            <Link
-              href="/contact"
-              onClick={closeMenu}
-              className="nav-item bg-primary-500 hover:bg-primary-400 block w-full rounded-full px-6 py-3 text-center font-semibold text-black transition-colors"
-            >
-              رزرو کنید
-            </Link>
+            <Button href="/" fullWidth>ورود | ثبت‌نام</Button>
           </div>
         </nav>
       </div>

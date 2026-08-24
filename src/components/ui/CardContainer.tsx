@@ -1,0 +1,42 @@
+import { ComponentProps, type ReactNode } from "react";
+
+type TVariant = "default" | "gradient" | "primary";
+
+type Props = ComponentProps<"div"> & {
+  variant?: TVariant;
+};
+const varients: Record<TVariant, string> = {
+  default:
+    "rounded-2xl border border-white/5 bg-slate-800/50 p-8 transition-all duration-500",
+  gradient:
+    "from-primary-400/40 relative rounded-3xl bg-linear-to-br via-white/10 to-transparent p-px",
+  primary:
+    "group hover:from-primary-400/40 relative rounded-3xl bg-linear-to-br from-white/10 via-white/5 to-transparent p-px transition-all duration-500",
+};
+
+export default function CardContainer({
+  variant = "default",
+  children,
+  className,
+  ...otherProps
+}: Props): ReactNode {
+  return (
+    <div
+      className={`${varients[variant]} ${className ? className : ""}`}
+      {...otherProps}
+    >
+      {variant === "gradient" && (
+        <div className="relative h-full overflow-hidden rounded-3xl bg-slate-900/80 p-8 backdrop-blur-sm md:p-10">
+          <div className="bg-primary-400/10 absolute -top-24 -left-24 h-64 w-64 rounded-full blur-[100px]" />
+          {children}
+        </div>
+      )}
+      {variant === "primary" && (
+        <div className="rounded-3xl bg-slate-900/80 p-6 backdrop-blur-sm md:p-7">
+          {children}
+        </div>
+      )}
+      {variant === "default" && children}
+    </div>
+  );
+}

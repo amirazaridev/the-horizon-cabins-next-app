@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
 import Image from "next/image";
-import heroImageUrl from "@/assets/images/hero-section-bg.png";
 import { MoveLeft } from "lucide-react";
+
+import heroImageUrl from "@/assets/images/hero-section-bg.png";
 import BadgeTitle from "@/components/ui/BadgeTitle";
-import useGsapHeroSection from "../hooks/useHeroAnimation";
+import Button from "@/components/ui/Button";
+import useGsapHeroSection from "@/features/landing/HeroSection/useHeroAnimation";
 
 export default function HeroSection() {
   const {
@@ -35,9 +35,9 @@ export default function HeroSection() {
         <Image
           className="object-cover"
           fill
-          alt="hero-section-image"
+          alt="header image"
           src={heroImageUrl}
-          priority
+          preload
         />
       </div>
 
@@ -76,20 +76,15 @@ export default function HeroSection() {
           ref={ctaRef}
           className="flex flex-col justify-center gap-3 px-4 sm:flex-row sm:gap-4"
         >
-          <button className="group bg-primary-400 hover:shadow-primary-400/30 relative overflow-hidden rounded-full px-8 py-4 font-semibold text-black transition-all duration-300 hover:shadow-lg">
-            <span className="relative z-10 flex items-center justify-center gap-2">
-              مشاهده کابین‌ها
-              <MoveLeft
-                strokeWidth={2}
-                className="size-4 transition-transform duration-300 group-hover:-translate-x-1"
-              />
-            </span>
-          </button>
-          <a
-            href="#about"
-            className="rounded-full border border-white/20 px-8 py-4 font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/10"
-          >
-            بیشتر بدانید
+          <Button href="/cabins">
+            مشاهده کابین‌ها
+            <MoveLeft
+              strokeWidth={2}
+              className="size-4 transition-transform duration-300 group-hover:-translate-x-1"
+            />
+          </Button>
+          <a href="#about">
+            <Button variant="outline">بیشتر بدانید</Button>
           </a>
         </div>
       </div>

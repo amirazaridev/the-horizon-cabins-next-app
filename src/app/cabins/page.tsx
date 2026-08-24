@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
-import CabinList from "../../features/cabins/components/CabinList";
-import Filter from "../../features/cabins/components/Filter";
-import Spinner from "../../components/ui/spinner";
+import CabinList from "@/features/cabins/components/CabinList";
+import Filter from "@/features/cabins/components/Filter";
+import Spinner from "@/components/ui/Spinner";
 import Container from "@/components/ui/Container";
 import BadgeTitle from "@/components/ui/BadgeTitle";
 

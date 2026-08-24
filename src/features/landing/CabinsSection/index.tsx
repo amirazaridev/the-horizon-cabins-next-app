@@ -1,15 +1,8 @@
 "use client";
-
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CabinCard from "@/components/ui/CabinCard";
-import useCabinsAnimation from "../hooks/useCabinsAnimation";
 import Container from "@/components/ui/Container";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import useCabinsAnimation from "@/features/landing/CabinsSection/useCabinsAnimation";
+import SectionTitle from "../SectionTitle";
 
 const cabins = [
   {
@@ -47,26 +40,19 @@ export default function CabinsSection() {
       className="bg-background relative overflow-hidden px-6 py-24 md:py-32"
     >
       <Container>
-        <div className="cabins-title mb-16 text-center">
-          <span className="cabins-eyebrow inline-block text-sm font-medium tracking-wider text-primary-400">
-            کابین‌های ما
-          </span>
-          <h2 className="mt-4 text-4xl font-bold text-text md:text-6xl">
-            <span className="cabins-heading-line block">پناهگاه خودتان</span>
-            <span className="cabins-heading-line block text-primary-400">
-              را انتخاب کنید
-            </span>
-          </h2>
-          <p className="cabins-subtext mx-auto mt-4 max-w-2xl text-text-gray">
-            هر کابین به طور منحصربه‌فردی طراحی شده تا تجربه‌ای فوق‌العاده در دل
-            طبیعت ارائه دهد.
-          </p>
-        </div>
+        <SectionTitle
+          forCabin={true}
+          className="cabins-title"
+          subTitle="کابین‌های ما"
+          title="پناهگاه خودتان"
+          titlePri="را انتخاب کنید"
+          parag="هر کابین به طور منحصربه‌فردی طراحی شده تا تجربه‌ای فوق‌العاده در دل
+            طبیعت ارائه دهد."
+        />
 
         <div
           ref={cardsRef}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3"
-          style={{ perspective: 1200 }}
+          className="grid grid-cols-1 gap-6 perspective-[1200] sm:grid-cols-2 md:gap-8 lg:grid-cols-3"
         >
           {cabins.map((cabin) => (
             <CabinCard

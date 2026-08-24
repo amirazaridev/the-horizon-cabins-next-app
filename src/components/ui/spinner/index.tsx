@@ -35,7 +35,7 @@ const STYLES = `
 }
 `;
 
-export default function SpinnerDash({
+export default function Spinner({
   size = "md",
   label,
   className = "",
