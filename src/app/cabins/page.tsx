@@ -24,7 +24,7 @@ export default async function CabinsPage({
       <Container>
         <div className="mx-auto mb-12 max-w-4xl text-center sm:mb-16">
           <div className="mb-8 inline-flex">
-            <BadgeTitle>مجموعه سوئیت‌ها</BadgeTitle>
+            <BadgeTitle variant="point-animation">مجموعه سوئیت‌ها</BadgeTitle>
           </div>
           <h1 className="mb-6 text-4xl leading-[1.1] font-bold text-white sm:text-5xl md:text-6xl lg:text-7xl">
             سوئیت‌های
@@ -35,8 +35,8 @@ export default async function CabinsPage({
           <p className="mx-auto max-w-3xl text-lg leading-relaxed text-white/60 sm:text-xl">
             مجموعه‌ای منحصربه‌فرد از اقامتگاه‌های لوکس در طبیعت ایران؛ از
             سوئیت‌های چوبی در دل جنگل‌های هیرکانی شمال تا سوئیت‌های ساحلی کنار
-            دریای خزر و بوم‌گردی‌های آرام شرق کشور. هر اقامتگاه با دقت طراحی
-            شده تا تجربه‌ای فراموش‌نشدنی از آسایش و طبیعت را برای شما رقم بزند.
+            دریای خزر و بوم‌گردی‌های آرام شرق کشور. هر اقامتگاه با دقت طراحی شده
+            تا تجربه‌ای فراموش‌نشدنی از آسایش و طبیعت را برای شما رقم بزند.
           </p>
         </div>
 

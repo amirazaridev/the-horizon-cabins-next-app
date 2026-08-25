@@ -52,7 +52,7 @@ export default function CabinsSection() {
           forCabin
           className="cabins-title"
           subTitle="کابین‌های ما"
-          title="پناهگاه خودتان"
+          title="سوئیت خودتان"
           titlePri="را انتخاب کنید"
           parag="هر کابین به طور منحصربه‌فردی طراحی شده تا تجربه‌ای فوق‌العاده در دل
             طبیعت ارائه دهد."

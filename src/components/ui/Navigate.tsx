@@ -19,9 +19,7 @@ export default function Navigate({ paths }: Props): ReactNode {
           {item.isSpan ? (
             <span className="text-text/80">{item.title}</span>
           ) : (
-            <Link href={item.href ? item.href : ""}>
-              {item.title}
-            </Link>
+            <Link href={item.href ? item.href : ""}>{item.title}</Link>
           )}
 
           {index + 1 !== paths.length && <ChevronRight className="size-4" />}
