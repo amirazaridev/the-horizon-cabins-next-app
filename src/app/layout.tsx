@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import fonts from "@/constants/fonts";
 import "@/app/globals.css";
-import Layout from "@/components/ui/Layout";
 
 export const metadata: Metadata = {
   title: "هورایزن کابینز | ویلای لوکس",
@@ -9,15 +8,15 @@ export const metadata: Metadata = {
     "از شلوغی شهر فاصله بگیرید و در دل طبیعت، لوکس بودن را تجربه کنید.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactNode {
   return (
-    <html
-      lang="fa"
-      dir="rtl"
-      className={`${fonts.variable} h-full antialiased`}
-    >
+    <html lang="fa" dir="rtl" className={`${fonts.variable} h-full antialiased`}>
       <body className="bg-background text-foreground flex min-h-full flex-col justify-between">
-        <Layout>{children}</Layout>
+        {children}
       </body>
     </html>
   );

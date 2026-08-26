@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage(): ReactNode {
-  return (
-    <section className="flex min-h-screen items-center justify-center px-4 py-16">
-      <RegisterForm />
-    </section>
-  );
+  return <RegisterForm />;
 }

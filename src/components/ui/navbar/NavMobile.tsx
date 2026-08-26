@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { usePathname } from "next/navigation";
 import Button from "../Button";
 import Logo from "../Logo";
+import LoginButton from "./LoginButton";
 
 type Props = { handleCloseMenu: () => void; isOpen: boolean };
 
@@ -112,9 +113,7 @@ export default function NavMobile({
           </div>
 
           <div className="border-t border-white/10 p-5">
-            <Button href="/" fullWidth>
-              ورود | ثبت‌نام
-            </Button>
+            <LoginButton fullWidth/>
           </div>
         </nav>
       </div>
