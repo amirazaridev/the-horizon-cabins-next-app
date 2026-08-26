@@ -1,11 +1,11 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { ComponentProps, type ReactNode } from "react";
 
 type Variant = "primary" | "outline";
 type Size = "md" | "lg";
 type Shape = "full" | "xl";
 
-type Props = {
+type Props = Omit<ComponentProps<"button">, "className" | "children"> & {
   href?: string;
   variant?: Variant;
   size?: Size;
@@ -43,19 +43,21 @@ export default function Button({
   fullWidth = false,
   className = "",
   children,
+  ...otherProps
 }: Props) {
   const classes = [
     base,
     variants[variant],
     sizes[size],
     shapes[shape],
-    fullWidth ? "w-full flex-1 sm:flex-auto" : "",
+    fullWidth ? "w-full" : "",
+    "disabled:pointer-events-none disabled:opacity-60",
     className,
   ]
     .filter(Boolean)
     .join(" ");
 
-  if (!href) return <button className={classes}>{children}</button>;
+  if (!href) return <button className={classes} {...otherProps}>{children}</button>;
 
   return (
     <Link href={href} className={classes}>

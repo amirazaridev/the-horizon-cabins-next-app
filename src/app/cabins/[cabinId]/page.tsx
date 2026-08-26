@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import CabinDetail from "@/features/cabins/components/CabinDetail";

@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import gsap from "gsap";
 import { usePathname } from "next/navigation";
 import Button from "../Button";
+import Logo from "../Logo";
 
 type Props = { handleCloseMenu: () => void; isOpen: boolean };
 
@@ -84,14 +85,7 @@ export default function NavMobile({
       >
         <nav className="flex h-full flex-col">
           <div className="flex items-center justify-between border-b border-white/10 p-5">
-            <Link
-              href="/"
-              onClick={closeMenu}
-              className="text-xl font-bold text-white"
-            >
-              هورایزن
-              <span className="text-primary-400">.</span>
-            </Link>
+            <Logo />
 
             <button
               onClick={closeMenu}
@@ -108,7 +102,7 @@ export default function NavMobile({
                 <NavbarItem
                   active={pathname === link.href}
                   closeMenu={closeMenu}
-                  forAndroid={true}
+                  forMobile={true}
                   href={link.href}
                   label={link.label}
                   key={link.href}
@@ -118,7 +112,9 @@ export default function NavMobile({
           </div>
 
           <div className="border-t border-white/10 p-5">
-            <Button href="/" fullWidth>ورود | ثبت‌نام</Button>
+            <Button href="/" fullWidth>
+              ورود | ثبت‌نام
+            </Button>
           </div>
         </nav>
       </div>

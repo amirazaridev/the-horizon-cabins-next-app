@@ -1,0 +1,1 @@
+export const SUPPORT_PHONE_HREF = "tel:+989000000000";

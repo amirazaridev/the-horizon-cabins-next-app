@@ -5,11 +5,26 @@ import Image from "next/image";
 import Container from "@/components/ui/Container";
 import imageURL from "@/assets/images/about-section.png";
 import FeatureList from "@/features/landing/AboutSection/FeatureList";
-import useAboutAnimation from "@/features/landing/AboutSection/useAboutAnimation";
+import useSectionReveal, {
+  type RevealTarget,
+} from "@/features/landing/hooks/useSectionReveal";
 import SectionTitle from "../SectionTitle";
 
+const REVEAL_TARGETS: RevealTarget[] = [
+  { selector: ".about-heading", y: 60 },
+  {
+    selector: ".about-image",
+    x: 100,
+    scale: 0.9,
+    duration: 1.2,
+    start: "top 80%",
+    parallaxChildSelector: ".about-image-inner",
+  },
+  { selector: ".about-content", x: -100, duration: 1.2, start: "top 80%" },
+];
+
 export default function AboutSection() {
-  const { contentRef, headingRef, imageRef, sectionRef } = useAboutAnimation();
+  const { sectionRef } = useSectionReveal(REVEAL_TARGETS);
 
   return (
     <section
@@ -18,26 +33,33 @@ export default function AboutSection() {
       className="relative overflow-hidden bg-slate-900 px-10 py-24 md:py-32"
     >
       <Container className="relative z-10">
-        <SectionTitle ref={headingRef} subTitle="داستان ما"  title="جایی که طبیعت ایران" titlePri={<>به لوکس بودن <br /> می‌رسد</>}/>
+        <SectionTitle
+          className="about-heading"
+          subTitle="داستان ما"
+          title="جایی که طبیعت ایران"
+          titlePri={<>به لوکس بودن <br /> می‌رسد</>}
+        />
 
         <div className="grid items-center gap-12 md:grid-cols-2">
-          <div ref={imageRef} className="relative order-1 md:order-1">
-            <div className="relative aspect-4/5 overflow-hidden rounded-2xl">
-              <Image
-                src={imageURL}
-                className="object-cover"
-                fill
-                alt="سوئیت چوبی در دل طبیعت ایران"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
-            <div className="bg-primary-400 absolute -bottom-6 -left-2 rounded-2xl p-4 text-black md:-left-6 md:p-6">
-              <p className="text-2xl font-bold md:text-3xl">۱۵+</p>
-              <p className="text-xs font-medium md:text-sm">سال تجربه</p>
+          <div className="about-image relative order-1 md:order-1">
+            <div className="about-image-inner relative">
+              <div className="relative aspect-4/5 overflow-hidden rounded-2xl">
+                <Image
+                  src={imageURL}
+                  className="object-cover"
+                  fill
+                  alt="سوئیت چوبی در دل طبیعت ایران"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+              <div className="bg-primary-400 absolute -bottom-6 -left-2 rounded-2xl p-4 text-black md:-left-6 md:p-6">
+                <p className="text-2xl font-bold md:text-3xl">۱۵+</p>
+                <p className="text-xs font-medium md:text-sm">سال تجربه</p>
+              </div>
             </div>
           </div>
 
-          <div ref={contentRef} className="order-2 space-y-6 md:order-1">
+          <div className="about-content order-2 space-y-6 md:order-1">
             <h3 className="text-text text-3xl font-bold">
               از جنگل‌های هیرکانی تا ساحل خزر
             </h3>

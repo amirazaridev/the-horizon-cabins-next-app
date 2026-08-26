@@ -27,7 +27,7 @@ export default function CardContainer({
     >
       {variant === "gradient" && (
         <div className="relative h-full overflow-hidden rounded-3xl bg-slate-900/80 p-8 backdrop-blur-sm md:p-10">
-          <div className="bg-primary-400/10 absolute -top-24 -left-24 h-64 w-64 rounded-full blur-[100px]" />
+          <div className="bg-primary-400/30 absolute -top-24 -left-24 h-64 w-64 rounded-full blur-[100px]" />
           {children}
         </div>
       )}

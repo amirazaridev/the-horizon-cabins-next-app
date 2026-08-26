@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 type Props = {
   href: string;
   label: string;
-  forAndroid?: boolean;
+  forMobile?: boolean;
   closeMenu?: () => void;
   active: boolean;
 };
@@ -12,11 +12,11 @@ type Props = {
 export default function NavbarItem({
   href,
   label,
-  forAndroid = false,
+  forMobile = false,
   closeMenu = () => {},
   active,
 }: Props): ReactNode {
-  if (forAndroid)
+  if (forMobile)
     return (
       <Link href={href}>
         <li

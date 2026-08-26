@@ -16,6 +16,7 @@ import Container from "@/components/ui/Container";
 import SectionTitle from "../SectionTitle";
 import CardContainer from "@/components/ui/CardContainer";
 import { BOOKING_STEPS, WORKING_HOURS } from "@/constants/contact-section";
+import { SUPPORT_PHONE_HREF } from "@/constants/suport-phone";
 
 const REVEAL_TARGETS = [
   { selector: ".contact-content" },
@@ -81,7 +82,7 @@ export default function ContactSection() {
                 مشاهده کابین‌ها و رزرو
                 <MoveLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-1" />
               </Button>
-              <Button href="tel:+989000000000" variant="outline" shape="xl">
+              <Button href={SUPPORT_PHONE_HREF} variant="outline" shape="xl">
                 <Phone className="size-5" />
                 تماس سریع
               </Button>

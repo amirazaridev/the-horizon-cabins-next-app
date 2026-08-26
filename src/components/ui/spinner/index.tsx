@@ -20,27 +20,12 @@ interface SpinnerProps {
   fullWidth?: boolean;
 }
 
-const STYLES = `
-@keyframes sd-spin {
-  to { transform: rotate(360deg) }
-}
-@keyframes sd-draw {
-  0%   { stroke-dasharray: 1 150; stroke-dashoffset: 0;    opacity: .6 }
-  50%  { stroke-dasharray: 90 150; stroke-dashoffset: -35;  opacity: 1  }
-  100% { stroke-dasharray: 1 150; stroke-dashoffset: -124; opacity: .6 }
-}
-@keyframes sd-label-in {
-  from { opacity: 0; transform: translateY(4px) }
-  to   { opacity: .45; transform: translateY(0) }
-}
-`;
-
 export default function Spinner({
   size = "md",
   label,
   className = "",
   fullscreen = false,
-  fullWidth = false
+  fullWidth = false,
 }: SpinnerProps) {
   const { w, sw, labelSize } = SIZES[size];
 
@@ -50,7 +35,6 @@ export default function Spinner({
         className={`bg-background fixed inset-0 z-50 flex flex-col items-center justify-center ${className}`}
         aria-label={label ?? "در حال بارگذاری"}
       >
-        <style>{STYLES}</style>
         <svg
           width={SIZES.lg.w}
           height={SIZES.lg.w}
@@ -84,8 +68,6 @@ export default function Spinner({
       className={`inline-flex flex-col items-center justify-center gap-y-3 ${className} ${fullWidth ? "w-full" : ""}`}
       aria-label={label ?? "در حال بارگذاری"}
     >
-      <style>{STYLES}</style>
-
       <svg
         width={w}
         height={w}

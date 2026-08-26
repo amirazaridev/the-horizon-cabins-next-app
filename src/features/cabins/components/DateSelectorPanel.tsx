@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export default function DateSelectorPanel(): ReactNode {
   return (
-    <div className="flex h-full min-h-[420px] flex-col overflow-hidden rounded-3xl border border-white/5 bg-slate-900/60 backdrop-blur-sm">
+    <div className="lg:col-span-3 flex h-full min-h-105 flex-col overflow-hidden rounded-3xl border border-white/5 bg-slate-900/60 backdrop-blur-sm">
       <div className="flex items-center gap-3 border-b border-white/5 px-6 py-4">
         <CalendarDays className="text-primary-400 size-5" />
         <h3 className="font-bold text-white">انتخاب تاریخ اقامت</h3>

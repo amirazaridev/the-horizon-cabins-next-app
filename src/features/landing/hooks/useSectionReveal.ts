@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 export type RevealTarget = {
   selector: string;
   y?: number;
+  x?: number;
   scale?: number;
   rotateX?: number;
   duration?: number;
@@ -26,12 +27,14 @@ export default function useSectionReveal(targets: RevealTarget[]) {
             element,
             {
               y: target.y ?? 60,
+              x: target.x ?? 0,
               opacity: 0,
               scale: target.scale ?? 1,
               rotateX: target.rotateX ?? 0,
             },
             {
               y: 0,
+              x: 0,
               opacity: 1,
               scale: 1,
               rotateX: 0,

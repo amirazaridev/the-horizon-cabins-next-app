@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Logo from "./Logo";
 
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
@@ -35,10 +36,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
           <div className="col-span-2 md:col-span-2">
-            <a href="#hero" className="text-2xl font-bold text-white">
-              هورایزن
-              <span className="text-primary-400">.</span>
-            </a>
+            <Logo />
             <p className="text-text-gray mt-4 max-w-md leading-relaxed">
               از شلوغی شهر فاصله بگیرید و در دل کوهستان، لوکس بودن را تجربه
               کنید. طبیعت را هرگز مثل قبل تجربه نکرده‌اید.
