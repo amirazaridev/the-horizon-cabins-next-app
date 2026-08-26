@@ -60,7 +60,7 @@ export default function Input({
             icon ? "ps-11" : "ps-4"
           } ${isPassword ? "pe-12" : "pe-4"} ${
             error
-              ? "border-red-500/60 shadow-[0_0_12px_rgba(239,68,68,0.15)]"
+              ? "border-danger-strong/60 shadow-[0_0_12px_rgba(239,68,68,0.15)]"
               : focused
                 ? "border-primary-400/60 shadow-[0_0_20px_rgba(251,191,36,0.1)]"
                 : "border-white/10 hover:border-white/20"
@@ -117,9 +117,9 @@ export default function Input({
         <p
           id={errorId}
           role="alert"
-          className="mt-2 flex items-center gap-1.5 text-xs text-red-400"
+          className="mt-2 flex items-center gap-1.5 text-xs text-danger"
         >
-          <span className="inline-block size-1 rounded-full bg-red-400" />
+          <span className="inline-block size-1 rounded-full bg-danger" />
           {error}
         </p>
       )}

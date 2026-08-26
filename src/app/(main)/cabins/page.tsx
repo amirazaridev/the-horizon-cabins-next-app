@@ -20,7 +20,7 @@ export default async function CabinsPage({
   const { capacity = "all" } = await searchParams;
 
   return (
-    <section className="min-h-screen bg-slate-950 py-16 sm:py-20 md:py-24">
+    <section className="min-h-screen bg-background py-16 sm:py-20 md:py-24">
       <Container>
         <div className="mx-auto mb-12 max-w-4xl text-center sm:mb-16">
           <div className="mb-8 inline-flex">

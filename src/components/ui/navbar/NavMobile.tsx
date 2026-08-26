@@ -82,7 +82,7 @@ export default function NavMobile({
 
       <div
         ref={panelRef}
-        className="absolute top-0 right-0 h-full w-9/12 max-w-sm bg-slate-900 shadow-2xl"
+        className="absolute top-0 right-0 h-full w-9/12 max-w-sm bg-surface shadow-2xl"
       >
         <nav className="flex h-full flex-col">
           <div className="flex items-center justify-between border-b border-white/10 p-5">

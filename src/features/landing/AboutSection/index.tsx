@@ -30,7 +30,7 @@ export default function AboutSection() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative overflow-hidden bg-slate-900 px-10 py-24 md:py-32"
+      className="relative overflow-hidden bg-surface px-10 py-24 md:py-32"
     >
       <Container className="relative z-10">
         <SectionTitle

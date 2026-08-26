@@ -88,7 +88,7 @@ export default function RegisterForm() {
   return (
     <div className="relative mx-auto w-full max-w-md">
       <div className="absolute -inset-[1px] rounded-[1.75rem] bg-gradient-to-br from-primary-400/40 via-primary-500/20 to-primary-400/40 opacity-60 blur-sm" />
-      <div className="relative overflow-hidden rounded-[1.75rem] bg-slate-900/90 backdrop-blur-xl">
+      <div className="relative overflow-hidden rounded-[1.75rem] bg-surface/90 backdrop-blur-xl">
         <div className="absolute -top-32 -left-32 size-64 rounded-full bg-primary-400/8 blur-[100px]" />
         <div className="absolute -bottom-32 -right-32 size-64 rounded-full bg-primary-500/5 blur-[80px]" />
 
@@ -109,7 +109,7 @@ export default function RegisterForm() {
           </div>
 
           {status === "success" && (
-            <div className="mb-4 flex items-center gap-3 rounded-xl border border-green-400/20 bg-green-400/5 px-4 py-3 text-sm text-green-300 backdrop-blur-sm">
+            <div className="mb-4 flex items-center gap-3 rounded-xl border border-success/20 bg-success/5 px-4 py-3 text-sm text-success backdrop-blur-sm">
               <CheckCircle2 className="size-5 shrink-0" />
               حساب کاربری شما با موفقیت ساخته شد!
             </div>

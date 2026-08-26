@@ -40,7 +40,7 @@ export default function Filter(): ReactNode {
   return (
     <div
       ref={filterRef}
-      className="flex flex-wrap gap-2 rounded-2xl border border-white/5 bg-slate-900/50 p-1 backdrop-blur-sm"
+      className="flex flex-wrap gap-2 rounded-2xl border border-white/5 bg-surface/50 p-1 backdrop-blur-sm"
     >
       {filterOptions.map((option) => (
         <button

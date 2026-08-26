@@ -33,7 +33,7 @@ export default function CabinCard({
   animation = "hover",
 }: CabinCardProps): ReactNode {
   const baseClasses =
-    "group relative overflow-hidden rounded-3xl border border-white/5 bg-slate-900";
+    "group relative overflow-hidden rounded-3xl border border-white/5 bg-surface";
 
   const animationClasses = {
     none: "transition-all duration-300",
@@ -52,7 +52,7 @@ export default function CabinCard({
   const priceBadge = (
     <div className="absolute top-4 right-4 flex items-center gap-2" dir="ltr">
       {hasDiscount && (
-        <span className="rounded-full bg-slate-900/80 px-4 py-1.5 text-sm font-medium text-white/60 line-through backdrop-blur-sm">
+        <span className="rounded-full bg-surface/80 px-4 py-1.5 text-sm font-medium text-white/60 line-through backdrop-blur-sm">
           ${price}
         </span>
       )}
@@ -63,7 +63,7 @@ export default function CabinCard({
   );
 
   const discountBadge = hasDiscount ? (
-    <span className="absolute top-4 left-4 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white">
+    <span className="absolute top-4 left-4 rounded-full bg-danger-strong px-3 py-1.5 text-xs font-bold text-white">
       {discountPercent}٪ تخفیف
     </span>
   ) : null;
@@ -76,7 +76,7 @@ export default function CabinCard({
           alt={imageAlt || name}
           src={typeof image === "string" ? image : image.src}
         />
-        <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-surface via-transparent to-transparent" />
         {priceBadge}
         {discountBadge}
       </div>
