@@ -41,7 +41,7 @@ export default function Input({
       <div className="relative">
         {icon && (
           <span
-            className={`pointer-events-none absolute inset-y-0 start-0 flex w-11 items-center justify-center transition-colors duration-300 ${
+            className={`pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center transition-colors duration-300 ${
               focused ? "text-primary-400" : "text-white/30"
             }`}
           >
@@ -56,7 +56,7 @@ export default function Input({
           aria-describedby={error ? errorId : undefined}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className={`peer w-full rounded-xl border bg-transparent py-3.5 text-sm text-white transition-all duration-300 placeholder:text-transparent focus:outline-none ${
+          className={` w-full rounded-xl border bg-transparent py-3.5 text-sm text-white transition-all duration-300 placeholder:text-transparent focus:outline-none ${
             icon ? "ps-11" : "ps-4"
           } ${isPassword ? "pe-12" : "pe-4"} ${
             error
@@ -103,7 +103,7 @@ export default function Input({
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
             aria-label={showPassword ? "پنهان کردن رمز" : "نمایش رمز"}
-            className="absolute inset-y-0 end-0 flex w-12 items-center justify-center text-white/30 transition-colors duration-300 hover:text-primary-400"
+            className="absolute inset-y-0 inset-e-0 flex w-12 items-center justify-center text-white/30 transition-colors duration-300 hover:text-primary-400"
           >
             {showPassword ? (
               <EyeOff className="size-5" />

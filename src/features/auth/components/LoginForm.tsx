@@ -9,6 +9,7 @@ import {
   validateEmail,
   validatePassword,
 } from "@/features/auth/lib/validation";
+import FormContainer from "./FormContainer";
 
 type FormValues = {
   email: string;
@@ -52,111 +53,65 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="relative mx-auto w-full max-w-md">
-      <div className="from-primary-400/40 via-primary-500/20 to-primary-400/40 absolute -inset-px rounded-[1.75rem] bg-linear-to-br opacity-60 blur-sm" />
-      <div className="relative overflow-hidden rounded-3xl bg-surface/90 backdrop-blur-xl">
-        <div className="bg-primary-400/8 absolute -top-32 -left-32 size-64 rounded-full blur-[100px]" />
-        <div className="bg-primary-500/5 absolute -right-32 -bottom-32 size-64 rounded-full blur-[80px]" />
+    <FormContainer for="login">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <Input
+          label="ایمیل"
+          type="email"
+          dir="ltr"
+          placeholder="you@example.com"
+          value={values.email}
+          onChange={handleChange("email")}
+          error={errors.email}
+          autoComplete="email"
+          icon={<Mail className="size-5" />}
+        />
 
-        <div className="relative px-6 py-6 md:px-8 md:py-8">
-          <div className="mb-5 text-center">
-            <div className="relative mx-auto mb-3 size-12">
-              <div className="bg-primary-400/10 absolute inset-0 rounded-xl blur-xl" />
-              <div className="border-primary-400/20 bg-primary-400/10 relative flex size-12 items-center justify-center rounded-xl border backdrop-blur-sm">
-                <LogIn className="text-primary-400 size-6" />
-              </div>
-            </div>
-            <h1 className="text-text text-xl font-bold tracking-tight">
-              ورود به هورایزن
-            </h1>
-            <p className="mt-1.5 text-xs text-white/40">
-              به دنیای کابین‌های لوکس خوش آمدید
-            </p>
-          </div>
+        <Input
+          label="رمز عبور"
+          type="password"
+          dir="ltr"
+          placeholder="••••••••"
+          value={values.password}
+          onChange={handleChange("password")}
+          error={errors.password}
+          autoComplete="current-password"
+          icon={<Lock className="size-5" />}
+        />
 
-          {status === "success" && (
-            <div className="mb-4 flex items-center gap-3 rounded-xl border border-success/20 bg-success/5 px-4 py-3 text-sm text-success backdrop-blur-sm">
-              <CheckCircle2 className="size-5 shrink-0" />
-              ورود با موفقیت انجام شد!
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
-            <Input
-              label="ایمیل"
-              type="email"
-              dir="ltr"
-              placeholder="you@example.com"
-              value={values.email}
-              onChange={handleChange("email")}
-              error={errors.email}
-              autoComplete="email"
-              icon={<Mail className="size-5" />}
+        <div className="flex items-center justify-between">
+          <label className="flex cursor-pointer items-center gap-2.5 text-sm text-white/50 select-none">
+            <input
+              type="checkbox"
+              className="accent-primary-400 size-4 rounded border-white/20"
             />
-
-            <Input
-              label="رمز عبور"
-              type="password"
-              dir="ltr"
-              placeholder="••••••••"
-              value={values.password}
-              onChange={handleChange("password")}
-              error={errors.password}
-              autoComplete="current-password"
-              icon={<Lock className="size-5" />}
-            />
-
-            <div className="flex items-center justify-between">
-              <label className="flex cursor-pointer items-center gap-2.5 text-sm text-white/50 select-none">
-                <input
-                  type="checkbox"
-                  className="accent-primary-400 size-4 rounded border-white/20"
-                />
-                مرا به خاطر بسپار
-              </label>
-              <a
-                href="#"
-                className="text-primary-400/80 hover:text-primary-400 text-sm transition-colors duration-300"
-              >
-                فراموشی رمز عبور؟
-              </a>
-            </div>
-
-            <Button
-              type="submit"
-              shape="xl"
-              fullWidth
-              disabled={status === "loading"}
-              className="mt-2"
-            >
-              {status === "loading" ? (
-                <>
-                  <Loader2 className="size-5 animate-spin" />
-                  در حال ورود...
-                </>
-              ) : (
-                "ورود به حساب"
-              )}
-            </Button>
-          </form>
-
-          <div className="my-5 flex items-center gap-4">
-            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <span className="text-xs font-medium text-white/30">یا</span>
-            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          </div>
-
-          <p className="text-center text-sm text-white/40">
-            حساب کاربری ندارید؟{" "}
-            <Link
-              href="/register"
-              className="text-primary-400 hover:text-primary-300 font-semibold transition-colors duration-300"
-            >
-              ثبت‌نام کنید
-            </Link>
-          </p>
+            مرا به خاطر بسپار
+          </label>
+          <a
+            href="#"
+            className="text-primary-400/80 hover:text-primary-400 text-sm transition-colors duration-300"
+          >
+            فراموشی رمز عبور؟
+          </a>
         </div>
-      </div>
-    </div>
+
+        <Button
+          type="submit"
+          shape="xl"
+          fullWidth
+          disabled={status === "loading"}
+          className="mt-2"
+        >
+          {status === "loading" ? (
+            <>
+              <Loader2 className="size-5 animate-spin" />
+              در حال ورود...
+            </>
+          ) : (
+            "ورود به حساب"
+          )}
+        </Button>
+      </form>
+    </FormContainer>
   );
 }

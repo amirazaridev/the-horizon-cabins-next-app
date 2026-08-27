@@ -2,30 +2,10 @@
 
 import { useRef } from "react";
 import Logo from "./Logo";
+import CopyrightText from "./CopyrightText";
 
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
-
-  // useEffect(() => {
-  //   const ctx = gsap.context(() => {
-  //     gsap.fromTo(
-  //       footerRef.current,
-  //       { opacity: 0 },
-  //       {
-  //         opacity: 1,
-  //         duration: 1,
-  //         ease: "power3.out",
-  //         scrollTrigger: {
-  //           trigger: footerRef.current,
-  //           start: "top 95%",
-  //           toggleActions: "play none none reverse",
-  //         },
-  //       }
-  //     );
-  //   }, footerRef);
-
-  //   return () => ctx.revert();
-  // }, []);
 
   return (
     <footer
@@ -102,10 +82,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/5 pt-8 text-center">
-          <p className="text-sm text-white/30">
-            © {new Date().getFullYear()} کابین‌های هورایزن. تمامی حقوق محفوظ
-            است.
-          </p>
+          <CopyrightText />
         </div>
       </div>
     </footer>

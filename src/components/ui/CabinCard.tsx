@@ -52,7 +52,7 @@ export default function CabinCard({
   const priceBadge = (
     <div className="absolute top-4 right-4 flex items-center gap-2" dir="ltr">
       {hasDiscount && (
-        <span className="rounded-full bg-surface/80 px-4 py-1.5 text-sm font-medium text-white/60 line-through backdrop-blur-sm">
+        <span className="rounded-full bg-surface/80 px-4 py-1.5 text-sm font-medium text-text/60 line-through backdrop-blur-sm">
           ${price}
         </span>
       )}
