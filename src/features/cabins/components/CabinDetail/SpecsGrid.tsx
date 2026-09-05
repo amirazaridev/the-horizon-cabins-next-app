@@ -12,7 +12,7 @@ export default function SpecsGrid({ cabin }: Props): ReactNode {
     { icon: Users, value: `${cabin.maxCapacity}`, label: "نفر ظرفیت" },
     { icon: BedDouble, value: `${cabin.bedrooms}`, label: "اتاق خواب" },
     { icon: Bath, value: `${cabin.bathrooms}`, label: "سرویس بهداشتی" },
-    { icon: Maximize, value: `${cabin.size}`, label: "متر مربع" },
+    { icon: Maximize, value: `${cabin.areaSqm}`, label: "متر مربع" },
   ];
 
   return (

@@ -4,6 +4,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import Image from "next/image";
 
 const AUTOPLAY_DELAY_MS = 4000;
 
@@ -57,12 +58,14 @@ export default function CabinGallery({
                 key={i}
                 className="relative aspect-square min-w-0 flex-[0_0_100%] sm:aspect-video lg:aspect-21/9"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   draggable={false}
                   className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                   src={image}
                   alt={`${altBase} - تصویر ${i + 1}`}
+                  fill
+                  preload={i == 0}
+                  // placeholder="blur"
                 />
               </div>
             ))}
@@ -102,11 +105,12 @@ export default function CabinGallery({
                   : "border-white/5 opacity-50 hover:opacity-80"
               }`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 className="absolute inset-0 h-full w-full object-cover"
                 src={image}
                 alt={`تصویر ${i + 1}`}
+                fill
+                preload={i == 0}
               />
             </button>
           ))}

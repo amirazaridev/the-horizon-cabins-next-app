@@ -44,7 +44,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-black/70" />
 
       <div className="relative z-20 mx-auto max-w-5xl px-6 text-center">
-        <BadgeTitle variant="point-animation" ref={badgeRef}>ویلای لوکس</BadgeTitle>
+        <BadgeTitle variant="point-animation" ref={badgeRef}>خانه</BadgeTitle>
 
         <h1 className="text-text mb-8 flex flex-col gap-y-6 text-5xl leading-[0.9] font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl xl:text-8xl 2xl:text-9xl">
           <span ref={titleTheRef} className="overflow-hidden">

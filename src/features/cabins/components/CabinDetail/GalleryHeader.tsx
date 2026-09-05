@@ -13,7 +13,7 @@ export default function GalleryHeader({ cabin }: Props): ReactNode {
       <div>
         <BadgeTitle className="text-text/80 mb-3 gap-2 px-4 py-1.5 text-xs font-medium">
           <MapPin className="text-primary-400 size-3.5" />
-          {cabin.location.region}
+          {cabin.name}
         </BadgeTitle>
         <h1 className="text-text text-3xl font-bold sm:text-4xl md:text-5xl">
           {cabin.name}

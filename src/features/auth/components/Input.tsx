@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react";
 import {
+  memo,
   useId,
   useState,
   type ComponentProps,
@@ -14,8 +15,7 @@ type Props = Omit<ComponentProps<"input">, "className"> & {
   error?: string;
   className?: string;
 };
-
-export default function Input({
+const Input = memo(function Input({
   label,
   icon,
   error,
@@ -56,7 +56,7 @@ export default function Input({
           aria-describedby={error ? errorId : undefined}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className={` w-full rounded-xl border bg-transparent py-3.5 text-sm text-white transition-all duration-300 placeholder:text-transparent focus:outline-none ${
+          className={`w-full rounded-xl border bg-transparent py-3.5 text-sm text-white transition-all duration-300 placeholder:text-transparent focus:outline-none ${
             icon ? "ps-11" : "ps-4"
           } ${isPassword ? "pe-12" : "pe-4"} ${
             error
@@ -76,14 +76,8 @@ export default function Input({
             isFloating
               ? "top-1 text-[10px] font-medium text-white/40"
               : "top-1/2 -translate-y-1/2 text-sm text-white/30"
-          } peer-focus: ${
-            isFloating ? "" : ""
-          } ${
-            focused
-              ? isFloating && focused
-                ? "text-primary-400/70"
-                : ""
-              : ""
+          } peer-focus: ${isFloating ? "" : ""} ${
+            focused ? (isFloating && focused ? "text-primary-400/70" : "") : ""
           }`}
           style={{
             top: isFloating ? "0.25rem" : undefined,
@@ -103,7 +97,7 @@ export default function Input({
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
             aria-label={showPassword ? "پنهان کردن رمز" : "نمایش رمز"}
-            className="absolute inset-y-0 inset-e-0 flex w-12 items-center justify-center text-white/30 transition-colors duration-300 hover:text-primary-400"
+            className="hover:text-primary-400 absolute inset-y-0 inset-e-0 flex w-12 items-center justify-center text-white/30 transition-colors duration-300"
           >
             {showPassword ? (
               <EyeOff className="size-5" />
@@ -117,12 +111,13 @@ export default function Input({
         <p
           id={errorId}
           role="alert"
-          className="mt-2 flex items-center gap-1.5 text-xs text-danger"
+          className="text-danger mt-2 flex items-center gap-1.5 text-xs"
         >
-          <span className="inline-block size-1 rounded-full bg-danger" />
+          <span className="bg-danger inline-block size-1 rounded-full" />
           {error}
         </p>
       )}
     </div>
   );
-}
+});
+export default Input;

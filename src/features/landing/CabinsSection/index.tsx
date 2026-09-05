@@ -1,45 +1,11 @@
 ﻿"use client";
-import CabinCard from "@/components/ui/CabinCard";
+import CabinCard from "@/features/cabins/components/CabinCard";
 import Container from "@/components/ui/Container";
 import useCabinsAnimation from "@/features/landing/CabinsSection/useCabinsAnimation";
 import SectionTitle from "../SectionTitle";
+import { Cabin } from "@/features/cabins/lib/data-service";
 
-const cabins = [
-  {
-    id: 1,
-    name: "پناهگاه آلپاین",
-    price: 299,
-    discount: 15,
-    capacity: 4,
-    image:
-      "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?q=80&w=2070&auto=format&fit=crop",
-    features: ["۲ اتاق خواب", "منظره کوه", "وان آب گرم"],
-    size: "۱۲۰",
-  },
-  {
-    id: 2,
-    name: "پناهگاه جنگلی",
-    price: 399,
-    capacity: 6,
-    image:
-      "https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=2070&auto=format&fit=crop",
-    features: ["۳ اتاق خواب", "دید پانوراما", "شومینه"],
-    size: "۱۸۰",
-  },
-  {
-    id: 3,
-    name: "قله لوکس",
-    price: 549,
-    discount: 10,
-    capacity: 10,
-    image:
-      "https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=2070&auto=format&fit=crop",
-    features: ["۴ اتاق خواب", "استخر خصوصی", "سونا"],
-    size: "۲۵۰",
-  },
-];
-
-export default function CabinsSection() {
+export default function CabinsSection({ cabins }: { cabins: Cabin[] }) {
   const { cardsRef, sectionRef } = useCabinsAnimation();
 
   return (
@@ -65,14 +31,8 @@ export default function CabinsSection() {
           {cabins.map((cabin) => (
             <CabinCard
               key={cabin.id}
-              name={cabin.name}
-              price={cabin.price}
-              discount={cabin.discount}
-              capacity={cabin.capacity}
-              image={cabin.image}
-              imageAlt={cabin.name}
-              features={cabin.features}
-              size={`${cabin.size} متر مربع`}
+              cabin={cabin}
+
               href={`/cabins/${cabin.id}`}
               animation="hover"
             />

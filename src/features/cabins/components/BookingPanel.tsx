@@ -12,12 +12,11 @@ type Props = { cabin: Cabin };
 export default function BookingPanel({ cabin }: Props): ReactNode {
   return (
     <CardContainer variant="gradient" className="h-full lg:col-span-2">
-      {/* <div className="bg-primary-400/20 absolute -top-20 -left-20 size-48 rounded-full blur-[80px]" /> */}
-
+     
       <h3 className="relative mb-6 text-lg font-bold text-white">رزرو اقامت</h3>
 
       <PriceDisplay
-        price={cabin.price}
+        price={cabin.regularPrice}
         discount={cabin.discount}
         perNightText="در هر شب × تعداد شب‌های انتخابی"
       />

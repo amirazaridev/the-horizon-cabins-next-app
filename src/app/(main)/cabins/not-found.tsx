@@ -8,9 +8,6 @@ export default function notFound(): ReactNode {
         <h3 className="mb-2 text-xl font-semibold text-text">
           اقامتگاهی یافت نشد
         </h3>
-        <p className="text-white/50">
-          برای این دسته‌بندی اقامتگاهی موجود نیست. فیلتر را تغییر دهید.
-        </p>
       </div>
   );
 }

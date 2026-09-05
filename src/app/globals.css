@@ -9,6 +9,7 @@
 
   /*Backgrounds & surfaces*/
   --color-background: #020617;
+  --color-foreground: #f8fafc;
   --color-background-2: var(--color-slate-900);
   --color-surface: var(--color-slate-900);
   --color-surface-raised: var(--color-slate-800);
@@ -24,12 +25,10 @@
 
   /*Font*/
   --default-font-family: var(--font-iranyekan);
+
+  --breakpoint-xs: 410px
 }
 
-:root {
-  --background: #020617;
-  --foreground: #f8fafc;
-}
 
 @layer base {
   * {

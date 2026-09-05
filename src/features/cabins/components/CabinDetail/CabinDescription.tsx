@@ -14,12 +14,12 @@ export default function CabinDescription({ cabin }: Props): ReactNode {
 
       <SectionHeading className="mt-10 mb-5">ویژگی‌ها</SectionHeading>
       <div className="flex flex-wrap gap-2.5">
-        {cabin.features.map((feature) => (
+        {cabin.amenities.map((amenitiy) => (
           <div
-            key={feature}
+            key={amenitiy}
             className="hover:border-primary-400/40 hover:text-primary-400 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-white/70 transition-colors duration-300"
           >
-            {feature}
+            {amenitiy}
           </div>
         ))}
       </div>

@@ -10,7 +10,7 @@ import SpecsGrid from "./SpecsGrid";
 type Props = { cabin: Cabin };
 
 export default function CabinDetail({ cabin }: Props): ReactNode {
-  const images = cabin.images.length ? cabin.images : [cabin.image];
+  const { images } = cabin;
 
   return (
     <div>
