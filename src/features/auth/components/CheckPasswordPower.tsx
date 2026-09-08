@@ -26,7 +26,7 @@ export default function CheckPasswordPower({ password }: Props): ReactNode {
               className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
                 isActive
                   ? `${config.color} shadow-sm ${config.glow}`
-                  : "bg-white/8"
+                  : "bg-foreground/8"
               }`}
             />
           );

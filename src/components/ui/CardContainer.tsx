@@ -7,11 +7,11 @@ type Props = ComponentProps<"div"> & {
 };
 const varients: Record<TVariant, string> = {
   default:
-    "rounded-2xl border border-white/5 bg-surface-raised/50 p-8 transition-all duration-500",
+    "rounded-2xl border border-foreground/5 bg-surface-raised/50 p-8 transition-all duration-500",
   gradient:
-    "from-primary-400/40 relative rounded-3xl bg-linear-to-br via-white/10 to-transparent p-px",
+    "from-primary-400/40 relative rounded-3xl bg-linear-to-br via-foreground/10 to-transparent p-px",
   primary:
-    "group hover:from-primary-400/40 relative rounded-3xl bg-linear-to-br from-white/10 via-white/5 to-transparent p-px transition-all duration-500",
+    "group hover:from-primary-400/40 relative rounded-3xl bg-linear-to-br from-foreground/10 via-foreground/5 to-transparent p-px transition-all duration-500",
 };
 
 export default function CardContainer({

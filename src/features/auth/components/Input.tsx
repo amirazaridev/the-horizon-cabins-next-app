@@ -42,7 +42,7 @@ const Input = memo(function Input({
         {icon && (
           <span
             className={`pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center transition-colors duration-300 ${
-              focused ? "text-primary-400" : "text-white/30"
+              focused ? "text-primary-400" : "text-foreground/30"
             }`}
           >
             {icon}
@@ -56,14 +56,14 @@ const Input = memo(function Input({
           aria-describedby={error ? errorId : undefined}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className={`w-full rounded-xl border bg-transparent py-3.5 text-sm text-white transition-all duration-300 placeholder:text-transparent focus:outline-none ${
+          className={`w-full rounded-xl border bg-transparent py-3.5 text-sm text-text transition-all duration-300 placeholder:text-transparent focus:outline-none ${
             icon ? "ps-11" : "ps-4"
           } ${isPassword ? "pe-12" : "pe-4"} ${
             error
               ? "border-danger-strong/60 shadow-[0_0_12px_rgba(239,68,68,0.15)]"
               : focused
                 ? "border-primary-400/60 shadow-[0_0_20px_rgba(251,191,36,0.1)]"
-                : "border-white/10 hover:border-white/20"
+                : "border-foreground/10 hover:border-foreground/20"
           }`}
           placeholder=" "
           {...otherProps}
@@ -74,8 +74,8 @@ const Input = memo(function Input({
             icon ? "start-11" : "start-4"
           } ${
             isFloating
-              ? "top-1 text-[10px] font-medium text-white/40"
-              : "top-1/2 -translate-y-1/2 text-sm text-white/30"
+              ? "top-1 text-[10px] font-medium text-foreground/40"
+              : "top-1/2 -translate-y-1/2 text-sm text-foreground/30"
           } peer-focus: ${isFloating ? "" : ""} ${
             focused ? (isFloating && focused ? "text-primary-400/70" : "") : ""
           }`}
@@ -97,7 +97,7 @@ const Input = memo(function Input({
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
             aria-label={showPassword ? "پنهان کردن رمز" : "نمایش رمز"}
-            className="hover:text-primary-400 absolute inset-y-0 inset-e-0 flex w-12 items-center justify-center text-white/30 transition-colors duration-300"
+            className="hover:text-primary-400 absolute inset-y-0 inset-e-0 flex w-12 items-center justify-center text-foreground/30 transition-colors duration-300"
           >
             {showPassword ? (
               <EyeOff className="size-5" />

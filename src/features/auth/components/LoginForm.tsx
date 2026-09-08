@@ -80,10 +80,10 @@ export default function LoginForm() {
         />
 
         <div className="flex items-center justify-between">
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm text-white/50 select-none">
+          <label className="flex cursor-pointer items-center gap-2.5 text-sm text-text-gray select-none">
             <input
               type="checkbox"
-              className="accent-primary-400 size-4 rounded border-white/20"
+              className="accent-primary-400 size-4 rounded border-foreground/20"
             />
             مرا به خاطر بسپار
           </label>

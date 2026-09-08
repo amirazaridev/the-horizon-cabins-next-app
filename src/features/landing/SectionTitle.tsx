@@ -37,7 +37,7 @@ export default function SectionTitle({
       </h2>
       {parag && (
         <p
-          className={`${subtextClass}mx-auto mt-4 max-w-2xl text-white/50`}
+          className={`${subtextClass}mx-auto mt-4 max-w-2xl text-text-gray`}
         >
           {parag}
         </p>

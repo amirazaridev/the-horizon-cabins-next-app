@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme {
   /*Primary (brand)*/
   --color-primary-300: #fcd34d;
@@ -7,28 +9,48 @@
   --color-primary-500: #f59e0b;
   --color-primary-600: #d97706;
 
-  /*Backgrounds & surfaces*/
-  --color-background: #020617;
-  --color-foreground: #f8fafc;
-  --color-background-2: var(--color-slate-900);
-  --color-surface: var(--color-slate-900);
-  --color-surface-raised: var(--color-slate-800);
+  /*Backgrounds & surfaces - Light mode default*/
+  --color-background: var(--color-slate-300);
+  --color-foreground: #0f172a;
+  --color-background-2: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f8fafc;
 
   /*Text*/
-  --color-text: #fff;
-  --color-text-gray: var(--color-zinc-400);
+  --color-text: #0f172a;
+  --color-text-gray: var(--color-blue-950);
+
+  /*Borders*/
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
 
   /*Status*/
-  --color-success: var(--color-green-400);
-  --color-danger: var(--color-red-400);
-  --color-danger-strong: var(--color-red-500);
+  --color-success: #16a34a;
+  --color-danger: #ef4444;
+  --color-danger-strong: #dc2626;
 
   /*Font*/
   --default-font-family: var(--font-iranyekan);
-
-  --breakpoint-xs: 410px
 }
 
+/* Dark mode overrides */
+.dark {
+  --color-background: #020617;
+  --color-foreground: #f8fafc;
+  --color-background-2: #0f172a;
+  --color-surface: #0f172a;
+  --color-surface-raised: #1e293b;
+
+  --color-text: #f8fafc;
+  --color-text-gray: var(--color-gray-400);
+
+  --color-border: #1e293b;
+  --color-border-strong: #334155;
+
+  --color-success: #4ade80;
+  --color-danger: #f87171;
+  --color-danger-strong: #ef4444;
+}
 
 @layer base {
   * {

@@ -1,12 +1,11 @@
 import { NAV_ITEMS } from "@/constants/navigation";
-import Link from "next/link";
 import { useEffect, useRef, type ReactNode } from "react";
 import NavbarItem from "./NavbarItem";
 import { X } from "lucide-react";
 import gsap from "gsap";
 import { usePathname } from "next/navigation";
-import Button from "../Button";
 import Logo from "../Logo";
+import ThemeToggle from "../ThemeToggle";
 import LoginButton from "./LoginButton";
 
 type Props = { handleCloseMenu: () => void; isOpen: boolean };
@@ -77,7 +76,7 @@ export default function NavMobile({
       <div
         ref={overlayRef}
         onClick={closeMenu}
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm dark:bg-black/60"
       />
 
       <div
@@ -85,12 +84,12 @@ export default function NavMobile({
         className="absolute top-0 right-0 h-full w-9/12 max-w-sm bg-surface shadow-2xl"
       >
         <nav className="flex h-full flex-col">
-          <div className="flex items-center justify-between border-b border-white/10 p-5">
+          <div className="flex items-center justify-between border-b border-foreground/10 p-5">
             <Logo />
 
             <button
               onClick={closeMenu}
-              className="flex h-10 w-10 items-center justify-center text-white/70 transition-colors hover:text-white"
+              className="flex h-10 w-10 items-center justify-center text-foreground/70 transition-colors hover:text-foreground"
               aria-label="Close menu"
             >
               <X />
@@ -112,7 +111,11 @@ export default function NavMobile({
             </ul>
           </div>
 
-          <div className="border-t border-white/10 p-5">
+          <div className="border-t border-foreground/10 p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="text-sm text-foreground/70">تم</span>
+              <ThemeToggle forMobile/>
+            </div>
             <LoginButton fullWidth/>
           </div>
         </nav>

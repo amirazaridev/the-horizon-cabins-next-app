@@ -20,7 +20,7 @@ export default function PriceDisplay({
   return (
     <div className="relative mb-6">
       <div className="flex items-baseline gap-3">
-        <span className="text-4xl font-bold text-white">{formatNumberFa(finalPrice)} تومان</span>
+        <span className="text-4xl font-bold text-text">{formatNumberFa(finalPrice)} تومان</span>
         {discount ? (
           <>
             <span className="text-lg text-text/40 line-through">{formatNumberFa(price)}</span>

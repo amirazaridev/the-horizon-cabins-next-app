@@ -17,7 +17,7 @@ export default async function CabinList({ filter }: CabinListProps) {
         <h3 className="text-text mb-2 text-xl font-semibold">
           اقامتگاهی یافت نشد
         </h3>
-        <p className="text-white/50">
+        <p className="text-text-gray">
           برای این دسته‌بندی اقامتگاهی موجود نیست. فیلتر را تغییر دهید.
         </p>
       </div>

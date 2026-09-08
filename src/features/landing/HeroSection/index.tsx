@@ -45,7 +45,7 @@ export default function HeroSection() {
         />
       </div>
 
-      <div className="via-background/50 to-background absolute inset-0 bg-linear-to-b from-black/60" />
+      <div className="via-background/20 to-background/50 absolute inset-0 bg-linear-to-b from-black/40" />
       <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-black/30" />
 
       {/* backTitle */}

@@ -152,7 +152,7 @@ export default function RegisterForm() {
           icon={<Shield className="size-5" />}
         />
 
-        <label className="flex cursor-pointer items-start gap-2.5 pt-1 text-sm leading-relaxed text-white/50 select-none">
+        <label className="flex cursor-pointer items-start gap-2.5 pt-1 text-sm leading-relaxed text-text-gray select-none">
           <input
             type="checkbox"
             className="accent-primary-400 mt-1 size-4 shrink-0 rounded"

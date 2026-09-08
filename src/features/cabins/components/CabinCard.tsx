@@ -52,7 +52,7 @@ export default function CabinCard({
   const remainingAmenitiesCount = amenities.length - visibleAmenities.length;
 
   const baseClasses =
-    "group relative overflow-hidden rounded-3xl border border-white/5 bg-surface";
+    "group relative overflow-hidden rounded-3xl border border-foreground/5 bg-surface";
 
   const animationClasses = {
     none: "transition-all duration-300",
@@ -97,8 +97,8 @@ export default function CabinCard({
 
       <div className="p-5 sm:p-6">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-xl font-bold text-white sm:text-2xl">{name}</h3>
-          <span className="text-xs text-white/40 sm:text-sm">
+          <h3 className="text-xl font-bold text-text sm:text-2xl">{name}</h3>
+          <span className="text-xs text-text-gray sm:text-sm">
             {areaSqm} متر مربع
           </span>
         </div>
@@ -123,13 +123,13 @@ export default function CabinCard({
             {visibleAmenities.map((amenity) => (
               <span
                 key={amenity}
-                className="rounded-full bg-white/5 px-3 py-1 text-xs text-white/60 sm:text-sm"
+                className="rounded-full bg-foreground/5 px-3 py-1 text-xs text-text-gray sm:text-sm"
               >
                 {amenity}
               </span>
             ))}
             {remainingAmenitiesCount > 0 && (
-              <span className="rounded-full bg-white/5 px-3 py-1 text-xs text-white/40 sm:text-sm">
+              <span className="rounded-full bg-foreground/5 px-3 py-1 text-xs text-text-gray sm:text-sm">
                 +{remainingAmenitiesCount.toLocaleString("fa-IR")}
               </span>
             )}
@@ -137,7 +137,7 @@ export default function CabinCard({
         )}
 
         {children || (
-          <button className="hover:border-primary-400 hover:bg-primary-400 w-full rounded-xl border border-white/10 bg-white/5 py-3 font-semibold text-white transition-all duration-300 hover:text-black">
+          <button className="hover:border-primary-400 hover:bg-primary-400 w-full rounded-xl border border-foreground/10 bg-foreground/5 py-3 font-semibold text-text transition-all duration-300 hover:text-background">
             مشاهده جزئیات
           </button>
         )}

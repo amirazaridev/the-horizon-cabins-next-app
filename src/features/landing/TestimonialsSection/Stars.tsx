@@ -9,7 +9,7 @@ export default function Stars({ filledCount, total = 5 }: Props): ReactNode {
         <svg
           key={i}
           className={`size-5 ${
-            i < filledCount ? "text-primary-400" : "text-white/15"
+            i < filledCount ? "text-primary-400" : "text-foreground/15"
           }`}
           fill="currentColor"
           viewBox="0 0 20 20"

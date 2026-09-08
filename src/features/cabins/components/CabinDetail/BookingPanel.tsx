@@ -2,8 +2,8 @@ import { Check, MoveLeft, Phone } from "lucide-react";
 import type { ReactNode } from "react";
 import Button from "@/components/ui/Button";
 import PriceDisplay from "@/features/cabins/components/PriceDisplay";
-import type { Cabin } from "../lib/data-service";
-import { BOOKING_PERKS } from "../lib/constants";
+import type { Cabin } from "../../lib/data-service";
+import { BOOKING_PERKS } from "../../lib/constants";
 import CardContainer from "@/components/ui/CardContainer";
 import { SUPPORT_PHONE_HREF } from "@/constants/suport-phone";
 
@@ -12,8 +12,7 @@ type Props = { cabin: Cabin };
 export default function BookingPanel({ cabin }: Props): ReactNode {
   return (
     <CardContainer variant="gradient" className="h-full lg:col-span-2">
-     
-      <h3 className="relative mb-6 text-lg font-bold text-white">رزرو اقامت</h3>
+      <h3 className="text-text relative mb-6 text-lg font-bold">رزرو اقامت</h3>
 
       <PriceDisplay
         price={cabin.regularPrice}
@@ -21,9 +20,9 @@ export default function BookingPanel({ cabin }: Props): ReactNode {
         perNightText="در هر شب × تعداد شب‌های انتخابی"
       />
 
-      <div className="relative space-y-3 border-y border-white/10 py-5 text-sm">
+      <div className="border-foreground/10 relative space-y-3 border-y py-5 text-sm">
         {BOOKING_PERKS.map((perk) => (
-          <p key={perk} className="flex items-center gap-3 text-white/60">
+          <p key={perk} className="text-text-gray flex items-center gap-3">
             <Check className="text-primary-400 size-4 shrink-0" />
             {perk}
           </p>
@@ -32,7 +31,7 @@ export default function BookingPanel({ cabin }: Props): ReactNode {
 
       <div className="relative mt-auto pt-6">
         <BookingActions />
-        <p className="mt-4 text-center text-xs text-white/40">
+        <p className="text-text-gray mt-4 text-center text-xs">
           رزرو نهایی در صفحه پرداخت انجام می‌شود
         </p>
       </div>

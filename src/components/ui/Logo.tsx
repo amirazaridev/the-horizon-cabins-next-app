@@ -5,7 +5,7 @@ export default function Logo(): ReactNode {
   return (
     <Link
       href="/"
-      className="text-xl font-bold tracking-tight text-white md:text-2xl"
+      className="text-xl font-bold tracking-tight text-foreground md:text-2xl"
     >
       هورایزن
       <span className="text-primary-400">.</span>

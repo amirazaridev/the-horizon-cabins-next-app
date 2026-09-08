@@ -40,7 +40,7 @@ export default function Filter(): ReactNode {
   return (
     <div
       ref={filterRef}
-      className="flex flex-wrap gap-2 rounded-2xl border border-white/5 bg-surface/50 p-1 backdrop-blur-sm"
+      className="flex flex-wrap gap-2 rounded-2xl border border-foreground/5 bg-surface/50 p-1 backdrop-blur-sm"
     >
       {filterOptions.map((option) => (
         <button
@@ -50,7 +50,7 @@ export default function Filter(): ReactNode {
           className={`focus:ring-primary-400/50 relative rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-300 focus:ring-2 focus:outline-none ${
             option.value === currentFilter
               ? "bg-primary-400 shadow-primary-400/25 text-black shadow-lg"
-              : "text-white/70 hover:bg-white/5 hover:text-white"
+              : "text-text-gray hover:bg-foreground/5 hover:text-text"
           }`}
         >
           {option.title}

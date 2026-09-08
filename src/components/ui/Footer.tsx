@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="bg-background border-t border-white/5 px-6 py-12"
+      className="bg-background border-t border-foreground/5 px-6 py-12"
       dir="rtl"
     >
       <div className="mx-auto max-w-7xl">
@@ -26,7 +26,7 @@ export default function Footer() {
                 <a
                   key={social}
                   href="#"
-                  className="hover:bg-primary-400 flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white/50 transition-all duration-300 hover:text-black"
+                  className="hover:bg-primary-400 flex h-10 w-10 items-center justify-center rounded-full bg-foreground/5 text-foreground/50 transition-all duration-300 hover:text-background"
                 >
                   <span className="sr-only">{social}</span>
                   <svg
@@ -42,7 +42,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 font-semibold text-white">لینک‌های سریع</h4>
+            <h4 className="mb-4 font-semibold text-text">لینک‌های سریع</h4>
             <ul className="space-y-3">
               {["درباره ما", "کابین‌ها", "امکانات", "گالری", "تماس"].map(
                 (link) => (
@@ -81,7 +81,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/5 pt-8 text-center">
+        <div className="border-t border-foreground/5 pt-8 text-center">
           <CopyrightText />
         </div>
       </div>

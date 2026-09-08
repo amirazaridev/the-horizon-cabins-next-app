@@ -12,7 +12,6 @@ export default function useHeroAnimation() {
   const bgImageRef = useRef<HTMLDivElement>(null);
   const lineLeftRef = useRef<HTMLDivElement>(null);
   const lineRightRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -28,7 +27,6 @@ export default function useHeroAnimation() {
       tl.set(ctaRef.current, { y: 30, opacity: 0 });
       tl.set(badgeRef.current, { scale: 0.8, opacity: 0 });
       tl.set(scrollIndicatorRef.current, { opacity: 0 });
-      tl.set(dotRef.current, { scale: 0 });
       tl.set([lineLeftRef.current, lineRightRef.current], { scaleX: 0 });
 
       tl.to(
@@ -46,12 +44,6 @@ export default function useHeroAnimation() {
         lineRightRef.current,
         { scaleX: 1, duration: 0.8, ease: "power3.inOut" },
         0.3,
-      );
-
-      tl.to(
-        dotRef.current,
-        { scale: 1, duration: 0.5, ease: "back.out(3)" },
-        1.5,
       );
 
       tl.to(
@@ -155,6 +147,5 @@ export default function useHeroAnimation() {
     bgImageRef,
     lineLeftRef,
     lineRightRef,
-    dotRef,
   };
 }

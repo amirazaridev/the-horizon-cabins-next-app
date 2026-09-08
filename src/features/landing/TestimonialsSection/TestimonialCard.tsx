@@ -25,8 +25,8 @@ export default function TestimonialCard({
           className="h-12 w-12 rounded-full object-cover"
         />
         <div>
-          <h4 className="font-semibold text-white">{name}</h4>
-          <p className="text-sm text-white/50">{role}</p>
+          <h4 className="font-semibold text-text">{name}</h4>
+          <p className="text-sm text-text-gray">{role}</p>
         </div>
       </div>
     </CardContainer>

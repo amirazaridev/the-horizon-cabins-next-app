@@ -37,18 +37,18 @@ export default function Navbar() {
       if (window.scrollY > 50) {
         navRef.current?.classList.add(
           "backdrop-blur-xl",
-          "bg-black/20",
+          "bg-background/80",
           "shadow-lg",
           "border-b",
-          "border-white/10",
+          "border-foreground/10",
         );
       } else {
         navRef.current?.classList.remove(
           "backdrop-blur-xl",
-          "bg-black/20",
+          "bg-background/80",
           "shadow-lg",
           "border-b",
-          "border-white/10",
+          "border-foreground/10",
         );
       }
     };

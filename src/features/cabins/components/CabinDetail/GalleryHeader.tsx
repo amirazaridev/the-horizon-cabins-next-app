@@ -23,7 +23,7 @@ export default function GalleryHeader({ cabin }: Props): ReactNode {
 
       <BadgeTitle className="gap-x-2 px-4 py-2">
         <Star className="fill-primary-400 text-primary-400 size-4" />
-        <span className="font-bold text-white">{cabin.rating}</span>
+        <span className="font-bold text-text">{cabin.rating}</span>
         <span className="text-text/50 text-sm">({cabin.reviewCount} نظر)</span>
       </BadgeTitle>
     </div>

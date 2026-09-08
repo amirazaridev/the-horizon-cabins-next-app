@@ -22,7 +22,7 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-primary-400 text-black hover:bg-primary-300 hover:shadow-lg hover:shadow-primary-400/30",
   outline:
-    "border border-white/20 text-white backdrop-blur-sm hover:border-primary-400/50 hover:bg-white/10 hover:text-primary-400",
+    "border border-foreground/20 text-foreground backdrop-blur-sm hover:border-primary-400/50 hover:bg-foreground/10 hover:text-primary-400",
 };
 
 const sizes: Record<Size, string> = {
