@@ -10,6 +10,8 @@ import TestimonialsSection from "@/features/landing/TestimonialsSection";
 
 export default async function Home() {
   const cabins = (await getCabins()).slice(0,3);
+  console.log(cabins);
+  
   
   return (
     <GsapProvider>

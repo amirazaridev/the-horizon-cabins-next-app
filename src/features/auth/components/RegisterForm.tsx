@@ -54,7 +54,6 @@ export default function RegisterForm() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<Status>("idle");
 
-  const strength = getPasswordStrength(values.password);
 
   function handleChange(field: keyof FormValues) {
     return (event: React.ChangeEvent<HTMLInputElement>) => {

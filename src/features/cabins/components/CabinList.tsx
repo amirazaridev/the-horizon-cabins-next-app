@@ -1,6 +1,5 @@
 import CabinCard from "@/features/cabins/components/CabinCard";
 import { getCabins, filterCabins } from "../lib/data-service";
-import { notFound } from "next/navigation";
 
 interface CabinListProps {
   filter: string;
@@ -25,7 +24,7 @@ export default async function CabinList({ filter }: CabinListProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 px-10">
       {filteredCabin.map((cabin) => (
         <CabinCard
           key={cabin.id}
