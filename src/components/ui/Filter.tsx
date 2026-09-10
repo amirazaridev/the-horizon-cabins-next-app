@@ -4,14 +4,9 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useTransition, useRef, useEffect } from "react";
 import { type ReactNode } from "react";
 
-const filterOptions = [
-  { title: "همه سوئیت‌ها", value: "all" },
-  { title: "۱ تا ۳ مهمان", value: "small" },
-  { title: "۴ تا ۷ مهمان", value: "medium" },
-  { title: "۸ تا ۱۲ مهمان", value: "large" },
-] as const;
+type Props = { filterOptions: { title: string; value: string }[] };
 
-export default function Filter(): ReactNode {
+export default function Filter({ filterOptions }: Props): ReactNode {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -26,7 +21,7 @@ export default function Filter(): ReactNode {
     }
   }, [isPending]);
 
-  const currentFilter = searchParams?.get("capacity") ?? "all";
+  const currentFilter = searchParams?.get("capacity") ?? filterOptions[0].value;
 
   function handleFilter(filter: string): void {
     hasClicked.current = true;
@@ -40,7 +35,7 @@ export default function Filter(): ReactNode {
   return (
     <div
       ref={filterRef}
-      className="flex flex-wrap gap-2 rounded-2xl border border-foreground/5 bg-surface/50 p-1 backdrop-blur-sm"
+      className="border-foreground/5 bg-surface/50 flex flex-wrap gap-2 rounded-2xl border p-1 backdrop-blur-sm"
     >
       {filterOptions.map((option) => (
         <button

@@ -1,3 +1,4 @@
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import Layout from "@/components/layout/Layout";
 import type { ReactNode } from "react";
 
@@ -6,5 +7,5 @@ export default function MainLayout({
 }: {
   children: ReactNode;
 }): ReactNode {
-  return <Layout>{children}</Layout>;
+  return <DashboardLayout>{children}</DashboardLayout>;
 }
