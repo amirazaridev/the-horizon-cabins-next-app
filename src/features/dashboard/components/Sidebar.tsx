@@ -15,7 +15,7 @@ export default function Sidebar({ pathname, open, onClose }: SidebarProps) {
   return (
     <>
       <aside
-        className={`bg-surface border-border flex-col lg:static fixed inset-y-0 ${open ? "translate-x-0" : "translate-x-full lg:translate-x-0"} z-50 flex w-64 transform border-l transition-transform duration-300 ease-in-out`}
+        className={`bg-surface border-border flex-col fixed inset-y-0 ${open ? "translate-x-0" : "translate-x-full lg:translate-x-0"} z-50 flex w-64 transform border-l transition-transform duration-300 ease-in-out`}
         aria-label="Sidebar navigation"
       >
         <div className="border-border flex h-16 items-center justify-between border-b px-4">

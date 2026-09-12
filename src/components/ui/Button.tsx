@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ComponentProps, type ReactNode } from "react";
 
-type Variant = "primary" | "outline";
+type Variant = "primary" | "outline" | "success" | "warning";
 type Size = "md" | "lg";
 type Shape = "full" | "xl";
 
@@ -23,6 +23,10 @@ const variants: Record<Variant, string> = {
     "bg-primary-400 text-black hover:bg-primary-300 hover:shadow-lg hover:shadow-primary-400/30",
   outline:
     "border border-foreground/20 text-foreground backdrop-blur-sm hover:border-primary-400/50 hover:bg-foreground/10 hover:text-primary-400",
+  success:
+    "bg-emerald-400 text-black hover:bg-emerald-300 hover:shadow-lg hover:shadow-emerald-400/30",
+  warning:
+    "bg-orange-400 text-black hover:bg-orange-300 hover:shadow-lg hover:shadow-orange-400/30",
 };
 
 const sizes: Record<Size, string> = {

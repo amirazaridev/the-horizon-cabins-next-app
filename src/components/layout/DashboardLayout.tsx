@@ -15,11 +15,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="bg-background min-h-screen md:flex">
+      <div className="w-75">
       <Sidebar
         pathname={pathname}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
+        
+      </div>
 
       {sidebarOpen && (
         <div
@@ -29,9 +32,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         />
       )}
 
-      <div className="flex min-h-screen flex-col w-full">
+      <div className="flex w-full flex-col">
         <Header pathname={pathname} onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-4 sm:p-6">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 w-full max-w-7xl mx-auto">{children}</main>
       </div>
     </div>
   );

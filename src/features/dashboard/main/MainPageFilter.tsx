@@ -3,6 +3,7 @@ import Filter from "@/components/ui/Filter";
 function MainFilter() {
   return (
     <Filter
+      filterField="last"
       filterOptions={[
         { value: "7", title: "7 روز" },
         { value: "30", title: "30 روز" },

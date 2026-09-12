@@ -1,4 +1,4 @@
-import { formatNumberFa } from "@/libs/format";
+import { formatCurrency } from "@/libs/format";
 import type { ReactNode } from "react";
 
 type Props = {
@@ -20,17 +20,21 @@ export default function PriceDisplay({
   return (
     <div className="relative mb-6">
       <div className="flex items-baseline gap-3">
-        <span className="text-4xl font-bold text-text">{formatNumberFa(finalPrice)} تومان</span>
+        <span className="text-text text-4xl font-bold">
+          {formatCurrency(finalPrice)} تومان
+        </span>
         {discount ? (
           <>
-            <span className="text-lg text-text/40 line-through">{formatNumberFa(price)}</span>
+            <span className="text-text/40 text-lg line-through">
+              {formatCurrency(price)}
+            </span>
             <span className="bg-primary-400 rounded-full px-3 py-1 text-xs font-bold text-black">
               {discountPercent}٪ تخفیف
             </span>
           </>
         ) : null}
       </div>
-      <p className="mt-2 text-sm text-text/50">{perNightText}</p>
+      <p className="text-text/50 mt-2 text-sm">{perNightText}</p>
     </div>
   );
 }

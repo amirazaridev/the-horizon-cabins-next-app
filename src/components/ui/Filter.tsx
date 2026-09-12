@@ -4,9 +4,12 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useTransition, useRef, useEffect } from "react";
 import { type ReactNode } from "react";
 
-type Props = { filterOptions: { title: string; value: string }[] };
+type Props = {
+  filterOptions: { title: string; value: string }[];
+  filterField: string;
+};
 
-export default function Filter({ filterOptions }: Props): ReactNode {
+export default function Filter({ filterOptions,filterField }: Props): ReactNode {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -21,12 +24,12 @@ export default function Filter({ filterOptions }: Props): ReactNode {
     }
   }, [isPending]);
 
-  const currentFilter = searchParams?.get("capacity") ?? filterOptions[0].value;
+  const currentFilter = searchParams?.get(filterField) ?? filterOptions[0].value;
 
   function handleFilter(filter: string): void {
     hasClicked.current = true;
     const params = new URLSearchParams(searchParams);
-    params.set("capacity", filter);
+    params.set(filterField, filter);
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`);
     });

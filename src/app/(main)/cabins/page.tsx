@@ -30,6 +30,7 @@ export default async function CabinsPage({
 
         <div className="mb-10 flex justify-center">
           <Filter
+          filterField="capacity"
             filterOptions={[
               { title: "همه سوئیت‌ها", value: "all" },
               { title: "۱ تا ۳ مهمان", value: "small" },

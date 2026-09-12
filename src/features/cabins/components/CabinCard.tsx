@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Users, BedDouble, Bath } from "lucide-react";
 import { type ReactNode } from "react";
 import { type Cabin } from "@/features/cabins/lib/data-service";
-import { formatNumberFa } from "@/libs/format";
+import { formatCurrency } from "@/libs/format";
 
 export interface CabinCardProps {
   cabin: Cabin;
@@ -63,23 +63,22 @@ export default function CabinCard({
   const cardClasses = `${baseClasses} ${animationClasses[animation]} ${className}`;
 
   const priceBadge = (
-    <div className="absolute top-4 right-2 sm:right-4 flex items-center justify-between gap-2">
-      <span className="bg-primary-400 rounded-full px-4 py-1.5 text-xs md:text-sm font-bold text-black max-w-27 sm:max-w-max">
-        {formatNumberFa(finalPrice)} تومان/هر شب
+    <div className="absolute top-4 right-2 flex items-center justify-between gap-2 sm:right-4">
+      <span className="bg-primary-400 max-w-27 rounded-full px-4 py-1.5 text-xs font-bold text-black sm:max-w-max md:text-sm">
+        {formatCurrency(finalPrice)} تومان/هر شب
       </span>
       {hasDiscount && (
         <>
           <span className="bg-surface/80 text-text/60 rounded-full px-4 py-1.5 text-xs font-medium line-through backdrop-blur-sm md:text-sm">
-            {formatNumberFa(regularPrice)}
+            {formatCurrency(regularPrice)}
           </span>
-          <span className="bg-danger-strong  rounded-full px-3 py-1.5 text-[10px] md:text-xs font-bold text-white">
+          <span className="bg-danger-strong rounded-full px-3 py-1.5 text-[10px] font-bold text-white md:text-xs">
             {discountPercent}٪ تخفیف
           </span>
         </>
       )}
     </div>
   );
-
 
   const cardContent = (
     <div className={cardClasses}>
@@ -97,8 +96,8 @@ export default function CabinCard({
 
       <div className="p-5 sm:p-6">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-xl font-bold text-text sm:text-2xl">{name}</h3>
-          <span className="text-xs text-text-gray sm:text-sm">
+          <h3 className="text-text text-xl font-bold sm:text-2xl">{name}</h3>
+          <span className="text-text-gray text-xs sm:text-sm">
             {areaSqm} متر مربع
           </span>
         </div>
@@ -123,13 +122,13 @@ export default function CabinCard({
             {visibleAmenities.map((amenity) => (
               <span
                 key={amenity}
-                className="rounded-full bg-foreground/5 px-3 py-1 text-xs text-text-gray sm:text-sm"
+                className="bg-foreground/5 text-text-gray rounded-full px-3 py-1 text-xs sm:text-sm"
               >
                 {amenity}
               </span>
             ))}
             {remainingAmenitiesCount > 0 && (
-              <span className="rounded-full bg-foreground/5 px-3 py-1 text-xs text-text-gray sm:text-sm">
+              <span className="bg-foreground/5 text-text-gray rounded-full px-3 py-1 text-xs sm:text-sm">
                 +{remainingAmenitiesCount.toLocaleString("fa-IR")}
               </span>
             )}
@@ -137,7 +136,7 @@ export default function CabinCard({
         )}
 
         {children || (
-          <button className="hover:border-primary-400 hover:bg-primary-400 w-full rounded-xl border border-foreground/10 bg-foreground/5 py-3 font-semibold text-text transition-all duration-300 hover:text-background">
+          <button className="hover:border-primary-400 hover:bg-primary-400 border-foreground/10 bg-foreground/5 text-text hover:text-background w-full rounded-xl border py-3 font-semibold transition-all duration-300">
             مشاهده جزئیات
           </button>
         )}

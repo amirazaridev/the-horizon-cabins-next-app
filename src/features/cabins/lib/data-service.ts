@@ -18,7 +18,10 @@ export type Cabin = {
 };
 
 export async function getCabins(): Promise<Cabin[]> {
-  const res = await fetch(`${API_URL}cabins`);
+  const res = await fetch(`${API_URL}cabins`, {
+    cache: "force-cache",
+    next: { revalidate: 3600, tags: ["cabins-data"] },
+  });
   const json: ApiResponse<"cabins", Cabin[]> = await res.json();
 
   if (json.status !== "success") {
