@@ -1,7 +1,7 @@
 "use client";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useTheme } from "@/contexts/ThemeContext";
-import CardDashContainer from "../components/CardDashContainer";
+import CardDashContainer from "../../../components/CardDashContainer";
 
 const startDataLight = [
   { duration: "1 night", value: 0, color: "#ef4444" },

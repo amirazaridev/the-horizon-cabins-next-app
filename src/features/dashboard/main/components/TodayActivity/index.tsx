@@ -1,4 +1,4 @@
-import CardDashContainer from "../../components/CardDashContainer";
+import CardDashContainer from "../../../components/CardDashContainer";
 import TodayItem from "./TodayItem";
 
 function TodayActivity() {

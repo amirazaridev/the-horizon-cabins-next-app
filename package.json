@@ -19,6 +19,7 @@
     "plaiceholder": "^3.0.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-multi-date-picker": "^4.5.2",
     "recharts": "^3.10.1",
     "sharp": "^0.35.4"
   },

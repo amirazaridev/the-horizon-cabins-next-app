@@ -32,7 +32,7 @@ export default function Spinner({
   if (fullscreen) {
     return (
       <div
-        className={`bg-background fixed inset-0 z-50 flex flex-col items-center justify-center ${className}`}
+        className={`bg-background/70 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm ${className}`}
         aria-label={label ?? "در حال بارگذاری"}
       >
         <svg
