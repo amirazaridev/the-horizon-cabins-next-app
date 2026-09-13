@@ -39,7 +39,6 @@ export default function MainPageLayout() {
         <FilterBar startTransition={startTransition} />
       </div>
 
-      {/* KPIها */}
       <Stats
         bookings={bookings}
         prevBookings={prevBookings}
@@ -47,7 +46,6 @@ export default function MainPageLayout() {
         numDays={filters.numDays}
       />
 
-      {/* ردیف ۱: فروش + مدت اقامت */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">
           <SalesChart bookings={bookings} from={filters.from} to={filters.to} />
@@ -57,7 +55,6 @@ export default function MainPageLayout() {
         </div>
       </div>
 
-      {/* ردیف ۲: اشغال + درآمد شهرها */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">
           <OccupancyChart
@@ -71,7 +68,6 @@ export default function MainPageLayout() {
         </div>
       </div>
 
-      {/* فعالیت امروز */}
       <TodayActivity />
     </div>
   );

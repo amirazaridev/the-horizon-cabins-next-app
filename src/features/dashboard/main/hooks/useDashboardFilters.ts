@@ -23,9 +23,6 @@ import {
   type Cabin,
 } from "../data/mock-data";
 
-// ---------------------------------------------------------------------------
-// Re-export ثابت‌ها و توابع کمکی تا کامپوننت‌ها بتوانند از اینجا import کنند
-// ---------------------------------------------------------------------------
 export {
   ALL,
   DEFAULT_RANGE_DAYS,
@@ -36,9 +33,6 @@ export {
   calcGrowth,
 };
 
-// ---------------------------------------------------------------------------
-// خروجی هوک
-// ---------------------------------------------------------------------------
 export interface DashboardFilters {
   from: Date;
   to: Date;
@@ -63,7 +57,6 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
     return d;
   }, []);
 
-  // خواندن پارامترها با پیش‌فرض
   const fromParam = searchParams.get(PARAM_FROM);
   const toParam = searchParams.get(PARAM_TO);
   const city = searchParams.get(PARAM_CITY) ?? ALL;
@@ -96,13 +89,11 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
     return list;
   }, [from, to, city, status]);
 
-  // رزروهای دوره قبل (برای محاسبه رشد)
   const prevBookings = useMemo(
     () => filterPrevBookings(BOOKINGS, from, to),
     [from, to],
   );
 
-  // سوییت‌های فعال (بر اساس فیلتر شهر)
   const activeCabins = useMemo(
     () => (city === ALL ? CABINS : CABINS.filter((c) => c.city === city)),
     [city],

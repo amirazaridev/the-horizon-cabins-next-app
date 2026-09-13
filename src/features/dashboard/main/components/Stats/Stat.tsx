@@ -34,7 +34,6 @@ export default function Stat({ title, value, delta, icon, color }: StatProps) {
 
   return (
     <CardDashContainer className="relative overflow-hidden p-5">
-      {/* هاله رنگی گوشه کارت */}
       <div
         className={`${COLORS[color].glow} pointer-events-none absolute -top-10 -left-10 size-35 rounded-full blur-2xl`}
       />

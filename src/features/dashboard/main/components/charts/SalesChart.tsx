@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import {
   Area,
   AreaChart,
@@ -32,10 +31,8 @@ interface ChartPoint {
 
 export default function SalesChart({ bookings, from, to }: SalesChartProps) {
   const totalSales = bookings.reduce((acc, b) => acc + b.totalPrice, 0);
-
-  const data: ChartPoint[] = useMemo(() => {
+  const data: ChartPoint[] = (() => {
     const days = eachDayOfInterval({ start: from, end: to });
-    // بازه‌های بلندتر از یک ماه → تجمیع هفتگی تا نمودار شلوغ نشود
     const groupByWeek = days.length > 31;
 
     const buckets = new Map<string, ChartPoint>();
@@ -62,7 +59,7 @@ export default function SalesChart({ bookings, from, to }: SalesChartProps) {
     });
 
     return [...buckets.values()];
-  }, [bookings, from, to]);
+  })();
 
   return (
     <CardDashContainer className="flex h-full w-full flex-col gap-5 p-5">
@@ -80,19 +77,48 @@ export default function SalesChart({ bookings, from, to }: SalesChartProps) {
       </div>
 
       <ResponsiveContainer width="100%" height={280}>
-        <AreaChart data={data} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+        <AreaChart
+          data={data}
+          margin={{ top: 10, right: 8, left: 0, bottom: 0 }}
+        >
           <defs>
             <linearGradient id="totalSalesGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-primary-400)" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="var(--color-primary-400)" stopOpacity={0} />
+              <stop
+                offset="0%"
+                stopColor="var(--color-primary-400)"
+                stopOpacity={0.35}
+              />
+              <stop
+                offset="100%"
+                stopColor="var(--color-primary-400)"
+                stopOpacity={0}
+              />
             </linearGradient>
-            <linearGradient id="extrasSalesGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-emerald-500)" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="var(--color-emerald-500)" stopOpacity={0} />
+            <linearGradient
+              id="extrasSalesGradient"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="0%"
+                stopColor="var(--color-emerald-500)"
+                stopOpacity={0.3}
+              />
+              <stop
+                offset="100%"
+                stopColor="var(--color-emerald-500)"
+                stopOpacity={0}
+              />
             </linearGradient>
           </defs>
 
-          <CartesianGrid horizontal vertical={false} stroke="var(--color-border)" />
+          <CartesianGrid
+            horizontal
+            vertical={false}
+            stroke="var(--color-border)"
+          />
 
           <XAxis
             dataKey="label"
@@ -110,7 +136,10 @@ export default function SalesChart({ bookings, from, to }: SalesChartProps) {
           />
 
           <Tooltip
-            cursor={{ stroke: "var(--color-border-strong)", strokeDasharray: "4 4" }}
+            cursor={{
+              stroke: "var(--color-border-strong)",
+              strokeDasharray: "4 4",
+            }}
             contentStyle={{
               borderRadius: 10,
               border: "1px solid var(--color-border)",
@@ -144,7 +173,12 @@ export default function SalesChart({ bookings, from, to }: SalesChartProps) {
             fill="url(#extrasSalesGradient)"
             name="فروش افزونه"
             dot={false}
-            activeDot={{ r: 5, fill: "var(--color-emerald-500)", stroke: "var(--color-surface)", strokeWidth: 2 }}
+            activeDot={{
+              r: 5,
+              fill: "var(--color-emerald-500)",
+              stroke: "var(--color-surface)",
+              strokeWidth: 2,
+            }}
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -160,7 +194,10 @@ export default function SalesChart({ bookings, from, to }: SalesChartProps) {
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+      <span
+        className="size-2.5 shrink-0 rounded-full"
+        style={{ backgroundColor: color }}
+      />
       <span className="text-text text-sm">{label}</span>
     </div>
   );

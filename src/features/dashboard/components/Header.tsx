@@ -7,7 +7,6 @@ import { faIR } from "date-fns-jalali/locale";
 
 import { SIDEBAR_ITEMS } from "../constants/sidebar-items";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-import IconButton from "@/components/ui/IconButton";
 
 const NOTIFICATIONS = [
   { id: 1, title: "رزرو جدید برای کلبه چوبی آرامش ثبت شد", time: "۱۰ دقیقه پیش", unread: true },
@@ -21,7 +20,6 @@ interface HeaderProps {
 }
 
 export default function Header({ pathname, onMenuClick }: HeaderProps) {
-  const [notifOpen, setNotifOpen] = useState(false);
   const activeItem = SIDEBAR_ITEMS.find((item) => pathname === item.href);
   const title = activeItem?.name ?? "داشبورد";
 
@@ -57,53 +55,16 @@ export default function Header({ pathname, onMenuClick }: HeaderProps) {
           {format(new Date(), "EEEE d MMMM yyyy", { locale: faIR })}
         </span>
 
-        {/* <div className="relative">
-          <IconButton
-            className="relative"
-            onClick={() => setNotifOpen((v) => !v)}
-            aria-label="اعلان‌ها"
-          >
-            <Bell className="size-5" />
-            <span className="bg-danger absolute top-1.5 right-1.5 grid size-4 place-items-center rounded-full text-[10px] font-bold text-white">
-              {NOTIFICATIONS.filter((n) => n.unread).length}
-            </span>
-          </IconButton>
-
-          {notifOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
-              <div className="border-border bg-surface shadow-shadow-soft absolute left-0 z-50 mt-2 w-80 max-w-[85vw] rounded-2xl border p-2">
-                <p className="text-text px-3 pt-2 pb-1 text-sm font-semibold">اعلان‌ها</p>
-                {NOTIFICATIONS.map((n) => (
-                  <div
-                    key={n.id}
-                    className="hover:bg-background-2 flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors"
-                  >
-                    <span
-                      className={`mt-1.5 size-2 shrink-0 rounded-full ${
-                        n.unread ? "bg-primary-400" : "bg-border-strong"
-                      }`}
-                    />
-                    <div className="min-w-0">
-                      <p className="text-text text-sm">{n.title}</p>
-                      <p className="text-text-gray text-xs">{n.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </div> */}
 
         <ThemeToggle />
 
         {/* پروفایل ادمین */}
         <div className="border-border mr-1 flex items-center gap-2.5 border-r pr-3">
-          <div className="from-primary-400 to-primary-600 grid size-9 place-items-center rounded-full bg-gradient-to-br text-sm font-bold text-white">
+          <div className="from-primary-400 to-primary-600 grid size-9 place-items-center rounded-full bg-linear-to-br text-sm font-bold text-white">
             س
           </div>
           <div className="hidden lg:block">
-            <p className="text-text text-sm leading-none font-semibold">سارا محمدی</p>
+            <p className="text-text text-sm leading-none font-semibold">علی رضایی</p>
             <p className="text-text-gray mt-1 text-xs">مدیر سایت</p>
           </div>
         </div>
