@@ -19,8 +19,11 @@
     "plaiceholder": "^3.0.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-hook-form": "^7.88.0",
+    "react-hot-toast": "^2.6.0",
     "react-multi-date-picker": "^4.5.2",
     "recharts": "^3.10.1",
+    "server-only": "^0.0.1",
     "sharp": "^0.35.4"
   },
   "devDependencies": {

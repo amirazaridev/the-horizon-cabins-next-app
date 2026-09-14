@@ -1,11 +1,9 @@
-// ============================================================================
-// useDashboardFilters — هوک فیلترهای داشبورد
-// ============================================================================
+
 "use client";
 
 import { useSearchParams } from "next/navigation";
 import { subDays, parseISO } from "date-fns";
-import { useMemo, useTransition } from "react";
+import { useMemo } from "react";
 
 import {
   ALL,
@@ -20,8 +18,8 @@ import {
   filterBookingsByRange,
   filterPrevBookings,
   type Booking,
-  type Cabin,
 } from "../data/mock-data";
+import { Cabin } from "@/features/cabins/lib/data-service";
 
 export {
   ALL,
@@ -77,7 +75,7 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
 
     if (city !== ALL) {
       const cityCabinIds = new Set(
-        CABINS.filter((c) => c.city === city).map((c) => c.id),
+        CABINS.filter((c) => c.city?.name === city).map((c) => c.id),
       );
       list = list.filter((b) => cityCabinIds.has(b.cabinId));
     }
@@ -95,7 +93,7 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
   );
 
   const activeCabins = useMemo(
-    () => (city === ALL ? CABINS : CABINS.filter((c) => c.city === city)),
+    () => (city === ALL ? CABINS : CABINS.filter((c) => c.city?.name === city)),
     [city],
   );
 

@@ -13,7 +13,7 @@ export default function GalleryHeader({ cabin }: Props): ReactNode {
       <div>
         <BadgeTitle className="text-text/80 mb-3 gap-2 px-4 py-1.5 text-xs font-medium">
           <MapPin className="text-primary-400 size-3.5" />
-          {cabin.name}
+          {cabin.city?.name}
         </BadgeTitle>
         <h1 className="text-text text-3xl font-bold sm:text-4xl md:text-5xl">
           {cabin.name}
@@ -23,8 +23,8 @@ export default function GalleryHeader({ cabin }: Props): ReactNode {
 
       <BadgeTitle className="gap-x-2 px-4 py-2">
         <Star className="fill-primary-400 text-primary-400 size-4" />
-        <span className="font-bold text-text">{cabin.rating}</span>
-        <span className="text-text/50 text-sm">({cabin.reviewCount} نظر)</span>
+        <span className="text-text font-bold">{cabin.rating}</span>
+        {/* <span className="text-text/50 text-sm"></span> */}
       </BadgeTitle>
     </div>
   );

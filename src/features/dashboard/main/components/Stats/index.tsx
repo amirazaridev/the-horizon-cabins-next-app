@@ -3,7 +3,7 @@
 import { CalendarDays, Moon, Percent, Wallet } from "lucide-react";
 import Stat from "./Stat";
 import { calcGrowth } from "../../hooks/useDashboardFilters";
-import { formatCurrency } from "@/libs/format";
+import { formatCurrency } from "@/libs/utils/format";
 import type { Booking, Cabin } from "../../data/mock-data";
 
 interface StatsProps {
@@ -13,7 +13,12 @@ interface StatsProps {
   numDays: number;
 }
 
-export default function Stats({ bookings, prevBookings, cabins, numDays }: StatsProps) {
+export default function Stats({
+  bookings,
+  prevBookings,
+  cabins,
+  numDays,
+}: StatsProps) {
   const sales = bookings.reduce((acc, b) => acc + b.totalPrice, 0);
   const prevSales = prevBookings.reduce((acc, b) => acc + b.totalPrice, 0);
 
@@ -22,7 +27,9 @@ export default function Stats({ bookings, prevBookings, cabins, numDays }: Stats
 
   const occupancy = nights / (numDays * cabins.length);
   const avgNights = bookings.length ? nights / bookings.length : 0;
-  const prevAvgNights = prevBookings.length ? prevNights / prevBookings.length : 0;
+  const prevAvgNights = prevBookings.length
+    ? prevNights / prevBookings.length
+    : 0;
 
   const items = [
     {

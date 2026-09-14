@@ -4,8 +4,10 @@ import {
   createContext,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
   type RefObject,
 } from "react";
@@ -13,13 +15,16 @@ import { MoreHorizontal } from "lucide-react";
 import { createPortal } from "react-dom";
 import useOutsideClick from "@/hooks/useOutsideClick";
 
-type MenuPosition = { side: number; top: number };
+interface AnchorInfo {
+  rect: DOMRect;
+  justBottom: boolean;
+}
 
 interface MenuContextValue {
   openId: string;
-  position: RefObject<MenuPosition | null>;
+  anchor: RefObject<AnchorInfo | null>;
   close: () => void;
-  open: (id: string) => void;
+  open: (id: string, info: AnchorInfo) => void;
 }
 
 const MenuContext = createContext<MenuContextValue | undefined>(undefined);
@@ -32,13 +37,27 @@ function useMenuContext() {
 
 function Menus({ children }: { children: ReactNode }) {
   const [openId, setOpenId] = useState("");
-  const position = useRef<MenuPosition | null>(null);
+  const anchor = useRef<AnchorInfo | null>(null);
 
   const close = () => setOpenId("");
-  const open = setOpenId;
+  const open = (id: string, info: AnchorInfo) => {
+    anchor.current = info;
+    setOpenId(id);
+  };
+
+  useEffect(() => {
+    if (!openId) return;
+    const handleClose = () => close();
+    document.addEventListener("scroll", handleClose, true);
+    window.addEventListener("resize", handleClose);
+    return () => {
+      document.removeEventListener("scroll", handleClose, true);
+      window.removeEventListener("resize", handleClose);
+    };
+  }, [openId]);
 
   return (
-    <MenuContext value={{ openId, position, close, open }}>
+    <MenuContext value={{ openId, anchor, close, open }}>
       {children}
     </MenuContext>
   );
@@ -51,38 +70,21 @@ interface ToggleProps {
 }
 
 function Toggle({ id, icon, justBottom = false }: ToggleProps) {
-  const { openId, open, close, position } = useMenuContext();
-
-  useEffect(() => {
-    const handleScroll = () => close();
-    document.addEventListener("scroll", handleScroll, true);
-    return () => document.removeEventListener("scroll", handleScroll, true);
-  }, [close]);
+  const { openId, open, close } = useMenuContext();
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
-    const rect = (e.target as HTMLElement)
-      .closest("button")!
-      .getBoundingClientRect();
-    const isRtl = document.documentElement.dir === "rtl";
+    const rect = e.currentTarget.getBoundingClientRect();
 
-    position.current = isRtl
-      ? {
-          side: justBottom
-            ? window.innerWidth - rect.right - 120
-            : window.innerWidth - rect.right - rect.right / 1,
-          top: rect.bottom + 8,
-        }
-      : {
-          side: rect.left - 100,
-          top: rect.bottom + 8,
-        };
-
-    openId === "" || openId !== id ? open(id) : close();
+    if (openId === "" || openId !== id) {
+      open(id, { rect, justBottom });
+    } else {
+      close();
+    }
   }
 
   return (
     <button
-      className="flex cursor-pointer items-center rounded-lg p-1.5 text-text-gray transition-colors duration-150 hover:bg-primary-400/10 hover:text-primary-400"
+      className="text-text-gray hover:bg-primary-400/10 hover:text-primary-400 flex cursor-pointer items-center rounded-lg p-1.5 transition-colors duration-150"
       onClick={handleClick}
     >
       {icon || <MoreHorizontal className="size-5" />}
@@ -95,22 +97,49 @@ interface ListProps {
   children: ReactNode;
 }
 
+const GAP = 8;
+const VIEWPORT_MARGIN = 8;
+
 function List({ id, children }: ListProps) {
-  const { position, openId, close } = useMenuContext();
-  const ref = useOutsideClick(close, true);
+  const { anchor, openId, close } = useMenuContext();
+  const ref = useOutsideClick<HTMLUListElement>(close, true);
+  const [style, setStyle] = useState<CSSProperties>({ visibility: "hidden" });
 
-  if (openId !== id || !position.current) return null;
+  const isOpen = openId === id;
 
-  const isRtl = document.documentElement.dir === "rtl";
+  useLayoutEffect(() => {
+    const info = anchor.current;
+    const menuEl = ref.current;
+    if (!isOpen || !info || !menuEl) return;
 
-  const style = isRtl
-    ? { right: position.current.side + "px", top: position.current.top + "px" }
-    : { left: position.current.side + "px", top: position.current.top + "px" };
+    const { rect, justBottom } = info;
+    const menu = menuEl.getBoundingClientRect();
+
+    let left = rect.right - menu.width;
+    let top = rect.bottom + GAP;
+
+    if (
+      !justBottom &&
+      top + menu.height > window.innerHeight - VIEWPORT_MARGIN
+    ) {
+      top = rect.top - menu.height - GAP;
+    }
+
+    left = Math.min(
+      Math.max(left, VIEWPORT_MARGIN),
+      window.innerWidth - menu.width - VIEWPORT_MARGIN,
+    );
+
+    setStyle({ position: "fixed", top, left, visibility: "visible" });
+  }, [isOpen, anchor, ref]);
+
+  if (!isOpen) return null;
 
   return createPortal(
     <ul
       ref={ref}
-      className="menu-dropdown fixed z-50 min-w-44 flex-col overflow-hidden rounded-xl border border-border-strong bg-surface p-1 shadow-shadow-soft md:min-w-48"
+      role="menu"
+      className="menu-dropdown border-border-strong bg-surface shadow-shadow-soft fixed z-50 min-w-44 flex-col overflow-hidden rounded-xl border p-1 md:min-w-48"
       style={style}
     >
       {children}
@@ -137,6 +166,7 @@ function Button({ children, onClick, icon, danger }: ButtonProps) {
   return (
     <li>
       <button
+        role="menuitem"
         onClick={handleClick}
         className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-150 ${
           danger
@@ -162,7 +192,7 @@ function Button({ children, onClick, icon, danger }: ButtonProps) {
 }
 
 function Divider() {
-  return <li className="my-1 h-px bg-border-strong" />;
+  return <li className="bg-border-strong my-1 h-px" />;
 }
 
 Menus.Button = Button;

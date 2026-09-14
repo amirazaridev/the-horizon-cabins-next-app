@@ -1,10 +1,13 @@
 import Spinner from "@/components/ui/Spinner";
+import { getCities } from "@/features/cabins/api/getCities";
 import MainPageLayout from "@/features/dashboard/main/MainPageLayout";
 import { Suspense } from "react";
 
 export const metadata = { title: "داشبورد ادمین هورایزن" };
 
-function page() {
+async function page() {
+  const cities = await getCities();
+
   return (
     <>
       <div>
@@ -15,7 +18,7 @@ function page() {
             </div>
           }
         >
-          <MainPageLayout />
+          <MainPageLayout cities={cities} />
         </Suspense>
       </div>
     </>

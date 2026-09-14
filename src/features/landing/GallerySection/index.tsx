@@ -1,12 +1,12 @@
 "use client";
 
-import SectionTitle from "../SectionTitle";
+import SectionTitle from "@/features/landing/shared/components/SectionTitle";
 import useSectionReveal, {
   type RevealTarget,
-} from "@/features/landing/hooks/useSectionReveal";
+} from "@/features/landing/shared/hooks/useSectionReveal";
 import Container from "@/components/ui/Container";
 import GalleryItem from "./GalleryItem";
-import { GALLERY_IMAGES } from "@/constants/gallery-images";
+import { GALLERY_IMAGES } from "@/features/landing/shared/constants/gallery-images";
 
 const REVEAL_TARGETS: RevealTarget[] = [
   { selector: ".gallery-title" },

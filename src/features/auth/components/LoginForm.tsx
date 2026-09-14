@@ -8,7 +8,7 @@ import Input from "@/features/auth/components/Input";
 import {
   validateEmail,
   validatePassword,
-} from "@/features/auth/lib/validation";
+} from "@/features/auth/utils/validation";
 import FormContainer from "./FormContainer";
 
 type FormValues = {
@@ -80,10 +80,10 @@ export default function LoginForm() {
         />
 
         <div className="flex items-center justify-between">
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm text-text-gray select-none">
+          <label className="text-text-gray flex cursor-pointer items-center gap-2.5 text-sm select-none">
             <input
               type="checkbox"
-              className="accent-primary-400 size-4 rounded border-foreground/20"
+              className="accent-primary-400 border-foreground/20 size-4 rounded"
             />
             مرا به خاطر بسپار
           </label>

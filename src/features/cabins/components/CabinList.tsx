@@ -1,5 +1,6 @@
 import CabinCard from "@/features/cabins/components/CabinCard";
 import { getCabins, filterCabins } from "../lib/data-service";
+import CabinNotFound from "./CabinNotFound";
 
 interface CabinListProps {
   filter: string;
@@ -10,17 +11,7 @@ export default async function CabinList({ filter }: CabinListProps) {
   const filteredCabin = filterCabins(cabins, filter);
 
   if (!filteredCabin?.length) {
-    return (
-      <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
-        <div className="mb-4 text-6xl">🏔️</div>
-        <h3 className="text-text mb-2 text-xl font-semibold">
-          اقامتگاهی یافت نشد
-        </h3>
-        <p className="text-text-gray">
-          برای این دسته‌بندی اقامتگاهی موجود نیست. فیلتر را تغییر دهید.
-        </p>
-      </div>
-    );
+    return <CabinNotFound />
   }
 
   return (

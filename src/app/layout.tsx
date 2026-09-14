@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import fonts from "@/constants/fonts";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import "@/app/globals.css";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "هورایزن کابینز | ویلای لوکس",
@@ -19,9 +20,13 @@ export default function RootLayout({
       lang="fa"
       dir="rtl"
       className={`${fonts.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
     >
       <body className="bg-background text-foreground flex min-h-full flex-col justify-between">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <Toaster position="top-center" reverseOrder={false} />
+        </ThemeProvider>
       </body>
     </html>
   );

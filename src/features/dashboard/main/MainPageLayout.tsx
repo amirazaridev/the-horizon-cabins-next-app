@@ -13,8 +13,13 @@ import CityRevenueChart from "./components/charts/CityRevenueChart";
 import TodayActivity from "./components/TodayActivity";
 import { useTransition } from "react";
 import Spinner from "@/components/ui/Spinner";
+import { City } from "@/features/cabins/types/City";
 
-export default function MainPageLayout() {
+type Props = {
+  cities: City[];
+};
+
+export default function MainPageLayout({cities}:Props) {
   const [isPending, startTransition] = useTransition();
   const { filters, bookings, prevBookings, activeCabins } =
     useDashboardFilters();
@@ -36,7 +41,7 @@ export default function MainPageLayout() {
             </span>
           </p>
         </div>
-        <FilterBar startTransition={startTransition} />
+        <FilterBar cities={cities} startTransition={startTransition} />
       </div>
 
       <Stats

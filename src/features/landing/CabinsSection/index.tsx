@@ -2,7 +2,7 @@
 import CabinCard from "@/features/cabins/components/CabinCard";
 import Container from "@/components/ui/Container";
 import useCabinsAnimation from "@/features/landing/CabinsSection/useCabinsAnimation";
-import SectionTitle from "../SectionTitle";
+import SectionTitle from "@/features/landing/shared/components/SectionTitle";
 import { Cabin } from "@/features/cabins/lib/data-service";
 
 export default function CabinsSection({ cabins }: { cabins: Cabin[] }) {

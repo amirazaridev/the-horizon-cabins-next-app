@@ -19,7 +19,7 @@ import {
   validateEmail,
   validatePassword,
   validatePhone,
-} from "@/features/auth/lib/validation";
+} from "@/features/auth/utils/validation";
 import FormContainer from "./FormContainer";
 import CheckPasswordPower from "./CheckPasswordPower";
 
@@ -53,7 +53,6 @@ export default function RegisterForm() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<Status>("idle");
-
 
   function handleChange(field: keyof FormValues) {
     return (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +150,7 @@ export default function RegisterForm() {
           icon={<Shield className="size-5" />}
         />
 
-        <label className="flex cursor-pointer items-start gap-2.5 pt-1 text-sm leading-relaxed text-text-gray select-none">
+        <label className="text-text-gray flex cursor-pointer items-start gap-2.5 pt-1 text-sm leading-relaxed select-none">
           <input
             type="checkbox"
             className="accent-primary-400 mt-1 size-4 shrink-0 rounded"

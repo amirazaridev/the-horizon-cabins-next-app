@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { getPasswordStrength } from "../lib/validation";
+import { getPasswordStrength } from "../utils/validation";
 
 type Props = { password: string };
 

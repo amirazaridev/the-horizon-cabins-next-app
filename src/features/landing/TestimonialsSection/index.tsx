@@ -1,11 +1,11 @@
 "use client";
 
-import useSectionReveal from "@/features/landing/hooks/useSectionReveal";
+import useSectionReveal from "@/features/landing/shared/hooks/useSectionReveal";
 import BackDropBlur from "@/components/ui/BackDropBlur";
-import SectionTitle from "../SectionTitle";
+import SectionTitle from "@/features/landing/shared/components/SectionTitle";
 import Container from "@/components/ui/Container";
 import TestimonialCard from "./TestimonialCard";
-import { TESTIMONIALS } from "@/constants/testimonials";
+import { TESTIMONIALS } from "@/features/landing/shared/constants/testimonials";
 
 const REVEAL_TARGETS = [
   { selector: ".testimonials-title" },

@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { format, subDays } from "date-fns";
 
 import DateRangeFilter from "./DateRangeFilter";
-import CityFilter from "./CityFilter";
+import CityFilter from "../../../cabins/components/CityFilter";
 import StatusFilter from "./StatusFilter";
 import {
   ALL,
@@ -16,6 +16,7 @@ import {
   PARAM_TO,
 } from "../../hooks/useDashboardFilters";
 import { TransitionStartFunction } from "react";
+import { City } from "@/features/cabins/types/City";
 
 const QUICK_RANGES = [
   { days: 7, title: "۷ روز" },
@@ -25,8 +26,10 @@ const QUICK_RANGES = [
 
 export default function FilterBar({
   startTransition,
+  cities,
 }: {
   startTransition: TransitionStartFunction;
+  cities: City[];
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -101,6 +104,7 @@ export default function FilterBar({
 
       {/* فیلتر شهر */}
       <CityFilter
+        cities={cities}
         value={city}
         onChange={(c) => updateParams({ [PARAM_CITY]: c === ALL ? null : c })}
       />

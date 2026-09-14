@@ -15,7 +15,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="bg-background min-h-screen md:flex">
-      <div className="w-75">
+      <div className="w-75 absolute lg:static">
       <Sidebar
         pathname={pathname}
         open={sidebarOpen}

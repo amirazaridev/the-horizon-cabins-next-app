@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import Stars from "./Stars";
 import CardContainer from "@/components/ui/CardContainer";
-import type { Testimonial } from "@/constants/testimonials";
+import type { Testimonial } from "@/features/landing/shared/constants/testimonials";
 
 type Props = Testimonial;
 
@@ -25,8 +25,8 @@ export default function TestimonialCard({
           className="h-12 w-12 rounded-full object-cover"
         />
         <div>
-          <h4 className="font-semibold text-text">{name}</h4>
-          <p className="text-sm text-text-gray">{role}</p>
+          <h4 className="text-text font-semibold">{name}</h4>
+          <p className="text-text-gray text-sm">{role}</p>
         </div>
       </div>
     </CardContainer>

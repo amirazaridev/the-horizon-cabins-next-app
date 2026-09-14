@@ -1,11 +1,11 @@
 "use client";
 
-import useSectionReveal from "@/features/landing/hooks/useSectionReveal";
+import useSectionReveal from "@/features/landing/shared/hooks/useSectionReveal";
 import BackDropBlur from "@/components/ui/BackDropBlur";
-import SectionTitle from "../SectionTitle";
+import SectionTitle from "@/features/landing/shared/components/SectionTitle";
 import Container from "@/components/ui/Container";
 import AmenityCard from "./AmenityCard";
-import { AMENITIES } from "@/constants/amenities";
+import { AMENITIES } from "@/features/landing/shared/constants/amenities";
 
 const REVEAL_TARGETS = [
   { selector: ".amenities-title" },
@@ -40,8 +40,8 @@ export default function AmenitiesSection() {
         />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          {AMENITIES.map((amenity) => (
-            <AmenityCard key={amenity.id} {...amenity} />
+          {AMENITIES.map(({ icon: Icon, ...amenity }) => (
+            <AmenityCard key={amenity.id} icon={<Icon />} {...amenity} />
           ))}
         </div>
       </Container>

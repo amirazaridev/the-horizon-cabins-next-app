@@ -12,9 +12,13 @@ import {
 
 import CardDashContainer from "../../../components/CardDashContainer";
 import { CABINS, type Booking } from "../../data/mock-data";
-import { formatCurrency } from "@/libs/format";
+import { formatCurrency } from "@/libs/utils/format";
 
-export default function CityRevenueChart({ bookings }: { bookings: Booking[] }) {
+export default function CityRevenueChart({
+  bookings,
+}: {
+  bookings: Booking[];
+}) {
   const data = useMemo(() => {
     const map = new Map<string, number>();
     bookings.forEach((b) => {
@@ -42,11 +46,25 @@ export default function CityRevenueChart({ bookings }: { bookings: Booking[] }) 
       </div>
 
       <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={data} margin={{ top: 10, right: 8, left: 8, bottom: 0 }} barCategoryGap="30%">
+        <BarChart
+          data={data}
+          margin={{ top: 10, right: 8, left: 8, bottom: 0 }}
+          barCategoryGap="30%"
+        >
           <defs>
-            <linearGradient id="cityRevenueGradient" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient
+              id="cityRevenueGradient"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
               <stop offset="0%" stopColor="var(--color-primary-400)" />
-              <stop offset="100%" stopColor="var(--color-primary-600)" stopOpacity={0.6} />
+              <stop
+                offset="100%"
+                stopColor="var(--color-primary-600)"
+                stopOpacity={0.6}
+              />
             </linearGradient>
           </defs>
 
@@ -73,7 +91,10 @@ export default function CityRevenueChart({ bookings }: { bookings: Booking[] }) 
               background: "var(--color-surface)",
               direction: "rtl",
             }}
-            formatter={(value) => [`${formatCurrency(Number(value))} تومان`, "درآمد"]}
+            formatter={(value) => [
+              `${formatCurrency(Number(value))} تومان`,
+              "درآمد",
+            ]}
           />
 
           <Bar

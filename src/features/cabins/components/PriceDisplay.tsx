@@ -1,4 +1,4 @@
-import { formatCurrency } from "@/libs/format";
+import { formatCurrency } from "@/libs/utils/format";
 import type { ReactNode } from "react";
 
 type Props = {

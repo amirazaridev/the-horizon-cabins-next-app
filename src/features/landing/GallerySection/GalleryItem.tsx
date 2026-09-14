@@ -1,4 +1,3 @@
-import { getBlurData } from "@/libs/getBlurData";
 import { ZoomIn } from "lucide-react";
 import Image from "next/image";
 import { type ReactNode } from "react";

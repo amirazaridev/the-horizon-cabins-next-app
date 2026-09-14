@@ -2,8 +2,8 @@ import { ApiResponse } from "@/types/api-response";
 
 const API_URL = process.env.API_URL;
 export type Cabin = {
-  name: string;
   id: number;
+  name: string;
   maxCapacity: number;
   regularPrice: number;
   discount: number;
@@ -12,7 +12,11 @@ export type Cabin = {
   bedrooms: number;
   bathrooms: number;
   areaSqm: number;
-  images: string[];
+  images?: string[];
+  latitude: number | null;
+  longitude: number | null;
+  rating: number | null;
+  city?: { id: number; name: string };
   createdAt: Date;
   updatedAt: Date;
 };
@@ -20,7 +24,7 @@ export type Cabin = {
 export async function getCabins(): Promise<Cabin[]> {
   const res = await fetch(`${API_URL}cabins`, {
     cache: "force-cache",
-    next: { revalidate: 3600, tags: ["cabins-data"] },
+    next: { revalidate: 1, tags: ["cabins-data"] },
   });
   const json: ApiResponse<"cabins", Cabin[]> = await res.json();
 

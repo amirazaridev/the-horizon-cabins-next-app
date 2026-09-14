@@ -10,12 +10,15 @@ import {
   Phone,
   TreePine,
 } from "lucide-react";
-import useSectionReveal from "@/features/landing/hooks/useSectionReveal";
+import useSectionReveal from "@/features/landing/shared/hooks/useSectionReveal";
 import BackDropBlur from "@/components/ui/BackDropBlur";
 import Container from "@/components/ui/Container";
-import SectionTitle from "../SectionTitle";
+import SectionTitle from "@/features/landing/shared/components/SectionTitle";
 import CardContainer from "@/components/ui/CardContainer";
-import { BOOKING_STEPS, WORKING_HOURS } from "@/constants/contact-section";
+import {
+  BOOKING_STEPS,
+  WORKING_HOURS,
+} from "@/features/landing/shared/constants/contact-section";
 import { SUPPORT_PHONE_HREF } from "@/constants/suport-phone";
 
 const REVEAL_TARGETS = [
@@ -63,7 +66,7 @@ export default function ContactSection() {
             <div className="mt-8 space-y-5">
               {BOOKING_STEPS.map((step, i) => (
                 <div key={step.title} className="group flex items-start gap-4">
-                  <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-foreground/10 bg-surface-raised/80 transition-colors duration-300">
+                  <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 border-foreground/10 bg-surface-raised/80 relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors duration-300">
                     <step.icon className="text-primary-400 size-5" />
                     <span className="bg-primary-400 absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full text-[10px] font-bold text-black">
                       {i + 1}
@@ -92,7 +95,7 @@ export default function ContactSection() {
           <div className="space-y-6 transition-all duration-500 md:space-y-8">
             <CardContainer variant="primary">
               <div className="mb-4 flex items-center gap-4">
-                <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-foreground/10 bg-surface-raised/80 transition-colors duration-300">
+                <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 border-foreground/10 bg-surface-raised/80 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors duration-300">
                   <MapPin className="text-primary-400 size-5" />
                 </div>
                 <h3 className="text-text text-lg font-semibold">آدرس</h3>
@@ -106,7 +109,7 @@ export default function ContactSection() {
 
             <CardContainer variant="primary">
               <div className="mb-4 flex items-center gap-4">
-                <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-foreground/10 bg-surface-raised/80 transition-colors duration-300">
+                <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 border-foreground/10 bg-surface-raised/80 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors duration-300">
                   <Headset className="text-primary-400 size-5" />
                 </div>
                 <h3 className="text-text text-lg font-semibold">
@@ -133,7 +136,7 @@ export default function ContactSection() {
 
             <CardContainer variant="primary">
               <div className="mb-4 flex items-center gap-4">
-                <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-foreground/10 bg-surface-raised/80 transition-colors duration-300">
+                <div className="group-hover:border-primary-400/40 group-hover:bg-primary-400/10 border-foreground/10 bg-surface-raised/80 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors duration-300">
                   <Clock className="text-primary-400 size-5" />
                 </div>
                 <h3 className="text-text text-lg font-semibold">ساعات کاری</h3>
@@ -142,7 +145,7 @@ export default function ContactSection() {
                 {WORKING_HOURS.map((item) => (
                   <div
                     key={item.name}
-                    className="text-text-gray flex justify-between border-b border-foreground/5 pb-2 last:border-0 last:pb-0"
+                    className="text-text-gray border-foreground/5 flex justify-between border-b pb-2 last:border-0 last:pb-0"
                   >
                     <span>{item.name}</span>
                     <span className="text-text/70">{item.time}</span>

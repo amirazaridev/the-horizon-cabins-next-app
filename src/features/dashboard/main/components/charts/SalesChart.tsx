@@ -13,7 +13,7 @@ import { eachDayOfInterval, format, startOfWeek } from "date-fns";
 import { format as formatJalali } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
 
-import { formatCurrency } from "@/libs/format";
+import { formatCurrency } from "@/libs/utils/format";
 import CardDashContainer from "../../../components/CardDashContainer";
 import type { Booking } from "../../data/mock-data";
 
@@ -42,7 +42,7 @@ export default function SalesChart({ bookings, from, to }: SalesChartProps) {
       const key = format(d, "yyyy-MM-dd");
       if (!buckets.has(key)) {
         buckets.set(key, {
-          label: formatJalali(d, "d MMM", { locale: faIR }),
+          label: formatJalali(d, "d MMMM", { locale: faIR }),
           totalSales: 0,
           extrasSales: 0,
         });

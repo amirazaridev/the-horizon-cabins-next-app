@@ -7,8 +7,8 @@ import imageURL from "@/assets/images/about-section.png";
 import FeatureList from "@/features/landing/AboutSection/FeatureList";
 import useSectionReveal, {
   type RevealTarget,
-} from "@/features/landing/hooks/useSectionReveal";
-import SectionTitle from "../SectionTitle";
+} from "@/features/landing/shared/hooks/useSectionReveal";
+import SectionTitle from "@/features/landing/shared/components/SectionTitle";
 
 const REVEAL_TARGETS: RevealTarget[] = [
   { selector: ".about-heading", y: 60 },
@@ -30,14 +30,18 @@ export default function AboutSection() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative overflow-hidden bg-surface px-10 py-24 md:py-32"
+      className="bg-surface relative overflow-hidden px-10 py-24 md:py-32"
     >
       <Container className="relative z-10">
         <SectionTitle
           className="about-heading"
           subTitle="داستان ما"
           title="جایی که طبیعت ایران"
-          titlePri={<>به لوکس بودن <br /> می‌رسد</>}
+          titlePri={
+            <>
+              به لوکس بودن <br /> می‌رسد
+            </>
+          }
         />
 
         <div className="grid items-center gap-12 md:grid-cols-2">
