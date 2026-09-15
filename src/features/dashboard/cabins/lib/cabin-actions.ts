@@ -66,3 +66,28 @@ export async function updateCabinAction(
     };
   }
 }
+
+export async function deleteCabinAction(id: number): Promise<ActionResult> {
+  try {
+    const res = await apiFetch(`cabins/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      const json = await res.json();
+      throw new Error(json.message);
+    }
+
+    revalidateTag("cabins-data", "max");
+    revalidatePath("/dashboard/cabins");
+    return { success: true, message: "سوییت با موفقیت حذف شد." };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "حذف سوییت ناموفق بود. دوباره تلاش کنید.",
+    };
+  }
+}

@@ -1,6 +1,13 @@
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import { Bath, BedDouble, CalendarDays, Maximize, Users } from "lucide-react";
+import {
+  Bath,
+  BedDouble,
+  CalendarDays,
+  MapPin,
+  Maximize,
+  Users,
+} from "lucide-react";
 import { type ReactNode } from "react";
 import { format as formatJalali } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
@@ -80,6 +87,7 @@ function DefaultCard({
     bathrooms,
     areaSqm,
     images,
+    city,
   } = cabin;
 
   const image = imageOverride ?? images?.[0];
@@ -109,6 +117,13 @@ function DefaultCard({
             {areaSqm} متر مربع
           </span>
         </div>
+
+        {city?.name && (
+          <div className="text-text-gray mb-3 flex items-center gap-1.5 text-sm">
+            <MapPin className="text-primary-400 size-4" />
+            <span>{city.name}</span>
+          </div>
+        )}
 
         <div className="text-text-gray mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <SpecItem icon={<Users className="text-primary-400 size-4" />}>
@@ -167,6 +182,7 @@ function DashboardCard({
     areaSqm,
     images,
     createdAt,
+    city
   } = cabin;
 
   const image = imageOverride ?? images?.[0];
@@ -232,6 +248,12 @@ function DashboardCard({
             label="متر مربع"
           />
         </div>
+        {city?.name && (
+          <div className="text-text-gray mb-3 flex items-center gap-1.5 text-sm">
+            <MapPin className="text-primary-400 size-4" />
+            <span>{city.name}</span>
+          </div>
+        )}
         {/* امکانات */}
         {amenities.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
@@ -245,6 +267,7 @@ function DashboardCard({
             )}
           </div>
         )}
+        
         <div className="border-border flex items-center justify-between border-t pt-3 text-xs">
           <span className="text-text-gray flex items-center gap-1.5">
             <CalendarDays className="size-3.5" />
