@@ -82,7 +82,7 @@ function DefaultCard({
     images,
   } = cabin;
 
-  const image = imageOverride ?? images[0];
+  const image = imageOverride ?? images?.[0];
   const visibleAmenities = amenities.slice(0, maxAmenities);
   const remainingAmenitiesCount = amenities.length - visibleAmenities.length;
 
@@ -145,7 +145,6 @@ function DefaultCard({
   );
 }
 
-/* ═══════════════════ نسخه داشبورد (ادمین) ═══════════════════ */
 
 function DashboardCard({
   cabin,
@@ -170,7 +169,7 @@ function DashboardCard({
     createdAt,
   } = cabin;
 
-  const image = imageOverride ?? images[0];
+  const image = imageOverride ?? images?.[0];
   const hasDiscount = discount > 0;
   const discountPercent = hasDiscount
     ? Math.round((discount / regularPrice) * 100)
@@ -246,7 +245,6 @@ function DashboardCard({
             )}
           </div>
         )}
-        \
         <div className="border-border flex items-center justify-between border-t pt-3 text-xs">
           <span className="text-text-gray flex items-center gap-1.5">
             <CalendarDays className="size-3.5" />

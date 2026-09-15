@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { apiFetch } from "@/libs/api/apiFetch";
-import { Cabin } from "@/features/cabins/lib/data-service";
+import { ApiResponse } from "@/types/api-response";
+import { EmptyObject } from "react-hook-form";
 
 type ActionResult = {
   success: boolean;
@@ -13,12 +14,16 @@ export async function createCabinAction(
   formData: FormData,
 ): Promise<ActionResult> {
   try {
-    // FormData مستقیم به Express forward می‌شه — File ها هم سالم می‌رن
     const res = await apiFetch("cabins", {
       method: "POST",
       body: formData,
     });
-    console.log(formData, await res.json());
+    const json = await res.json();
+    console.log(formData, json);
+
+    if (!res.ok) throw new Error(json.message);
+
+    revalidateTag("cabins-data", "max");
 
     revalidatePath("/dashboard/cabins");
     return { success: true, message: "سوییت با موفقیت ثبت شد." };
@@ -38,10 +43,16 @@ export async function updateCabinAction(
   formData: FormData,
 ): Promise<ActionResult> {
   try {
-    await apiFetch(`/cabins/${id}`, {
+    const res = await apiFetch(`cabins/${id}`, {
       method: "PATCH",
       body: formData,
     });
+    const json = await res.json();
+    console.log(formData, json);
+
+    if (!res.ok) throw new Error(json.message);
+
+    revalidateTag("cabins-data", "max");
 
     revalidatePath("/dashboard/cabins");
     return { success: true, message: "تغییرات با موفقیت ذخیره شد." };

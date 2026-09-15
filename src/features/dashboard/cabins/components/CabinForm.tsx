@@ -12,6 +12,7 @@ import type { City } from "@/features/cabins/types/City";
 import CabinImageDropzone, { type CabinImage } from "./CabinImageDropzone";
 import { splitImages } from "../lib/cabin-images";
 import { createCabinAction, updateCabinAction } from "../lib/cabin-actions";
+import { useRouter } from "next/navigation";
 
 type Mode = "add" | "edit";
 
@@ -106,6 +107,7 @@ export default function CabinForm({ mode, cities, cabin }: CabinFormProps) {
   } = useForm<CabinFormValues>({
     defaultValues: getDefaultValues(cabin),
   });
+  const router = useRouter()
 
   useEffect(() => {
     reset(getDefaultValues(cabin));
@@ -113,7 +115,7 @@ export default function CabinForm({ mode, cities, cabin }: CabinFormProps) {
 
   async function onSubmit(values: CabinFormValues) {
     const formData = buildFormData(values);
-    console.log(values);
+    // console.log(values);
     
     // 🔑 کلاینت فقط server action رو صدا می‌زنه — نه API، نه توکن، هیچی
     const result =
@@ -123,7 +125,7 @@ export default function CabinForm({ mode, cities, cabin }: CabinFormProps) {
 
     if (result.success) {
       toast.success(result.message);
-    //   router.push("/dashboard/cabins");
+      router.push("/dashboard/cabins");
     } else {
       toast.error(result.message);
     }
