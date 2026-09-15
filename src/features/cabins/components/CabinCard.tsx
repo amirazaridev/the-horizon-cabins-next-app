@@ -96,7 +96,7 @@ function DefaultCard({
 
   return (
     <div
-      className={`${baseClasses} ${animationClasses[animation]} ${className}`}
+      className={`${baseClasses} ${animationClasses[animation]} flex h-full flex-col ${className}`}
     >
       <div className="relative aspect-4/3 overflow-hidden">
         <Image
@@ -110,7 +110,7 @@ function DefaultCard({
         <PriceBadge cabin={cabin} />
       </div>
 
-      <div className="p-5 sm:p-6">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-text text-xl font-bold sm:text-2xl">{name}</h3>
           <span className="text-text-gray text-xs sm:text-sm">
@@ -150,11 +150,13 @@ function DefaultCard({
           </div>
         )}
 
-        {children || (
-          <button className="hover:border-primary-400 hover:bg-primary-400 border-foreground/10 bg-foreground/5 text-text hover:text-background w-full rounded-xl border py-3 font-semibold transition-all duration-300">
-            مشاهده جزئیات
-          </button>
-        )}
+        <div className="mt-auto">
+          {children || (
+            <button className="hover:border-primary-400 hover:bg-primary-400 border-foreground/10 bg-foreground/5 text-text hover:text-background w-full rounded-xl border py-3 font-semibold transition-all duration-300">
+              مشاهده جزئیات
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

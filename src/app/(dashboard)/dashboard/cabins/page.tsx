@@ -2,7 +2,6 @@ import { Suspense, type ReactNode } from "react";
 import AddCabin from "@/features/dashboard/cabins/components/AddCabin";
 import CabinListOperations from "@/features/dashboard/cabins/components/CabinListOperations";
 import CabinListDashboard from "@/features/dashboard/cabins/components/CabinListDashboard";
-import Spinner from "@/components/ui/Spinner";
 
 export const metadata = { title: "سوییت‌ها" };
 
@@ -31,15 +30,7 @@ export default async function CabinsPage({
         </Suspense>
       </div>
 
-      <Suspense
-        fallback={
-          <div className="flex justify-center py-20">
-            <Spinner size="lg" />
-          </div>
-        }
-      >
-        <CabinListDashboard searchParams={searchParams} />
-      </Suspense>
+      <CabinListDashboard searchParams={searchParams} />
     </div>
   );
 }
