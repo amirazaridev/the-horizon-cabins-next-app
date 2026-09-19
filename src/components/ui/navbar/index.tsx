@@ -48,10 +48,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // صفحات داخلی همیشه پس‌زمینه‌ی تم‌دار دارند؛ فقط لندینگ در بالای صفحه شفاف است
-  // نکته: با تغییر روت نیازی به سینک دستی نیست — اسکرول-to-top مرورگر
-  // ایونت scroll را فایر می‌کند و state بالا به‌روز می‌شود؛ ضمن اینکه
-  // کلاس‌ها کاملاً declarative از state/route ساخته می‌شوند و چیزی روی DOM باقی نمی‌ماند.
   const hasSolidBackground = isScrolled || !isLandingPage;
   const textColor = isLandingPage && !isScrolled ? "text-white" : "text-text";
 

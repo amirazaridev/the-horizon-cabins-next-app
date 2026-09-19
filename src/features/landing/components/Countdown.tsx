@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-export type HorizonCountdownProps = {
+export type CountdownProps = {
   expiresAt?: string;
   demoDurationSeconds?: number;
 };
 
-export default function HorizonCountdown({
+export default function Countdown({
   expiresAt,
   demoDurationSeconds = 7200,
-}: HorizonCountdownProps) {
+}: CountdownProps) {
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {

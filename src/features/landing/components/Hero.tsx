@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { HORIZON_IMAGES } from "@/features/landing/constants/horizon-home";
-import HorizonSearch from "./HorizonSearch";
+import Search from "./Search";
 
-export default function HorizonHero() {
+export default function Hero() {
   return (
     <header id="top" className="hz-hero relative min-h-190 overflow-hidden bg-overlay pt-28 pb-10 md:min-h-200 md:pt-36">
       <div className="hz-hero-bg absolute inset-0">
@@ -44,7 +44,7 @@ export default function HorizonHero() {
         </div>
 
         <div className="mt-12 md:mt-16">
-          <HorizonSearch />
+          <Search />
         </div>
         <div className="mt-7 flex justify-center text-white/55">
           <ChevronDown className="hz-scroll-indicator animate-bounce" size={20} />

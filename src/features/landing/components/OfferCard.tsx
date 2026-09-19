@@ -9,7 +9,7 @@ type Props = {
   badge: string;
 };
 
-export default function HorizonOfferCard({ cabin, price, originalPrice, badge }: Props) {
+export default function OfferCard({ cabin, price, originalPrice, badge }: Props) {
   return (
     <article className="hz-reveal flex h-full flex-col">
       <div className="relative flex-1 [&>a]:h-full">

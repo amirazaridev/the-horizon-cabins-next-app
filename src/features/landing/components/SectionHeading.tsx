@@ -3,7 +3,7 @@ import Link from "next/link";
 
 type Props = { eyebrow: string; title: React.ReactNode; href?: string; hrefLabel?: string };
 
-export default function HorizonSectionHeading({ eyebrow, title, href, hrefLabel = "مشاهده همه" }: Props) {
+export default function SectionHeading({ eyebrow, title, href, hrefLabel = "مشاهده همه" }: Props) {
   return (
     <div className="mb-7 flex items-end justify-between gap-5 md:mb-9">
       <div>

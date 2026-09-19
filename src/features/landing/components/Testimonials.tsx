@@ -2,13 +2,13 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { TESTIMONIALS_HOME } from "@/features/landing/constants/horizon-home";
-import HorizonSectionHeading from "./HorizonSectionHeading";
+import SectionHeading from "./SectionHeading";
 
-export default function HorizonTestimonials() {
+export default function Testimonials() {
   return (
     <section className="bg-background-2 px-4 py-14 md:px-6 md:py-20">
       <Container>
-        <HorizonSectionHeading eyebrow="نظرات مهمان‌ها" title="آنچه مهمانان ما می‌گویند" />
+        <SectionHeading eyebrow="نظرات مهمان‌ها" title="آنچه مهمانان ما می‌گویند" />
         <div className="grid gap-4 lg:grid-cols-3">
           {TESTIMONIALS_HOME.map((item) => (
             <article key={item.name} className="hz-reveal rounded-2xl border border-border bg-surface p-5">

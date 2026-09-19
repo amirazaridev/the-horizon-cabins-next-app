@@ -44,7 +44,7 @@ const ICONS = {
 
 const NATURE_ICONS = new Set(["cabin", "forest", "mountain", "nature", "eco", "adventure"]);
 
-export default function HorizonCategories() {
+export default function Categories() {
   return (
     <section id="categories" className="hz-reveal relative overflow-hidden bg-background py-10 sm:py-12 md:py-16">
       <Container>

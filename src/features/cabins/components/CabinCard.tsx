@@ -1,6 +1,7 @@
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import {
+  ArrowLeft,
   Bath,
   BedDouble,
   CalendarDays,
@@ -16,7 +17,7 @@ import { formatCurrency } from "@/libs/utils/format";
 
 export interface CabinCardProps {
   cabin: Cabin;
-  
+
   variant?: "default" | "dashboard" | "landing";
   imageOverride?: string | StaticImageData;
   imageAlt?: string;
@@ -26,6 +27,7 @@ export interface CabinCardProps {
   children?: ReactNode;
   animation?: "none" | "hover";
   maxAmenities?: number;
+  showPrice?: boolean;
 }
 
 const baseClasses =
@@ -72,9 +74,13 @@ function LandingCard({
   imageAlt,
   className = "",
   animation = "hover",
+  showPrice = false,
 }: CardVariantProps): ReactNode {
-  const { name, bedrooms, bathrooms, areaSqm, images, city } = cabin;
+  const { name, bedrooms, areaSqm, images, city, regularPrice, discount } =
+    cabin;
   const image = imageOverride ?? images?.[0];
+  const hasDiscount = discount > 0;
+  const finalPrice = hasDiscount ? regularPrice - discount : regularPrice;
 
   return (
     <div
@@ -96,25 +102,38 @@ function LandingCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="text-text text-lg font-bold">{name}</h3>
-        {city?.name && (
-          <div className="text-text-gray flex items-center gap-1.5 text-xs">
-            <MapPin className="text-primary-400 size-3.5 shrink-0" />
-            <span>{city.name}</span>
+      <div className="flex flex-1 flex-col gap-1.5 p-3.5">
+        <h3 className="text-text truncate text-base font-bold">{name}</h3>
+
+        <div className="text-text-gray flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+          {city?.name && (
+            <span className="flex min-w-0 items-center gap-1">
+              <MapPin className="text-primary-400 size-3.5 shrink-0" />
+              <span className="truncate">{city.name}</span>
+            </span>
+          )}
+          <span className="flex items-center gap-1">
+            <BedDouble className="text-primary-400 size-3.5" />
+            {bedrooms.toLocaleString("fa-IR")}
+          </span>
+          <span className="flex items-center gap-1">
+            <Maximize className="text-primary-400 size-3.5" />
+            {areaSqm.toLocaleString("fa-IR")} متر
+          </span>
+        </div>
+        {showPrice && (
+          <div className="mt-auto flex items-baseline gap-1.5 pt-1.5">
+            {hasDiscount && (
+              <span className="text-text-gray/60 text-[11px] line-through">
+                {formatCurrency(regularPrice)}
+              </span>
+            )}
+            <span className="text-primary-500 text-sm font-extrabold tabular-nums">
+              {formatCurrency(finalPrice)}
+            </span>
+            <span className="text-text-gray text-[10px]">تومان/شب</span>
           </div>
         )}
-        <div className="text-text-gray mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 pt-1 text-xs">
-          <SpecItem icon={<BedDouble className="text-primary-400 size-3.5" />}>
-            {bedrooms.toLocaleString("fa-IR")} اتاق خواب
-          </SpecItem>
-          <SpecItem icon={<Bath className="text-primary-400 size-3.5" />}>
-            {bathrooms.toLocaleString("fa-IR")} سرویس
-          </SpecItem>
-          <SpecItem icon={<Maximize className="text-primary-400 size-3.5" />}>
-            {areaSqm.toLocaleString("fa-IR")} متر مربع
-          </SpecItem>
-        </div>
       </div>
     </div>
   );
@@ -127,10 +146,9 @@ function DefaultCard({
   className = "",
   children,
   animation = "hover",
-  maxAmenities = 4,
+  maxAmenities = 3,
 }: CardVariantProps): ReactNode {
   const {
-    id,
     name,
     regularPrice,
     discount,
@@ -144,6 +162,11 @@ function DefaultCard({
   } = cabin;
 
   const image = imageOverride ?? images?.[0];
+  const hasDiscount = discount > 0;
+  const finalPrice = hasDiscount ? regularPrice - discount : regularPrice;
+  const discountPercent = hasDiscount
+    ? Math.round((discount / regularPrice) * 100)
+    : 0;
   const visibleAmenities = amenities.slice(0, maxAmenities);
   const remainingAmenitiesCount = amenities.length - visibleAmenities.length;
 
@@ -151,47 +174,66 @@ function DefaultCard({
     <div
       className={`${baseClasses} ${animationClasses[animation]} flex h-full flex-col ${className}`}
     >
-      <div className="relative aspect-4/3 overflow-hidden">
-        <Image
-          src={image || ""}
-          alt={imageAlt || name}
-          fill
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        <div className="from-surface absolute inset-0 bg-linear-to-t via-transparent to-transparent" />
-        <PriceBadge cabin={cabin} />
-      </div>
-
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-text text-xl font-bold sm:text-2xl">{name}</h3>
-          <span className="text-text-gray text-xs sm:text-sm">
-            {areaSqm} متر مربع
-          </span>
-        </div>
-
-        {city?.name && (
-          <div className="text-text-gray mb-3 flex items-center gap-1.5 text-sm">
-            <MapPin className="text-primary-400 size-4" />
-            <span>{city.name}</span>
+      {/* تصویر */}
+      <div className="bg-background-2 relative aspect-video overflow-hidden">
+        {image ? (
+          <Image
+            src={image}
+            alt={imageAlt || name}
+            fill
+            sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+        ) : (
+          <div className="text-text-gray flex h-full items-center justify-center text-xs">
+            تصویر موجود نیست
           </div>
         )}
 
-        <div className="text-text-gray mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-          <SpecItem icon={<Users className="text-primary-400 size-4" />}>
-            تا {maxCapacity} نفر
-          </SpecItem>
-          <SpecItem icon={<BedDouble className="text-primary-400 size-4" />}>
-            {bedrooms} اتاق خواب
-          </SpecItem>
-          <SpecItem icon={<Bath className="text-primary-400 size-4" />}>
-            {bathrooms} سرویس
-          </SpecItem>
+        {hasDiscount && (
+          <span className="bg-danger-strong absolute top-3 right-3 rounded-full px-2.5 py-1 text-[10px] font-bold text-white">
+            {discountPercent.toLocaleString("fa-IR")}٪ تخفیف
+          </span>
+        )}
+      </div>
+
+      {/* محتوا */}
+      <div className="flex flex-1 flex-col gap-2.5 p-3.5 sm:p-4">
+        {/* عنوان + متراژ */}
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-text min-w-0 truncate text-base font-bold sm:text-lg">
+            {name}
+          </h3>
+          <span className="text-text-gray shrink-0 text-xs">
+            {areaSqm.toLocaleString("fa-IR")} متر
+          </span>
         </div>
 
-        {amenities.length > 0 && (
-          <div className="mb-6 flex flex-wrap gap-2">
+        {/* شهر + مشخصات در یک ردیف */}
+        <div className="text-text-gray flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+          {city?.name && (
+            <span className="flex min-w-0 items-center gap-1">
+              <MapPin className="text-primary-400 size-3.5 shrink-0" />
+              <span className="truncate">{city.name}</span>
+            </span>
+          )}
+          <span className="flex items-center gap-1">
+            <Users className="text-primary-400 size-3.5" />
+            {maxCapacity.toLocaleString("fa-IR")}
+          </span>
+          <span className="flex items-center gap-1">
+            <BedDouble className="text-primary-400 size-3.5" />
+            {bedrooms.toLocaleString("fa-IR")}
+          </span>
+          <span className="flex items-center gap-1">
+            <Bath className="text-primary-400 size-3.5" />
+            {bathrooms.toLocaleString("fa-IR")}
+          </span>
+        </div>
+
+        {/* امکانات */}
+        {visibleAmenities.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
             {visibleAmenities.map((amenity) => (
               <AmenityChip key={amenity}>{amenity}</AmenityChip>
             ))}
@@ -203,11 +245,26 @@ function DefaultCard({
           </div>
         )}
 
-        <div className="mt-auto">
+        {/* قیمت + دکمه */}
+        <div className="border-border mt-auto flex items-center justify-between gap-2 border-t pt-3">
+          <div className="flex flex-col">
+            {hasDiscount && (
+              <span className="text-text-gray/70 text-[11px] line-through">
+                {formatCurrency(regularPrice)}
+              </span>
+            )}
+            <span className="text-text text-sm font-extrabold tabular-nums sm:text-base">
+              {formatCurrency(finalPrice)}
+              <span className="text-text-gray mr-1 text-[10px] font-normal">
+                تومان/شب
+              </span>
+            </span>
+          </div>
+
           {children || (
-            <button className="hover:border-primary-400 hover:bg-primary-400 border-foreground/10 bg-foreground/5 text-text hover:text-black w-full rounded-xl border py-3 font-semibold transition-all duration-300">
-              مشاهده جزئیات
-            </button>
+            <span className="bg-foreground/5 text-text group-hover:bg-primary-400 flex size-9 shrink-0 items-center justify-center rounded-full transition-all duration-300 group-hover:text-black">
+              <ArrowLeft className="size-4" />
+            </span>
           )}
         </div>
       </div>
@@ -371,7 +428,7 @@ function PriceBadge({ cabin }: { cabin: Cabin }): ReactNode {
 
   return (
     <div className="absolute top-4 right-2 flex items-center justify-between gap-2 sm:right-4">
-      <span className="bg-primary-400 max-w-27 rounded-full px-4 py-1.5 text-xs font-bold text-black sm:max-w-max md:text-sm">
+      <span className="bg-primary-400 max-w-27 truncate rounded-full px-4 py-1.5 text-xs font-bold text-black sm:max-w-max md:text-sm">
         {formatCurrency(finalPrice)} تومان/هر شب
       </span>
       {hasDiscount && (

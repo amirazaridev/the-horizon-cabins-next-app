@@ -2,13 +2,13 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { DESTINATIONS } from "@/features/landing/constants/horizon-home";
-import HorizonSectionHeading from "./HorizonSectionHeading";
+import SectionHeading from "./SectionHeading";
 
-export default function HorizonDestinations() {
+export default function Destinations() {
   return (
     <section id="destinations" className="bg-background-2 px-4 py-16 md:px-6 md:py-20">
       <Container>
-        <HorizonSectionHeading eyebrow="مقاصد محبوب" title="بهترین مقاصد ایران" />
+        <SectionHeading eyebrow="مقاصد محبوب" title="بهترین مقاصد ایران" />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {DESTINATIONS.map((item, index) => (
             <article

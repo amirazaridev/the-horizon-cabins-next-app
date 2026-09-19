@@ -9,7 +9,7 @@ const items = [
   { icon: Sparkles, title: "تجربه‌های متفاوت", desc: "هر مقصد، یک خاطره تازه", tone: "primary" as const },
 ];
 
-export default function HorizonExperienceBanner() {
+export default function ExperienceBanner() {
   return (
     <section id="experiences" className="bg-background-2 px-4 md:px-6 pb-20 sm:h-80 lg:h-50 h-150">
       <Container>

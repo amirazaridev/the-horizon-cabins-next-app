@@ -3,13 +3,13 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Container from "@/components/ui/Container";
 import { POPULAR_EXPERIENCES } from "@/features/landing/constants/horizon-home";
-import HorizonSectionHeading from "./HorizonSectionHeading";
+import SectionHeading from "./SectionHeading";
 
-export default function HorizonExperiences() {
+export default function Experiences() {
   return (
     <section className="bg-background-2 px-4 py-14 md:px-6 md:py-20">
       <Container>
-        <HorizonSectionHeading eyebrow="تجربه‌های خاص در ایران" title="مقصد بعدی‌تان را انتخاب کنید" href="/cabins" />
+        <SectionHeading eyebrow="تجربه‌های خاص در ایران" title="مقصد بعدی‌تان را انتخاب کنید" href="/cabins" />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {POPULAR_EXPERIENCES.map((item) => (
             <Link key={item.title} href="/cabins" className="hz-reveal group relative overflow-hidden rounded-2xl border border-white/8">

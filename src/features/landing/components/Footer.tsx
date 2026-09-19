@@ -3,7 +3,7 @@ import { Mail, Phone, Activity } from "lucide-react";
 import Container from "@/components/ui/Container";
 import Logo from "@/components/ui/Logo";
 
-export default function HorizonFooter() {
+export default function Footer() {
   return (
     <footer className="bg-background-2 text-text-gray border-border border-t px-4 py-10 shadow-lg md:px-6 md:py-12">
       <Container>

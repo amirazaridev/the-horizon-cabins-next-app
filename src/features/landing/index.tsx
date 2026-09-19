@@ -1,24 +1,28 @@
 "use client";
 
-import HorizonExperienceBanner from "./components/HorizonExperienceBanner";
-import HorizonExperiences from "./components/HorizonExperiences";
-import HorizonHero from "./components/HorizonHero";
-import HorizonLastMinute, { type HorizonLastMinuteProps } from "./components/HorizonLastMinute";
-import HorizonBudgetStays, { type HorizonBudgetStaysProps } from "./components/HorizonBudgetStays";
-import HorizonStays from "./components/HorizonStays";
-import HorizonTestimonials from "./components/HorizonTestimonials";
-import HorizonDestinations from "./components/HorizonDestinations";
+import ExperienceBanner from "./components/ExperienceBanner";
+import Experiences from "./components/Experiences";
+import Hero from "./components/Hero";
+import LastMinute, { type LastMinuteProps } from "./components/LastMinute";
+import BudgetStays, { type BudgetStaysProps } from "./components/BudgetStays";
+import Stays from "./components/Stays";
+import Testimonials from "./components/Testimonials";
+import Destinations from "./components/Destinations";
 import useHorizonLandingAnimation from "./hooks/useHorizonLandingAnimation";
 import { Cabin } from "@/features/cabins/lib/data-service";
-import HorizonCategories from "./components/HorizonCategories";
+import Categories from "./components/Categories";
 
 type Props = {
   cabins: Cabin[];
-  lastMinute?: HorizonLastMinuteProps;
-  budgetStays?: HorizonBudgetStaysProps;
+  lastMinute?: LastMinuteProps;
+  budgetStays?: BudgetStaysProps;
 };
 
-export default function HorizonLanding({ cabins, lastMinute, budgetStays }: Props) {
+export default function HorizonLanding({
+  cabins,
+  lastMinute,
+  budgetStays,
+}: Props) {
   const { landingRef } = useHorizonLandingAnimation();
   const demoOffers = cabins.slice(0, 3).map((cabin) => ({
     cabin,
@@ -26,15 +30,15 @@ export default function HorizonLanding({ cabins, lastMinute, budgetStays }: Prop
   }));
   return (
     <div ref={landingRef} className="bg-background text-text min-h-screen">
-      <HorizonHero />
-      <HorizonCategories />
-      <HorizonLastMinute {...(lastMinute ?? { offers: demoOffers, isDemo: true })} />
-      <HorizonDestinations />
-      <HorizonStays cabins={cabins.slice(0, 3)} />
-      <HorizonBudgetStays {...(budgetStays ?? { cabins, isDemo: true })} />
-      <HorizonExperienceBanner />
-      <HorizonExperiences />
-      <HorizonTestimonials />
+      <Hero />
+      <Categories />
+      <LastMinute {...(lastMinute ?? { offers: demoOffers })} />
+      <Destinations />
+      <Stays cabins={cabins.slice(0, 3)} />
+      <BudgetStays {...(budgetStays ?? { cabins })} />
+      <ExperienceBanner />
+      <Experiences />
+      <Testimonials />
     </div>
   );
 }
