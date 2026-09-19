@@ -20,7 +20,7 @@ export default function NavbarItem({
     return (
       <Link href={href}>
         <li
-          className={`${active ? "text-primary-400 bg-foreground/5" : "hover:text-primary-400 text-foreground/80 hover:bg-foreground/5"} nav-item rounded-lg px-4 py-3 text-lg font-medium transition-colors`}
+          className={`${active ? "text-primary-400! bg-foreground/5" : "hover:text-primary-400 hover:bg-foreground/5"} nav-item rounded-lg px-4 py-3 text-lg font-medium transition-colors`}
           onClick={closeMenu}
         >
           {label}
@@ -31,7 +31,7 @@ export default function NavbarItem({
   return (
     <Link href={href}>
       <li
-        className={`group ${active ? "text-primary-400" : "hover:text-primary-400 text-foreground/70"} relative text-sm font-medium transition-colors duration-300`}
+        className={`group ${active ? "text-primary-400" : "hover:text-primary-400"} relative text-sm font-medium transition-colors duration-300`}
       >
         {label}
         <span

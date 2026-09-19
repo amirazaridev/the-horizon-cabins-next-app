@@ -1,3 +1,4 @@
+import { Mountain } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode } from "react";
 
@@ -5,10 +6,15 @@ export default function Logo(): ReactNode {
   return (
     <Link
       href="/"
-      className="text-xl font-bold tracking-tight text-foreground md:text-2xl"
+      className="flex items-center gap-3"
+      aria-label="هورایزن"
     >
-      هورایزن
-      <span className="text-primary-400">.</span>
+      <span className="border-primary-600/40 bg-primary-400/8 flex size-10 items-center justify-center rounded-xl border shadow">
+        <Mountain className="stroke-primary-400" size={22} strokeWidth={1.8} />
+      </span>
+      <span className="block text-xl font-semibold tracking-[0.24em]">
+        هورایزن
+      </span>
     </Link>
   );
 }

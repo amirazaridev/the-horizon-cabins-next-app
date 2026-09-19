@@ -27,14 +27,21 @@ export default function Navbar() {
     gsap.to(nav, {
       y: 0,
       opacity: 1,
-      duration: 1,
+      duration: .2,
       ease: "power3.out",
       delay: 0.5,
     });
   }, [isLandingPage]);
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
+      const isScrolled = window.scrollY > 50;
+
+      if (isLandingPage) {
+        navRef.current?.classList.toggle("text-white", !isScrolled);
+        navRef.current?.classList.toggle("text-text", isScrolled);
+      }
+
+      if (isScrolled) {
         navRef.current?.classList.add(
           "backdrop-blur-xl",
           "bg-background/80",
@@ -53,15 +60,16 @@ export default function Navbar() {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isLandingPage]);
 
   return (
     <>
       <nav
         ref={navRef}
-        className={`${isLandingPage ? "fixed" : "sticky"} top-0 right-0 left-0 z-50 px-4 py-4 transition-all duration-300 md:px-6`}
+        className={`${isLandingPage ? "fixed text-white" : "sticky text-text"} top-0 right-0 left-0 z-50 px-4 py-4 transition-all duration-300 md:px-6`}
       >
         <Container className="flex items-center justify-between">
           <Logo />

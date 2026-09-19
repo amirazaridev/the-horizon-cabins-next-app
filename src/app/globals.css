@@ -3,49 +3,50 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /*Primary (brand)*/
+  /* Primary — غروب (بدون تغییر، خوب کار می‌کنه) */
   --color-primary-300: #fcd34d;
   --color-primary-400: #fbbf24;
   --color-primary-500: #f59e0b;
   --color-primary-600: #d97706;
 
-  /*Backgrounds & surfaces - Light mode default*/
-  --color-background: var(--color-slate-300);
-  --color-foreground: #0f172a;
-  --color-background-2: #f8fafc;
-  --color-surface: #ffffff;
-  --color-surface-raised: #f8fafc;
+  --color-secondary-300: #86efac;
+  --color-secondary-400: #4ade80;
+  --color-secondary-500: #16a34a;
+  --color-secondary-600: #15803d;
 
-  /*Text*/
-  --color-text: #0f172a;
-  --color-text-gray: var(--color-blue-950);
+  --color-overlay: #07111e;
 
-  /*Borders*/
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
+  --color-background: #f6f2ea;
+  --color-foreground: #1c1a16;
+  --color-background-2: #efe8db;
+  --color-surface: #fffdf9;
+  --color-surface-raised: #f3ede0;
 
-  /*Status*/
+  --color-text: #1c1a16;
+  --color-text-gray: #78716c;
+
+  --color-border: #e6ded0;
+  --color-border-strong: #d3c7b3;
+
   --color-success: #16a34a;
   --color-danger: #ef4444;
   --color-danger-strong: #dc2626;
 
-  /*Font*/
   --default-font-family: var(--font-iranyekan);
 }
 
-/* Dark mode overrides */
 .dark {
-  --color-background: #020617;
-  --color-foreground: #f8fafc;
-  --color-background-2: #0f172a;
-  --color-surface: #0f172a;
-  --color-surface-raised: #1e293b;
+  --color-background: #0a0d10;
+  --color-foreground: #f2ede4;
+  --color-background-2: #12171b;
+  --color-surface: #12171b;
+  --color-surface-raised: #1a2126;
 
-  --color-text: #f8fafc;
-  --color-text-gray: var(--color-gray-400);
+  --color-text: #f2ede4;
+  --color-text-gray: #9a938a;
 
-  --color-border: #1e293b;
-  --color-border-strong: #334155;
+  --color-border: #1e262b;
+  --color-border-strong: #2c363c;
 
   --color-success: #4ade80;
   --color-danger: #f87171;
@@ -94,5 +95,21 @@
 @layer utilities {
   .animate-float {
     animation: float 6s ease-in-out infinite;
+  }
+}
+
+
+@layer base {
+  body {
+    background: #07111e;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

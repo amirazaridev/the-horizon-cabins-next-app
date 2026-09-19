@@ -16,11 +16,8 @@ import { formatCurrency } from "@/libs/utils/format";
 
 export interface CabinCardProps {
   cabin: Cabin;
-  /**
-   * "dashboard" → نسخه مدیریتی با اطلاعات کامل‌تر (قیمت‌نامه، تاریخ ثبت، کد)
-   * و بدون لینک — عملیات را از طریق prop «children» (منو) دریافت می‌کند.
-   */
-  variant?: "default" | "dashboard";
+  
+  variant?: "default" | "dashboard" | "landing";
   imageOverride?: string | StaticImageData;
   imageAlt?: string;
   href?: string;
@@ -48,6 +45,8 @@ export default function CabinCard({
   const card =
     variant === "dashboard" ? (
       <DashboardCard cabin={cabin} {...props} />
+    ) : variant === "landing" ? (
+      <LandingCard cabin={cabin} {...props} />
     ) : (
       <DefaultCard cabin={cabin} {...props} />
     );
@@ -66,6 +65,60 @@ type CardVariantProps = Omit<
   CabinCardProps,
   "variant" | "href" | "disableLink"
 >;
+
+function LandingCard({
+  cabin,
+  imageOverride,
+  imageAlt,
+  className = "",
+  animation = "hover",
+}: CardVariantProps): ReactNode {
+  const { name, bedrooms, bathrooms, areaSqm, images, city } = cabin;
+  const image = imageOverride ?? images?.[0];
+
+  return (
+    <div
+      className={`${baseClasses} ${animationClasses[animation]} flex h-full flex-col ${className}`}
+    >
+      <div className="bg-background-2 relative aspect-video overflow-hidden">
+        {image ? (
+          <Image
+            src={image}
+            alt={imageAlt || name}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="text-text-gray flex h-full items-center justify-center text-xs">
+            تصویر موجود نیست
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col gap-2 p-4">
+        <h3 className="text-text text-lg font-bold">{name}</h3>
+        {city?.name && (
+          <div className="text-text-gray flex items-center gap-1.5 text-xs">
+            <MapPin className="text-primary-400 size-3.5 shrink-0" />
+            <span>{city.name}</span>
+          </div>
+        )}
+        <div className="text-text-gray mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 pt-1 text-xs">
+          <SpecItem icon={<BedDouble className="text-primary-400 size-3.5" />}>
+            {bedrooms.toLocaleString("fa-IR")} اتاق خواب
+          </SpecItem>
+          <SpecItem icon={<Bath className="text-primary-400 size-3.5" />}>
+            {bathrooms.toLocaleString("fa-IR")} سرویس
+          </SpecItem>
+          <SpecItem icon={<Maximize className="text-primary-400 size-3.5" />}>
+            {areaSqm.toLocaleString("fa-IR")} متر مربع
+          </SpecItem>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function DefaultCard({
   cabin,
@@ -100,7 +153,7 @@ function DefaultCard({
     >
       <div className="relative aspect-4/3 overflow-hidden">
         <Image
-          src={image}
+          src={image || ""}
           alt={imageAlt || name}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
@@ -152,7 +205,7 @@ function DefaultCard({
 
         <div className="mt-auto">
           {children || (
-            <button className="hover:border-primary-400 hover:bg-primary-400 border-foreground/10 bg-foreground/5 text-text hover:text-background w-full rounded-xl border py-3 font-semibold transition-all duration-300">
+            <button className="hover:border-primary-400 hover:bg-primary-400 border-foreground/10 bg-foreground/5 text-text hover:text-black w-full rounded-xl border py-3 font-semibold transition-all duration-300">
               مشاهده جزئیات
             </button>
           )}
@@ -161,7 +214,6 @@ function DefaultCard({
     </div>
   );
 }
-
 
 function DashboardCard({
   cabin,
@@ -184,7 +236,7 @@ function DashboardCard({
     areaSqm,
     images,
     createdAt,
-    city
+    city,
   } = cabin;
 
   const image = imageOverride ?? images?.[0];
@@ -201,7 +253,7 @@ function DashboardCard({
     >
       <div className="relative aspect-video overflow-hidden">
         <Image
-          src={image}
+          src={image || ""}
           alt={imageAlt || name}
           fill
           sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
@@ -269,7 +321,7 @@ function DashboardCard({
             )}
           </div>
         )}
-        
+
         <div className="border-border flex items-center justify-between border-t pt-3 text-xs">
           <span className="text-text-gray flex items-center gap-1.5">
             <CalendarDays className="size-3.5" />

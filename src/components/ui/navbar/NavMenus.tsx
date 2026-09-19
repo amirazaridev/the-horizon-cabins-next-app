@@ -16,7 +16,7 @@ export default function NavMenus({ onClickMenu }: Props): ReactNode {
 
       <button
         onClick={onClickMenu}
-        className="flex h-10 w-10 items-center justify-center text-foreground md:hidden"
+        className="flex h-10 w-10 items-center justify-center text md:hidden"
         aria-label="Open menu"
       >
         <TextAlignJustify />
