@@ -14,6 +14,7 @@ import Container from "../Container";
 export default function Navbar() {
   const navRef = useRef<HTMLElement>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathName = usePathname();
   const isLandingPage = pathName === "/";
 
@@ -31,45 +32,38 @@ export default function Navbar() {
       ease: "power3.out",
       delay: 0.5,
     });
+
+    return () => {
+      gsap.set(nav, { clearProps: "transform,opacity" });
+    };
   }, [isLandingPage]);
+
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
-
-      if (isLandingPage) {
-        navRef.current?.classList.toggle("text-white", !isScrolled);
-        navRef.current?.classList.toggle("text-text", isScrolled);
-      }
-
-      if (isScrolled) {
-        navRef.current?.classList.add(
-          "backdrop-blur-xl",
-          "bg-background/80",
-          "shadow-lg",
-          "border-b",
-          "border-foreground/10",
-        );
-      } else {
-        navRef.current?.classList.remove(
-          "backdrop-blur-xl",
-          "bg-background/80",
-          "shadow-lg",
-          "border-b",
-          "border-foreground/10",
-        );
-      }
+      setIsScrolled(window.scrollY > 50);
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isLandingPage]);
+  }, []);
+
+  // صفحات داخلی همیشه پس‌زمینه‌ی تم‌دار دارند؛ فقط لندینگ در بالای صفحه شفاف است
+  // نکته: با تغییر روت نیازی به سینک دستی نیست — اسکرول-to-top مرورگر
+  // ایونت scroll را فایر می‌کند و state بالا به‌روز می‌شود؛ ضمن اینکه
+  // کلاس‌ها کاملاً declarative از state/route ساخته می‌شوند و چیزی روی DOM باقی نمی‌ماند.
+  const hasSolidBackground = isScrolled || !isLandingPage;
+  const textColor = isLandingPage && !isScrolled ? "text-white" : "text-text";
 
   return (
     <>
       <nav
         ref={navRef}
-        className={`${isLandingPage ? "fixed text-white" : "sticky text-text"} top-0 right-0 left-0 z-50 px-4 py-4 transition-all duration-300 md:px-6`}
+        className={`${isLandingPage ? "fixed" : "sticky"} ${textColor} ${
+          hasSolidBackground
+            ? "border-foreground/10 border-b bg-background/80 shadow-lg backdrop-blur-xl"
+            : "border-b border-transparent bg-transparent"
+        } top-0 right-0 left-0 z-50 px-4 py-4 transition-all duration-300 md:px-6`}
       >
         <Container className="flex items-center justify-between">
           <Logo />
