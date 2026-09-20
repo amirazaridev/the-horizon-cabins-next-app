@@ -1,17 +1,33 @@
-import Tabs from "@/components/ui/Tabs";
+import FilterCard from "@/components/ui/FilterCard";
+import OptionRow from "@/features/cabins/components/filters/OptionRow";
+import { MapPin } from "lucide-react";
 import { type ReactNode } from "react";
+
+const cities = [{ id: 1, name: "sasa" }];
+type City = (typeof cities)[number];
 
 export default function page(): ReactNode {
   return (
-    <div className="w-100">
-      <Tabs
-        defaultValue="info"
-        items={[
-          { id: "info", label: "مشخصات", content: <p>محتوای مشخصات</p> },
-          { id: "comments", label: "نظرات", content: <p>محتوای نظرات</p> },
-          { id: "rules", label: "قوانین", disabled: true, content: <p>...</p> },
-        ]}
-      />
-    </div>
+    <FilterCard
+  items={[
+    {
+      id: "city",
+      label: "تعیین شهر",
+      icon: <MapPin className="size-4" />,
+    //   formatLabel: (v) => v?.name,          // اسم دکمه عوض میشه
+      panel: {
+        title: "شهر / مقصد",
+        size: "md",                          // sm | md | lg | auto
+        closeOnSelect: true,
+        showArrow: true,
+        // render: ({ value, setValue, close }) => ( /* فیلترها */ ),
+      },
+    },
+    { id: "price", label: "بازه قیمت", panel: { size: "sm", children: <p>...</p> } },
+  ]}
+  placement="start"          // start | center | end
+//   defaultValue={{ city: ... }}
+//   onValueChange={(id, value) => updateQuery(id, value)}
+/>
   );
 }
