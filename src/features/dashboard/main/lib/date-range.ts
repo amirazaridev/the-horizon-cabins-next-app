@@ -9,6 +9,11 @@ import {
 } from "date-fns";
 import {
   addMonths,
+  addYears,
+  differenceInCalendarMonths,
+  differenceInCalendarYears,
+  endOfMonth,
+  endOfYear,
   format as formatJalali,
   startOfMonth,
   startOfYear,
@@ -18,6 +23,7 @@ import { faIR } from "date-fns-jalali/locale";
 import { PARAM_FROM, PARAM_TO } from "../data/mock-data";
 
 export const PARAM_RANGE = "range";
+export const PARAM_DATE_TAB = "dateTab";
 
 export type DateRangePreset =
   | "last-7-days"
@@ -80,6 +86,22 @@ export function formatDateKey(date: Date): string {
 
 export function formatJalaliDayMonth(date: Date): string {
   return formatJalali(date, "d MMMM", { locale: faIR });
+}
+
+export function formatJalaliFull(date: Date): string {
+  return formatJalali(date, "d MMMM yyyy", { locale: faIR });
+}
+
+export function formatJalaliMonthYear(date: Date): string {
+  return formatJalali(date, "MMMM yyyy", { locale: faIR });
+}
+
+export function formatJalaliMonthShort(date: Date): string {
+  return formatJalali(date, "MMM", { locale: faIR });
+}
+
+export function formatJalaliYear(date: Date): string {
+  return formatJalali(date, "yyyy", { locale: faIR });
 }
 
 function getJalaliMonthNumber(date: Date): number {
@@ -230,4 +252,112 @@ export function getJalaliMonthTicks(domain: DateRange): MonthTick[] {
   }
 
   return ticks;
+}
+
+/* ==================================================================
+   تب‌های ماه / سال — دامین و تبدیل ایندکس (تقویم جلالی)
+   ================================================================== */
+
+export type DateFilterTab = "day" | "month" | "year";
+
+export function isDateFilterTab(value: string | null): value is DateFilterTab {
+  return value === "day" || value === "month" || value === "year";
+}
+
+/** مقدار فیلتر تاریخ — همان چیزی که در URL (from/to) + تب فعال ذخیره می‌شود */
+export interface DateFilterValue {
+  from: string;
+  to: string;
+  tab: DateFilterTab;
+}
+
+/** متن روی دکمه فیلتر تاریخ: «از X تا Y» */
+export function formatDateFilterLabel(value: DateFilterValue): string | undefined {
+  const from = parseDateParam(value.from);
+  const to = parseDateParam(value.to);
+  if (!from || !to) return undefined;
+
+  if (value.tab === "year")
+    return `از ${formatJalaliYear(from)} تا ${formatJalaliYear(to)}`;
+  if (value.tab === "month")
+    return `از ${formatJalaliMonthYear(from)} تا ${formatJalaliMonthYear(to)}`;
+  return `از ${formatJalaliDayMonth(from)} تا ${formatJalaliFull(to)}`;
+}
+
+export interface IndexDomain {
+  start: Date;
+  count: number;
+}
+
+const MONTH_WINDOW = 12;
+const YEAR_WINDOW = 5;
+
+export function getMonthGaugeDomain(
+  today: Date,
+  selectedFrom: Date,
+  selectedTo: Date,
+): IndexDomain {
+  const defaultStart = startOfMonth(addMonths(today, -(MONTH_WINDOW - 1)));
+  const fromMonth = startOfMonth(selectedFrom);
+  const start = fromMonth < defaultStart ? fromMonth : defaultStart;
+
+  const endRef = selectedTo > today ? selectedTo : today;
+  const count =
+    differenceInCalendarMonths(startOfMonth(endRef), start) + 1;
+
+  return { start, count };
+}
+
+export function getYearGaugeDomain(
+  today: Date,
+  selectedFrom: Date,
+  selectedTo: Date,
+): IndexDomain {
+  const defaultStart = startOfYear(addYears(today, -(YEAR_WINDOW - 1)));
+  const fromYear = startOfYear(selectedFrom);
+  const start = fromYear < defaultStart ? fromYear : defaultStart;
+
+  const endRef = selectedTo > today ? selectedTo : today;
+  const count =
+    differenceInCalendarYears(startOfYear(endRef), start) + 1;
+
+  return { start, count };
+}
+
+export function monthIndexOf(date: Date, domainStart: Date): number {
+  return differenceInCalendarMonths(startOfMonth(date), domainStart);
+}
+
+export function monthAtIndex(domainStart: Date, index: number): Date {
+  return addMonths(domainStart, index);
+}
+
+export function monthRangeAtIndices(
+  domainStart: Date,
+  start: number,
+  end: number,
+): DateRange {
+  return {
+    from: monthAtIndex(domainStart, start),
+    to: endOfMonth(monthAtIndex(domainStart, end)),
+  };
+}
+
+export function yearIndexOf(date: Date, domainStart: Date): number {
+  return differenceInCalendarYears(startOfYear(date), domainStart);
+}
+
+export function yearAtIndex(domainStart: Date, index: number): Date {
+  return addYears(domainStart, index);
+}
+
+export function yearRangeAtIndices(
+  domainStart: Date,
+  start: number,
+  end: number,
+): DateRange {
+  return {
+    from: yearAtIndex(domainStart, start),
+    to: endOfYear(yearAtIndex(domainStart, end)),
+  };
 }
