@@ -1,4 +1,5 @@
 import { Cabin } from "@/features/cabins/lib/data-service";
+import type { City } from "@/features/cabins/types/City";
 
 export type BookingStatus = "unconfirmed" | "confirmed" | "checked-out";
 
@@ -18,11 +19,12 @@ export interface Booking {
 }
 
 export const ALL = "all";
-export const DEFAULT_RANGE_DAYS = 7;
+export const DEFAULT_RANGE_DAYS = 30;
 export const PARAM_FROM = "from";
 export const PARAM_TO = "to";
 export const PARAM_CITY = "city";
 export const PARAM_STATUS = "status";
+export const PARAM_RANGE = "range";
 
 export const CITIES = [
   "کردان",
@@ -376,6 +378,18 @@ export const CABINS: Cabin[] = [
     rating: 4,
   },
 ];
+export const DASHBOARD_CITIES: City[] = CABINS.reduce<City[]>(
+  (cities, cabin) => {
+    const city = cabin.city;
+
+    if (city && !cities.some((item) => item.id === city.id)) {
+      cities.push(city);
+    }
+
+    return cities;
+  },
+  [],
+).sort((a, b) => a.name.localeCompare(b.name, "fa"));
 
 function makeRng(seed: number) {
   let s = seed >>> 0;

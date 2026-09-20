@@ -1,129 +1,141 @@
 "use client";
 
+import { useEffect, useState, type TransitionStartFunction } from "react";
 import { RotateCcw } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { format, subDays } from "date-fns";
 
 import DateRangeFilter from "./DateRangeFilter";
 import CityFilter from "../../../cabins/components/CityFilter";
 import StatusFilter from "./StatusFilter";
+import { ALL, PARAM_CITY } from "../../hooks/useDashboardFilters";
 import {
-  ALL,
-  DEFAULT_RANGE_DAYS,
-  PARAM_CITY,
-  PARAM_FROM,
-  PARAM_STATUS,
-  PARAM_TO,
-} from "../../hooks/useDashboardFilters";
-import { TransitionStartFunction } from "react";
-import { City } from "@/features/cabins/types/City";
+  DATE_RANGE_PRESETS,
+  formatDateKey,
+  getPresetDateRange,
+  PARAM_RANGE,
+  resolveDashboardDateRange,
+  type DateRangePreset,
+} from "../../lib/date-range";
+import type { City } from "@/features/cabins/types/City";
 
-const QUICK_RANGES = [
-  { days: 7, title: "۷ روز" },
-  { days: 30, title: "۳۰ روز" },
-  { days: 90, title: "۹۰ روز" },
-];
+interface FilterBarProps {
+  startTransition: TransitionStartFunction;
+  cities: City[];
+}
 
 export default function FilterBar({
   startTransition,
   cities,
-}: {
-  startTransition: TransitionStartFunction;
-  cities: City[];
-}) {
+}: FilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const from = searchParams.get(PARAM_FROM);
-  const to = searchParams.get(PARAM_TO);
+  const dateRange = resolveDashboardDateRange(searchParams);
   const city = searchParams.get(PARAM_CITY) ?? ALL;
 
-  function updateParams(updates: Record<string, string | null>) {
+  const [isGaugeOpen, setIsGaugeOpen] = useState(
+    dateRange.preset === "custom",
+  );
+
+  useEffect(() => {
+    setIsGaugeOpen(dateRange.preset === "custom");
+  }, [dateRange.preset]);
+
+  function updateParams(updates: Record<string, string | null>): void {
     const params = new URLSearchParams(searchParams);
+
     Object.entries(updates).forEach(([key, value]) => {
       if (value === null) params.delete(key);
       else params.set(key, value);
     });
+
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     });
   }
 
-  function isQuickActive(days: number) {
-    if (!from || !to) return days === DEFAULT_RANGE_DAYS;
-    const today = new Date();
-    return (
-      from === format(subDays(today, days - 1), "yyyy-MM-dd") &&
-      to === format(today, "yyyy-MM-dd")
-    );
+  function handlePresetChange(preset: DateRangePreset): void {
+    if (preset === "custom") {
+      updateParams({ [PARAM_RANGE]: "custom" });
+      setIsGaugeOpen(true);
+      return;
+    }
+
+    const range = getPresetDateRange(preset, new Date());
+
+    updateParams({
+      [PARAM_RANGE]: preset,
+      from: formatDateKey(range.from),
+      to: formatDateKey(range.to),
+    });
+
+    setIsGaugeOpen(false);
+  }
+
+  function handleCustomRangeChange(from: Date, to: Date): void {
+    updateParams({
+      [PARAM_RANGE]: "custom",
+      from: formatDateKey(from),
+      to: formatDateKey(to),
+    });
   }
 
   return (
-    <div className="border-border bg-background-2/60 flex flex-wrap items-center gap-3 rounded-2xl border p-3">
-      {/* پرئست‌های سریع */}
-      <div className="border-foreground/5 bg-surface/50 flex gap-1 rounded-xl border p-1">
-        {QUICK_RANGES.map(({ days, title }) => (
-          <button
-            key={days}
-            onClick={() =>
+    <div className="border-border bg-background-2/60 flex w-full flex-col gap-3 rounded-2xl border p-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="border-foreground/5 bg-surface/50 flex flex-wrap gap-1 rounded-xl border p-1">
+          {DATE_RANGE_PRESETS.map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              onClick={() => handlePresetChange(preset.value)}
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                dateRange.preset === preset.value
+                  ? "bg-primary-400 text-black shadow"
+                  : "text-text-gray hover:bg-foreground/5 hover:text-text"
+              }`}
+            >
+              {preset.title}
+            </button>
+          ))}
+        </div>
+
+        <div className="min-w-48 flex-1 md:max-w-60">
+          <CityFilter
+            cities={cities}
+            value={city}
+            onChange={(nextCity) =>
               updateParams({
-                [PARAM_FROM]: format(
-                  subDays(new Date(), days - 1),
-                  "yyyy-MM-dd",
-                ),
-                [PARAM_TO]: format(new Date(), "yyyy-MM-dd"),
+                [PARAM_CITY]: nextCity === ALL ? null : nextCity,
               })
             }
-            className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-colors ${
-              isQuickActive(days)
-                ? "bg-primary-400 text-black shadow"
-                : "text-text-gray hover:bg-foreground/5 hover:text-text"
-            }`}
-          >
-            {title}
-          </button>
-        ))}
+          />
+        </div>
+
+        <StatusFilter />
+
+        <button
+          type="button"
+          onClick={() =>
+            startTransition(() => {
+              router.replace(pathname, { scroll: false });
+            })
+          }
+          title="پاک کردن فیلترها"
+          className="text-text-gray hover:text-danger hover:bg-danger/10 grid size-9.5 place-items-center rounded-xl transition-colors"
+        >
+          <RotateCcw className="size-4" />
+        </button>
       </div>
 
-      {/* رنج تاریخ */}
-      <DateRangeFilter
-        from={
-          from
-            ? new Date(`${from}T00:00:00`)
-            : subDays(new Date(), DEFAULT_RANGE_DAYS - 1)
-        }
-        to={to ? new Date(`${to}T00:00:00`) : new Date()}
-        onChange={(f, t) =>
-          updateParams({
-            [PARAM_FROM]: format(f, "yyyy-MM-dd"),
-            [PARAM_TO]: format(t, "yyyy-MM-dd"),
-          })
-        }
-      />
-
-      {/* فیلتر شهر */}
-      <CityFilter
-        cities={cities}
-        value={city}
-        onChange={(c) => updateParams({ [PARAM_CITY]: c === ALL ? null : c })}
-      />
-
-      {/* فیلتر وضعیت (تراشه‌های آماده پروژه) */}
-      <StatusFilter />
-
-      {/* ریست */}
-      <button
-        onClick={() =>
-          startTransition(() => {
-            router.replace(pathname, { scroll: false });
-          })
-        }
-        title="پاک کردن فیلترها"
-        className="text-text-gray hover:text-danger hover:bg-danger/10 grid size-9.5 place-items-center rounded-xl transition-colors"
-      >
-        <RotateCcw className="size-4" />
-      </button>
+      {isGaugeOpen && dateRange.preset === "custom" && (
+        <DateRangeFilter
+          from={dateRange.from}
+          to={dateRange.to}
+          onChange={handleCustomRangeChange}
+        />
+      )}
     </div>
   );
 }

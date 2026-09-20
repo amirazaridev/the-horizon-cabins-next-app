@@ -27,8 +27,8 @@ export default function MainPageLayout({cities}:Props) {
   return (
     <div className="flex flex-col gap-6">
       {isPending && <Spinner size="xl" fullscreen />}
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-        <div>
+      <div className="flex flex-col gap-5">
+        <div >
           <h2 className="text-text text-2xl font-bold sm:text-3xl">داشبورد</h2>
           <p className="text-text-gray mt-1 text-sm">
             خلاصه وضعیت سوییت‌ها از{" "}

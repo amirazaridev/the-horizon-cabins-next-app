@@ -1,9 +1,7 @@
-
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { subDays, parseISO } from "date-fns";
 import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 
 import {
   ALL,
@@ -19,7 +17,11 @@ import {
   filterPrevBookings,
   type Booking,
 } from "../data/mock-data";
-import { Cabin } from "@/features/cabins/lib/data-service";
+import {
+  resolveDashboardDateRange,
+  type DateRangePreset,
+} from "../lib/date-range";
+import type { Cabin } from "@/features/cabins/lib/data-service";
 
 export {
   ALL,
@@ -37,6 +39,7 @@ export interface DashboardFilters {
   city: string;
   status: string;
   numDays: number;
+  preset: DateRangePreset;
 }
 
 export interface UseDashboardFiltersResult {
@@ -49,21 +52,13 @@ export interface UseDashboardFiltersResult {
 export function useDashboardFilters(): UseDashboardFiltersResult {
   const searchParams = useSearchParams();
 
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
+  const { from, to, preset } = useMemo(
+    () => resolveDashboardDateRange(searchParams),
+    [searchParams],
+  );
 
-  const fromParam = searchParams.get(PARAM_FROM);
-  const toParam = searchParams.get(PARAM_TO);
   const city = searchParams.get(PARAM_CITY) ?? ALL;
   const status = searchParams.get(PARAM_STATUS) ?? ALL;
-
-  const from = fromParam
-    ? parseISO(fromParam)
-    : subDays(today, DEFAULT_RANGE_DAYS - 1);
-  const to = toParam ? parseISO(toParam) : today;
 
   const numDays = Math.max(
     1,
@@ -75,13 +70,16 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
 
     if (city !== ALL) {
       const cityCabinIds = new Set(
-        CABINS.filter((c) => c.city?.name === city).map((c) => c.id),
+        CABINS.filter((cabin) => cabin.city?.name === city).map(
+          (cabin) => cabin.id,
+        ),
       );
-      list = list.filter((b) => cityCabinIds.has(b.cabinId));
+
+      list = list.filter((booking) => cityCabinIds.has(booking.cabinId));
     }
 
     if (status !== ALL) {
-      list = list.filter((b) => b.status === status);
+      list = list.filter((booking) => booking.status === status);
     }
 
     return list;
@@ -93,12 +91,22 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
   );
 
   const activeCabins = useMemo(
-    () => (city === ALL ? CABINS : CABINS.filter((c) => c.city?.name === city)),
+    () =>
+      city === ALL
+        ? CABINS
+        : CABINS.filter((cabin) => cabin.city?.name === city),
     [city],
   );
 
   return {
-    filters: { from, to, city, status, numDays },
+    filters: {
+      from,
+      to,
+      city,
+      status,
+      numDays,
+      preset,
+    },
     bookings,
     prevBookings,
     activeCabins,
