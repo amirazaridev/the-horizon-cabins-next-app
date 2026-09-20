@@ -3,6 +3,7 @@ import Container from "@/components/ui/Container";
 import type { Cabin } from "@/features/cabins/lib/data-service";
 import Countdown from "./Countdown";
 import OfferCard from "./OfferCard";
+import Carousel from "@/components/ui/Carousel";
 
 export type LastMinuteOffer = {
   cabin: Cabin;
@@ -57,7 +58,9 @@ export default function LastMinute({
               </div>
             )}
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div>
+
+          <Carousel showDots>
             {offers.map(({ cabin, price }) => (
               <OfferCard
                 key={cabin.id}
@@ -67,6 +70,7 @@ export default function LastMinute({
                 badge={"پیشنهاد ویژه"}
               />
             ))}
+          </Carousel>
           </div>
         </div>
       </Container>

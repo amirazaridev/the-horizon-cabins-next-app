@@ -3,6 +3,7 @@ import Container from "@/components/ui/Container";
 import type { Cabin } from "@/features/cabins/lib/data-service";
 import OfferCard from "./OfferCard";
 import SectionHeading from "./SectionHeading";
+import Carousel from "@/components/ui/Carousel";
 
 export type BudgetStaysProps = {
   cabins: Cabin[];
@@ -27,11 +28,11 @@ export default function BudgetStays({ cabins, limit = 3 }: BudgetStaysProps) {
             گزینه‌های خوش‌قیمت برای سفر بعدی شما؛ مرتب‌شده بر اساس قیمت هر شب پس از تخفیف.
           </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Carousel>
           {budgetCabins.map((cabin) => (
             <OfferCard key={cabin.id} cabin={cabin} price={priceOf(cabin)} badge="خوش‌قیمت" />
           ))}
-        </div>
+        </Carousel>
       </Container>
     </section>
   );
