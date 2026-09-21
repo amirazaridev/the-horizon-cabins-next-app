@@ -8,7 +8,7 @@ import {
   formatDateKey,
   formatJalaliMonthShort,
   formatJalaliMonthYear,
-  getMonthGaugeDomain,
+  getMonthGaugeDomainLimited,
   monthAtIndex,
   monthIndexOf,
   monthRangeAtIndices,
@@ -20,7 +20,7 @@ interface MonthRangeSliderProps {
   onChange: (from: Date, to: Date) => void;
 }
 
-/** اسلایدر بازه ماهانه (تقویم جلالی) — commit بر مرز ماه برمی‌گرداند */
+/** اسلایدر بازه ماهانه (تقویم جلالی) — محدود به ماه جاری اگر to-year = سال جاری */
 export default function MonthRangeSlider({
   from,
   to,
@@ -29,7 +29,7 @@ export default function MonthRangeSlider({
   const today = useMemo(() => startOfDay(new Date()), []);
 
   const domain = useMemo(
-    () => getMonthGaugeDomain(today, from, to),
+    () => getMonthGaugeDomainLimited(today, from, to),
     [today, from, to],
   );
 
@@ -41,7 +41,7 @@ export default function MonthRangeSlider({
   const startIndex = clampIndex(monthIndexOf(from, domain.start));
   const endIndex = clampIndex(monthIndexOf(to, domain.start));
 
-  // اگر دامین خیلی باز شد، لیبل‌ها را خلوت می‌کنیم (حدود ۱۲ لیبل)
+  // تیک‌ها: هر ۱ یا ۲ ماه یک لیبل (حداکثر ~۱۲ لیبل)
   const ticks = useMemo(() => {
     const step = Math.max(1, Math.ceil(domain.count / 12));
     return Array.from({ length: domain.count }, (_, i) => {

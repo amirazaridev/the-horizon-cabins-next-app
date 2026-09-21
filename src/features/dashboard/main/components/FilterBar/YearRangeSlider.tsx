@@ -19,7 +19,7 @@ interface YearRangeSliderProps {
   onChange: (from: Date, to: Date) => void;
 }
 
-/** اسلایدر بازه سالانه (تقویم جلالی) — commit بر مرز سال برمی‌گرداند */
+/** اسلایدر بازه سالانه (تقویم جلالی) */
 export default function YearRangeSlider({
   from,
   to,

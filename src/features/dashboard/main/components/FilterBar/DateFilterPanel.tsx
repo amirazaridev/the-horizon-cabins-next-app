@@ -6,7 +6,7 @@ import { Calendar, CalendarDays, CalendarRange } from "lucide-react";
 
 import Tabs from "@/components/ui/Tabs";
 import Button from "@/components/ui/Button";
-import DateRangeFilter from "./DateRangeFilter";
+import DayRangeSlider from "./DayRangeSlider";
 import MonthRangeSlider from "./MonthRangeSlider";
 import YearRangeSlider from "./YearRangeSlider";
 import {
@@ -69,7 +69,7 @@ export default function DateFilterPanel({
             label: "روز",
             icon: <CalendarDays className="size-4" />,
             content: (
-              <DateRangeFilter
+              <DayRangeSlider
                 from={draft.from}
                 to={draft.to}
                 onChange={handleDraftChange}

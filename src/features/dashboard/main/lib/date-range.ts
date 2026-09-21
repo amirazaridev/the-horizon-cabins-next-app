@@ -361,3 +361,79 @@ export function yearRangeAtIndices(
     to: endOfYear(yearAtIndex(domainStart, end)),
   };
 }
+
+/* ==================================================================
+   هلپرهای جدید برای گژی روز (۱-۳۱ با طول ماه متغیر)
+   ================================================================== */
+
+/** تعداد روزهای ماه جلالی برای یک تاریخ داده */
+export function getDaysInJalaliMonth(date: Date): number {
+  const nextMonth = addMonths(startOfMonth(date), 1);
+  return differenceInCalendarDays(nextMonth, startOfMonth(date));
+}
+
+/** تعیین روز در ماه جلالی (۱-۳۱) */
+export function getJalaliDayOfMonth(date: Date): number {
+  return Number(formatJalali(date, "d", { locale: faIR }));
+}
+
+/** تنظیم روز در ماه جلالی (حفظ ماه و سال) */
+export function setJalaliDayOfMonth(date: Date, day: number): Date {
+  const monthStart = startOfMonth(date);
+  return addDays(monthStart, day - 1);
+}
+
+/** دامین ماه با محدودیت: اگر to-year = سال جاری، تا ماه جاری */
+export function getMonthGaugeDomainLimited(
+  today: Date,
+  selectedFrom: Date,
+  selectedTo: Date,
+): IndexDomain {
+  const fromMonth = startOfMonth(selectedFrom);
+  const toMonth = startOfMonth(selectedTo);
+  const currentMonth = startOfMonth(today);
+
+  // شروع: فروردین سال from
+  const start = startOfMonth(addMonths(fromMonth, -((Number(formatJalali(fromMonth, "M", { locale: faIR })) - 1))));
+
+  // پایان: اگر to-year = سال جاری، ماه جاری؛ وگرنه آخر سال to
+  const toYear = Number(formatJalali(toMonth, "yyyy", { locale: faIR }));
+  const currentYear = Number(formatJalali(today, "yyyy", { locale: faIR }));
+  const end = toYear === currentYear ? currentMonth : endOfYear(toMonth);
+
+  const count = differenceInCalendarMonths(end, start) + 1;
+
+  return { start, count };
+}
+
+/** دامین روز: ایندکس ۰ = روز ۱ ماه from، ایندکس آخر = روز آخر ماه to */
+export interface DayGaugeDomain {
+  fromMonthStart: Date;
+  toMonthStart: Date;
+  fromMonthDays: number;
+  toMonthDays: number;
+}
+
+export function getDayGaugeDomain(
+  selectedFrom: Date,
+  selectedTo: Date,
+): DayGaugeDomain {
+  const fromMonthStart = startOfMonth(selectedFrom);
+  const toMonthStart = startOfMonth(selectedTo);
+  const fromMonthDays = getDaysInJalaliMonth(fromMonthStart);
+  const toMonthDays = getDaysInJalaliMonth(toMonthStart);
+
+  return { fromMonthStart, toMonthStart, fromMonthDays, toMonthDays };
+}
+
+/** تبدیل ایندکس گژی روز به تاریخ واقعی */
+export function dayIndexToDate(
+  domain: DayGaugeDomain,
+  startDayIndex: number,
+  endDayIndex: number,
+): DateRange {
+  return {
+    from: setJalaliDayOfMonth(domain.fromMonthStart, startDayIndex + 1),
+    to: setJalaliDayOfMonth(domain.toMonthStart, endDayIndex + 1),
+  };
+}
