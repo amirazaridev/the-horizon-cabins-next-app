@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type MouseEvent as ReactMouseEvent,
@@ -19,7 +20,7 @@ import { ChevronDown, X } from "lucide-react";
    TYPES
    ================================================================== */
 
-export type FilterCardValues = Partial<Record<string, unknown>>;
+export type FilterCardValues = Record<string, unknown>;
 export type FilterCardPlacement = "start" | "center" | "end";
 export type FilterTriggerVariant = "pill" | "outline" | "ghost";
 export type FilterPanelSize = "sm" | "md" | "lg" | "auto";
@@ -78,13 +79,14 @@ export type FilterCardItem = {
 type AnchorRect = DOMRect;
 
 type FilterCardContextValue = {
-  openId: string | null;
   placement: FilterCardPlacement;
   getValue: (id: string) => unknown;
   isOpen: (id: string) => boolean;
   anchorRect: RefObject<AnchorRect | null>;
-  open: (id: string, rect: AnchorRect) => void;
-  toggle: (id: string, rect: AnchorRect) => void;
+  /** المنت دکمه‌ای که پنل فعلی از آن باز شده - برای برگرداندن فوکوس بعد از بسته شدن */
+  triggerEl: RefObject<HTMLButtonElement | null>;
+  open: (id: string, rect: AnchorRect, el: HTMLButtonElement) => void;
+  toggle: (id: string, rect: AnchorRect, el: HTMLButtonElement) => void;
   close: () => void;
   setValue: (id: string, value: unknown, closePanel?: boolean) => void;
 };
@@ -132,6 +134,21 @@ function FilterCard({
   const [values, setValues] = useState<Record<string, unknown>>(defaultValue);
 
   const anchorRect = useRef<AnchorRect | null>(null);
+  const triggerEl = useRef<HTMLButtonElement | null>(null);
+
+  if (process.env.NODE_ENV !== "production") {
+    const seen = new Set<string>();
+    const duplicates = new Set<string>();
+    for (const item of items) {
+      if (seen.has(item.id)) duplicates.add(item.id);
+      seen.add(item.id);
+    }
+    if (duplicates.size > 0) {
+      console.warn(
+        `[FilterCard] شناسه‌ی تکراری در items پیدا شد: ${[...duplicates].join(", ")}`,
+      );
+    }
+  }
 
   const close = useCallback(() => setOpenId(null), []);
 
@@ -149,35 +166,43 @@ function FilterCard({
     [controlled, onValueChange],
   );
 
-  const open = useCallback((id: string, rect: AnchorRect) => {
-    anchorRect.current = rect;
-    setOpenId(id);
-  }, []);
+  const open = useCallback(
+    (id: string, rect: AnchorRect, el: HTMLButtonElement) => {
+      anchorRect.current = rect;
+      triggerEl.current = el;
+      setOpenId(id);
+    },
+    [],
+  );
 
   const toggle = useCallback(
-    (id: string, rect: AnchorRect) => {
+    (id: string, rect: AnchorRect, el: HTMLButtonElement) => {
       if (openId === id) close();
-      else open(id, rect);
+      else open(id, rect, el);
     },
     [openId, close, open],
   );
 
   const isOpen = useCallback((id: string) => openId === id, [openId]);
 
+  // جلوگیری از رندر مجدد بی‌دلیل همه‌ی Trigger/Panelها با هر رندر پدر
+  const ctxValue = useMemo<FilterCardContextValue>(
+    () => ({
+      placement,
+      getValue,
+      isOpen,
+      anchorRect,
+      triggerEl,
+      open,
+      toggle,
+      close,
+      setValue,
+    }),
+    [placement, getValue, isOpen, open, toggle, close, setValue],
+  );
+
   return (
-    <FilterCardContext
-      value={{
-        openId,
-        placement,
-        getValue,
-        isOpen,
-        anchorRect,
-        open,
-        toggle,
-        close,
-        setValue,
-      }}
-    >
+    <FilterCardContext value={ctxValue}>
       <div className={className}>
         {items.map((item) => (
           <Trigger key={item.id} item={item} />
@@ -252,7 +277,7 @@ function Trigger({ item }: { item: FilterCardItem }) {
       : renderTrigger;
 
   const handleClick = (e: ReactMouseEvent<HTMLButtonElement>) => {
-    toggle(id, e.currentTarget.getBoundingClientRect());
+    toggle(id, e.currentTarget.getBoundingClientRect(), e.currentTarget);
     onClick?.();
   };
 
@@ -304,9 +329,9 @@ const GAP = 10;
 const VIEWPORT_MARGIN = 10;
 
 function Panel({ id, panel }: { id: string; panel: FilterPanelConfig }) {
-  const { openId } = useFilterCard();
+  const { isOpen } = useFilterCard();
 
-  if (openId !== id) return null;
+  if (!isOpen(id)) return null;
   return <PanelPopover id={id} panel={panel} />;
 }
 
@@ -329,9 +354,10 @@ function PanelPopover({ id, panel }: { id: string; panel: FilterPanelConfig }) {
     setValue,
     close,
     anchorRect,
+    triggerEl,
   } = useFilterCard();
 
-  const dir = placement ?? rootPlacement;
+  const panelPlacement = placement ?? rootPlacement;
 
   const ref = useRef<HTMLDivElement>(null);
   const caretRef = useRef<HTMLSpanElement>(null);
@@ -359,12 +385,13 @@ function PanelPopover({ id, panel }: { id: string; panel: FilterPanelConfig }) {
 
     /* افقی: با توجه به placement و جهت متن */
     let left: number;
-    if (dir === "center") {
+    if (panelPlacement === "center") {
       left = rect.left + rect.width / 2 - panelW / 2;
     } else {
-      const alignToStart = dir === "start" ? rtl : !rtl;
+      const alignToStart = panelPlacement === "start" ? rtl : !rtl;
       left = alignToStart ? rect.right - panelW : rect.left;
     }
+    // اگر عرض کارت از عرض ویوپورت بیشتر باشد، اولویت با نماندن بیرون از سمت راست/چپ است
     left = Math.min(
       Math.max(left, VIEWPORT_MARGIN),
       window.innerWidth - panelW - VIEWPORT_MARGIN,
@@ -399,7 +426,7 @@ function PanelPopover({ id, panel }: { id: string; panel: FilterPanelConfig }) {
 
     const raf = requestAnimationFrame(() => setVisible(true));
     return () => cancelAnimationFrame(raf);
-  }, [anchorRect, dir, showArrow]);
+  }, [anchorRect, panelPlacement, showArrow]);
 
   /** بستن با کلیک بیرون، Escape یا اسکرول صفحه */
   useEffect(() => {
@@ -427,6 +454,21 @@ function PanelPopover({ id, panel }: { id: string; panel: FilterPanelConfig }) {
     };
   }, [close]);
 
+  /**
+   * مدیریت فوکوس مطابق الگوی a11y دیالوگ:
+   * موقع باز شدن، فوکوس می‌رود روی خود کارت؛ موقع بسته شدن، فقط اگر فوکوس
+   * واقعاً داخل کارت بوده (نه مثلاً روی چیزی که کاربر با کلیک بیرون به آن رفته)
+   * به دکمه‌ی trigger برمی‌گردد.
+   */
+  useEffect(() => {
+    ref.current?.focus();
+    return () => {
+      if (ref.current?.contains(document.activeElement)) {
+        triggerEl.current?.focus();
+      }
+    };
+  }, [triggerEl]);
+
   const value = getValue(id);
   const setLocal = (next: unknown) => setValue(id, next, closeOnSelect);
 
@@ -444,9 +486,9 @@ function PanelPopover({ id, panel }: { id: string; panel: FilterPanelConfig }) {
     <div
       ref={ref}
       role="dialog"
+      tabIndex={-1}
       aria-label={title ?? id}
-      onScrollCapture={(e) => e.stopPropagation()}
-      className={`bg-surface border-border dark:border-border-strong fixed z-[60] flex max-h-[min(440px,62dvh)] flex-col rounded-3xl border shadow-2xl transition-[opacity,transform] duration-200 ease-out ${PANEL_SIZE[size]} ${
+      className={`bg-surface border-border dark:border-border-strong fixed z-[60] flex max-h-[min(440px,62dvh)] flex-col rounded-3xl border shadow-2xl outline-none transition-[opacity,transform] duration-200 ease-out ${PANEL_SIZE[size]} ${
         visible
           ? "translate-y-0 scale-100 opacity-100"
           : "translate-y-1.5 scale-[0.98] opacity-0"

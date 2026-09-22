@@ -21,15 +21,15 @@ export default function CabinsExplorer({
   // دسکتاپ: نقشه به صورت پیش‌فرض باز
   const [mapVisible, setMapVisible] = useState(true);
 
-  const gridVariables = {
-    "--cabins-grid-lg": mapVisible
-      ? "repeat(2, minmax(0, 1fr))"
-      : "repeat(3, minmax(0, 1fr))",
+  // const gridVariables = {
+  //   "--cabins-grid-lg": mapVisible
+  //     ? "repeat(2, minmax(0, 1fr))"
+  //     : "repeat(3, minmax(0, 1fr))",
 
-    "--cabins-grid-2xl": mapVisible
-      ? "repeat(3, minmax(0, 1fr))"
-      : "repeat(4, minmax(0, 1fr))",
-  } as CSSProperties;
+  //   "--cabins-grid-2xl": mapVisible
+  //     ? "repeat(3, minmax(0, 1fr))"
+  //     : "repeat(4, minmax(0, 1fr))",
+  // } as CSSProperties;
 
   return (
     <>
@@ -57,7 +57,6 @@ export default function CabinsExplorer({
           - ستون دوم = سمت چپ → map
           ========================================================= */}
         <div
-          style={gridVariables}
           className={`${mapVisible ? "lg:grid-cols-[minmax(0,1fr)_minmax(360px,40%)]" : "max-w-7xl"} mx-auto grid items-start gap-6 px-3 py-6 sm:px-4 md:py-7  lg:gap-6 lg:px-6 lg:py-8 2xl:gap-8`}
         >
           {/* =====================================================

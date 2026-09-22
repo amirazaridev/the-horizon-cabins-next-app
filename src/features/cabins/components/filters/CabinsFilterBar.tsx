@@ -175,7 +175,7 @@ export default function CabinsFilterBar({
           {/* =====================================================
               FILTER BUTTONS
               ===================================================== */}
-          <div className="bg-surface/80 border-foreground/10 flex min-w-0 flex-1 [scrollbar-width:none] items-center gap-2 overflow-x-auto rounded-2xl border p-1.5 shadow-sm backdrop-blur-md [&::-webkit-scrollbar]:hidden">
+          <div className="bg-surface/80 border-foreground/10 flex min-w-0 flex-1 scrollbar-none items-center gap-2 overflow-x-auto rounded-2xl border p-1.5 shadow-sm backdrop-blur-md [&::-webkit-scrollbar]:hidden">
             {/* تاریخ */}
             <FilterButton
               label="تاریخ سفر"

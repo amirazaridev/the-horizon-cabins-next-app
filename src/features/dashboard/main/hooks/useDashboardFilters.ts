@@ -48,6 +48,17 @@ export interface UseDashboardFiltersResult {
   prevBookings: Booking[];
   activeCabins: Cabin[];
 }
+/** تبدیل پارامتر URL به آرایه‌ی مقادیر */
+export function parseMultiParam(raw: string | null): string[] {
+  if (!raw || raw === ALL) return [];
+  return raw.split(",").filter(Boolean);
+}
+
+/** تبدیل آرایه به مقدار پارامتر URL */
+export function serializeMultiParam(values: string[]): string | null {
+  if (values.length === 0) return null;
+  return values.join(",");
+}
 
 export function useDashboardFilters(): UseDashboardFiltersResult {
   const searchParams = useSearchParams();
