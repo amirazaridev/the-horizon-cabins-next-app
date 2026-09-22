@@ -5,6 +5,7 @@ import { startOfDay } from "date-fns";
 
 import RangeGauge, { type GaugeRange } from "./RangeGauge";
 import {
+  clampToToday,
   formatDateKey,
   formatJalaliMonthShort,
   formatJalaliMonthYear,
@@ -57,12 +58,14 @@ export default function MonthRangeSlider({
 
   function handleCommit({ start, end }: GaugeRange): void {
     const range = monthRangeAtIndices(domain.start, start, end);
+    // اگر ماه پایان ماه جاری باشد، سقف بازه امروز است نه آخر ماه
+    const safeTo = clampToToday(range.to, today);
 
     if (
       formatDateKey(range.from) !== formatDateKey(from) ||
-      formatDateKey(range.to) !== formatDateKey(to)
+      formatDateKey(safeTo) !== formatDateKey(to)
     ) {
-      onChange(range.from, range.to);
+      onChange(range.from, safeTo);
     }
   }
 

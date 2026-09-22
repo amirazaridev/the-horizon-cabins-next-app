@@ -104,6 +104,10 @@ export function formatJalaliYear(date: Date): string {
   return formatJalali(date, "yyyy", { locale: faIR });
 }
 
+export function getJalaliYear(date: Date): number {
+  return Number(formatJalali(date, "yyyy", { locale: faIR }));
+}
+
 function getJalaliMonthNumber(date: Date): number {
   return Number(formatJalali(date, "M", { locale: faIR }));
 }
@@ -177,11 +181,15 @@ export function resolveDashboardDateRange(
   const toParam = parseDateParam(searchParams.get(PARAM_TO));
 
   if (fromParam && toParam && fromParam <= toParam) {
-    const matchingPreset = findMatchingPreset(fromParam, toParam, today);
+    // امنیت: اگر تاریخ آینده در URL باشد، به امروز clamp شود
+    const clampedFrom = clampToToday(fromParam, today);
+    const clampedTo = clampToToday(toParam, today);
+    const safeFrom = clampedFrom <= clampedTo ? clampedFrom : clampedTo;
+    const matchingPreset = findMatchingPreset(safeFrom, clampedTo, today);
 
     return {
-      from: fromParam,
-      to: toParam,
+      from: safeFrom,
+      to: clampedTo,
       preset: rangeParam === "custom" ? "custom" : (matchingPreset ?? "custom"),
     };
   }
@@ -269,6 +277,44 @@ export interface DateFilterValue {
   from: string;
   to: string;
   tab: DateFilterTab;
+}
+
+/* ==================================================================
+   دکمه‌های دسترسی سریع
+   ================================================================== */
+
+export type QuickRangePreset = "last-7" | "last-month" | "last-6months" | "last-year";
+
+export const QUICK_RANGE_PRESETS: readonly {
+  value: QuickRangePreset;
+  label: string;
+  days: number;
+}[] = [
+  { value: "last-7", label: "۷ روز اخیر", days: 7 },
+  { value: "last-month", label: "۱ ماه اخیر", days: 30 },
+  { value: "last-6months", label: "۶ ماه اخیر", days: 180 },
+  { value: "last-year", label: "۱ سال اخیر", days: 365 },
+];
+
+export function getPresetDateRangeFromDays(
+  days: number,
+  today: Date = getToday(),
+): DateRange {
+  return {
+    from: subDays(today, days - 1),
+    to: today,
+  };
+}
+
+/* ==================================================================
+   محدود کردن تاریخ‌ها به امروز (غیرفعال کردن آینده)
+   ================================================================== */
+
+/** اگر تاریخ بعد از امروز باشد، امروز را برمی‌گرداند (امروز آزاد است) */
+export function clampToToday(date: Date, today: Date = getToday()): Date {
+  const d = toDateOnly(date);
+  const t = toDateOnly(today);
+  return d > t ? t : d;
 }
 
 /** متن روی دکمه فیلتر تاریخ: «از X تا Y» */

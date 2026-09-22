@@ -18,7 +18,7 @@ export type LastMinuteProps = {
 
 export default function LastMinute({
   offers,
-  expiresAt,
+  expiresAt = "2000",
   demoDurationSeconds = 7200,
 }: LastMinuteProps) {
   if (!offers.length) return null;

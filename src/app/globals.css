@@ -98,15 +98,71 @@
   }
 }
 
-
 @layer base {
   body {
     background: #07111e;
   }
 }
 
+/* تقویم شمسی داشبورد — سلول‌های روز کمی بزرگ‌تر */
+.horizon-date-picker .rmdp-calendar {
+  padding: 16px 14px;
+}
+.horizon-date-picker .rmdp-day {
+  height: 40px;
+  width: 40px;
+}
+.horizon-date-picker .rmdp-day span {
+  font-size: 14px;
+}
+
+/* پاپ‌آپ تقویم ماه هیچ‌وقت از صفحه بیرون نزند */
+.horizon-month-picker {
+  max-width: calc(100vw - 2rem);
+}
+/* تقویم ماه دوقلو (onlyMonthPicker): هر سال ستون خودش با فاصله و جداکننده */
+.horizon-month-picker .only.rmdp-month-picker {
+  width: 548px;
+  max-width: 100%;
+  height: auto;
+  min-height: 264px;
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+/* ستون هر سال — حداقل ۲۴۰px تا اسم ماه‌ها جا شوند */
+.horizon-month-picker .only.rmdp-month-picker > div {
+  flex: 1 0 240px;
+  min-width: 240px;
+}
+/* فاصله و خط جداکننده بین ستون ۱۴۰۴ و ۱۴۰۵ */
+.horizon-month-picker .only.rmdp-month-picker > div + div {
+  border-inline-start: 1px solid var(--color-border);
+  margin-inline-start: 16px;
+  padding-inline-start: 16px;
+}
+/* فاصله بین ماه‌ها در هر ردیف تا نوشته‌ها به هم نچسبند */
+.horizon-month-picker .rmdp-ym {
+  gap: 4px;
+  height: auto;
+  margin-bottom: 4px;
+}
+.horizon-month-picker .rmdp-ym .rmdp-day {
+  min-width: 0;
+  height: 44px;
+}
+.horizon-month-picker .rmdp-ym .rmdp-day span {
+  font-size: 13px;
+  padding: 9px 2px;
+  white-space: nowrap;
+}
+.horizon-month-picker .rmdp-header {
+  font-size: 15px;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

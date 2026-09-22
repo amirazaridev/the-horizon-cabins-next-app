@@ -50,7 +50,7 @@ export default function FilterBar({
   const dateTabParam = searchParams.get(PARAM_DATE_TAB);
   const dateTab: DateFilterTab = isDateFilterTab(dateTabParam)
     ? dateTabParam
-    : "day";
+    : "year";
 
   const dateValue: DateFilterValue = {
     from: formatDateKey(dateRange.from),

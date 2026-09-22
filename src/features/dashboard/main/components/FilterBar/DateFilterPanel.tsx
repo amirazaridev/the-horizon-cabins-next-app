@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import { startOfDay } from "date-fns";
-import { Calendar, CalendarDays, CalendarRange } from "lucide-react";
+import { Calendar, CalendarDays, CalendarRange, Zap } from "lucide-react";
 
 import Tabs from "@/components/ui/Tabs";
 import Button from "@/components/ui/Button";
-import DayRangeSlider from "./DayRangeSlider";
-import MonthRangeSlider from "./MonthRangeSlider";
+import DayRangePicker from "./DayRangePicker";
+import MonthRangePicker from "./MonthRangePicker";
 import YearRangeSlider from "./YearRangeSlider";
 import {
+  QUICK_RANGE_PRESETS,
   formatDateKey,
+  getPresetDateRangeFromDays,
   parseDateParam,
   type DateFilterTab,
   type DateFilterValue,
@@ -23,8 +25,9 @@ interface DateFilterPanelProps {
 }
 
 /**
- * محتوای کارت فیلتر تاریخ: سه تب روز / ماه / سال + دکمه اعمال
- * انتخاب‌ها پیش‌نویس (draft) می‌مانند تا «اعمال» زده شود
+ * محتوای کارت فیلتر تاریخ: دکمه‌های سریع + سه تب روز / ماه / سال + دکمه اعمال
+ * انتخاب‌ها پیش‌نویس (draft) می‌مانند تا «اعمال» زده شود،
+ * ولی دکمه‌های سریع مستقیم اعمال و بسته می‌شوند
  */
 export default function DateFilterPanel({
   initial,
@@ -57,8 +60,38 @@ export default function DateFilterPanel({
     });
   }
 
+  function handleQuickPreset(days: number): void {
+    const range = getPresetDateRangeFromDays(days);
+    // اعمال خودکار با دقت روز + بستن پنل (onApply در FilterBar پنل را می‌بندد)
+    onApply({
+      from: formatDateKey(range.from),
+      to: formatDateKey(range.to),
+      tab: "day",
+    });
+  }
+
   return (
     <div className="flex flex-col gap-4">
+      {/* دسترسی سریع */}
+      <div className="rounded-2xl border border-border bg-background p-3">
+        <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-text-gray">
+          <Zap className="size-3.5" />
+          دسترسی سریع
+        </p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {QUICK_RANGE_PRESETS.map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              onClick={() => handleQuickPreset(preset.days)}
+              className="rounded-xl border border-border bg-surface px-2 py-2 text-xs font-medium text-text transition-colors hover:border-primary-400 hover:bg-primary-400/10 hover:text-text active:scale-95"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Tabs
         defaultValue={tab}
         onChange={(id) => setTab(id as DateFilterTab)}
@@ -69,7 +102,7 @@ export default function DateFilterPanel({
             label: "روز",
             icon: <CalendarDays className="size-4" />,
             content: (
-              <DayRangeSlider
+              <DayRangePicker
                 from={draft.from}
                 to={draft.to}
                 onChange={handleDraftChange}
@@ -81,7 +114,7 @@ export default function DateFilterPanel({
             label: "ماه",
             icon: <CalendarRange className="size-4" />,
             content: (
-              <MonthRangeSlider
+              <MonthRangePicker
                 from={draft.from}
                 to={draft.to}
                 onChange={handleDraftChange}

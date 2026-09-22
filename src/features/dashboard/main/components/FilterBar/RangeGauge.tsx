@@ -39,7 +39,7 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /**
- * اسلایدر دو دسته‌ای عمومی (استخراج‌شده از DateRangeFilter)
+ * اسلایدر دو دسته‌ای عمومی برای انتخاب بازه سال
  * state داخلی دارد و با تغییر props همگام می‌شود؛ والد فقط commit را می‌گیرد
  */
 export default function RangeGauge({
