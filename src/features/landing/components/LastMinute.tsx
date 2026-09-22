@@ -18,7 +18,7 @@ export type LastMinuteProps = {
 
 export default function LastMinute({
   offers,
-  expiresAt = "2000",
+  expiresAt ,
   demoDurationSeconds = 7200,
 }: LastMinuteProps) {
   if (!offers.length) return null;
@@ -48,7 +48,6 @@ export default function LastMinute({
                 بررسی کنید.
               </p>
             </div>
-            {expiresAt && (
               <div className="flex flex-col gap-2 self-start">
                 <span className="text-text-gray text-xs">زمان باقی‌مانده</span>
                 <Countdown
@@ -56,7 +55,6 @@ export default function LastMinute({
                   demoDurationSeconds={demoDurationSeconds}
                 />
               </div>
-            )}
           </div>
           <div>
 

@@ -1,4 +1,4 @@
-import heroImage from "@/assets/images/dark-hero-section.jpeg";
+import heroImage from "@/assets/images/dark-hero-section.png";
 import lakeImage from "@/assets/images/1.png";
 import landscapeImage from "@/assets/images/hero-section-bg.avif";
 
