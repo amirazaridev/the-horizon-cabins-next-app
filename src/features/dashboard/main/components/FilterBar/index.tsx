@@ -1,6 +1,7 @@
 "use client";
 
 import type { TransitionStartFunction } from "react";
+import { useEffect, useState } from "react";
 import { CalendarDays, MapPin, RotateCcw, Tag } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -12,7 +13,6 @@ import MultiOptionList, {
 } from "@/features/cabins/components/filters/MultiOptionList";
 import DateFilterPanel from "./DateFilterPanel";
 import {
-  ALL,
   PARAM_CITY,
   PARAM_STATUS,
   parseMultiParam,
@@ -54,12 +54,29 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
   const searchParams = useSearchParams();
 
   const dateRange = resolveDashboardDateRange(searchParams);
-  const cityValues = parseMultiParam(searchParams.get(PARAM_CITY));
-  const statusValues = parseMultiParam(searchParams.get(PARAM_STATUS));
+  const cityParam = searchParams.get(PARAM_CITY);
+  const statusParam = searchParams.get(PARAM_STATUS);
   const dateTabParam = searchParams.get(PARAM_DATE_TAB);
   const dateTab: DateFilterTab = isDateFilterTab(dateTabParam)
     ? dateTabParam
     : "year";
+
+  // پیش‌نگهداری محلی برای انتخاب‌های چندگانه تا UI فوراً و بدون منتظر ماندنِ
+  // navigation پاسخ دهد و کلیک‌های پشت‌سرهم از بین نروند.
+  const [cityDraft, setCityDraft] = useState<string[]>(() =>
+    parseMultiParam(cityParam),
+  );
+  const [statusDraft, setStatusDraft] = useState<string[]>(() =>
+    parseMultiParam(statusParam),
+  );
+
+  useEffect(() => {
+    setCityDraft(parseMultiParam(cityParam));
+  }, [cityParam]);
+
+  useEffect(() => {
+    setStatusDraft(parseMultiParam(statusParam));
+  }, [statusParam]);
 
   const dateValue: DateFilterValue = {
     from: formatDateKey(dateRange.from),
@@ -96,15 +113,19 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
     }
 
     if (id === "city") {
+      const next = (value as string[]) ?? [];
+      setCityDraft(next);
       updateParams({
-        [PARAM_CITY]: serializeMultiParam((value as string[]) ?? []),
+        [PARAM_CITY]: serializeMultiParam(next),
       });
       return;
     }
 
     if (id === "status") {
+      const next = (value as string[]) ?? [];
+      setStatusDraft(next);
       updateParams({
-        [PARAM_STATUS]: serializeMultiParam((value as string[]) ?? []),
+        [PARAM_STATUS]: serializeMultiParam(next),
       });
     }
   }
@@ -179,8 +200,8 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
         items={items}
         value={{
           date: dateValue,
-          city: cityValues,
-          status: statusValues,
+          city: cityDraft,
+          status: statusDraft,
         }}
         onValueChange={handleValueChange}
         placement="start"

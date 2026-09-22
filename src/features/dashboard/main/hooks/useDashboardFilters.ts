@@ -36,8 +36,8 @@ export {
 export interface DashboardFilters {
   from: Date;
   to: Date;
-  city: string;
-  status: string;
+  city: string[];
+  status: string[];
   numDays: number;
   preset: DateRangePreset;
 }
@@ -68,8 +68,8 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
     [searchParams],
   );
 
-  const city = searchParams.get(PARAM_CITY) ?? ALL;
-  const status = searchParams.get(PARAM_STATUS) ?? ALL;
+  const cities = parseMultiParam(searchParams.get(PARAM_CITY));
+  const statuses = parseMultiParam(searchParams.get(PARAM_STATUS));
 
   const numDays = Math.max(
     1,
@@ -79,42 +79,44 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
   const bookings = useMemo(() => {
     let list = filterBookingsByRange(BOOKINGS, from, to);
 
-    if (city !== ALL) {
+    if (cities.length > 0) {
+      const citySet = new Set(cities);
       const cityCabinIds = new Set(
-        CABINS.filter((cabin) => cabin.city?.name === city).map(
-          (cabin) => cabin.id,
-        ),
+        CABINS.filter((cabin) =>
+          cabin.city?.name ? citySet.has(cabin.city.name) : false,
+        ).map((cabin) => cabin.id),
       );
 
       list = list.filter((booking) => cityCabinIds.has(booking.cabinId));
     }
 
-    if (status !== ALL) {
-      list = list.filter((booking) => booking.status === status);
+    if (statuses.length > 0) {
+      const statusSet = new Set(statuses);
+      list = list.filter((booking) => statusSet.has(booking.status));
     }
 
     return list;
-  }, [from, to, city, status]);
+  }, [from, to, cities, statuses]);
 
   const prevBookings = useMemo(
     () => filterPrevBookings(BOOKINGS, from, to),
     [from, to],
   );
 
-  const activeCabins = useMemo(
-    () =>
-      city === ALL
-        ? CABINS
-        : CABINS.filter((cabin) => cabin.city?.name === city),
-    [city],
-  );
+  const activeCabins = useMemo(() => {
+    if (cities.length === 0) return CABINS;
+    const citySet = new Set(cities);
+    return CABINS.filter((cabin) =>
+      cabin.city?.name ? citySet.has(cabin.city.name) : false,
+    );
+  }, [cities]);
 
   return {
     filters: {
       from,
       to,
-      city,
-      status,
+      city: cities,
+      status: statuses,
       numDays,
       preset,
     },

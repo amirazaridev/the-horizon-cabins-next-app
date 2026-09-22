@@ -242,6 +242,14 @@ const TRIGGER_VARIANTS: Record<
   },
 };
 
+/** آیا مقدار فیلتر «واقعاً» پر شده؟ آرایه/رشته خالی یعنی خالی */
+function isFilterValueActive(value: unknown): boolean {
+  if (value == null) return false;
+  if (Array.isArray(value)) return value.length > 0;
+  if (typeof value === "string") return value.trim().length > 0;
+  return true;
+}
+
 function Trigger({ item }: { item: FilterCardItem }) {
   const {
     id,
@@ -260,7 +268,7 @@ function Trigger({ item }: { item: FilterCardItem }) {
 
   const value = getValue(id);
   const open = isOpen(id);
-  const filled = value != null;
+  const filled = isFilterValueActive(value);
 
   const styles = TRIGGER_VARIANTS[variant];
   const displayLabel =
