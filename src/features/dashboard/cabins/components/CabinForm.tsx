@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { MapPin, Save } from "lucide-react";
 
 import Button from "@/components/ui/Button";
-import CardDashContainer from "@/features/dashboard/components/CardDashContainer";
+import CardDashContainer from "@/features/dashboard/shared/components/CardDashContainer";
 import type { Cabin } from "@/features/cabins/lib/data-service";
 import type { City } from "@/features/cabins/types/City";
 import CabinImageDropzone, { type CabinImage } from "./CabinImageDropzone";
@@ -107,7 +107,7 @@ export default function CabinForm({ mode, cities, cabin }: CabinFormProps) {
   } = useForm<CabinFormValues>({
     defaultValues: getDefaultValues(cabin),
   });
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     reset(getDefaultValues(cabin));
@@ -116,7 +116,7 @@ export default function CabinForm({ mode, cities, cabin }: CabinFormProps) {
   async function onSubmit(values: CabinFormValues) {
     const formData = buildFormData(values);
     // console.log(values);
-    
+
     // 🔑 کلاینت فقط server action رو صدا می‌زنه — نه API، نه توکن، هیچی
     const result =
       mode === "add"

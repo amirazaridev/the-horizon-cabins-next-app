@@ -2,8 +2,8 @@
 
 import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import Sidebar from "@/features/dashboard/components/Sidebar";
-import Header from "@/features/dashboard/components/Header";
+import Sidebar from "@/features/dashboard/shared/components/Sidebar";
+import Header from "@/features/dashboard/shared/components/Header";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -15,13 +15,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="bg-background min-h-screen md:flex">
-      <div className="w-75 absolute lg:static">
-      <Sidebar
-        pathname={pathname}
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-        
+      <div className="absolute w-75 lg:static">
+        <Sidebar
+          pathname={pathname}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
       </div>
 
       {sidebarOpen && (
@@ -33,8 +32,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       <div className="flex w-full flex-col">
-        <Header pathname={pathname} onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-4 sm:p-6 w-full max-w-7xl mx-auto">{children}</main>
+        <Header
+          pathname={pathname}
+          onMenuClick={() => setSidebarOpen((prev) => !prev)}
+        />
+        <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );

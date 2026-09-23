@@ -14,7 +14,7 @@ import { format as formatJalali } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
 
 import { formatCurrency } from "@/libs/utils/format";
-import CardDashContainer from "../../../components/CardDashContainer";
+import CardDashContainer from "../../../shared/components/CardDashContainer";
 import type { Booking } from "../../data/mock-data";
 
 interface SalesChartProps {

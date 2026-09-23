@@ -163,7 +163,6 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
       panel: {
         title: "انتخاب شهر",
         size: "md",
-        // چون چندانتخابیه، با هر کلیک بسته نشه
         closeOnSelect: false,
         render: ({ value, setValue }) => (
           <MultiOptionList

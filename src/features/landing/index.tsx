@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import ExperienceBanner from "./components/ExperienceBanner";
 import Experiences from "./components/Experiences";
@@ -18,7 +18,7 @@ type Props = {
   budgetStays?: BudgetStaysProps;
 };
 
-export default function HorizonLanding({
+export default function Landing({
   cabins,
   lastMinute,
   budgetStays,
@@ -32,9 +32,9 @@ export default function HorizonLanding({
     <div ref={landingRef} className="bg-background text-text min-h-screen">
       <Hero />
       <Categories />
-      <LastMinute {...(lastMinute ?? { offers: demoOffers })} />
       <Destinations />
       <Stays cabins={cabins.slice(0, 3)} />
+      <LastMinute {...(lastMinute ?? { offers: demoOffers })} />
       <BudgetStays {...(budgetStays ?? { cabins })} />
       <ExperienceBanner />
       <Experiences />

@@ -41,7 +41,7 @@ export default function LastMinute({
                 id="last-minute-title"
                 className="text-text text-2xl font-extrabold sm:text-3xl"
               >
-                ویلاهای <span className="text-primary-400">لحظه‌آخری</span>
+                تخفیف های <span className="text-primary-400">لحظه‌آخری</span>
               </h2>
               <p className="text-text-gray mt-3 max-w-xl text-sm leading-7">
                 فرصت‌های محدود برای اقامت بعدی؛ جزئیات و موجودی را پیش از رزرو

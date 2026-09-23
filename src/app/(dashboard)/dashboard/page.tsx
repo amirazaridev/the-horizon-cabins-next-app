@@ -1,6 +1,6 @@
 import Spinner from "@/components/ui/Spinner";
-import { DASHBOARD_CITIES } from "@/features/dashboard/main/data/mock-data";
-import MainPageLayout from "@/features/dashboard/main/MainPageLayout";
+import { DASHBOARD_CITIES } from "@/features/dashboard/overview/data/mock-data";
+import MainPageLayout from "@/features/dashboard/overview/MainPageLayout";
 import { Suspense } from "react";
 
 export const metadata = { title: "داشبورد ادمین هورایزن" };

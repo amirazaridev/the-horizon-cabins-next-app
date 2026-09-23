@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import CardDashContainer from "../../../components/CardDashContainer";
+import CardDashContainer from "../../../shared/components/CardDashContainer";
 
 const COLORS = {
   indigo: {
@@ -58,7 +58,9 @@ export default function Stat({ title, value, delta, icon, color }: StatProps) {
                 <ArrowDownLeft className="size-3.5" />
               )}
               {Math.abs(delta)}٪
-              <span className="text-text-gray font-normal">نسبت به دوره قبل</span>
+              <span className="text-text-gray font-normal">
+                نسبت به دوره قبل
+              </span>
             </span>
           )}
         </div>

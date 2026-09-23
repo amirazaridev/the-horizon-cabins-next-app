@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { HORIZON_IMAGES } from "@/features/landing/constants/horizon-home";
-import Search from "./Search";
+import Search from "./search";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Hero() {

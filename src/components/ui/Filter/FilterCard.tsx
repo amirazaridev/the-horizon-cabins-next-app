@@ -1,12 +1,9 @@
 "use client";
 
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
   type MouseEvent as ReactMouseEvent,
@@ -22,8 +19,8 @@ import { ChevronDown, X } from "lucide-react";
 
 export type FilterCardValues = Record<string, unknown>;
 export type FilterCardPlacement = "start" | "center" | "end";
-export type FilterTriggerVariant = "pill" | "outline" | "ghost";
-export type FilterPanelSize = "sm" | "md" | "lg" | "auto";
+export type FilterTriggerVariant = "pill" | "outline" | "ghost" | "field";
+export type FilterPanelSize = "sm" | "md" | "lg" | "xl" | "auto";
 
 export type TriggerRenderProps = {
   id: string;
@@ -35,7 +32,13 @@ export type TriggerRenderProps = {
 export type PanelRenderProps = {
   id: string;
   value: unknown;
+  /** خواندن مقدار هر فیلد دیگر (مثلاً ورود/خروج که یک بازه مشترک دارند) */
+  getValue: (id: string) => unknown;
   setValue: (value: unknown) => void;
+  /** نوشتن مقدار یک فیلد دیگر بدون وابستگی به id همین کارت */
+  setFieldValue: (id: string, value: unknown) => void;
+  /** باز کردن کارتِ فیلد دیگر (برای رفتن خودکار به فیلد بعدی) */
+  openPanel: (id: string) => void;
   close: () => void;
 };
 
@@ -50,6 +53,8 @@ export type FilterPanelConfig = {
   showArrow?: boolean;
   /** بعد از انتخاب، کارت خودکار بسته شود */
   closeOnSelect?: boolean;
+  /** بعد از بستنِ خودکار، کارتِ فیلد با این id باز شود (انتخاب مرحله‌ای) */
+  advanceTo?: string;
   className?: string;
   contentClassName?: string;
   /** محتوای کارت - میتونه تابع (render-prop) هم باشه */
@@ -77,27 +82,6 @@ export type FilterCardItem = {
 };
 
 type AnchorRect = DOMRect;
-
-type FilterCardContextValue = {
-  placement: FilterCardPlacement;
-  getValue: (id: string) => unknown;
-  isOpen: (id: string) => boolean;
-  anchorRect: RefObject<AnchorRect | null>;
-  /** المنت دکمه‌ای که پنل فعلی از آن باز شده - برای برگرداندن فوکوس بعد از بسته شدن */
-  triggerEl: RefObject<HTMLButtonElement | null>;
-  open: (id: string, rect: AnchorRect, el: HTMLButtonElement) => void;
-  toggle: (id: string, rect: AnchorRect, el: HTMLButtonElement) => void;
-  close: () => void;
-  setValue: (id: string, value: unknown, closePanel?: boolean) => void;
-};
-
-const FilterCardContext = createContext<FilterCardContextValue | null>(null);
-
-function useFilterCard() {
-  const ctx = useContext(FilterCardContext);
-  if (!ctx) throw new Error("FilterCard خارج از Provider استفاده شده");
-  return ctx;
-}
 
 /* ==================================================================
    ROOT
@@ -175,6 +159,16 @@ function FilterCard({
     [],
   );
 
+  const openById = useCallback((id: string) => {
+    const el = document.querySelector<HTMLButtonElement>(
+      `[data-fc-trigger="${id}"]`,
+    );
+    if (!el) return;
+    anchorRect.current = el.getBoundingClientRect();
+    triggerEl.current = el;
+    setOpenId(id);
+  }, []);
+
   const toggle = useCallback(
     (id: string, rect: AnchorRect, el: HTMLButtonElement) => {
       if (openId === id) close();
@@ -183,37 +177,36 @@ function FilterCard({
     [openId, close, open],
   );
 
-  const isOpen = useCallback((id: string) => openId === id, [openId]);
-
-  // جلوگیری از رندر مجدد بی‌دلیل همه‌ی Trigger/Panelها با هر رندر پدر
-  const ctxValue = useMemo<FilterCardContextValue>(
-    () => ({
-      placement,
-      getValue,
-      isOpen,
-      anchorRect,
-      triggerEl,
-      open,
-      toggle,
-      close,
-      setValue,
-    }),
-    [placement, getValue, isOpen, open, toggle, close, setValue],
-  );
-
   return (
-    <FilterCardContext value={ctxValue}>
-      <div className={className}>
-        {items.map((item) => (
-          <Trigger key={item.id} item={item} />
+    <div className={className}>
+      {items.map((item) => (
+        <Trigger
+          key={item.id}
+          item={item}
+          value={getValue(item.id)}
+          isOpen={openId === item.id}
+          toggle={toggle}
+          close={close}
+        />
+      ))}
+      {items
+        .filter((item) => item.panel)
+        .map((item) => (
+          <Panel
+            key={item.id}
+            id={item.id}
+            panel={item.panel!}
+            isOpen={openId === item.id}
+            placement={placement}
+            getValue={getValue}
+            setValue={setValue}
+            openById={openById}
+            close={close}
+            anchorRect={anchorRect}
+            triggerEl={triggerEl}
+          />
         ))}
-        {items
-          .filter((item) => item.panel)
-          .map((item) => (
-            <Panel key={item.id} id={item.id} panel={item.panel!} />
-          ))}
-      </div>
-    </FilterCardContext>
+    </div>
   );
 }
 
@@ -240,6 +233,11 @@ const TRIGGER_VARIANTS: Record<
     active: "bg-primary-400/10 text-primary-600 dark:text-primary-400",
     idle: "text-text-gray hover:bg-foreground/5 hover:text-text",
   },
+  field: {
+    base: "group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-start transition-colors duration-200 disabled:pointer-events-none disabled:opacity-50",
+    active: "bg-foreground/[0.06]",
+    idle: "hover:bg-foreground/[0.04]",
+  },
 };
 
 /** آیا مقدار فیلتر «واقعاً» پر شده؟ آرایه/رشته خالی یعنی خالی */
@@ -250,7 +248,15 @@ function isFilterValueActive(value: unknown): boolean {
   return true;
 }
 
-function Trigger({ item }: { item: FilterCardItem }) {
+type TriggerProps = {
+  item: FilterCardItem;
+  value: unknown;
+  isOpen: boolean;
+  toggle: (id: string, rect: AnchorRect, el: HTMLButtonElement) => void;
+  close: () => void;
+};
+
+function Trigger({ item, value, isOpen: open, toggle, close }: TriggerProps) {
   const {
     id,
     label = "انتخاب کنید",
@@ -264,10 +270,6 @@ function Trigger({ item }: { item: FilterCardItem }) {
     renderTrigger,
   } = item;
 
-  const { getValue, isOpen, toggle, close } = useFilterCard();
-
-  const value = getValue(id);
-  const open = isOpen(id);
   const filled = isFilterValueActive(value);
 
   const styles = TRIGGER_VARIANTS[variant];
@@ -330,40 +332,62 @@ const PANEL_SIZE: Record<FilterPanelSize, string> = {
   sm: "w-64",
   md: "w-80",
   lg: "w-[26rem]",
+  xl: "w-[min(38rem,calc(100vw-1.5rem))]",
   auto: "w-max min-w-52",
 };
 
 const GAP = 10;
 const VIEWPORT_MARGIN = 10;
 
-function Panel({ id, panel }: { id: string; panel: FilterPanelConfig }) {
-  const { isOpen } = useFilterCard();
+type PanelSharedProps = {
+  placement: FilterCardPlacement;
+  getValue: (id: string) => unknown;
+  setValue: (id: string, value: unknown, closePanel?: boolean) => void;
+  openById: (id: string) => void;
+  close: () => void;
+  anchorRect: RefObject<AnchorRect | null>;
+  triggerEl: RefObject<HTMLButtonElement | null>;
+};
 
-  if (!isOpen(id)) return null;
-  return <PanelPopover id={id} panel={panel} />;
+type PanelProps = PanelSharedProps & {
+  id: string;
+  panel: FilterPanelConfig;
+  isOpen: boolean;
+};
+
+function Panel({ id, panel, isOpen, ...rest }: PanelProps) {
+  if (!isOpen) return null;
+  return <PanelPopover id={id} panel={panel} {...rest} />;
 }
 
-function PanelPopover({ id, panel }: { id: string; panel: FilterPanelConfig }) {
+type PanelPopoverProps = PanelSharedProps & {
+  id: string;
+  panel: FilterPanelConfig;
+};
+
+function PanelPopover({
+  id,
+  panel,
+  placement: rootPlacement,
+  getValue,
+  setValue,
+  openById,
+  close,
+  anchorRect,
+  triggerEl,
+}: PanelPopoverProps) {
   const {
     title,
     size = "md",
     placement,
     showArrow = true,
     closeOnSelect = false,
+    advanceTo,
     className = "",
     contentClassName = "",
     render,
     children,
   } = panel;
-
-  const {
-    placement: rootPlacement,
-    getValue,
-    setValue,
-    close,
-    anchorRect,
-    triggerEl,
-  } = useFilterCard();
 
   const panelPlacement = placement ?? rootPlacement;
 
@@ -478,14 +502,34 @@ function PanelPopover({ id, panel }: { id: string; panel: FilterPanelConfig }) {
   }, [triggerEl]);
 
   const value = getValue(id);
-  const setLocal = (next: unknown) => setValue(id, next, closeOnSelect);
+
+  /**
+   * بعد از انتخاب، کارت یا بسته می‌شود و/یا فیلد بعدی باز می‌شود.
+   * اگر advanceTo ست شده باشد، بلافاصله (بعد از بسته‌شدن) کارت بعدی باز می‌شود.
+   */
+  const commit = (next: unknown, shouldClose: boolean) => {
+    if (!shouldClose) {
+      setValue(id, next, false);
+      return;
+    }
+
+    setValue(id, next, true);
+    if (advanceTo) {
+      window.requestAnimationFrame(() => openById(advanceTo));
+    }
+  };
+
+  const setLocal = (next: unknown) => commit(next, closeOnSelect);
 
   const content: ReactNode =
     typeof render === "function"
       ? (render as (ctx: PanelRenderProps) => ReactNode)({
           id,
           value,
+          getValue,
           setValue: setLocal,
+          setFieldValue: (targetId, next) => setValue(targetId, next, false),
+          openPanel: openById,
           close,
         })
       : children;

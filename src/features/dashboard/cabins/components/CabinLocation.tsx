@@ -1,7 +1,7 @@
 import { MapPin, Navigation } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Cabin } from "@/features/cabins/lib/data-service";
-import CardDashContainer from "../../components/CardDashContainer";
+import CardDashContainer from "../../shared/components/CardDashContainer";
 
 /**
  * جایگاه نمایش موقعیت مکانی — آماده برای نقشه.

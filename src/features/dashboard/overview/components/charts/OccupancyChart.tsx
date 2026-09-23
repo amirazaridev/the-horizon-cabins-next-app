@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 
-import CardDashContainer from "../../../components/CardDashContainer";
+import CardDashContainer from "../../../shared/components/CardDashContainer";
 import type { Booking, Cabin } from "../../data/mock-data";
 
 interface OccupancyChartProps {

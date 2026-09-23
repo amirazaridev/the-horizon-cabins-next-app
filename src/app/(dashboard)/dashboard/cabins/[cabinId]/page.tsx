@@ -11,7 +11,7 @@ import CabinGallery from "@/features/cabins/components/CabinDetail/CabinGallery"
 import SpecsGrid from "@/features/cabins/components/CabinDetail/SpecsGrid";
 import CabinDescription from "@/features/cabins/components/CabinDetail/CabinDescription";
 import BadgeTitle from "@/components/ui/BadgeTitle";
-import CardDashContainer from "@/features/dashboard/components/CardDashContainer";
+import CardDashContainer from "@/features/dashboard/shared/components/CardDashContainer";
 import CabinLocation from "@/features/dashboard/cabins/components/CabinLocation";
 import CabinDetailsActions from "@/features/dashboard/cabins/components/CabinDetailsActions";
 import { formatCurrency } from "@/libs/utils/format";

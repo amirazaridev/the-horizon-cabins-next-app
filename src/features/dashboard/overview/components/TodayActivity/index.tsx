@@ -1,21 +1,31 @@
-import CardDashContainer from "../../../components/CardDashContainer";
+import CardDashContainer from "../../../shared/components/CardDashContainer";
 import TodayItem from "./TodayItem";
 
 function TodayActivity() {
   const activities = [
     { id: 1, status: "checked-in", numNights: 4, guest: { fullName: "امیر" } },
     { id: 2, status: "checked-in", numNights: 4, guest: { fullName: "حسین" } },
-    { id: 3, status: "unconfirmed", numNights: 4, guest: { fullName: "فرهاد" } },
+    {
+      id: 3,
+      status: "unconfirmed",
+      numNights: 4,
+      guest: { fullName: "فرهاد" },
+    },
     { id: 4, status: "checked-in", numNights: 4, guest: { fullName: "فرهاد" } },
     { id: 5, status: "checked-in", numNights: 4, guest: { fullName: "فرهاد" } },
-    { id: 6, status: "unconfirmed", numNights: 4, guest: { fullName: "فرهاد" } },
+    {
+      id: 6,
+      status: "unconfirmed",
+      numNights: 4,
+      guest: { fullName: "فرهاد" },
+    },
   ];
 
   return (
-    <CardDashContainer className="flex w-full flex-col gap-5 overflow-x-hidden p-5 max-h-110">
+    <CardDashContainer className="flex max-h-110 w-full flex-col gap-5 overflow-x-hidden p-5">
       <div className="flex flex-col gap-1">
-        <h3 className="text-lg font-semibold text-text">فعالیت امروز</h3>
-        <p className="text-sm text-text-gray">تحویل و تخلیه برای امروز</p>
+        <h3 className="text-text text-lg font-semibold">فعالیت امروز</h3>
+        <p className="text-text-gray text-sm">تحویل و تخلیه برای امروز</p>
       </div>
 
       {activities?.length > 0 ? (
@@ -25,7 +35,7 @@ function TodayActivity() {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-3 py-10 text-text-gray">
+        <div className="text-text-gray flex flex-col items-center justify-center gap-3 py-10">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-9 w-9"

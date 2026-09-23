@@ -10,7 +10,7 @@ import {
   YAxis,
 } from "recharts";
 
-import CardDashContainer from "../../../components/CardDashContainer";
+import CardDashContainer from "../../../shared/components/CardDashContainer";
 import { CABINS, type Booking } from "../../data/mock-data";
 import { formatCurrency } from "@/libs/utils/format";
 
