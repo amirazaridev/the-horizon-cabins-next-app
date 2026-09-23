@@ -12,14 +12,14 @@ import OccupancyChart from "./components/charts/OccupancyChart";
 import CityRevenueChart from "./components/charts/CityRevenueChart";
 import TodayActivity from "./components/TodayActivity";
 import { useTransition } from "react";
-import Spinner from "@/components/ui/Spinner";
-import { City } from "@/features/cabins/types/City";
+import Spinner from "@/components/ui/spinner";
+import { City } from "@/features/cabins/types/city.types";
 
 type Props = {
   cities: City[];
 };
 
-export default function MainPageLayout({cities}:Props) {
+export default function MainPageLayout({ cities }: Props) {
   const [isPending, startTransition] = useTransition();
   const { filters, bookings, prevBookings, activeCabins } =
     useDashboardFilters();
@@ -28,7 +28,7 @@ export default function MainPageLayout({cities}:Props) {
     <div className="flex flex-col gap-6">
       {isPending && <Spinner size="xl" fullscreen />}
       <div className="flex flex-col gap-5">
-        <div >
+        <div>
           <h2 className="text-text text-2xl font-bold sm:text-3xl">داشبورد</h2>
           <p className="text-text-gray mt-1 text-sm">
             خلاصه وضعیت سوییت‌ها از{" "}

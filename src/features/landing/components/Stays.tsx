@@ -1,6 +1,6 @@
 import Container from "@/components/ui/Container";
 import SectionHeading from "./SectionHeading";
-import { Cabin } from "@/features/cabins/lib/data-service";
+import { Cabin } from "@/features/cabins/types/cabin.types";
 import CabinCard from "@/features/cabins/components/CabinCard";
 import Carousel from "@/components/ui/Carousel";
 
@@ -17,18 +17,18 @@ export default function Stays({ cabins }: { cabins: Cabin[] }) {
           }
           href="/cabins"
         />
-          <Carousel>
-            {cabins.map((cabin) => (
-              <CabinCard
-                cabin={cabin}
-                key={cabin.id}
-                showPrice
-                variant="landing"
-                animation="hover"
-                className="hz-stay-card transition-[border-color,box-shadow]!"
-              />
-            ))}
-          </Carousel>
+        <Carousel>
+          {cabins.map((cabin) => (
+            <CabinCard
+              cabin={cabin}
+              key={cabin.id}
+              showPrice
+              variant="landing"
+              animation="hover"
+              className="hz-stay-card transition-[border-color,box-shadow]!"
+            />
+          ))}
+        </Carousel>
       </Container>
     </section>
   );

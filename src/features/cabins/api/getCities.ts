@@ -1,6 +1,6 @@
 import { apiFetch } from "@/libs/api/apiFetch";
 import { ApiResponse } from "@/types/api-response";
-import { City } from "../types/City";
+import { City } from "../types/city.types";
 
 export async function getCities() {
   const res = await apiFetch("cabins/cities");

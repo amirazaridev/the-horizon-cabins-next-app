@@ -1,5 +1,5 @@
 import CabinCard from "@/features/cabins/components/CabinCard";
-import { getCabins } from "../lib/data-service";
+import { getCabins } from "../api";
 import { applyCabinFilters, type CabinFilters } from "../lib/cabin-filters";
 import CabinNotFound from "./CabinNotFound";
 

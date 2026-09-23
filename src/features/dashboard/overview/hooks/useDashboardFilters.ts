@@ -21,7 +21,7 @@ import {
   resolveDashboardDateRange,
   type DateRangePreset,
 } from "../lib/date-range";
-import type { Cabin } from "@/features/cabins/lib/data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 
 export {
   ALL,

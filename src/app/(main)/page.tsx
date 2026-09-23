@@ -1,4 +1,4 @@
-import { getCabins } from "@/features/cabins/lib/data-service";
+import { getCabins } from "@/features/cabins/api";
 import Landing from "@/features/landing";
 
 export default async function Home() {

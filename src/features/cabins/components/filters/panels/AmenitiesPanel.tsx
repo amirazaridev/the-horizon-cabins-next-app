@@ -1,6 +1,6 @@
 "use client";
 
-import OptionRow from "../OptionRow";
+import OptionRow from "../../../../../components/ui/filter/OptionRow";
 import { useCabinQuery } from "../useCabinQuery";
 import type { CabinFilterOptions } from "../../../lib/cabin-filters";
 

@@ -1,5 +1,5 @@
-import { Cabin } from "@/features/cabins/lib/data-service";
-import type { City } from "@/features/cabins/types/City";
+import { Cabin } from "@/features/cabins/types/cabin.types";
+import type { City } from "@/features/cabins/types/city.types";
 
 export type BookingStatus = "unconfirmed" | "confirmed" | "checked-out";
 

@@ -1,4 +1,4 @@
-import { filterCabins, type Cabin } from "@/features/cabins/lib/data-service";
+import { type Cabin } from "@/features/cabins/types/cabin.types";
 
 export type CabinsSearchParams = Record<string, string | string[] | undefined>;
 
@@ -29,7 +29,7 @@ export function applyCabinsOperations(
     result = result.filter((c) => c.discount > 0);
 
   // ظرفیت: از تابع موجود data-service استفاده می‌کنیم (small/medium/large)
-  if (capacity !== "all") result = filterCabins(result, capacity);
+  // if (capacity !== "all") result = filterCabins(result, capacity);
   if (city !== "all") result = result.filter((res) => res.city?.name === city);
 
   return sortCabins(result, sortBy);

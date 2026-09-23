@@ -1,6 +1,6 @@
 "use client";
 
-import OptionRow from "../OptionRow";
+import OptionRow from "../../../../../components/ui/filter/OptionRow";
 import { useCabinQuery } from "../useCabinQuery";
 
 const OPTIONS = [1, 2, 3, 4];
@@ -21,7 +21,9 @@ export default function BedroomsPanel() {
       {OPTIONS.map((n) => (
         <OptionRow
           key={n}
-          label={n >= 4 ? "۴ خواب و بیشتر" : `${n.toLocaleString("fa-IR")} خوابه`}
+          label={
+            n >= 4 ? "۴ خواب و بیشتر" : `${n.toLocaleString("fa-IR")} خوابه`
+          }
           hint={
             n >= 4
               ? "حداقل ۴ اتاق‌خواب"

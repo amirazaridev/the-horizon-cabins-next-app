@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 import type { ReactNode } from "react";
-import type { Cabin } from "../../lib/data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 
 type Props = {
   cabin: Cabin;

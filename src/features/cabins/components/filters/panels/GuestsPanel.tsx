@@ -1,6 +1,6 @@
 "use client";
 
-import OptionRow from "../OptionRow";
+import OptionRow from "../../../../../components/ui/filter/OptionRow";
 import { useCabinQuery } from "../useCabinQuery";
 
 const OPTIONS = [1, 2, 3, 4, 5, 6];
@@ -22,7 +22,11 @@ export default function GuestsPanel() {
         <OptionRow
           key={n}
           label={n >= 6 ? "۶ نفر و بیشتر" : `${n.toLocaleString("fa-IR")} نفر`}
-          hint={n >= 6 ? "ظرفیت ۶ به بالا" : `ظرفیت حداقل ${n.toLocaleString("fa-IR")} نفر`}
+          hint={
+            n >= 6
+              ? "ظرفیت ۶ به بالا"
+              : `ظرفیت حداقل ${n.toLocaleString("fa-IR")} نفر`
+          }
           selected={current === String(n)}
           onSelect={() => setParam("guests", String(n))}
         />

@@ -1,6 +1,6 @@
 import { MapPin, Navigation } from "lucide-react";
 import type { ReactNode } from "react";
-import type { Cabin } from "@/features/cabins/lib/data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 import CardDashContainer from "../../shared/components/CardDashContainer";
 
 /**

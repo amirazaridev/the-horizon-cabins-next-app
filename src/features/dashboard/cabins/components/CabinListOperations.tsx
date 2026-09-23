@@ -9,16 +9,16 @@ export default async function CabinListOperations(): Promise<ReactNode> {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Filter
+      {/* <Filter
         filterField="discount"
         filterOptions={[
           { value: "all", title: "همه" },
           { value: "with-discount", title: "تخفیف‌دار" },
           { value: "no-discount", title: "بدون تخفیف" },
         ]}
-      />
+      /> */}
 
-      <Filter
+      {/* <Filter
         filterField="capacity"
         filterOptions={[
           { value: "all", title: "همه ظرفیت‌ها" },
@@ -26,7 +26,7 @@ export default async function CabinListOperations(): Promise<ReactNode> {
           { value: "medium", title: "متوسط (۴ تا ۷ نفر)" },
           { value: "large", title: "بزرگ (۸ نفر و بیشتر)" },
         ]}
-      />
+      /> */}
 
       <div className="mr-auto space-y-5">
       <CityFilter cities={cities} value="" />

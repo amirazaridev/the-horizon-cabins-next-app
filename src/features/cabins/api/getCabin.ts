@@ -3,16 +3,13 @@ import { Cabin, CabinDto } from "../types/cabin.types";
 import { API_URL_CABINS } from ".";
 import { mapCabin } from "../lib/mapCabin";
 
-export async function getCabins(): Promise<Cabin[]> {
-  const res = await fetch(API_URL_CABINS, {
-    cache: "force-cache",
-    next: { revalidate: 1, tags: ["cabins-data"] },
-  });
-  const json: ApiResponse<"cabins", CabinDto[]> = await res.json();
+export async function getCabin(id: number): Promise<Cabin> {
+  const res = await fetch(`${API_URL_CABINS}/${id}`);
+  const json: ApiResponse<"cabin", CabinDto> = await res.json();
 
   if (json.status !== "success") {
     throw new Error(json.message ?? "Failed to fetch cabins");
   }
 
-  return json.data.cabins.map(mapCabin);
+  return mapCabin(json.data.cabin);
 }

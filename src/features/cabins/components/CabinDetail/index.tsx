@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import BookingPanel from "@/features/cabins/components/CabinDetail/BookingPanel";
 import CabinGallery from "@/features/cabins/components/CabinDetail/CabinGallery";
 import DateSelectorPanel from "@/features/cabins/components/CabinDetail/DateSelectorPanel";
-import type { Cabin } from "../../lib/data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 import CabinDescription from "./CabinDescription";
 import GalleryHeader from "./GalleryHeader";
 import SpecsGrid from "./SpecsGrid";

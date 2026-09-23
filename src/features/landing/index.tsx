@@ -9,7 +9,7 @@ import Stays from "./components/Stays";
 import Testimonials from "./components/Testimonials";
 import Destinations from "./components/Destinations";
 import useHorizonLandingAnimation from "./hooks/useHorizonLandingAnimation";
-import { Cabin } from "@/features/cabins/lib/data-service";
+import { Cabin } from "@/features/cabins/types/cabin.types";
 import Categories from "./components/Categories";
 
 type Props = {

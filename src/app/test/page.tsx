@@ -1,5 +1,5 @@
-import FilterCard from "@/components/ui/Filter/FilterCard";
-import OptionRow from "@/features/cabins/components/filters/OptionRow";
+import FilterCard from "@/components/ui/filter/FilterCard";
+import OptionRow from "@/components/ui/filter/OptionRow";
 import { MapPin } from "lucide-react";
 import { type ReactNode } from "react";
 

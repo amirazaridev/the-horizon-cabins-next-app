@@ -1,6 +1,6 @@
 import { Zap } from "lucide-react";
 import Container from "@/components/ui/Container";
-import type { Cabin } from "@/features/cabins/lib/data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 import Countdown from "./Countdown";
 import OfferCard from "./OfferCard";
 import Carousel from "@/components/ui/Carousel";

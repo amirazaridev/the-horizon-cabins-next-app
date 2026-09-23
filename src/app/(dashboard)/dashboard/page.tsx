@@ -1,4 +1,4 @@
-import Spinner from "@/components/ui/Spinner";
+import Spinner from "@/components/ui/spinner";
 import { DASHBOARD_CITIES } from "@/features/dashboard/overview/data/mock-data";
 import MainPageLayout from "@/features/dashboard/overview/MainPageLayout";
 import { Suspense } from "react";

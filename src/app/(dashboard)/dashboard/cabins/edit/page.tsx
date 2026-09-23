@@ -1,5 +1,5 @@
 import { getCities } from "@/features/cabins/api";
-import { getCabin } from "@/features/cabins/lib/data-service";
+import { getCabin } from "@/features/cabins/api";
 import CabinForm from "@/features/dashboard/cabins/components/CabinForm";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";

@@ -6,7 +6,7 @@ import { format as formatJalali } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
 import type { ReactNode } from "react";
 
-import { getCabin } from "@/features/cabins/lib/data-service";
+import { getCabin } from "@/features/cabins/api";
 import CabinGallery from "@/features/cabins/components/CabinDetail/CabinGallery";
 import SpecsGrid from "@/features/cabins/components/CabinDetail/SpecsGrid";
 import CabinDescription from "@/features/cabins/components/CabinDetail/CabinDescription";

@@ -1,7 +1,7 @@
 import { Bath, BedDouble, Maximize, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import CardContainer from "@/components/ui/CardContainer";
-import type { Cabin } from "../../lib/data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 
 type Props = {
   cabin: Cabin;

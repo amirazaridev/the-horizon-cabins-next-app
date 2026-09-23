@@ -7,10 +7,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import FilterCard, {
   type FilterCardItem,
-} from "@/components/ui/Filter/FilterCard";
+} from "@/components/ui/filter/FilterCard";
 import MultiOptionList, {
   type MultiOptionListOption,
-} from "@/features/cabins/components/filters/MultiOptionList";
+} from "@/components/ui/filter/MultiOptionList";
 import DateFilterPanel from "./DateFilterPanel";
 import {
   PARAM_CITY,
@@ -28,7 +28,7 @@ import {
   type DateFilterTab,
   type DateFilterValue,
 } from "../../lib/date-range";
-import type { City } from "@/features/cabins/types/City";
+import type { City } from "@/features/cabins/types/city.types";
 
 const STATUS_OPTIONS: MultiOptionListOption[] = [
   { value: "confirmed", label: "تایید شده" },

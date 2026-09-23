@@ -2,7 +2,7 @@
 
 import { MapPin } from "lucide-react";
 
-import OptionRow from "@/features/cabins/components/filters/OptionRow";
+import OptionRow from "@/components/ui/filter/OptionRow";
 import type { SearchCity } from "@/features/landing/constants/search";
 
 type Props = {

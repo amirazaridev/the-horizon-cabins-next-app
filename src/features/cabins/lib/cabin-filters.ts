@@ -1,4 +1,4 @@
-import type { Cabin } from "./data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 
 /** کلیدهای فیلتر در URL */
 export const CABIN_FILTER_KEYS = [

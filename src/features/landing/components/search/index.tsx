@@ -14,7 +14,7 @@ import {
 import FilterCard, {
   type FilterCardItem,
   type FilterCardValues,
-} from "@/components/ui/Filter/FilterCard";
+} from "@/components/ui/filter/FilterCard";
 import {
   formatJalaliDate,
   type DateRange,

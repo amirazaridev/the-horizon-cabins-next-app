@@ -7,8 +7,8 @@ import { MapPin, Save } from "lucide-react";
 
 import Button from "@/components/ui/Button";
 import CardDashContainer from "@/features/dashboard/shared/components/CardDashContainer";
-import type { Cabin } from "@/features/cabins/lib/data-service";
-import type { City } from "@/features/cabins/types/City";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
+import type { City } from "@/features/cabins/types/city.types";
 import CabinImageDropzone, { type CabinImage } from "./CabinImageDropzone";
 import { splitImages } from "../lib/cabin-images";
 import { createCabinAction, updateCabinAction } from "../lib/cabin-actions";

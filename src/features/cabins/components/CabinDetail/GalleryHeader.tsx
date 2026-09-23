@@ -1,7 +1,8 @@
 import { MapPin, Star } from "lucide-react";
 import type { ReactNode } from "react";
 import BadgeTitle from "@/components/ui/BadgeTitle";
-import type { Cabin } from "../../lib/data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
+
 
 type Props = {
   cabin: Cabin;

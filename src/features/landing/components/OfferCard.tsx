@@ -1,4 +1,4 @@
-import type { Cabin } from "@/features/cabins/lib/data-service";
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 import CabinCard from "@/features/cabins/components/CabinCard";
 import { formatCurrency } from "@/libs/utils/format";
 

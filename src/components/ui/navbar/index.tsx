@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
-import NavbarItem from "@/components/ui/Navbar/NavbarItem";
+import NavbarItem from "@/components/ui/navbar/NavbarItem";
 import Logo from "@/components/ui/Logo";
-import NavMenus from "@/components/ui/Navbar/NavMenus";
-import NavMobile from "@/components/ui/Navbar/NavMobile";
+import NavMenus from "@/components/ui/navbar/NavMenus";
+import NavMobile from "@/components/ui/navbar/NavMobile";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { usePathname } from "next/navigation";
 import Container from "../Container";
@@ -28,7 +28,7 @@ export default function Navbar() {
     gsap.to(nav, {
       y: 0,
       opacity: 1,
-      duration: .2,
+      duration: 0.2,
       ease: "power3.out",
       delay: 0.5,
     });
@@ -57,7 +57,7 @@ export default function Navbar() {
         ref={navRef}
         className={`${isLandingPage ? "fixed" : "sticky"} ${textColor} ${
           hasSolidBackground
-            ? "border-foreground/10 border-b bg-background/80 shadow-lg backdrop-blur-xl"
+            ? "border-foreground/10 bg-background/80 border-b shadow-lg backdrop-blur-xl"
             : "border-b border-transparent bg-transparent"
         } top-0 right-0 left-0 z-50 px-4 py-4 transition-all duration-300 md:px-6`}
       >

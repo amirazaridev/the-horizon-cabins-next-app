@@ -2,7 +2,7 @@
 
 import Select from "@/components/ui/Select";
 import { ALL, PARAM_CITY } from "../../overview/hooks/useDashboardFilters";
-import { City } from "@/features/cabins/types/City";
+import { City } from "@/features/cabins/types/city.types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface CityFilterProps {

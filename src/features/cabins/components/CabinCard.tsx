@@ -12,7 +12,7 @@ import {
 import { type ReactNode } from "react";
 import { format as formatJalali } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
-import { type Cabin } from "@/features/cabins/lib/data-service";
+import { type Cabin } from "@/features/cabins/types/cabin.types";
 import { formatCurrency } from "@/libs/utils/format";
 
 export interface CabinCardProps {

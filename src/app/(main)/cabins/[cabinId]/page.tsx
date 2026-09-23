@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import CabinDetail from "@/features/cabins/components/CabinDetail";
-import { getCabin } from "@/features/cabins/lib/data-service";
+import { getCabin } from "@/features/cabins/api";
 import Navigate from "@/components/ui/Navigate";
 
 type Props = { params: Promise<{ cabinId: string }> };

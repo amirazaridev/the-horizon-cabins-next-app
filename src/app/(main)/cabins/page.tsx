@@ -3,9 +3,9 @@ import { Suspense } from "react";
 
 import CabinList from "@/features/cabins/components/CabinList";
 import CabinsExplorer from "@/features/cabins/components/CabinsExplorer";
-import Spinner from "@/components/ui/Spinner";
+import Spinner from "@/components/ui/spinner";
 
-import { getCabins } from "@/features/cabins/lib/data-service";
+import { getCabins } from "@/features/cabins/api";
 import {
   applyCabinFilters,
   buildCabinFilterOptions,
@@ -32,19 +32,10 @@ export default async function CabinsPage({
   const resultCount = applyCabinFilters(cabins, filters).length;
 
   return (
-    <section className="min-h-screen bg-background">
-      <CabinsExplorer
-        resultCount={resultCount}
-        filterOptions={filterOptions}
-      >
+    <section className="bg-background min-h-screen">
+      <CabinsExplorer resultCount={resultCount} filterOptions={filterOptions}>
         <Suspense
-          fallback={
-            <Spinner
-              size="lg"
-              label="درحال بارگزاری ..."
-              fullWidth
-            />
-          }
+          fallback={<Spinner size="lg" label="درحال بارگزاری ..." fullWidth />}
           key={JSON.stringify(filters)}
         >
           <CabinList filters={filters} />
