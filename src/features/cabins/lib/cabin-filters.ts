@@ -1,12 +1,16 @@
 import type { Cabin } from "@/features/cabins/types/cabin.types";
 
-/** کلیدهای فیلتر در URL */
+/** کلیدهای فیلتر در URL (برای clearFilters) */
 export const CABIN_FILTER_KEYS = [
   "guests",
   "bedrooms",
   "amenities",
   "price",
   "city",
+  // تاریخ سفر روی نتایج اثر نمی‌گذارد (دیتای اشغال نداریم) ولی برای نمایش/
+  // همگامی با سرچ لندینگ در URL نگه داشته و با «حذف فیلترها» پاک می‌شود.
+  "checkIn",
+  "checkOut",
 ] as const;
 
 export type CabinFilters = {

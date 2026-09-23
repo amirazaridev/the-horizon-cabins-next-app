@@ -6,23 +6,36 @@ import type { CabinFilterOptions } from "../../../lib/cabin-filters";
 
 type Props = {
   options: CabinFilterOptions;
+  /**
+   * حالت controlled (داخل FilterCard دسکتاپ).
+   * اگر onChange داده نشود، پنل خودش مستقیم با useCabinQuery کار می‌کند (موبایل).
+   */
+  value?: string[];
+  onChange?: (value: string[]) => void;
 };
 
 /** امکانات — چندگزینه‌ای؛ اقامتگاه باید همه موارد را داشته باشد */
-export default function AmenitiesPanel({ options }: Props) {
+export default function AmenitiesPanel({ options, value, onChange }: Props) {
   const { searchParams, setParam } = useCabinQuery();
-  const selected =
+  const urlSelected =
     searchParams
       .get("amenities")
       ?.split(",")
       .map((a) => a.trim())
       .filter(Boolean) ?? [];
+  const selected = onChange ? (value ?? []) : urlSelected;
+
+  const write = (next: string[]) => {
+    if (onChange) onChange(next);
+    else setParam("amenities", next.length ? next.join(",") : null);
+  };
 
   const toggle = (amenity: string) => {
-    const next = selected.includes(amenity)
-      ? selected.filter((a) => a !== amenity)
-      : [...selected, amenity];
-    setParam("amenities", next.length ? next.join(",") : null);
+    write(
+      selected.includes(amenity)
+        ? selected.filter((a) => a !== amenity)
+        : [...selected, amenity],
+    );
   };
 
   if (!options.amenities.length) {
@@ -44,7 +57,7 @@ export default function AmenitiesPanel({ options }: Props) {
         {selected.length > 0 && (
           <button
             type="button"
-            onClick={() => setParam("amenities", null)}
+            onClick={() => write([])}
             className="text-danger text-xs font-bold"
           >
             حذف همه

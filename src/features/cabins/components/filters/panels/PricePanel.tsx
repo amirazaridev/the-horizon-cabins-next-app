@@ -6,12 +6,23 @@ import type { CabinFilterOptions } from "../../../lib/cabin-filters";
 
 type Props = {
   options: CabinFilterOptions;
+  /**
+   * حالت controlled (داخل FilterCard دسکتاپ).
+   * اگر onChange داده نشود، پنل خودش مستقیم با useCabinQuery کار می‌کند (موبایل).
+   */
+  value?: string | null;
+  onChange?: (value: string | null) => void;
 };
 
 /** بازه قیمت هر شب — باکت‌های ساخته‌شده از دیتای واقعی */
-export default function PricePanel({ options }: Props) {
+export default function PricePanel({ options, value, onChange }: Props) {
   const { searchParams, setParam } = useCabinQuery();
-  const current = searchParams.get("price");
+  const current = onChange ? (value ?? null) : searchParams.get("price");
+
+  const select = (next: string | null) => {
+    if (onChange) onChange(next);
+    else setParam("price", next);
+  };
 
   if (!options.priceBuckets.length) {
     return (
@@ -27,17 +38,17 @@ export default function PricePanel({ options }: Props) {
         label="هر قیمت"
         hint="نمایش همه اقامتگاه‌ها"
         selected={current === null}
-        onSelect={() => setParam("price", null)}
+        onSelect={() => select(null)}
       />
       {options.priceBuckets.map((bucket) => {
-        const value = `${bucket.value[0]}-${bucket.value[1]}`;
+        const bucketValue = `${bucket.value[0]}-${bucket.value[1]}`;
         return (
           <OptionRow
-            key={value}
+            key={bucketValue}
             label={bucket.label}
             hint="قیمت نهایی هر شب"
-            selected={current === value}
-            onSelect={() => setParam("price", value)}
+            selected={current === bucketValue}
+            onSelect={() => select(bucketValue)}
           />
         );
       })}

@@ -1,74 +1,100 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays } from "lucide-react";
+import RangeDatePicker, {
+  type DateRange,
+} from "@/components/ui/RangeDatePicker";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import {
+  formatDateParam,
+  parseDateParam,
+  type CabinDateValue,
+} from "../../../lib/cabin-date";
+import { useCabinQuery } from "../useCabinQuery";
 
 type Props = {
-  onDone: () => void;
+  /**
+   * حالت controlled (داخل FilterCard دسکتاپ):
+   * value از searchParams می‌آید و onChange به URL می‌نویسد.
+   * اگر onChange داده نشود، پنل خودش مستقیم با useCabinQuery کار می‌کند (موبایل).
+   */
+  value?: CabinDateValue;
+  onChange?: (next: CabinDateValue) => void;
+  /** بعد از کامل شدن بازه (انتخاب خروج) صدا زده می‌شود — معمولاً بستن پنل */
+  onDone?: () => void;
 };
 
+function toRange(value: CabinDateValue): DateRange {
+  return {
+    from: parseDateParam(value.checkIn),
+    to: parseDateParam(value.checkOut),
+  };
+}
+
 /**
- * پنل تستی تاریخ سفر — فعلاً روی نتایج اثر نمی‌گذارد و در URL ذخیره نمی‌شود.
- * بعداً date picker همین‌جا جایگزین می‌شود.
+ * تاریخ سفر — تقویم شمسی دوقلو که در checkIn/checkOut آدرس ذخیره می‌شود.
+ * فعلاً روی نتایج اثر نمی‌گذارد (دیتای اشغال نداریم) ولی انتخاب در URL
+ * می‌ماند تا با سرچ لندینگ همگام باشد.
  */
-export default function DatePanel({ onDone }: Props) {
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+export default function DatePanel({ value, onChange, onDone }: Props) {
+  const { searchParams, setParams } = useCabinQuery();
+
+  const external: CabinDateValue = value ?? {
+    checkIn: searchParams.get("checkIn"),
+    checkOut: searchParams.get("checkOut"),
+  };
+
+  const commit = (next: CabinDateValue) => {
+    if (onChange) onChange(next);
+    else setParams({ checkIn: next.checkIn, checkOut: next.checkOut });
+  };
+
+  // درفت محلی برای پاسخ آنی UI؛ همگام‌سازی با URL ناوبری async است.
+  // وقتی مقدار بیرونی (URL) عوض شد — مثلاً دکمه «حذف فیلترها» — درفت ریست می‌شود.
+  const [draft, setDraft] = useState<DateRange>(() => toRange(external));
+  const [lastSynced, setLastSynced] = useState(external);
+  if (
+    external.checkIn !== lastSynced.checkIn ||
+    external.checkOut !== lastSynced.checkOut
+  ) {
+    setLastSynced(external);
+    setDraft(toRange(external));
+  }
+
+  const isNarrow = useMediaQuery("(max-width: 640px)");
+
+  const handleChange = (range: DateRange) => {
+    setDraft(range);
+    commit({
+      checkIn: range.from ? formatDateParam(range.from) : null,
+      checkOut: range.to ? formatDateParam(range.to) : null,
+    });
+  };
 
   const clear = () => {
-    setCheckIn("");
-    setCheckOut("");
+    setDraft({ from: null, to: null });
+    commit({ checkIn: null, checkOut: null });
   };
+
+  const hasSelection = draft.from !== null || draft.to !== null;
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-2">
-        <span className="bg-primary-400/15 flex size-9 items-center justify-center rounded-full">
-          <CalendarDays className="text-primary-400 size-4" />
-        </span>
-        <div>
-          <p className="text-text text-sm font-bold">تاریخ سفر</p>
-          <p className="text-text-gray text-xs">پنل تستی — به‌زودی date picker</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <label className="block">
-          <span className="text-text-gray mb-1.5 block text-xs">تاریخ ورود</span>
-          <input
-            value={checkIn}
-            onChange={(e) => setCheckIn(e.target.value)}
-            placeholder="۱۴۰۵/۰۷/۰۱"
-            inputMode="numeric"
-            className="bg-background-2 text-text w-full rounded-xl border border-foreground/10 px-3 py-2.5 text-sm outline-none placeholder:text-text-gray/60 focus:border-primary-400"
-          />
-        </label>
-        <label className="block">
-          <span className="text-text-gray mb-1.5 block text-xs">تاریخ خروج</span>
-          <input
-            value={checkOut}
-            onChange={(e) => setCheckOut(e.target.value)}
-            placeholder="۱۴۰۵/۰۷/۰۳"
-            inputMode="numeric"
-            className="bg-background-2 text-text w-full rounded-xl border border-foreground/10 px-3 py-2.5 text-sm outline-none placeholder:text-text-gray/60 focus:border-primary-400"
-          />
-        </label>
-      </div>
+      <RangeDatePicker
+        value={draft}
+        onChange={handleChange}
+        onComplete={onDone}
+        numberOfMonths={isNarrow ? 1 : 2}
+      />
 
       <div className="mt-4 flex items-center gap-2">
         <button
           type="button"
           onClick={clear}
-          className="text-text-gray flex-1 rounded-xl border border-foreground/10 py-2.5 text-sm font-medium transition-colors hover:text-text"
+          disabled={!hasSelection}
+          className="text-text-gray border-foreground/10 hover:text-text flex-1 rounded-xl border py-2.5 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-40"
         >
-          حذف
-        </button>
-        <button
-          type="button"
-          onClick={onDone}
-          className="bg-primary-400 flex-1 rounded-xl py-2.5 text-sm font-bold text-black transition-transform active:scale-95"
-        >
-          ثبت (تستی)
+          حذف تاریخ
         </button>
       </div>
     </div>
