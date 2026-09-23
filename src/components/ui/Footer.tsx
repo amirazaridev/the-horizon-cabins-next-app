@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone, Activity } from "lucide-react";
+import { Mail } from "lucide-react";
 import Container from "@/components/ui/Container";
 import Logo from "@/components/ui/Logo";
 

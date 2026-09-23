@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/RangeDatePicker";
 import { SEARCH_CITIES, type SearchCity } from "../../constants/search";
 import CityPanel from "./search-panels/CityPanel";
-import SearchDatePanel from "./search-panels/SearchDatePanel";
+import DateRangePanel from "@/components/ui/filter/DateRangePanel";
 import GuestsPanel from "./search-panels/GuestsPanel";
 import SearchAction from "./SearchAction";
 import FieldContent from "./FieldContent";
@@ -170,7 +170,7 @@ export default function Search() {
         };
 
         return (
-          <SearchDatePanel
+          <DateRangePanel
             value={range}
             onChange={(next) => {
               setFieldValue("checkIn", next.from);

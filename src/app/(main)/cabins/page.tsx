@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import CabinList from "@/features/cabins/components/CabinList";
 import CabinsExplorer from "@/features/cabins/components/CabinsExplorer";
-import Spinner from "@/components/ui/spinner";
+import Spinner from "@/components/ui/Spinner";
 
 import { getCabins } from "@/features/cabins/api";
 import {

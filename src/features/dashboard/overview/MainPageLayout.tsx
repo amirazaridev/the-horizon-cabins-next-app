@@ -12,7 +12,7 @@ import OccupancyChart from "./components/charts/OccupancyChart";
 import CityRevenueChart from "./components/charts/CityRevenueChart";
 import TodayActivity from "./components/TodayActivity";
 import { useTransition } from "react";
-import Spinner from "@/components/ui/spinner";
+import Spinner from "@/components/ui/Spinner";
 import { City } from "@/features/cabins/types/city.types";
 
 type Props = {

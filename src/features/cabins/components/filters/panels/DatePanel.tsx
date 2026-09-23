@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import RangeDatePicker, {
+import DateRangePanel, {
   type DateRange,
-} from "@/components/ui/RangeDatePicker";
-import useMediaQuery from "@/hooks/useMediaQuery";
+} from "@/components/ui/filter/DateRangePanel";
 import {
   formatDateParam,
   parseDateParam,
@@ -32,9 +31,10 @@ function toRange(value: CabinDateValue): DateRange {
 }
 
 /**
- * تاریخ سفر — تقویم شمسی دوقلو که در checkIn/checkOut آدرس ذخیره می‌شود.
- * فعلاً روی نتایج اثر نمی‌گذارد (دیتای اشغال نداریم) ولی انتخاب در URL
- * می‌ماند تا با سرچ لندینگ همگام باشد.
+ * تاریخ سفر — آداپتور cabins روی هسته مشترک DateRangePanel.
+ * برخلاف سرچ لندینگ (state محلی)، هر کلیک روی تقویم بلافاصله در
+ * checkIn/checkOut آدرس ثبت می‌شود تا با URL همگام بماند.
+ * فعلاً روی نتایج اثر نمی‌گذارد (دیتای اشغال نداریم).
  */
 export default function DatePanel({ value, onChange, onDone }: Props) {
   const { searchParams, setParams } = useCabinQuery();
@@ -61,8 +61,6 @@ export default function DatePanel({ value, onChange, onDone }: Props) {
     setDraft(toRange(external));
   }
 
-  const isNarrow = useMediaQuery("(max-width: 640px)");
-
   const handleChange = (range: DateRange) => {
     setDraft(range);
     commit({
@@ -76,27 +74,13 @@ export default function DatePanel({ value, onChange, onDone }: Props) {
     commit({ checkIn: null, checkOut: null });
   };
 
-  const hasSelection = draft.from !== null || draft.to !== null;
-
   return (
-    <div>
-      <RangeDatePicker
-        value={draft}
-        onChange={handleChange}
-        onComplete={onDone}
-        numberOfMonths={isNarrow ? 1 : 2}
-      />
-
-      <div className="mt-4 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={clear}
-          disabled={!hasSelection}
-          className="text-text-gray border-foreground/10 hover:text-text flex-1 rounded-xl border py-2.5 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-40"
-        >
-          حذف تاریخ
-        </button>
-      </div>
-    </div>
+    <DateRangePanel
+      value={draft}
+      onChange={handleChange}
+      onComplete={onDone}
+      showClear
+      onClear={clear}
+    />
   );
 }

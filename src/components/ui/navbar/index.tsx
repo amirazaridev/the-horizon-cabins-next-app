@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
-import NavbarItem from "@/components/ui/navbar/NavbarItem";
+import NavbarItem from "@/components/ui/Navbar/NavbarItem";
 import Logo from "@/components/ui/Logo";
-import NavMenus from "@/components/ui/navbar/NavMenus";
-import NavMobile from "@/components/ui/navbar/NavMobile";
+import NavMenus from "@/components/ui/Navbar/NavMenus";
+import NavMobile from "@/components/ui/Navbar/NavMobile";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { usePathname } from "next/navigation";
 import Container from "../Container";
