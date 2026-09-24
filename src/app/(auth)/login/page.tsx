@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import LoginForm from "@/features/auth/components/LoginForm";
 
 export const metadata: Metadata = {
-  title: "ورود | هورایزن کابینز",
+  title: "ورود",
 };
 
 export default function LoginPage(): ReactNode {

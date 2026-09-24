@@ -13,7 +13,7 @@ import {
 } from "@/features/cabins/utils/cabin-filters";
 
 export const metadata: Metadata = {
-  title: "سوئیت‌های لوکس | هورایزن کابینز",
+  title: "اقامتگاه‌ها",
   description:
     "مجموعه کامل سوئیت‌ها و اقامتگاه‌های لوکس در طبیعت ایران؛ از سوئیت‌های چوبی جنگل‌های هیرکانی تا اقامتگاه‌های ساحلی خزر.",
 };

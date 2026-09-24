@@ -21,7 +21,8 @@ type Props = { params: Promise<{ cabinId: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { cabinId } = await params;
   const cabin = await getCabin(Number(cabinId));
-  return { title: `${cabin?.name ?? "سوییت"} | داشبورد` };
+  const name = cabin?.name ?? "اقامتگاه";
+  return { title: name.length > 30 ? name.slice(0, 30) + "…" : name };
 }
 
 export default async function DashboardCabinDetailPage({

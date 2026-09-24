@@ -3,7 +3,7 @@ import AddCabin from "@/features/dashboard/cabins/components/AddCabin";
 import CabinListOperations from "@/features/dashboard/cabins/components/CabinListOperations";
 import CabinListDashboard from "@/features/dashboard/cabins/components/CabinListDashboard";
 
-export const metadata = { title: "سوییت‌ها" };
+export const metadata = { title: "مدیریت اقامتگاه‌ها" };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 

@@ -4,7 +4,7 @@ import CabinForm from "@/features/dashboard/cabins/components/CabinForm";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
-export const metadata = { title: "ویرایش سوییت" };
+export const metadata = { title: "ویرایش اقامتگاه" };
 
 type SearchParams = Promise<{
   cabinId?: string;

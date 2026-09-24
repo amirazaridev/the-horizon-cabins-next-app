@@ -5,7 +5,10 @@ import "@/app/globals.css";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "هورایزن کابینز | ویلای لوکس",
+  title: {
+    default: "هورایزن کابینز | ویلاهای لوکس",
+    template: "هورایزن کابینز | %s",
+  },
   description:
     "از شلوغی شهر فاصله بگیرید و در دل طبیعت، لوکس بودن را تجربه کنید.",
 };

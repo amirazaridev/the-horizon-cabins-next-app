@@ -2,7 +2,7 @@ import { getCities } from "@/features/cabins/api";
 import CabinForm from "@/features/dashboard/cabins/components/CabinForm";
 import type { ReactNode } from "react";
 
-export const metadata = { title: "اضافه کردن سوییت" };
+export const metadata = { title: "اضافه کردن اقامتگاه" };
 
 export default async function AddCabinPage(): Promise<ReactNode> {
   const cities = await getCities();
