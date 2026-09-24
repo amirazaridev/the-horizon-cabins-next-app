@@ -8,7 +8,7 @@ import {
   formatDateParam,
   parseDateParam,
   type CabinDateValue,
-} from "../../../lib/cabin-date";
+} from "../../../utils/cabin-date";
 import { useCabinQuery } from "../useCabinQuery";
 
 type Props = {

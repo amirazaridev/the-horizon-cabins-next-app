@@ -1,6 +1,6 @@
 import CabinCard from "@/features/cabins/components/CabinCard";
 import { getCabins } from "../api";
-import { applyCabinFilters, type CabinFilters } from "../lib/cabin-filters";
+import { applyCabinFilters, type CabinFilters } from "../utils/cabin-filters";
 import CabinNotFound from "./CabinNotFound";
 
 interface CabinListProps {
@@ -21,7 +21,7 @@ export default async function CabinList({
 
   return (
     <div
-      className={`grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 px-3 ${className} `}
+      className={`grid grid-cols-1 gap-5 px-3 sm:grid-cols-2 lg:grid-cols-3 ${className} `}
     >
       {filteredCabin.map((cabin) => (
         <CabinCard

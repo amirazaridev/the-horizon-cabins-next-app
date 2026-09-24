@@ -10,7 +10,7 @@ import {
   applyCabinFilters,
   buildCabinFilterOptions,
   parseCabinFilters,
-} from "@/features/cabins/lib/cabin-filters";
+} from "@/features/cabins/utils/cabin-filters";
 
 export const metadata: Metadata = {
   title: "سوئیت‌های لوکس | هورایزن کابینز",

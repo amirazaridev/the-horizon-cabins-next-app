@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import Button from "@/components/ui/Button";
 import PriceDisplay from "@/features/cabins/components/PriceDisplay";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
-import { BOOKING_PERKS } from "../../lib/constants";
+import { BOOKING_PERKS } from "../../constants";
 import CardContainer from "@/components/ui/CardContainer";
 import { SUPPORT_PHONE_HREF } from "@/constants/suport-phone";
 

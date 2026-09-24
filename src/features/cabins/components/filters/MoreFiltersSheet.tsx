@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { List, X } from "lucide-react";
-import type { CabinFilterOptions } from "../../lib/cabin-filters";
+import type { CabinFilterOptions } from "../../utils/cabin-filters";
 import { useCabinQuery } from "./useCabinQuery";
 import BedroomsPanel from "./panels/BedroomsPanel";
 import AmenitiesPanel from "./panels/AmenitiesPanel";
@@ -129,7 +129,7 @@ export default function MoreFiltersSheet({
             type="button"
             onClick={onClose}
             aria-label="بستن فیلترها"
-            className="text-text flex size-9 items-center justify-center rounded-full transition-colors hover:bg-foreground/5"
+            className="text-text hover:bg-foreground/5 flex size-9 items-center justify-center rounded-full transition-colors"
           >
             <X className="size-5" />
           </button>
@@ -161,12 +161,12 @@ function SheetFooter({
 }) {
   const { clearFilters } = useCabinQuery();
   return (
-    <div className="border-t border-foreground/10 px-5 py-4">
+    <div className="border-foreground/10 border-t px-5 py-4">
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={clearFilters}
-          className="text-text-gray flex-1 rounded-xl border border-foreground/10 py-3 text-sm font-bold transition-colors hover:text-text"
+          className="text-text-gray border-foreground/10 hover:text-text flex-1 rounded-xl border py-3 text-sm font-bold transition-colors"
         >
           حذف فیلترها
         </button>

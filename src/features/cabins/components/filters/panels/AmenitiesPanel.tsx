@@ -2,7 +2,7 @@
 
 import OptionRow from "../../../../../components/ui/filter/OptionRow";
 import { useCabinQuery } from "../useCabinQuery";
-import type { CabinFilterOptions } from "../../../lib/cabin-filters";
+import type { CabinFilterOptions } from "../../../utils/cabin-filters";
 
 type Props = {
   options: CabinFilterOptions;

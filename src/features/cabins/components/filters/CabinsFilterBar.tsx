@@ -16,8 +16,8 @@ import MoreFiltersSheet from "./MoreFiltersSheet";
 import CabinsDesktopFilters from "./CabinsDesktopFilters";
 import { useCabinQuery } from "./useCabinQuery";
 
-import { formatDateRangeLabel } from "../../lib/cabin-date";
-import type { CabinFilterOptions } from "../../lib/cabin-filters";
+import { formatDateRangeLabel } from "../../utils/cabin-date";
+import type { CabinFilterOptions } from "../../utils/cabin-filters";
 
 type MobilePanelId = "date" | "guests";
 
@@ -35,19 +35,7 @@ type Props = {
   onToggleMap: () => void;
 };
 
-/**
- * Filter bar صفحه cabins
- *
- * Desktop (lg به بالا):
- * - فیلترها با FilterCard عمومی (پاپ‌اور شناور نزدیک دکمه)
- * - منطق در CabinsDesktopFilters — controlled از URL
- *
- * Mobile / Tablet (زیر lg):
- * - همان bottom-sheet قبلی + شیت «سایر فیلترها»
- * - پنل‌ها مستقیم با useCabinQuery به URL وصل‌اند
- *
- * لی‌آوت sticky و MapToggle مشترک و دست‌نخورده مانده‌اند.
- */
+
 export default function CabinsFilterBar({
   options,
   resultCount,
@@ -67,10 +55,6 @@ export default function CabinsFilterBar({
     setOpenPanel((prev) => (prev === id ? null : id));
   };
 
-  /**
-   * Escape برای بستن پنل
-   * در موبایل body scroll قفل می‌شود.
-   */
   useEffect(() => {
     if (!openPanel && !moreOpen) return;
 

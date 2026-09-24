@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import { CABIN_FILTER_KEYS } from "../../lib/cabin-filters";
+import { CABIN_FILTER_KEYS } from "../../utils/cabin-filters";
 
 /** خواندن/نوشتن فیلترهای cabins در URL (بدون پرش اسکرول) */
 export function useCabinQuery() {

@@ -16,11 +16,11 @@ import FilterCard, {
 import {
   formatPriceShort,
   type CabinFilterOptions,
-} from "../../lib/cabin-filters";
+} from "../../utils/cabin-filters";
 import {
   formatDateRangeLabel,
   type CabinDateValue,
-} from "../../lib/cabin-date";
+} from "../../utils/cabin-date";
 import { useCabinQuery } from "./useCabinQuery";
 import DatePanel from "./panels/DatePanel";
 import GuestsPanel from "./panels/GuestsPanel";
@@ -255,7 +255,6 @@ export default function CabinsDesktopFilters({
           city,
         }}
         onValueChange={handleValueChange}
-        placement="start"
         className="bg-surface/80 border-foreground/10 flex min-w-0 flex-1 scrollbar-none items-center gap-2 overflow-x-auto rounded-2xl border p-1.5 shadow-sm backdrop-blur-md [&::-webkit-scrollbar]:hidden"
       />
 
