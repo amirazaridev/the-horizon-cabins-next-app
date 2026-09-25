@@ -3,7 +3,7 @@
 import { useState } from "react";
 import DateRangePanel, {
   type DateRange,
-} from "@/components/ui/filter/DateRangePanel";
+} from "@/components/ui/filter/panels/DateRangePanel";
 import {
   formatDateParam,
   parseDateParam,

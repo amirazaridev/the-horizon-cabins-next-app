@@ -1,6 +1,6 @@
 "use client";
 
-import OptionRow from "../../../../../components/ui/filter/OptionRow";
+import SingleOptionPanel from "@/components/ui/filter/panels/SingleOptionPanel";
 import { useCabinQuery } from "../useCabinQuery";
 import type { CabinFilterOptions } from "../../../utils/cabin-filters";
 
@@ -33,25 +33,15 @@ export default function PricePanel({ options, value, onChange }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <OptionRow
-        label="هر قیمت"
-        hint="نمایش همه اقامتگاه‌ها"
-        selected={current === null}
-        onSelect={() => select(null)}
-      />
-      {options.priceBuckets.map((bucket) => {
-        const bucketValue = `${bucket.value[0]}-${bucket.value[1]}`;
-        return (
-          <OptionRow
-            key={bucketValue}
-            label={bucket.label}
-            hint="قیمت نهایی هر شب"
-            selected={current === bucketValue}
-            onSelect={() => select(bucketValue)}
-          />
-        );
-      })}
-    </div>
+    <SingleOptionPanel
+      value={current}
+      onChange={select}
+      allOption={{ label: "هر قیمت", hint: "نمایش همه اقامتگاه‌ها" }}
+      options={options.priceBuckets.map((bucket) => ({
+        value: `${bucket.value[0]}-${bucket.value[1]}`,
+        label: bucket.label,
+        hint: "قیمت نهایی هر شب",
+      }))}
+    />
   );
 }

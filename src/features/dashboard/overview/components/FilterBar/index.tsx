@@ -11,6 +11,9 @@ import FilterCard, {
 import MultiOptionList, {
   type MultiOptionListOption,
 } from "@/components/ui/filter/MultiOptionList";
+import CityPanel, {
+  type CityPanelOption,
+} from "@/components/ui/filter/panels/CityPanel";
 import DateFilterPanel from "./DateFilterPanel";
 import {
   PARAM_CITY,
@@ -84,7 +87,7 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
     tab: dateTab,
   };
 
-  const cityOptions: MultiOptionListOption[] = cities.map((c) => ({
+  const cityOptions: CityPanelOption[] = cities.map((c) => ({
     value: c.name,
     label: c.name,
   }));
@@ -165,8 +168,9 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
         size: "md",
         closeOnSelect: false,
         render: ({ value, setValue }) => (
-          <MultiOptionList
-            options={cityOptions}
+          <CityPanel
+            multiple
+            cities={cityOptions}
             value={(value as string[]) ?? []}
             onChange={(next) => setValue(next)}
           />

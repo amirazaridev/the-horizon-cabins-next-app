@@ -1,6 +1,6 @@
 "use client";
 
-import OptionRow from "../../../../../components/ui/filter/OptionRow";
+import SingleOptionPanel from "@/components/ui/filter/panels/SingleOptionPanel";
 import { useCabinQuery } from "../useCabinQuery";
 
 const OPTIONS = [1, 2, 3, 4];
@@ -25,28 +25,19 @@ export default function BedroomsPanel({ value, onChange }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <OptionRow
-        label="هر تعداد"
-        hint="نمایش همه اقامتگاه‌ها"
-        selected={current === null}
-        onSelect={() => select(null)}
-      />
-      {OPTIONS.map((n) => (
-        <OptionRow
-          key={n}
-          label={
-            n >= 4 ? "۴ خواب و بیشتر" : `${n.toLocaleString("fa-IR")} خوابه`
-          }
-          hint={
-            n >= 4
-              ? "حداقل ۴ اتاق‌خواب"
-              : `حداقل ${n.toLocaleString("fa-IR")} اتاق‌خواب`
-          }
-          selected={current === String(n)}
-          onSelect={() => select(String(n))}
-        />
-      ))}
-    </div>
+    <SingleOptionPanel
+      value={current}
+      onChange={select}
+      allOption={{ label: "هر تعداد", hint: "نمایش همه اقامتگاه‌ها" }}
+      options={OPTIONS.map((n) => ({
+        value: String(n),
+        label:
+          n >= 4 ? "۴ خواب و بیشتر" : `${n.toLocaleString("fa-IR")} خوابه`,
+        hint:
+          n >= 4
+            ? "حداقل ۴ اتاق‌خواب"
+            : `حداقل ${n.toLocaleString("fa-IR")} اتاق‌خواب`,
+      }))}
+    />
   );
 }

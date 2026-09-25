@@ -20,8 +20,8 @@ import {
   type DateRange,
 } from "@/components/ui/RangeDatePicker";
 import { SEARCH_CITIES, type SearchCity } from "../../constants/search";
-import CityPanel from "./search-panels/CityPanel";
-import DateRangePanel from "@/components/ui/filter/DateRangePanel";
+import CityPanel from "@/components/ui/filter/panels/CityPanel";
+import DateRangePanel from "@/components/ui/filter/panels/DateRangePanel";
 import GuestsPanel from "./search-panels/GuestsPanel";
 import SearchAction from "./SearchAction";
 import FieldContent from "./FieldContent";
@@ -89,9 +89,17 @@ export default function Search() {
         advanceTo: "checkIn",
         render: ({ value, setValue }) => (
           <CityPanel
-            cities={SEARCH_CITIES}
-            value={value as SearchCity | null}
-            onSelect={(city) => setValue(city)}
+            cities={SEARCH_CITIES.map((city) => ({
+              value: String(city.id),
+              label: city.name,
+              hint: city.hint,
+            }))}
+            value={value != null ? String((value as SearchCity).id) : null}
+            onChange={(next) => {
+              const city =
+                SEARCH_CITIES.find((item) => String(item.id) === next) ?? null;
+              setValue(city);
+            }}
           />
         ),
       },

@@ -1,9 +1,11 @@
 "use client";
 
-import OptionRow from "../../../../../components/ui/filter/OptionRow";
+import SingleOptionPanel from "@/components/ui/filter/panels/SingleOptionPanel";
 import { useCabinQuery } from "../useCabinQuery";
 
 const OPTIONS = [1, 2, 3, 4, 5, 6];
+
+const fa = (n: number) => n.toLocaleString("fa-IR");
 
 type Props = {
   /**
@@ -25,26 +27,18 @@ export default function GuestsPanel({ value, onChange }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <OptionRow
-        label="هر تعداد"
-        hint="نمایش همه اقامتگاه‌ها"
-        selected={current === null}
-        onSelect={() => select(null)}
-      />
-      {OPTIONS.map((n) => (
-        <OptionRow
-          key={n}
-          label={n >= 6 ? "۶ نفر و بیشتر" : `${n.toLocaleString("fa-IR")} نفر`}
-          hint={
-            n >= 6
-              ? "ظرفیت ۶ به بالا"
-              : `ظرفیت حداقل ${n.toLocaleString("fa-IR")} نفر`
-          }
-          selected={current === String(n)}
-          onSelect={() => select(String(n))}
-        />
-      ))}
-    </div>
+    <SingleOptionPanel
+      value={current}
+      onChange={select}
+      allOption={{ label: "هر تعداد", hint: "نمایش همه اقامتگاه‌ها" }}
+      options={OPTIONS.map((n) => ({
+        value: String(n),
+        label: n >= 6 ? "۶ نفر و بیشتر" : `${fa(n)} نفر`,
+        hint:
+          n >= 6
+            ? "ظرفیت ۶ به بالا"
+            : `ظرفیت حداقل ${fa(n)} نفر`,
+      }))}
+    />
   );
 }

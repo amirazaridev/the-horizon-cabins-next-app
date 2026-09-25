@@ -1,7 +1,6 @@
 "use client";
 
-import { MapPin } from "lucide-react";
-import OptionRow from "@/components/ui/filter/OptionRow";
+import SharedCityPanel from "@/components/ui/filter/panels/CityPanel";
 import { useCabinQuery } from "../useCabinQuery";
 import type { CabinFilterOptions } from "../../../utils/cabin-filters";
 
@@ -15,7 +14,7 @@ type Props = {
   onChange?: (value: string | null) => void;
 };
 
-/** شهر / مقصد */
+/** شهر / مقصد — adapter پنل reusable روی URL اقامتگاه‌ها */
 export default function CityPanel({ options, value, onChange }: Props) {
   const { searchParams, setParam } = useCabinQuery();
   const current = onChange ? (value ?? null) : searchParams.get("city");
@@ -25,31 +24,18 @@ export default function CityPanel({ options, value, onChange }: Props) {
     else setParam("city", next);
   };
 
-  if (!options.cities.length) {
-    return (
-      <p className="text-text-gray py-4 text-center text-sm">
-        شهری برای نمایش ثبت نشده است.
-      </p>
-    );
-  }
-
   return (
-    <div className="flex max-h-72 flex-col gap-2 overflow-y-auto ps-0.5">
-      <OptionRow
-        label="همه شهرها"
-        hint="نمایش همه اقامتگاه‌ها"
-        selected={current === null}
-        onSelect={() => select(null)}
-      />
-      {options.cities.map((city) => (
-        <OptionRow
-          key={city.id}
-          label={city.name}
-          selected={current === String(city.id)}
-          onSelect={() => select(String(city.id))}
-          icon={<MapPin className="text-primary-400 size-4 shrink-0" />}
-        />
-      ))}
-    </div>
+    <SharedCityPanel
+      cities={options.cities.map((city) => ({
+        value: String(city.id),
+        label: city.name,
+      }))}
+      value={current}
+      onChange={select}
+      showAll
+      allLabel="همه شهرها"
+      allHint="نمایش همه اقامتگاه‌ها"
+      emptyMessage="شهری برای نمایش ثبت نشده است."
+    />
   );
 }

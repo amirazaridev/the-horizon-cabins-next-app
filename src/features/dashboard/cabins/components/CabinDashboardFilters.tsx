@@ -13,7 +13,7 @@ import {
 import FilterCard, {
   type FilterCardItem,
 } from "@/components/ui/filter/FilterCard";
-import OptionRow from "@/components/ui/filter/OptionRow";
+import SingleOptionPanel from "@/components/ui/filter/panels/SingleOptionPanel";
 import { useCabinQuery } from "@/features/cabins/components/filters/useCabinQuery";
 import GuestsPanel from "@/features/cabins/components/filters/panels/GuestsPanel";
 import BedroomsPanel from "@/features/cabins/components/filters/panels/BedroomsPanel";
@@ -225,22 +225,15 @@ export default function CabinDashboardFilters({
       size: "sm",
       closeOnSelect: true,
       render: ({ value, setValue }) => (
-        <div className="flex flex-col gap-2">
-          <OptionRow
-            label="پیش‌فرض"
-            hint="ترتیب ثبت در سیستم"
-            selected={(value as string | null) == null}
-            onSelect={() => setValue(null)}
-          />
-          {DASHBOARD_SORT_OPTIONS.map((option) => (
-            <OptionRow
-              key={option.value}
-              label={option.label}
-              selected={value === option.value}
-              onSelect={() => setValue(option.value)}
-            />
-          ))}
-        </div>
+        <SingleOptionPanel
+          value={(value as string | null) ?? null}
+          onChange={(next) => setValue(next)}
+          allOption={{ label: "پیش‌فرض", hint: "ترتیب ثبت در سیستم" }}
+          options={DASHBOARD_SORT_OPTIONS.map((option) => ({
+            value: option.value,
+            label: option.label,
+          }))}
+        />
       ),
     },
   });

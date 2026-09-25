@@ -1,6 +1,6 @@
 "use client";
 
-import OptionRow from "../../../../../components/ui/filter/OptionRow";
+import MultiOptionList from "@/components/ui/filter/MultiOptionList";
 import { useCabinQuery } from "../useCabinQuery";
 import type { CabinFilterOptions } from "../../../utils/cabin-filters";
 
@@ -30,14 +30,6 @@ export default function AmenitiesPanel({ options, value, onChange }: Props) {
     else setParam("amenities", next.length ? next.join(",") : null);
   };
 
-  const toggle = (amenity: string) => {
-    write(
-      selected.includes(amenity)
-        ? selected.filter((a) => a !== amenity)
-        : [...selected, amenity],
-    );
-  };
-
   if (!options.amenities.length) {
     return (
       <p className="text-text-gray py-4 text-center text-sm">
@@ -64,16 +56,14 @@ export default function AmenitiesPanel({ options, value, onChange }: Props) {
           </button>
         )}
       </div>
-      <div className="flex max-h-72 flex-col gap-2 overflow-y-auto ps-0.5">
-        {options.amenities.map((amenity) => (
-          <OptionRow
-            key={amenity}
-            label={amenity}
-            selected={selected.includes(amenity)}
-            onSelect={() => toggle(amenity)}
-          />
-        ))}
-      </div>
+      <MultiOptionList
+        options={options.amenities.map((amenity) => ({
+          value: amenity,
+          label: amenity,
+        }))}
+        value={selected}
+        onChange={write}
+      />
     </div>
   );
 }
