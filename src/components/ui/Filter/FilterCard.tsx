@@ -82,6 +82,8 @@ export type FilterCardItem = {
   renderTrigger?: ReactNode | ((ctx: TriggerRenderProps) => ReactNode);
   /** تنظیمات کارت فیلتر - اگر نباشد دکمه بدون کارت است */
   panel?: FilterPanelConfig;
+  /** در موبایل (تریگر + آکاردئون شیت) نمایش داده نشود - مثلاً تاریخ خروج */
+  hideOnMobile?: boolean;
 };
 
 type AnchorRect = DOMRect;
@@ -89,6 +91,15 @@ type AnchorRect = DOMRect;
 /* ==================================================================
    ROOT
    ================================================================== */
+
+export type MobileTriggerRenderProps = {
+  /** تعداد فیلترهای فعال */
+  activeCount: number;
+  /** خواندن مقدار هر فیلتر */
+  getValue: (id: string) => unknown;
+  /** باز کردن شیت */
+  open: () => void;
+};
 
 export type FilterCardProps = {
   /** آرایه‌ای از فیلترها (دکمه + کارت) */
@@ -111,8 +122,16 @@ export type FilterCardProps = {
   mobileTitle?: string;
   /** لیبل دکمه تکی موبایل */
   mobileTriggerLabel?: string;
+  /** سفارشی‌سازی کامل دکمه تریگر موبایل (محتوای داخل دکمه) */
+  renderMobileTrigger?: ReactNode | ((ctx: MobileTriggerRenderProps) => ReactNode);
+  /** کلاس دکمه تریگر موبایل */
+  mobileTriggerClassName?: string;
   /** لیبل دکمه اعمال در فوتر شیت */
   mobileApplyLabel?: string;
+  /** رفتار دکمه اعمال — اگر داده نشود فقط شیت بسته می‌شود */
+  onMobileApply?: () => void;
+  /** غیرفعال کردن دکمه اعمال (مثلاً هنگام ناقص بودن فرم جستجو) */
+  mobileApplyDisabled?: boolean;
   /** تعداد نتیجه (اختیاری) — داخل دکمه اعمال نمایش داده می‌شود */
   resultCount?: number;
   /** پاک کردن همه فیلترها — اگر داده نشود دکمه حذف نمایش داده نمی‌شود */
@@ -130,7 +149,11 @@ function FilterCard({
   mobileBreakpoint = "(max-width: 767.5px)",
   mobileTitle = "فیلترها",
   mobileTriggerLabel = "فیلترها",
+  renderMobileTrigger,
+  mobileTriggerClassName = "",
   mobileApplyLabel = "مشاهده نتایج",
+  onMobileApply,
+  mobileApplyDisabled = false,
   resultCount,
   onClearFilters,
 }: FilterCardProps) {
@@ -206,9 +229,10 @@ function FilterCard({
     [openId, close, open],
   );
 
-  /* ---------- مشتقات موبایل ---------- */
-  const panelItems = items.filter((item) => item.panel);
-  const actionItems = items.filter((item) => !item.panel);
+  /* ---------- مشتقات موبایل (حذف آیتم‌های hideOnMobile) ---------- */
+  const mobileItems = items.filter((item) => !item.hideOnMobile);
+  const panelItems = mobileItems.filter((item) => item.panel);
+  const actionItems = mobileItems.filter((item) => !item.panel);
 
   const getSummary = (id: string): string | undefined => {
     const item = items.find((entry) => entry.id === id);
@@ -226,7 +250,7 @@ function FilterCard({
     return undefined;
   };
 
-  const activeCount = items.filter((item) =>
+  const activeCount = mobileItems.filter((item) =>
     isFilterValueActive(getValue(item.id)),
   ).length;
 
@@ -261,29 +285,61 @@ function FilterCard({
   );
 
   if (isMobile) {
+    const openSheet = () => setSheetOpen(true);
+
+    const mobileTriggerCtx: MobileTriggerRenderProps = {
+      activeCount,
+      getValue,
+      open: openSheet,
+    };
+
+    const customTrigger =
+      typeof renderMobileTrigger === "function"
+        ? renderMobileTrigger(mobileTriggerCtx)
+        : renderMobileTrigger;
+
+    const handleApply = () => {
+      if (mobileApplyDisabled) return;
+      if (onMobileApply) {
+        onMobileApply();
+        closeSheet();
+      } else {
+        closeSheet();
+      }
+    };
+
     return (
       <div className={className}>
         {/* تریگر تکی موبایل + اکشن‌های بدون پنل */}
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <button
             type="button"
-            onClick={() => setSheetOpen(true)}
+            onClick={openSheet}
             aria-haspopup="dialog"
             aria-expanded={sheetOpen}
-            className={`flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 ${
-              activeCount > 0
-                ? "border-primary-400 bg-primary-400/10 text-text shadow-sm"
-                : "border-foreground/10 bg-surface text-text-gray hover:border-foreground/20 hover:text-text"
+            className={`${
+              customTrigger
+                ? mobileTriggerClassName ||
+                  "flex w-full items-center gap-2 rounded-full border px-4 py-2.5"
+                : `flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 ${
+                    activeCount > 0
+                      ? "border-primary-400 bg-primary-400/10 text-text shadow-sm"
+                      : "border-foreground/10 bg-surface text-text-gray hover:border-foreground/20 hover:text-text"
+                  }`
             }`}
           >
-            <span className="text-primary-400 flex shrink-0 items-center">
-              <SlidersHorizontal className="size-4" />
-            </span>
-            <span className="max-w-40 truncate">{mobileTriggerLabel}</span>
-            {activeCount > 0 && (
-              <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-[11px] leading-4 font-extrabold text-black tabular-nums">
-                {activeCount.toLocaleString("fa-IR")}
-              </span>
+            {customTrigger ?? (
+              <>
+                <span className="text-primary-400 flex shrink-0 items-center">
+                  <SlidersHorizontal className="size-4" />
+                </span>
+                <span className="max-w-40 truncate">{mobileTriggerLabel}</span>
+                {activeCount > 0 && (
+                  <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-[11px] leading-4 font-extrabold text-black tabular-nums">
+                    {activeCount.toLocaleString("fa-IR")}
+                  </span>
+                )}
+              </>
             )}
           </button>
 
@@ -325,8 +381,9 @@ function FilterCard({
               )}
               <button
                 type="button"
-                onClick={closeSheet}
-                className="bg-primary-400 flex flex-[2] items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform active:scale-95"
+                onClick={handleApply}
+                disabled={mobileApplyDisabled}
+                className="bg-primary-400 flex flex-[2] items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {mobileApplyLabel}
                 {typeof resultCount === "number" && (

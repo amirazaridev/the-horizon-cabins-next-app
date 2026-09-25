@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import {
   CalendarDays,
@@ -42,6 +43,7 @@ const DEFAULT_VALUES: SearchValues = {
 
 export default function Search() {
   const [values, setValues] = useState<SearchValues>(DEFAULT_VALUES);
+  const router = useRouter();
 
   const handleValueChange = (id: string, value: unknown) => {
     setValues((prev) => ({ ...prev, [id]: value }) as SearchValues);
@@ -66,11 +68,31 @@ export default function Search() {
     return `/cabins?${params.toString()}`;
   }, [values]);
 
+  /* خلاصه موبایل: شهر · بازه تاریخ · مهمان */
+  const mobileDateSummary = (() => {
+    if (values.checkIn && values.checkOut)
+      return `${formatJalaliDate(values.checkIn)} تا ${formatJalaliDate(values.checkOut)}`;
+    if (values.checkIn) return formatJalaliDate(values.checkIn);
+    if (values.checkOut) return formatJalaliDate(values.checkOut);
+    return null;
+  })();
+
+  const mobileGuestSummary =
+    typeof values.guests === "number" && values.guests >= 1
+      ? `${values.guests.toLocaleString("fa-IR")} نفر`
+      : null;
+
+  const mobileSummary =
+    [values.city?.name ?? null, mobileDateSummary, mobileGuestSummary]
+      .filter(Boolean)
+      .join("  ·  ") || "مقصد، تاریخ و مهمان را انتخاب کنید";
+
   const items: FilterCardItem[] = [
     {
       id: "city",
       label: "مثال: شمال ایران",
       variant: "field",
+      formatLabel: (v) => (v as SearchCity | null)?.name,
       className: "md:rounded-none",
       renderTrigger: ({ value }) => (
         <FieldContent
@@ -108,6 +130,7 @@ export default function Search() {
       id: "checkIn",
       label: "تاریخ ورود",
       variant: "field",
+      formatLabel: () => mobileDateSummary ?? undefined,
       className: "md:rounded-none md:border-s md:border-white/10",
       renderTrigger: ({ value }) => (
         <FieldContent
@@ -123,6 +146,7 @@ export default function Search() {
       id: "checkOut",
       label: "تاریخ خروج",
       variant: "field",
+      hideOnMobile: true,
       className: "md:rounded-none md:border-s md:border-white/10",
       renderTrigger: ({ value }) => (
         <FieldContent
@@ -138,6 +162,10 @@ export default function Search() {
       id: "guests",
       label: "تعداد مهمان",
       variant: "field",
+      formatLabel: (v) =>
+        typeof v === "number" && v >= 1
+          ? `${v.toLocaleString("fa-IR")} نفر`
+          : undefined,
       className: "md:rounded-none md:border-s md:border-white/10",
       renderTrigger: ({ value }) => (
         <FieldContent
@@ -195,7 +223,7 @@ export default function Search() {
   }
 
   return (
-    <div className="hz-search bg-background/60 text-text mx-auto flex max-w-255 flex-col gap-2 rounded-2xl border border-white/15 p-2 shadow-2xl shadow-black/20 backdrop-blur-xl md:flex-row md:items-center md:gap-0">
+    <div className="hz-search bg-transparent text-text mx-auto flex max-w-255 flex-col gap-2 rounded-none border-0 p-0 shadow-none backdrop-blur-none md:flex-row md:items-center md:gap-0 md:border md:border-white/15 md:bg-background/60 md:rounded-2xl md:p-2 md:shadow-2xl md:shadow-black/20 md:backdrop-blur-xl">
       <FilterCard
         items={items}
         value={values as unknown as FilterCardValues}
@@ -203,12 +231,31 @@ export default function Search() {
         onClearFilters={() => setValues(DEFAULT_VALUES)}
         placement="center"
         mobileTitle="جستجوی اقامتگاه"
-        mobileTriggerLabel="جستجو و فیلترها"
-        mobileApplyLabel="اعمال"
+        mobileApplyLabel="جستجو"
+        mobileApplyDisabled={!canSearch}
+        onMobileApply={() => router.push(href)}
+        renderMobileTrigger={() => (
+          <span className="flex w-full items-center gap-3 px-2 py-1.5">
+            <span className="flex min-w-0 flex-1 flex-col text-right">
+              <span className="text-text text-sm font-extrabold">
+                مقصد سفرت کجاست؟
+              </span>
+              <span className="text-text-gray mt-0.5 truncate text-xs font-medium">
+                {mobileSummary}
+              </span>
+            </span>
+            <span className="bg-primary-400 grid size-11 shrink-0 place-items-center rounded-full text-black shadow-sm">
+              <SearchIcon className="size-5" />
+            </span>
+          </span>
+        )}
+        mobileTriggerClassName="w-full rounded-full border border-white/15 bg-surface/80 py-2 pe-2 ps-4 shadow-lg shadow-black/15 backdrop-blur-md transition-all duration-200 active:scale-[0.99]"
         className="text-text grid min-w-0 flex-1 grid-cols-1 gap-1 md:grid-cols-4 md:gap-0"
       />
 
-      <SearchAction href={href} disabled={!canSearch} />
+      <div className="hidden md:block">
+        <SearchAction href={href} disabled={!canSearch} />
+      </div>
     </div>
   );
 }

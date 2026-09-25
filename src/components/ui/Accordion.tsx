@@ -79,7 +79,7 @@ function AccordionRow({
 
   return (
     <div
-      className={`border-foreground/10 overflow-hidden rounded-2xl border transition-colors duration-300 ${
+      className={`border-foreground/10 overflow-hidden rounded-2xl border transition-colors duration-[400ms] ${
         isOpen
           ? "border-primary-400/40 bg-primary-400/[0.04] shadow-sm"
           : item.active
@@ -125,14 +125,14 @@ function AccordionRow({
         </span>
 
         <span
-          className={`grid size-8 shrink-0 place-items-center rounded-full transition-all duration-300 ${
+          className={`grid size-8 shrink-0 place-items-center rounded-full transition-all duration-[400ms] ${
             isOpen
               ? "bg-primary-400 text-black"
               : "bg-foreground/5 text-text-gray"
           }`}
         >
           <ChevronDown
-            className={`size-4 transition-transform duration-300 ${
+            className={`size-4 transition-transform duration-[400ms] ${
               isOpen ? "rotate-180" : ""
             }`}
           />
@@ -144,13 +144,13 @@ function AccordionRow({
         id={panelId}
         role="region"
         aria-hidden={!isOpen}
-        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+        className={`grid transition-[grid-template-rows,opacity] duration-[400ms] ease-out ${
           isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
         <div className="min-h-0 overflow-hidden">
           <div
-            className={`border-foreground/10 border-t px-4 py-4 transition-transform duration-300 ${
+            className={`border-foreground/10 border-t px-4 py-4 transition-transform duration-[400ms] ${
               isOpen ? "translate-y-0" : "-translate-y-1"
             }`}
           >
