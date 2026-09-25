@@ -11,7 +11,10 @@ import {
   type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import Accordion from "../Accordion";
+import FilterMobileSheet from "./FilterMobileSheet";
+import useIsMobile from "./useIsMobile";
 
 /* ==================================================================
    TYPES
@@ -101,6 +104,19 @@ export type FilterCardProps = {
   /** اولین کارتِ باز در شروع */
   defaultOpenId?: string | null;
   className?: string;
+  /* ---------- موبایل (bottom-sheet + accordion) ---------- */
+  /** کوئری تشخیص موبایل — پیش‌فرض زیر md */
+  mobileBreakpoint?: string;
+  /** عنوان شیت موبایل */
+  mobileTitle?: string;
+  /** لیبل دکمه تکی موبایل */
+  mobileTriggerLabel?: string;
+  /** لیبل دکمه اعمال در فوتر شیت */
+  mobileApplyLabel?: string;
+  /** تعداد نتیجه (اختیاری) — داخل دکمه اعمال نمایش داده می‌شود */
+  resultCount?: number;
+  /** پاک کردن همه فیلترها — اگر داده نشود دکمه حذف نمایش داده نمی‌شود */
+  onClearFilters?: () => void;
 };
 
 function FilterCard({
@@ -111,11 +127,24 @@ function FilterCard({
   placement = "start",
   defaultOpenId = null,
   className = "",
+  mobileBreakpoint = "(max-width: 767.5px)",
+  mobileTitle = "فیلترها",
+  mobileTriggerLabel = "فیلترها",
+  mobileApplyLabel = "مشاهده نتایج",
+  resultCount,
+  onClearFilters,
 }: FilterCardProps) {
   const controlled = value !== undefined;
 
   const [openId, setOpenId] = useState<string | null>(defaultOpenId);
   const [values, setValues] = useState<Record<string, unknown>>(defaultValue);
+
+  /* ---------- state موبایل ---------- */
+  const isMobile = useIsMobile(mobileBreakpoint);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [mobileOpenId, setMobileOpenId] = useState<string | null>(
+    defaultOpenId,
+  );
 
   const anchorRect = useRef<AnchorRect | null>(null);
   const triggerEl = useRef<HTMLButtonElement | null>(null);
@@ -176,6 +205,195 @@ function FilterCard({
     },
     [openId, close, open],
   );
+
+  /* ---------- مشتقات موبایل ---------- */
+  const panelItems = items.filter((item) => item.panel);
+  const actionItems = items.filter((item) => !item.panel);
+
+  const getSummary = (id: string): string | undefined => {
+    const item = items.find((entry) => entry.id === id);
+    if (!item?.formatLabel) return undefined;
+    try {
+      return item.formatLabel(getValue(id)) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const getBadge = (id: string): number | undefined => {
+    const v = getValue(id);
+    if (Array.isArray(v) && v.length > 0) return v.length;
+    return undefined;
+  };
+
+  const activeCount = items.filter((item) =>
+    isFilterValueActive(getValue(item.id)),
+  ).length;
+
+  /* باز کردن شیت: اگر چیزی باز نیست، اولین فیلترِ فعال (یا اولین فیلتر) باز باشد */
+  useEffect(() => {
+    if (!sheetOpen) return;
+    if (mobileOpenId) return;
+    const firstActive = panelItems.find((item) =>
+      isFilterValueActive(getValue(item.id)),
+    );
+    setMobileOpenId(firstActive?.id ?? panelItems[0]?.id ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sheetOpen]);
+
+  const closeSheet = useCallback(() => {
+    setSheetOpen(false);
+    setMobileOpenId(null);
+  }, []);
+
+  const commitMobile = useCallback(
+    (id: string, next: unknown, panel?: FilterPanelConfig) => {
+      const shouldClose = panel?.closeOnSelect ?? false;
+      if (!controlled) setValues((prev) => ({ ...prev, [id]: next }));
+      onValueChange?.(id, next);
+      if (panel?.advanceTo) {
+        setMobileOpenId(panel.advanceTo);
+      } else if (shouldClose) {
+        setMobileOpenId(null);
+      }
+    },
+    [controlled, onValueChange],
+  );
+
+  if (isMobile) {
+    return (
+      <div className={className}>
+        {/* تریگر تکی موبایل + اکشن‌های بدون پنل */}
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setSheetOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={sheetOpen}
+            className={`flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 ${
+              activeCount > 0
+                ? "border-primary-400 bg-primary-400/10 text-text shadow-sm"
+                : "border-foreground/10 bg-surface text-text-gray hover:border-foreground/20 hover:text-text"
+            }`}
+          >
+            <span className="text-primary-400 flex shrink-0 items-center">
+              <SlidersHorizontal className="size-4" />
+            </span>
+            <span className="max-w-40 truncate">{mobileTriggerLabel}</span>
+            {activeCount > 0 && (
+              <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-[11px] leading-4 font-extrabold text-black tabular-nums">
+                {activeCount.toLocaleString("fa-IR")}
+              </span>
+            )}
+          </button>
+
+          {actionItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              disabled={item.disabled}
+              onClick={() => item.onClick?.()}
+              className={`flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 disabled:pointer-events-none disabled:opacity-50 border-foreground/10 bg-surface text-text-gray hover:border-foreground/20 hover:text-text ${item.className ?? ""}`}
+            >
+              {item.icon && (
+                <span className="text-primary-400 flex shrink-0 items-center">
+                  {item.icon}
+                </span>
+              )}
+              <span className="max-w-40 truncate">
+                {item.label ?? item.id}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <FilterMobileSheet
+          open={sheetOpen}
+          title={mobileTitle}
+          onClose={closeSheet}
+          footer={
+            <div className="flex items-center gap-2">
+              {onClearFilters && (
+                <button
+                  type="button"
+                  onClick={onClearFilters}
+                  disabled={activeCount === 0}
+                  className="text-text-gray border-foreground/10 hover:text-text flex-1 rounded-xl border py-3 text-sm font-bold transition-colors disabled:opacity-40"
+                >
+                  حذف فیلترها
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={closeSheet}
+                className="bg-primary-400 flex flex-[2] items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform active:scale-95"
+              >
+                {mobileApplyLabel}
+                {typeof resultCount === "number" && (
+                  <span className="rounded-full bg-black/15 px-2 py-0.5 text-xs font-bold tabular-nums">
+                    {resultCount.toLocaleString("fa-IR")}
+                  </span>
+                )}
+              </button>
+            </div>
+          }
+        >
+          <Accordion
+            openId={mobileOpenId}
+            onOpenChange={(next) => setMobileOpenId(next)}
+            items={panelItems.map((item) => {
+              const panel = item.panel!;
+              const itemValue = getValue(item.id);
+              return {
+                id: item.id,
+                title: panel.title ?? item.label ?? item.id,
+                summary: getSummary(item.id),
+                icon: item.icon,
+                badge: getBadge(item.id),
+                active: isFilterValueActive(itemValue),
+                content:
+                  typeof panel.render === "function" ? (
+                    panel.render({
+                      id: item.id,
+                      value: itemValue,
+                      getValue,
+                      setValue: (next: unknown) =>
+                        commitMobile(item.id, next, panel),
+                      setFieldValue: (targetId: string, next: unknown) =>
+                        setValue(targetId, next, false),
+                      openPanel: (targetId: string) =>
+                        setMobileOpenId(targetId),
+                      close: () => setMobileOpenId(null),
+                    })
+                  ) : (
+                    <>{panel.children}</>
+                  ),
+              };
+            })}
+          />
+
+          {actionItems.length > 0 && (
+            <div className="mt-3 flex flex-col gap-2">
+              {actionItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    closeSheet();
+                    item.onClick?.();
+                  }}
+                  className="border-foreground/10 bg-surface flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold"
+                >
+                  {item.icon}
+                  {item.label ?? item.id}
+                </button>
+              ))}
+            </div>
+          )}
+        </FilterMobileSheet>
+      </div>
+    );
+  }
 
   return (
     <div className={className}>

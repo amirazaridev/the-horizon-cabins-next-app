@@ -34,6 +34,7 @@ const fa = (n: number | string) => Number(n).toLocaleString("fa-IR");
 type Props = {
   options: CabinFilterOptions;
   className?: string;
+  resultCount?: number;
 };
 
 /**
@@ -46,6 +47,7 @@ type Props = {
 export default function CabinsDesktopFilters({
   options,
   className = "",
+  resultCount,
 }: Props) {
   const { searchParams, setParam, setParams, clearFilters } = useCabinQuery();
 
@@ -255,6 +257,11 @@ export default function CabinsDesktopFilters({
           city,
         }}
         onValueChange={handleValueChange}
+        onClearFilters={clearFilters}
+        resultCount={resultCount}
+        mobileTitle="فیلترها"
+        mobileTriggerLabel="فیلترها"
+        mobileApplyLabel="مشاهده نتایج"
         className="bg-surface/80 border-foreground/10 flex min-w-0 flex-1 scrollbar-none items-center gap-2 overflow-x-auto rounded-2xl border p-1.5 shadow-sm backdrop-blur-md [&::-webkit-scrollbar]:hidden"
       />
 

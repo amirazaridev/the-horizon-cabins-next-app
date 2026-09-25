@@ -251,6 +251,9 @@ export default function CabinDashboardFilters({
           sortBy,
         }}
         onValueChange={handleValueChange}
+        onClearFilters={handleClear}
+        mobileTitle="فیلترها"
+        mobileApplyLabel="اعمال"
         className="border-foreground/10 bg-surface/80 scrollbar-none flex min-w-0 flex-1 items-center gap-2 overflow-x-auto rounded-2xl border p-1.5 shadow-sm backdrop-blur-md [&::-webkit-scrollbar]:hidden"
       />
 

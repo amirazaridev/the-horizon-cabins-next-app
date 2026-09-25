@@ -200,8 +200,11 @@ export default function Search() {
         items={items}
         value={values as unknown as FilterCardValues}
         onValueChange={handleValueChange}
+        onClearFilters={() => setValues(DEFAULT_VALUES)}
         placement="center"
-
+        mobileTitle="جستجوی اقامتگاه"
+        mobileTriggerLabel="جستجو و فیلترها"
+        mobileApplyLabel="اعمال"
         className="text-text grid min-w-0 flex-1 grid-cols-1 gap-1 md:grid-cols-4 md:gap-0"
       />
 

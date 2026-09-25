@@ -207,7 +207,14 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
           status: statusDraft,
         }}
         onValueChange={handleValueChange}
+        onClearFilters={() =>
+          startTransition(() => {
+            router.replace(pathname, { scroll: false });
+          })
+        }
         placement="start"
+        mobileTitle="فیلترها"
+        mobileApplyLabel="اعمال"
         className="flex min-w-0 flex-1 flex-wrap items-center gap-2"
       />
 
