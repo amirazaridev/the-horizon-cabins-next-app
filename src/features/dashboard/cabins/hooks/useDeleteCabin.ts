@@ -2,7 +2,6 @@ import { useState } from "react";
 import { deleteCabinAction } from "../lib/cabin-actions";
 import toast from "react-hot-toast";
 
-
 export default function useDeleteCabin(cabinId: number) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 

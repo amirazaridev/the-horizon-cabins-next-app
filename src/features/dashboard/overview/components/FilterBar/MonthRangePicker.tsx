@@ -6,7 +6,12 @@ import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { startOfDay } from "date-fns";
-import { endOfMonth, endOfYear, startOfMonth, startOfYear } from "date-fns-jalali";
+import {
+  endOfMonth,
+  endOfYear,
+  startOfMonth,
+  startOfYear,
+} from "date-fns-jalali";
 
 import {
   clampToToday,
@@ -93,18 +98,18 @@ export default function MonthRangePicker({
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
+    <div className="border-border bg-surface rounded-2xl border p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-4 text-xs sm:text-sm">
         <div>
-          <span className="block text-[11px] text-text-gray">ماه شروع</span>
-          <strong className="font-semibold text-text">
+          <span className="text-text-gray block text-[11px]">ماه شروع</span>
+          <strong className="text-text font-semibold">
             {formatJalaliMonthYear(from)}
           </strong>
         </div>
-        <span className="h-px flex-1 bg-border" />
+        <span className="bg-border h-px flex-1" />
         <div className="text-end">
-          <span className="block text-[11px] text-text-gray">ماه پایان</span>
-          <strong className="font-semibold text-text">
+          <span className="text-text-gray block text-[11px]">ماه پایان</span>
+          <strong className="text-text font-semibold">
             {formatJalaliMonthYear(to)}
           </strong>
         </div>
@@ -127,7 +132,7 @@ export default function MonthRangePicker({
         inputClass="!w-full !h-11 !rounded-xl !border !border-border !bg-background !px-3 !text-sm !text-text"
       />
 
-      <p className="mt-3 text-xs leading-6 text-text-gray">
+      <p className="text-text-gray mt-3 text-xs leading-6">
         ابتدا ماه شروع را در سال {getJalaliYear(from)} و سپس ماه پایان را در سال{" "}
         {getJalaliYear(to)} انتخاب کنید. ماه‌های بعد از ماه جاری قابل انتخاب
         نیستند.

@@ -35,8 +35,7 @@ export default function YearRangeSlider({
 
   const maxIndex = Math.max(1, domain.count - 1);
 
-  const clampIndex = (value: number) =>
-    Math.min(Math.max(value, 0), maxIndex);
+  const clampIndex = (value: number) => Math.min(Math.max(value, 0), maxIndex);
 
   const startIndex = clampIndex(yearIndexOf(from, domain.start));
   const endIndex = clampIndex(yearIndexOf(to, domain.start));
@@ -72,7 +71,9 @@ export default function YearRangeSlider({
       startIndex={startIndex}
       endIndex={endIndex}
       maxIndex={maxIndex}
-      formatValue={(index) => formatJalaliYear(yearAtIndex(domain.start, index))}
+      formatValue={(index) =>
+        formatJalaliYear(yearAtIndex(domain.start, index))
+      }
       ticks={ticks}
       startAriaLabel="انتخاب سال شروع"
       endAriaLabel="انتخاب سال پایان"

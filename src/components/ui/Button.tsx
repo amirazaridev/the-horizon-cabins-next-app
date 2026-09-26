@@ -61,7 +61,12 @@ export default function Button({
     .filter(Boolean)
     .join(" ");
 
-  if (!href) return <button className={classes} {...otherProps}>{children}</button>;
+  if (!href)
+    return (
+      <button className={classes} {...otherProps}>
+        {children}
+      </button>
+    );
 
   return (
     <Link href={href} className={classes}>

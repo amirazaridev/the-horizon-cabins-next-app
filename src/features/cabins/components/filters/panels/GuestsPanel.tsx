@@ -34,10 +34,7 @@ export default function GuestsPanel({ value, onChange }: Props) {
       options={OPTIONS.map((n) => ({
         value: String(n),
         label: n >= 6 ? "۶ نفر و بیشتر" : `${fa(n)} نفر`,
-        hint:
-          n >= 6
-            ? "ظرفیت ۶ به بالا"
-            : `ظرفیت حداقل ${fa(n)} نفر`,
+        hint: n >= 6 ? "ظرفیت ۶ به بالا" : `ظرفیت حداقل ${fa(n)} نفر`,
       }))}
     />
   );

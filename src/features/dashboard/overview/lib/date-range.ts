@@ -26,11 +26,7 @@ export const PARAM_RANGE = "range";
 export const PARAM_DATE_TAB = "dateTab";
 
 export type DateRangePreset =
-  | "last-7-days"
-  | "last-30-days"
-  | "this-season"
-  | "this-year"
-  | "custom";
+  "last-7-days" | "last-30-days" | "this-season" | "this-year" | "custom";
 
 export const DATE_RANGE_PRESETS: readonly {
   value: DateRangePreset;
@@ -220,7 +216,9 @@ export function getGaugeDomain(
   const currentYearStart = startOfYear(today);
 
   let domainStart =
-    selectedFrom < currentYearStart ? toDateOnly(selectedFrom) : currentYearStart;
+    selectedFrom < currentYearStart
+      ? toDateOnly(selectedFrom)
+      : currentYearStart;
 
   let domainEnd = selectedTo > today ? toDateOnly(selectedTo) : today;
 
@@ -283,7 +281,8 @@ export interface DateFilterValue {
    دکمه‌های دسترسی سریع
    ================================================================== */
 
-export type QuickRangePreset = "last-7" | "last-month" | "last-6months" | "last-year";
+export type QuickRangePreset =
+  "last-7" | "last-month" | "last-6months" | "last-year";
 
 export const QUICK_RANGE_PRESETS: readonly {
   value: QuickRangePreset;
@@ -318,7 +317,9 @@ export function clampToToday(date: Date, today: Date = getToday()): Date {
 }
 
 /** متن روی دکمه فیلتر تاریخ: «از X تا Y» */
-export function formatDateFilterLabel(value: DateFilterValue): string | undefined {
+export function formatDateFilterLabel(
+  value: DateFilterValue,
+): string | undefined {
   const from = parseDateParam(value.from);
   const to = parseDateParam(value.to);
   if (!from || !to) return undefined;
@@ -348,8 +349,7 @@ export function getMonthGaugeDomain(
   const start = fromMonth < defaultStart ? fromMonth : defaultStart;
 
   const endRef = selectedTo > today ? selectedTo : today;
-  const count =
-    differenceInCalendarMonths(startOfMonth(endRef), start) + 1;
+  const count = differenceInCalendarMonths(startOfMonth(endRef), start) + 1;
 
   return { start, count };
 }
@@ -364,8 +364,7 @@ export function getYearGaugeDomain(
   const start = fromYear < defaultStart ? fromYear : defaultStart;
 
   const endRef = selectedTo > today ? selectedTo : today;
-  const count =
-    differenceInCalendarYears(startOfYear(endRef), start) + 1;
+  const count = differenceInCalendarYears(startOfYear(endRef), start) + 1;
 
   return { start, count };
 }
@@ -440,7 +439,12 @@ export function getMonthGaugeDomainLimited(
   const currentMonth = startOfMonth(today);
 
   // شروع: فروردین سال from
-  const start = startOfMonth(addMonths(fromMonth, -((Number(formatJalali(fromMonth, "M", { locale: faIR })) - 1))));
+  const start = startOfMonth(
+    addMonths(
+      fromMonth,
+      -(Number(formatJalali(fromMonth, "M", { locale: faIR })) - 1),
+    ),
+  );
 
   // پایان: اگر to-year = سال جاری، ماه جاری؛ وگرنه آخر سال to
   const toYear = Number(formatJalali(toMonth, "yyyy", { locale: faIR }));

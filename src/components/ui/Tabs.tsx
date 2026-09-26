@@ -62,7 +62,10 @@ export default function Tabs({
   return (
     <div className={className}>
       {/* نوار تب‌ها */}
-      <div role="tablist" className={`flex flex-wrap gap-2 rounded-2xl border border-foreground/5 bg-surface/50 p-1 backdrop-blur-sm ${listClassName}`}>
+      <div
+        role="tablist"
+        className={`border-foreground/5 bg-surface/50 flex flex-wrap gap-2 rounded-2xl border p-1 backdrop-blur-sm ${listClassName}`}
+      >
         {items.map((item) => {
           const isActive = item.id === activeTab?.id;
           return (
@@ -76,11 +79,15 @@ export default function Tabs({
               onClick={() => selectTab(item.id, item.disabled)}
               className={`relative inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40 ${
                 isActive
-                  ? "bg-primary-400 text-black shadow-lg shadow-primary-400/25"
+                  ? "bg-primary-400 shadow-primary-400/25 text-black shadow-lg"
                   : "text-text-gray hover:bg-foreground/5 hover:text-text"
               }`}
             >
-              {item.icon && <span className="flex size-4 items-center justify-center">{item.icon}</span>}
+              {item.icon && (
+                <span className="flex size-4 items-center justify-center">
+                  {item.icon}
+                </span>
+              )}
               {item.label}
             </button>
           );

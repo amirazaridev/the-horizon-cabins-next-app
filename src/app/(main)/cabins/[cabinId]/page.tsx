@@ -25,7 +25,7 @@ export default async function CabinPage({ params }: Props): Promise<ReactNode> {
   if (!cabin) notFound();
 
   return (
-    <section className="min-h-screen bg-background-2 py-10 sm:py-14">
+    <section className="bg-background-2 min-h-screen py-10 sm:py-14">
       <Container variant="cabin-detail">
         <Navigate
           paths={[

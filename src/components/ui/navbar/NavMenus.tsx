@@ -8,7 +8,7 @@ type Props = { onClickMenu: () => void };
 export default function NavMenus({ onClickMenu }: Props): ReactNode {
   return (
     <div className="flex items-center gap-2 md:gap-3">
-      <ThemeToggle/>
+      <ThemeToggle />
 
       <div className="hidden md:block">
         <LoginButton />
@@ -16,7 +16,7 @@ export default function NavMenus({ onClickMenu }: Props): ReactNode {
 
       <button
         onClick={onClickMenu}
-        className="flex h-10 w-10 items-center justify-center text md:hidden"
+        className="text flex h-10 w-10 items-center justify-center md:hidden"
         aria-label="Open menu"
       >
         <TextAlignJustify />

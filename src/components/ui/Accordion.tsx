@@ -95,7 +95,7 @@ function AccordionRow({
         className="flex w-full items-center gap-3 px-4 py-3.5 text-start transition-colors active:scale-[0.99]"
       >
         {item.icon && (
-          <span className="text-primary-400 grid size-9 shrink-0 place-items-center rounded-xl bg-primary-400/10">
+          <span className="text-primary-400 bg-primary-400/10 grid size-9 shrink-0 place-items-center rounded-xl">
             {item.icon}
           </span>
         )}

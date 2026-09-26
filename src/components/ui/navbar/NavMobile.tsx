@@ -81,15 +81,15 @@ export default function NavMobile({
 
       <div
         ref={panelRef}
-        className="absolute top-0 right-0 h-full w-9/12 max-w-sm bg-surface shadow-2xl"
+        className="bg-surface absolute top-0 right-0 h-full w-9/12 max-w-sm shadow-2xl"
       >
         <nav className="flex h-full flex-col">
-          <div className="flex items-center justify-between border-b border-foreground/10 p-5">
+          <div className="border-foreground/10 flex items-center justify-between border-b p-5">
             <Logo />
 
             <button
               onClick={closeMenu}
-              className="flex h-10 w-10 items-center justify-center text-foreground/70 transition-colors hover:text-foreground"
+              className="text-foreground/70 hover:text-foreground flex h-10 w-10 items-center justify-center transition-colors"
               aria-label="Close menu"
             >
               <X />
@@ -111,12 +111,12 @@ export default function NavMobile({
             </ul>
           </div>
 
-          <div className="border-t border-foreground/10 p-5">
+          <div className="border-foreground/10 border-t p-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-sm text-foreground/70">تم</span>
-              <ThemeToggle forMobile/>
+              <span className="text-foreground/70 text-sm">تم</span>
+              <ThemeToggle forMobile />
             </div>
-            <LoginButton fullWidth/>
+            <LoginButton fullWidth />
           </div>
         </nav>
       </div>

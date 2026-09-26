@@ -15,4 +15,5 @@ type ApiFailOrError = {
   errors?: ErrorMapResponse;
 };
 
-export type ApiResponse<T extends string, K> = ApiSuccess<T, K> | ApiFailOrError;
+export type ApiResponse<T extends string, K> =
+  ApiSuccess<T, K> | ApiFailOrError;

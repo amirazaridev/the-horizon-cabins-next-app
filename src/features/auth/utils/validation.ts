@@ -6,8 +6,7 @@ export function normalizeDigits(value: string): string {
 
 export function validateEmail(value: string): string | undefined {
   if (!value.trim()) return "ایمیل الزامی است";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-    return "فرمت ایمیل صحیح نیست";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "فرمت ایمیل صحیح نیست";
   return undefined;
 }
 

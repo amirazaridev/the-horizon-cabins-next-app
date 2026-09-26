@@ -151,7 +151,7 @@ export default function RangeDatePicker({
       </div>
 
       {/* راهنمای کوتاه مرحله فعلی */}
-      <p className="-mb-1 flex items-center gap-1.5 text-xs text-text-gray">
+      <p className="text-text-gray -mb-1 flex items-center gap-1.5 text-xs">
         <ChevronLeft className="text-primary-400 size-3.5" />
         {activeStage === "from"
           ? "روز ورود را از تقویم انتخاب کنید."
@@ -160,7 +160,7 @@ export default function RangeDatePicker({
             : "بازه انتخاب شد؛ می‌توانید تغییرش دهید."}
       </p>
 
-      <div className="horizon-range-picker overflow-hidden rounded-2xl border border-border bg-surface p-1">
+      <div className="horizon-range-picker border-border bg-surface overflow-hidden rounded-2xl border p-1">
         <RangeCalendarAny
           value={selected}
           onChange={handleChange}

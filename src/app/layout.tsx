@@ -23,6 +23,7 @@ export default function RootLayout({
       lang="fa"
       dir="rtl"
       className={`${fonts.variable} h-full antialiased`}
+      suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
       <body className="bg-background text-foreground flex min-h-full flex-col justify-between">

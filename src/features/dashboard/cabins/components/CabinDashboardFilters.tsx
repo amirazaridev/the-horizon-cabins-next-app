@@ -88,9 +88,9 @@ export default function CabinDashboardFilters({
   };
 
   const cityName = city
-    ? options.cities.find((item) => String(item.id) === city)?.name ??
+    ? (options.cities.find((item) => String(item.id) === city)?.name ??
       // سازگاری با URLهای قدیمی داشبورد که نام شهر ذخیره می‌کرد
-      options.cities.find((item) => item.name === city)?.name
+      options.cities.find((item) => item.name === city)?.name)
     : undefined;
 
   const priceSummary = (() => {
@@ -109,13 +109,9 @@ export default function CabinDashboardFilters({
     ? DASHBOARD_SORT_OPTIONS.find((o) => o.value === sortBy)?.label
     : undefined;
 
-  const activeCount = [
-    guests,
-    bedrooms,
-    amenities.length,
-    price,
-    city,
-  ].filter(Boolean).length;
+  const activeCount = [guests, bedrooms, amenities.length, price, city].filter(
+    Boolean,
+  ).length;
 
   const items: FilterCardItem[] = [
     {
@@ -254,7 +250,7 @@ export default function CabinDashboardFilters({
         onClearFilters={handleClear}
         mobileTitle="فیلترها"
         mobileApplyLabel="اعمال"
-        className="border-foreground/10 bg-surface/80 scrollbar-none flex min-w-0 flex-1 items-center gap-2 overflow-x-auto rounded-2xl border p-1.5 shadow-sm backdrop-blur-md [&::-webkit-scrollbar]:hidden"
+        className="border-foreground/10 bg-surface/80 flex min-w-0 flex-1 scrollbar-none items-center gap-2 overflow-x-auto rounded-2xl border p-1.5 shadow-sm backdrop-blur-md [&::-webkit-scrollbar]:hidden"
       />
 
       {activeCount > 0 && (

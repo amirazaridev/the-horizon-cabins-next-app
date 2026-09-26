@@ -73,8 +73,8 @@ export default function DateFilterPanel({
   return (
     <div className="flex flex-col gap-4">
       {/* دسترسی سریع */}
-      <div className="rounded-2xl border border-border bg-background p-3">
-        <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-text-gray">
+      <div className="border-border bg-background rounded-2xl border p-3">
+        <p className="text-text-gray mb-2 flex items-center gap-1.5 text-xs font-semibold">
           <Zap className="size-3.5" />
           دسترسی سریع
         </p>
@@ -84,7 +84,7 @@ export default function DateFilterPanel({
               key={preset.value}
               type="button"
               onClick={() => handleQuickPreset(preset.days)}
-              className="rounded-xl border border-border bg-surface px-2 py-2 text-xs font-medium text-text transition-colors hover:border-primary-400 hover:bg-primary-400/10 hover:text-text active:scale-95"
+              className="border-border bg-surface text-text hover:border-primary-400 hover:bg-primary-400/10 hover:text-text rounded-xl border px-2 py-2 text-xs font-medium transition-colors active:scale-95"
             >
               {preset.label}
             </button>

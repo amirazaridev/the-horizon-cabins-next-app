@@ -223,7 +223,7 @@ export default function Search() {
   }
 
   return (
-    <div className="hz-search bg-transparent text-text mx-auto flex max-w-255 flex-col gap-2 rounded-none border-0 p-0 shadow-none backdrop-blur-none md:flex-row md:items-center md:gap-0 md:border md:border-white/15 md:bg-background/60 md:rounded-2xl md:p-2 md:shadow-2xl md:shadow-black/20 md:backdrop-blur-xl">
+    <div className="hz-search text-text md:bg-background/60 mx-auto flex max-w-255 flex-col gap-2 rounded-none border-0 bg-transparent p-0 shadow-none backdrop-blur-none md:flex-row md:items-center md:gap-0 md:rounded-2xl md:border md:border-white/15 md:p-2 md:shadow-2xl md:shadow-black/20 md:backdrop-blur-xl">
       <FilterCard
         items={items}
         value={values as unknown as FilterCardValues}

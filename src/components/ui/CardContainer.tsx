@@ -26,13 +26,13 @@ export default function CardContainer({
       {...otherProps}
     >
       {variant === "gradient" && (
-        <div className="relative h-full overflow-hidden rounded-3xl bg-surface/80 p-8 backdrop-blur-sm md:p-10">
+        <div className="bg-surface/80 relative h-full overflow-hidden rounded-3xl p-8 backdrop-blur-sm md:p-10">
           <div className="bg-primary-400/30 absolute -top-24 -left-24 h-64 w-64 rounded-full blur-[100px]" />
           {children}
         </div>
       )}
       {variant === "primary" && (
-        <div className="rounded-3xl bg-surface/80 p-6 backdrop-blur-sm md:p-7">
+        <div className="bg-surface/80 rounded-3xl p-6 backdrop-blur-sm md:p-7">
           {children}
         </div>
       )}

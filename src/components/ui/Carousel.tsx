@@ -75,7 +75,10 @@ export default function Carousel({
       <div className="overflow-hidden" ref={emblaRef} dir="rtl">
         <div className={`flex ${gapClassName}`}>
           {slides.map((slide, index) => (
-            <div key={index} className={`min-w-0 touch-pan-y ${slideClassName}`}>
+            <div
+              key={index}
+              className={`min-w-0 touch-pan-y ${slideClassName}`}
+            >
               {slide}
             </div>
           ))}
@@ -89,7 +92,7 @@ export default function Carousel({
             onClick={scrollPrev}
             disabled={!canScrollPrev}
             aria-label="اسلاید قبلی"
-            className="bg-surface/90 border-foreground/10 text-text absolute top-1/2 right-1 z-10 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full border shadow-md backdrop-blur-md transition-all hover:bg-primary-400 hover:text-black disabled:pointer-events-none disabled:opacity-0 sm:-right-3 sm:flex"
+            className="bg-surface/90 border-foreground/10 text-text hover:bg-primary-400 absolute top-1/2 right-1 z-10 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full border shadow-md backdrop-blur-md transition-all hover:text-black disabled:pointer-events-none disabled:opacity-0 sm:-right-3 sm:flex"
           >
             <ChevronRight className="size-5" />
           </button>
@@ -99,7 +102,7 @@ export default function Carousel({
             onClick={scrollNext}
             disabled={!canScrollNext}
             aria-label="اسلاید بعدی"
-            className="bg-surface/90 border-foreground/10 text-text absolute top-1/2 left-1 z-10 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full border shadow-md backdrop-blur-md transition-all hover:bg-primary-400 hover:text-black disabled:pointer-events-none disabled:opacity-0 sm:-left-3 sm:flex"
+            className="bg-surface/90 border-foreground/10 text-text hover:bg-primary-400 absolute top-1/2 left-1 z-10 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full border shadow-md backdrop-blur-md transition-all hover:text-black disabled:pointer-events-none disabled:opacity-0 sm:-left-3 sm:flex"
           >
             <ChevronLeft className="size-5" />
           </button>

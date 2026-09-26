@@ -37,8 +37,7 @@ export default function DateRangeFilter({
     differenceInCalendarDays(domain.to, domain.from),
   );
 
-  const clampIndex = (value: number) =>
-    Math.min(Math.max(value, 0), maxIndex);
+  const clampIndex = (value: number) => Math.min(Math.max(value, 0), maxIndex);
 
   const startIndex = clampIndex(getDateIndex(from, domain.from));
   const endIndex = clampIndex(getDateIndex(to, domain.from));

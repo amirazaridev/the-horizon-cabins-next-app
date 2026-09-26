@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import BadgeTitle from "@/components/ui/BadgeTitle";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
 
-
 type Props = {
   cabin: Cabin;
 };

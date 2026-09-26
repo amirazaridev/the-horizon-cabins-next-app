@@ -25,7 +25,7 @@ export default function SelectedChips({
     <div
       role="list"
       aria-label="آیتم‌های انتخاب‌شده"
-      className={`flex flex-wrap gap-1.5 border-b border-foreground/5 pb-3 ${className}`}
+      className={`border-foreground/5 flex flex-wrap gap-1.5 border-b pb-3 ${className}`}
     >
       {items.map((item) => (
         <span

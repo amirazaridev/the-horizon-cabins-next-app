@@ -56,7 +56,7 @@ const Input = memo(function Input({
           aria-describedby={error ? errorId : undefined}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className={`w-full rounded-xl border bg-transparent py-3.5 text-sm text-text transition-all duration-300 placeholder:text-transparent focus:outline-none ${
+          className={`text-text w-full rounded-xl border bg-transparent py-3.5 text-sm transition-all duration-300 placeholder:text-transparent focus:outline-none ${
             icon ? "ps-11" : "ps-4"
           } ${isPassword ? "pe-12" : "pe-4"} ${
             error
@@ -74,8 +74,8 @@ const Input = memo(function Input({
             icon ? "start-11" : "start-4"
           } ${
             isFloating
-              ? "top-1 text-[10px] font-medium text-foreground/40"
-              : "top-1/2 -translate-y-1/2 text-sm text-foreground/30"
+              ? "text-foreground/40 top-1 text-[10px] font-medium"
+              : "text-foreground/30 top-1/2 -translate-y-1/2 text-sm"
           } peer-focus: ${isFloating ? "" : ""} ${
             focused ? (isFloating && focused ? "text-primary-400/70" : "") : ""
           }`}
@@ -97,7 +97,7 @@ const Input = memo(function Input({
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
             aria-label={showPassword ? "پنهان کردن رمز" : "نمایش رمز"}
-            className="hover:text-primary-400 absolute inset-y-0 inset-e-0 flex w-12 items-center justify-center text-foreground/30 transition-colors duration-300"
+            className="hover:text-primary-400 text-foreground/30 absolute inset-y-0 inset-e-0 flex w-12 items-center justify-center transition-colors duration-300"
           >
             {showPassword ? (
               <EyeOff className="size-5" />

@@ -5,7 +5,13 @@ type Props = { fullWidth?: boolean };
 
 export default function LoginButton({ fullWidth }: Props): ReactNode {
   return (
-    <Button className="border-gray-500/45" size="md" variant="outline" fullWidth={fullWidth} href="/login">
+    <Button
+      className="border-gray-500/45"
+      size="md"
+      variant="outline"
+      fullWidth={fullWidth}
+      href="/login"
+    >
       ورود | ثبت‌نام
     </Button>
   );

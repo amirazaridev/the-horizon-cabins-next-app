@@ -38,6 +38,6 @@
   animation: sd-draw 1.5s ease-in-out infinite;
 }
 .animate-sd-label-in {
-  animation: sd-label-in .4s ease-out both;
+  animation: sd-label-in 0.4s ease-out both;
   animation-delay: ".3s";
 }

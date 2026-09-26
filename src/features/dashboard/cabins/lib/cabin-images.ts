@@ -2,7 +2,7 @@ import type { CabinImage } from "../components/CabinImageDropzone";
 
 export type SplitImagesResult = {
   keepExisting: string[];
-  newFiles: File[];       
+  newFiles: File[];
 };
 
 export function splitImages(images: CabinImage[]): SplitImagesResult {

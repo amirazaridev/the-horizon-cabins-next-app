@@ -220,7 +220,11 @@
     transform 0.15s;
 }
 .horizon-range-picker .horizon-date-picker .rmdp-arrow-container:hover {
-  background-color: color-mix(in srgb, var(--color-primary-400) 18%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-400) 18%,
+    transparent
+  );
   box-shadow: none;
 }
 .horizon-range-picker .horizon-date-picker .rmdp-arrow-container:active {
@@ -232,12 +236,21 @@
   height: 4px;
   width: 4px;
 }
-.horizon-range-picker .horizon-date-picker .rmdp-arrow-container:hover .rmdp-arrow {
+.horizon-range-picker
+  .horizon-date-picker
+  .rmdp-arrow-container:hover
+  .rmdp-arrow {
   border: solid var(--color-primary-500);
   border-width: 0 2px 2px 0;
 }
-.horizon-range-picker .horizon-date-picker .rmdp-arrow-container.disabled .rmdp-arrow,
-.horizon-range-picker .horizon-date-picker .rmdp-arrow-container.disabled:hover .rmdp-arrow {
+.horizon-range-picker
+  .horizon-date-picker
+  .rmdp-arrow-container.disabled
+  .rmdp-arrow,
+.horizon-range-picker
+  .horizon-date-picker
+  .rmdp-arrow-container.disabled:hover
+  .rmdp-arrow {
   border: solid var(--color-text-gray);
   border-width: 0 2px 2px 0;
   opacity: 0.5;
@@ -270,11 +283,21 @@
     transform 0.15s;
 }
 @media (hover: hover) {
-  .horizon-range-picker .horizon-date-picker .rmdp-day:not(.rmdp-disabled, .rmdp-day-hidden) span:hover {
-    background-color: color-mix(in srgb, var(--color-primary-400) 22%, transparent);
+  .horizon-range-picker
+    .horizon-date-picker
+    .rmdp-day:not(.rmdp-disabled, .rmdp-day-hidden)
+    span:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--color-primary-400) 22%,
+      transparent
+    );
     color: var(--color-text);
   }
-  .horizon-range-picker .horizon-date-picker .rmdp-day:not(.rmdp-disabled, .rmdp-day-hidden):active span {
+  .horizon-range-picker
+    .horizon-date-picker
+    .rmdp-day:not(.rmdp-disabled, .rmdp-day-hidden):active
+    span {
     transform: scale(0.88);
   }
 }
@@ -285,21 +308,33 @@
   box-shadow: inset 0 0 0 1.5px var(--color-primary-400);
 }
 /* روزهای انتخاب‌شده (ورود/خروج) */
-.horizon-range-picker .horizon-date-picker .rmdp-day.rmdp-selected span:not(.highlight) {
+.horizon-range-picker
+  .horizon-date-picker
+  .rmdp-day.rmdp-selected
+  span:not(.highlight) {
   background-color: var(--color-primary-400);
   color: #1c1a16;
   font-weight: 800;
-  box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--color-primary-400) 70%, transparent);
+  box-shadow: 0 4px 14px -4px
+    color-mix(in srgb, var(--color-primary-400) 70%, transparent);
 }
 /* بدنه بازه */
 .horizon-range-picker .horizon-date-picker .rmdp-day .rmdp-range {
-  background-color: color-mix(in srgb, var(--color-primary-400) 20%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-400) 20%,
+    transparent
+  );
   color: var(--color-text);
   box-shadow: none;
   border-radius: 0;
 }
 .horizon-range-picker .horizon-date-picker .rmdp-day .rmdp-range-hover {
-  background-color: color-mix(in srgb, var(--color-primary-400) 12%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-400) 12%,
+    transparent
+  );
   color: var(--color-text);
 }
 /* روزهای غیرفعال (قبل از امروز) */
@@ -320,7 +355,11 @@
 .dark .horizon-range-picker .horizon-date-picker .rmdp-day.rmdp-today span {
   color: var(--color-primary-400);
 }
-.dark .horizon-range-picker .horizon-date-picker .rmdp-day.rmdp-selected span:not(.highlight) {
+.dark
+  .horizon-range-picker
+  .horizon-date-picker
+  .rmdp-day.rmdp-selected
+  span:not(.highlight) {
   color: #0a0d10;
 }
 /* موبایل: تک‌ماه تمام‌عرض */

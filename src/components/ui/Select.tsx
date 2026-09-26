@@ -38,7 +38,7 @@ function Select({ options = [], className = "", ...props }: SelectProps) {
 
       {/* Custom Icon */}
       <div className="text-text-gray group-hover:text-primary-400 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transition-colors duration-200">
-        <ChevronDown className="size-5"/>
+        <ChevronDown className="size-5" />
       </div>
     </div>
   );

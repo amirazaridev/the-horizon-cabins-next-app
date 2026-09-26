@@ -92,18 +92,18 @@ export default function DayRangePicker({
     "!w-full !h-11 !rounded-xl !border !border-border !bg-background !px-3 !text-sm !text-text text-center";
 
   return (
-    <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
+    <div className="border-border bg-surface rounded-2xl border p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-4 text-xs sm:text-sm">
         <div>
-          <span className="block text-[11px] text-text-gray">روز شروع</span>
-          <strong className="font-semibold text-text">
+          <span className="text-text-gray block text-[11px]">روز شروع</span>
+          <strong className="text-text font-semibold">
             {formatJalaliDayMonth(from)}
           </strong>
         </div>
-        <span className="h-px flex-1 bg-border" />
+        <span className="bg-border h-px flex-1" />
         <div className="text-end">
-          <span className="block text-[11px] text-text-gray">روز پایان</span>
-          <strong className="font-semibold text-text">
+          <span className="text-text-gray block text-[11px]">روز پایان</span>
+          <strong className="text-text font-semibold">
             {formatJalaliFull(to)}
           </strong>
         </div>
@@ -111,7 +111,7 @@ export default function DayRangePicker({
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-text-gray">
+          <label className="text-text-gray mb-1.5 block text-xs font-medium">
             تاریخ شروع
           </label>
           <DatePicker
@@ -129,7 +129,7 @@ export default function DayRangePicker({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-text-gray">
+          <label className="text-text-gray mb-1.5 block text-xs font-medium">
             تاریخ پایان
           </label>
           <DatePicker
@@ -148,7 +148,7 @@ export default function DayRangePicker({
         </div>
       </div>
 
-      <p className="mt-3 text-xs leading-6 text-text-gray">
+      <p className="text-text-gray mt-3 text-xs leading-6">
         تاریخ‌های بعد از امروز قابل انتخاب نیستند. تاریخ پایان نمی‌تواند قبل از
         تاریخ شروع باشد.
       </p>

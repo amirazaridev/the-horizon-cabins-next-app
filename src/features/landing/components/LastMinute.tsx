@@ -18,7 +18,7 @@ export type LastMinuteProps = {
 
 export default function LastMinute({
   offers,
-  expiresAt ,
+  expiresAt,
   demoDurationSeconds = 7200,
 }: LastMinuteProps) {
   if (!offers.length) return null;
@@ -48,27 +48,26 @@ export default function LastMinute({
                 بررسی کنید.
               </p>
             </div>
-              <div className="flex flex-col gap-2 self-start">
-                <span className="text-text-gray text-xs">زمان باقی‌مانده</span>
-                <Countdown
-                  expiresAt={expiresAt}
-                  demoDurationSeconds={demoDurationSeconds}
-                />
-              </div>
+            <div className="flex flex-col gap-2 self-start">
+              <span className="text-text-gray text-xs">زمان باقی‌مانده</span>
+              <Countdown
+                expiresAt={expiresAt}
+                demoDurationSeconds={demoDurationSeconds}
+              />
+            </div>
           </div>
           <div>
-
-          <Carousel showDots>
-            {offers.map(({ cabin, price }) => (
-              <OfferCard
-                key={cabin.id}
-                cabin={cabin}
-                price={price}
-                originalPrice={cabin.regularPrice}
-                badge={"پیشنهاد ویژه"}
-              />
-            ))}
-          </Carousel>
+            <Carousel showDots>
+              {offers.map(({ cabin, price }) => (
+                <OfferCard
+                  key={cabin.id}
+                  cabin={cabin}
+                  price={price}
+                  originalPrice={cabin.regularPrice}
+                  badge={"پیشنهاد ویژه"}
+                />
+              ))}
+            </Carousel>
           </div>
         </div>
       </Container>

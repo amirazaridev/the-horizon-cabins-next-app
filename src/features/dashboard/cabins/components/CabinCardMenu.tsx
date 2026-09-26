@@ -15,7 +15,8 @@ export default function CabinCardMenu({
   cabinId,
   cabinName,
 }: CabinCardMenuProps) {
-  const {handleConfirm,isModalOpen,setIsModalOpen} = useDeleteCabin(cabinId);
+  const { handleConfirm, isModalOpen, setIsModalOpen } =
+    useDeleteCabin(cabinId);
   const router = useRouter();
   const menuId = `cabin-menu-${cabinId}`;
 

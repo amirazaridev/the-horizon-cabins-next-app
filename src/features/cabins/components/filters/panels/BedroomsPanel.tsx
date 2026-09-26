@@ -31,8 +31,7 @@ export default function BedroomsPanel({ value, onChange }: Props) {
       allOption={{ label: "هر تعداد", hint: "نمایش همه اقامتگاه‌ها" }}
       options={OPTIONS.map((n) => ({
         value: String(n),
-        label:
-          n >= 4 ? "۴ خواب و بیشتر" : `${n.toLocaleString("fa-IR")} خوابه`,
+        label: n >= 4 ? "۴ خواب و بیشتر" : `${n.toLocaleString("fa-IR")} خوابه`,
         hint:
           n >= 4
             ? "حداقل ۴ اتاق‌خواب"

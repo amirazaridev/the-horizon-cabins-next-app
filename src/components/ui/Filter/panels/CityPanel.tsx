@@ -36,9 +36,7 @@ type CityPanelProps = CityPanelCommonProps &
       }
   );
 
-const DEFAULT_ICON = (
-  <MapPin className="text-primary-400 size-4 shrink-0" />
-);
+const DEFAULT_ICON = <MapPin className="text-primary-400 size-4 shrink-0" />;
 
 /**
  * پنل انتخاب شهر — reusable برای همه‌جا (landing، cabins، dashboard).

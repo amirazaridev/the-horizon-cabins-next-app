@@ -25,7 +25,7 @@ export default function CabinsMapPanel({
   return (
     <div
       className={`bg-background-2 relative overflow-hidden ${
-        framed ? "rounded-3xl border border-foreground/10" : ""
+        framed ? "border-foreground/10 rounded-3xl border" : ""
       } ${className}`}
     >
       {/* اسلات نقشه */}
@@ -43,9 +43,9 @@ function MapPlaceholder() {
       className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--color-border-strong)_1px,transparent_1px)] bg-[size:22px_22px]"
     >
       {/* مسیرهای تزئینی */}
-      <div className="absolute top-[18%] -right-10 left-0 h-10 rotate-[-8deg] rounded-full bg-foreground/5" />
-      <div className="absolute top-[55%] -right-10 left-0 h-7 rotate-[6deg] rounded-full bg-foreground/5" />
-      <div className="absolute top-0 bottom-0 left-[30%] w-7 rotate-[12deg] rounded-full bg-foreground/5" />
+      <div className="bg-foreground/5 absolute top-[18%] -right-10 left-0 h-10 rotate-[-8deg] rounded-full" />
+      <div className="bg-foreground/5 absolute top-[55%] -right-10 left-0 h-7 rotate-[6deg] rounded-full" />
+      <div className="bg-foreground/5 absolute top-0 bottom-0 left-[30%] w-7 rotate-[12deg] rounded-full" />
 
       {/* پین‌های تزئینی */}
       <span className="bg-primary-400/70 absolute top-[30%] right-[22%] size-3 rounded-full shadow" />
@@ -53,7 +53,7 @@ function MapPlaceholder() {
       <span className="bg-primary-400/70 absolute top-[42%] right-[75%] size-2 rounded-full shadow" />
 
       <div className="absolute inset-0 flex items-center justify-center p-6">
-        <div className="bg-surface/85 flex flex-col items-center gap-2 rounded-2xl border border-foreground/10 px-6 py-5 text-center shadow-xl backdrop-blur-md">
+        <div className="bg-surface/85 border-foreground/10 flex flex-col items-center gap-2 rounded-2xl border px-6 py-5 text-center shadow-xl backdrop-blur-md">
           <span className="bg-primary-400/15 flex size-11 items-center justify-center rounded-full">
             <MapPin className="text-primary-400 size-5" />
           </span>

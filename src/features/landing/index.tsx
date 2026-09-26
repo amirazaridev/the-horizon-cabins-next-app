@@ -15,7 +15,6 @@ type Props = {
   budgetStays?: BudgetStaysProps;
 };
 
-
 export default async function Landing({ lastMinute, budgetStays }: Props) {
   const cabins = await getCabins();
   const demoOffers = cabins.slice(0, 3).map((cabin) => ({

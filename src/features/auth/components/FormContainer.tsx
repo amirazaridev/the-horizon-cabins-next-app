@@ -29,7 +29,7 @@ export default function FormContainer({
             <h1 className="text-text text-xl font-bold tracking-tight">
               {isFormLogin ? "ساخت حساب کاربری" : "ورود به هورایزن"}
             </h1>
-            <p className="mt-1.5 text-xs text-text-gray">
+            <p className="text-text-gray mt-1.5 text-xs">
               {isFormLogin
                 ? "به دنیای کابین‌های لوکس خوش آمدید"
                 : "در چند ثانیه عضو خانواده هورایزن شوید"}
@@ -38,12 +38,12 @@ export default function FormContainer({
 
           {children}
           <div className="my-5 flex items-center gap-4">
-            <span className="h-px flex-1 bg-linear-to-r from-transparent via-foreground/10 to-transparent" />
-            <span className="text-xs font-medium text-foreground/30">یا</span>
-            <span className="h-px flex-1 bg-linear-to-r from-transparent via-foreground/10 to-transparent" />
+            <span className="via-foreground/10 h-px flex-1 bg-linear-to-r from-transparent to-transparent" />
+            <span className="text-foreground/30 text-xs font-medium">یا</span>
+            <span className="via-foreground/10 h-px flex-1 bg-linear-to-r from-transparent to-transparent" />
           </div>
 
-          <p className="text-center text-sm text-text-gray">
+          <p className="text-text-gray text-center text-sm">
             {isFormLogin ? "حساب کاربری ندارید" : "قبلاً ثبت‌نام کرده‌اید"}
 
             <Link

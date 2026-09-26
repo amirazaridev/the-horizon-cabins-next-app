@@ -23,8 +23,8 @@ export default function SpecsGrid({ cabin }: Props): ReactNode {
           className="hover:border-primary-400/30 text-center shadow-md"
         >
           <spec.icon className="text-primary-400 mx-auto mb-3 size-6" />
-          <p className="text-2xl font-bold text-text">{spec.value}</p>
-          <p className="mt-1 text-sm text-text-gray">{spec.label}</p>
+          <p className="text-text text-2xl font-bold">{spec.value}</p>
+          <p className="text-text-gray mt-1 text-sm">{spec.label}</p>
         </CardContainer>
       ))}
     </div>

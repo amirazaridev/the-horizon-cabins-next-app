@@ -1,7 +1,20 @@
 import heroImage from "@/assets/images/dark-hero-section.png";
 import lakeImage from "@/assets/images/1.png";
 import landscapeImage from "@/assets/images/hero-section-bg.avif";
-import { Building2, Castle, Home, Hotel, House, MountainSnow, Sparkles, Tent, TreePine, Trees, Waves, WavesLadder } from "lucide-react";
+import {
+  Building2,
+  Castle,
+  Home,
+  Hotel,
+  House,
+  MountainSnow,
+  Sparkles,
+  Tent,
+  TreePine,
+  Trees,
+  Waves,
+  WavesLadder,
+} from "lucide-react";
 
 export const HORIZON_IMAGES = {
   hero: heroImage,
@@ -10,16 +23,16 @@ export const HORIZON_IMAGES = {
 };
 
 export const PROPERTY_CATEGORIES = [
-  { id: 1,  title: "کلبه",          meta: "۳۲۵ اقامتگاه", icon: Home },
-  { id: 2,  title: "ویلا",          meta: "۴۱۲ اقامتگاه", icon: Building2 },
-  { id: 3,  title: "آپارتمان",       meta: "۲۴۸ اقامتگاه", icon: Hotel },
-  { id: 4,  title: "خانه سنتی",      meta: "۱۸۷ اقامتگاه", icon: Castle },
-  { id: 5,  title: "ویلا جنگلی",     meta: "۲۹۱ اقامتگاه", icon: Trees },
-  { id: 6,  title: "اقامتگاه لوکس",  meta: "۱۱۰ اقامتگاه", icon: Sparkles },
-  { id: 7,  title: "کلبه سوئیسی",    meta: "۸۶ اقامتگاه",  icon: MountainSnow },
-  { id: 8,  title: "کنار دریا",      meta: "۲۱۴ اقامتگاه", icon: Waves },
-  { id: 9,  title: "استخر دار",      meta: "۱۵۶ اقامتگاه", icon: WavesLadder },
-  { id: 10, title: "خانه روستایی",   meta: "۱۹۸ اقامتگاه", icon: House },
+  { id: 1, title: "کلبه", meta: "۳۲۵ اقامتگاه", icon: Home },
+  { id: 2, title: "ویلا", meta: "۴۱۲ اقامتگاه", icon: Building2 },
+  { id: 3, title: "آپارتمان", meta: "۲۴۸ اقامتگاه", icon: Hotel },
+  { id: 4, title: "خانه سنتی", meta: "۱۸۷ اقامتگاه", icon: Castle },
+  { id: 5, title: "ویلا جنگلی", meta: "۲۹۱ اقامتگاه", icon: Trees },
+  { id: 6, title: "اقامتگاه لوکس", meta: "۱۱۰ اقامتگاه", icon: Sparkles },
+  { id: 7, title: "کلبه سوئیسی", meta: "۸۶ اقامتگاه", icon: MountainSnow },
+  { id: 8, title: "کنار دریا", meta: "۲۱۴ اقامتگاه", icon: Waves },
+  { id: 9, title: "استخر دار", meta: "۱۵۶ اقامتگاه", icon: WavesLadder },
+  { id: 10, title: "خانه روستایی", meta: "۱۹۸ اقامتگاه", icon: House },
 ];
 
 export const DESTINATIONS = [

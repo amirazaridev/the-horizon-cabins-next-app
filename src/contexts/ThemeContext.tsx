@@ -62,7 +62,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const y = origin?.y ?? window.innerHeight / 2;
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
+        Math.max(y, window.innerHeight - y),
       );
       document.documentElement.style.setProperty("--vt-x", `${x}px`);
       document.documentElement.style.setProperty("--vt-y", `${y}px`);
@@ -72,7 +72,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setStoredTheme(next);
       });
     },
-    [theme]
+    [theme],
   );
 
   return (

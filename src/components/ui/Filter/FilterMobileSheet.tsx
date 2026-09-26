@@ -4,6 +4,9 @@ import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
+/** مدت انیمیشن ورود/خروج (باید با duration-[400ms] کلاس‌ها یکی باشد) */
+const EXIT_MS = 400;
+
 type FilterMobileSheetProps = {
   open: boolean;
   title?: string;
@@ -24,26 +27,32 @@ export default function FilterMobileSheet({
   children,
   footer,
 }: FilterMobileSheetProps) {
-  /** mounted برای انیمیشن خروج: اول visible=false بعد unmount */
-  const [mounted, setMounted] = useState(open);
+  /**
+   * visible = شیت «نشان داده شود» (بعد از یک فریم از mount تا انیمیشن ورود اجرا شود)
+   * mounted = open || visible یعنی تا پایان انیمیشن خروج در DOM می‌ماند.
+   * همه‌ی setState‌ها داخل callback (rAF/timeout) اجرا می‌شوند، نه در بدنه‌ی افکت.
+   */
   const [visible, setVisible] = useState(false);
+  const mounted = open || visible;
 
   useEffect(() => {
     if (open) {
-      setMounted(true);
       const raf = requestAnimationFrame(() =>
         requestAnimationFrame(() => setVisible(true)),
       );
       return () => cancelAnimationFrame(raf);
     }
-    setVisible(false);
-    const t = window.setTimeout(() => setMounted(false), 400);
+    if (!visible) return;
+    const t = window.setTimeout(() => setVisible(false), EXIT_MS);
     return () => window.clearTimeout(t);
-  }, [open]);
+  }, [open, visible]);
+
+  /** شکل نهایی: ورود فقط بعد از paint و خروج همان لحظه‌ی بسته شدن */
+  const shown = open && visible;
 
   /* قفل اسکرول body + بستن با Escape */
   useEffect(() => {
-    if (!mounted) return;
+    if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
@@ -54,7 +63,7 @@ export default function FilterMobileSheet({
       document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
     };
-  }, [mounted, onClose]);
+  }, [open, onClose]);
 
   if (!mounted) return null;
 
@@ -63,21 +72,22 @@ export default function FilterMobileSheet({
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-[70] md:hidden"
+      inert={!shown}
+      className="fixed inset-0 z-70 md:hidden"
     >
       {/* Overlay — fade خالص */}
       <div
         aria-hidden="true"
         onClick={onClose}
         className={`absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-[400ms] ease-out ${
-          visible ? "opacity-100" : "opacity-0"
+          shown ? "opacity-100" : "opacity-0"
         }`}
       />
 
       {/* Panel — slide-up خالص */}
       <div
         className={`bg-surface absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-3xl shadow-2xl transition-transform duration-[400ms] ease-out motion-reduce:transition-none ${
-          visible ? "translate-y-0" : "translate-y-full"
+          shown ? "translate-y-0" : "translate-y-full"
         }`}
       >
         {/* نشانگر بالای شیت (فقط بصری، بدون درگ) */}

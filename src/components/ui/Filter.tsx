@@ -9,7 +9,10 @@ type Props = {
   filterField: string;
 };
 
-export default function Filter({ filterOptions,filterField }: Props): ReactNode {
+export default function Filter({
+  filterOptions,
+  filterField,
+}: Props): ReactNode {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -24,7 +27,8 @@ export default function Filter({ filterOptions,filterField }: Props): ReactNode 
     }
   }, [isPending]);
 
-  const currentFilter = searchParams?.get(filterField) ?? filterOptions[0].value;
+  const currentFilter =
+    searchParams?.get(filterField) ?? filterOptions[0].value;
 
   function handleFilter(filter: string): void {
     hasClicked.current = true;

@@ -50,7 +50,7 @@ export default function CabinGallery({
 
   return (
     <div>
-      <div className="group relative overflow-hidden rounded-3xl border border-foreground/5 active:cursor-grabbing">
+      <div className="group border-foreground/5 relative overflow-hidden rounded-3xl border active:cursor-grabbing">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex touch-pan-y select-none">
             {images.map((image, i) => (
@@ -77,14 +77,14 @@ export default function CabinGallery({
         <button
           onClick={scrollPrev}
           aria-label="تصویر قبلی"
-          className="hover:border-primary-400/50 hover:text-primary-400 text-text absolute top-1/2 right-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-background/40 backdrop-blur-md transition-colors duration-300 sm:right-6 sm:size-11"
+          className="hover:border-primary-400/50 hover:text-primary-400 text-text border-foreground/15 bg-background/40 absolute top-1/2 right-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-md transition-colors duration-300 sm:right-6 sm:size-11"
         >
           <ChevronRight className="size-5" />
         </button>
         <button
           onClick={scrollNext}
           aria-label="تصویر بعدی"
-          className="hover:border-primary-400/50 hover:text-primary-400 text-text absolute top-1/2 left-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-background/40 backdrop-blur-md transition-colors duration-300 sm:left-6 sm:size-11"
+          className="hover:border-primary-400/50 hover:text-primary-400 text-text border-foreground/15 bg-background/40 absolute top-1/2 left-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-md transition-colors duration-300 sm:left-6 sm:size-11"
         >
           <ChevronLeft className="size-5" />
         </button>

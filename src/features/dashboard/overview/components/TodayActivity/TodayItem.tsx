@@ -28,7 +28,11 @@ function TodayItem({ activity }: any) {
         {isArriving ? "ورود" : "خروج"}
       </span>
 
-      <Button shape="xl" size="md" variant={`${isArriving ? "success" : "warning"}`}>
+      <Button
+        shape="xl"
+        size="md"
+        variant={`${isArriving ? "success" : "warning"}`}
+      >
         {isArriving ? "تحویل" : "تخلیه"}
       </Button>
     </div>

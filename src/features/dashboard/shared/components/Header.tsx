@@ -63,7 +63,7 @@ export default function Header({ pathname, onMenuClick }: HeaderProps) {
         <ThemeToggle />
 
         {/* پروفایل ادمین — تک محل ورودی به اطلاعات و اکشن‌های اکانت */}
-        <div className="border-border mr-1 flex items-center border-r pr-1 ">
+        <div className="border-border mr-1 flex items-center border-r pr-1">
           <Menus>
             <Menus.Toggle
               id="account-menu"
@@ -80,7 +80,7 @@ export default function Header({ pathname, onMenuClick }: HeaderProps) {
                       <p className="text-text-gray mt-1 text-xs">مدیر سایت</p>
                     </span>
                   </span>
-                  <ChevronDown className="size-5 ms-3" />
+                  <ChevronDown className="ms-3 size-5" />
                 </>
               }
             />
