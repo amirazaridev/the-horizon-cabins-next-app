@@ -1,5 +1,6 @@
-import FilterCard from "@/components/ui/filter/FilterCard";
+
 import OptionRow from "@/components/ui/filter/OptionRow";
+import { Pagination } from "@/components/ui/Pagination";
 import { MapPin } from "lucide-react";
 import { type ReactNode } from "react";
 
@@ -8,30 +9,6 @@ type City = (typeof cities)[number];
 
 export default function page(): ReactNode {
   return (
-    <FilterCard
-      items={[
-        {
-          id: "city",
-          label: "تعیین شهر",
-          icon: <MapPin className="size-4" />,
-          //   formatLabel: (v) => v?.name,          // اسم دکمه عوض میشه
-          panel: {
-            title: "شهر / مقصد",
-            size: "md", // sm | md | lg | auto
-            closeOnSelect: true,
-            showArrow: true,
-            // render: ({ value, setValue, close }) => ( /* فیلترها */ ),
-          },
-        },
-        {
-          id: "price",
-          label: "بازه قیمت",
-          panel: { size: "sm", children: <p>...</p> },
-        },
-      ]}
-      placement="start" // start | center | end
-      //   defaultValue={{ city: ... }}
-      //   onValueChange={(id, value) => updateQuery(id, value)}
-    />
+   <Pagination currentPage={10} totalPages={10} basePath="/cabins"/>
   );
 }
