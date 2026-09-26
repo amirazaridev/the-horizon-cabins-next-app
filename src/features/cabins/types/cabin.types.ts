@@ -21,3 +21,15 @@ export type CabinDto = Omit<Cabin, "createdAt" | "updatedAt"> & {
   createdAt: string;
   updatedAt: string;
 };
+
+
+export interface CabinsQueryParams {
+  page?: number;
+  limit?: number;
+  category?: string;
+  guests?: number;
+  bedrooms?: number;
+  amenities?: string;
+  price?: string;
+  city?: number;
+}

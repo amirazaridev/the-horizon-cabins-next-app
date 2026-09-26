@@ -1,18 +1,9 @@
-import { PaginationMeta } from "@/types/api-response";
-import { Cabin, CabinDto } from "../types/cabin.types";
-import { API_URL_CABINS } from ".";
+import { apiFetch } from "@/libs/api/apiFetch";
+import { ApiPaginatedResponse, PaginationMeta } from "@/types/api-response";
+import { Cabin, CabinDto, CabinsQueryParams } from "../types/cabin.types";
 import { mapCabin } from "../utils/mapCabin";
 
-export interface CabinsQueryParams {
-  page?: number;
-  limit?: number;
-  category?: string;
-  guests?: number;
-  bedrooms?: number;
-  amenities?: string;
-  price?: string;
-  city?: number;
-}
+
 
 export interface PaginatedCabins {
   cabins: Cabin[];
@@ -20,46 +11,50 @@ export interface PaginatedCabins {
 }
 
 export async function getCabins(): Promise<Cabin[]> {
-  const { cabins } = await queryCabins({ limit: 100 });
+  const { cabins } = await queryCabins();
   return cabins;
 }
 
-function buildQueryString(params: CabinsQueryParams): string {
+function buildQueryString({
+  page,
+  amenities,
+  bedrooms,
+  category,
+  city,
+  guests,
+  limit,
+  price,
+}: CabinsQueryParams): string {
   const searchParams = new URLSearchParams();
 
-  if (params.page) searchParams.set("page", String(params.page));
-  if (params.limit) searchParams.set("limit", String(params.limit));
-  if (params.category) searchParams.set("category", params.category);
-  if (params.guests) searchParams.set("guests", String(params.guests));
-  if (params.bedrooms) searchParams.set("bedrooms", String(params.bedrooms));
-  if (params.amenities) searchParams.set("amenities", params.amenities);
-  if (params.price) searchParams.set("price", params.price);
-  if (params.city) searchParams.set("city", String(params.city));
+  if (page) searchParams.set("page", String(page));
+  if (limit) searchParams.set("limit", String(limit));
+  if (category) searchParams.set("category", category);
+  if (guests) searchParams.set("guests", String(guests));
+  if (bedrooms) searchParams.set("bedrooms", String(bedrooms));
+  if (amenities) searchParams.set("amenities", amenities);
+  if (price) searchParams.set("price", price);
+  if (city) searchParams.set("city", String(city));
 
   const query = searchParams.toString();
   return query ? `?${query}` : "";
 }
 
 export async function queryCabins(
-  params: CabinsQueryParams
+  params?: CabinsQueryParams,
 ): Promise<PaginatedCabins> {
-  const queryString = buildQueryString(params);
-  const res = await fetch(`${API_URL_CABINS}${queryString}`, {
+  const queryString = buildQueryString({...params});
+  const res = await apiFetch(`cabins${queryString}`, {
     cache: "force-cache",
-    next: { revalidate: 1, tags: ["cabins-data"] },
+    next: { revalidate: 560, tags: ["cabins-data"] },
   });
 
-  const json = (await res.json()) as {
-    status: "success";
-    data: { data: CabinDto[]; meta: PaginationMeta };
-  };
+  const json: ApiPaginatedResponse<"cabins", CabinDto> = await res.json();
 
-  if (json.status !== "success") {
-    throw new Error("Failed to fetch cabins");
-  }
+  if (json.status != "success") throw new Error(json.message);
 
   return {
-    cabins: json.data.data.map(mapCabin),
+    cabins: json.data.cabins.map(mapCabin),
     meta: json.data.meta,
   };
 }

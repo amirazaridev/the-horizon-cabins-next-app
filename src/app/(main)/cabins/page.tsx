@@ -10,8 +10,7 @@ import {
   buildCabinFilterOptions,
   parseCabinFilters,
 } from "@/features/cabins/utils/cabin-filters";
-import { DEFAULT_CABINS_LIMIT, MAX_CABINS_LIMIT } from "@/constants/cabins";
-import { parsePageParam } from "@/libs/utils/pagination";
+import { parseLimitParam, parsePageParam } from "@/libs/utils/pagination";
 
 export const metadata: Metadata = {
   title: "اقامتگاه‌ها",
@@ -30,12 +29,7 @@ export default async function CabinsPage({
   const filters = parseCabinFilters(sp);
 
   const page = parsePageParam(sp);
-  const rawLimit = Array.isArray(sp.limit) ? sp.limit[0] : sp.limit;
-  const parsedLimit = Number(rawLimit);
-  const limit =
-    Number.isInteger(parsedLimit) && parsedLimit > 0
-      ? Math.min(parsedLimit, MAX_CABINS_LIMIT)
-      : DEFAULT_CABINS_LIMIT;
+  const limit = parseLimitParam(sp.limit);
 
   const [allCabins, { cabins, meta }] = await Promise.all([
     getCabins(),

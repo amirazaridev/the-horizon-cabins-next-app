@@ -1,3 +1,4 @@
+import { apiFetch } from "@/libs/api/apiFetch";
 import { ApiResponse } from "@/types/api-response";
 
 export interface Category {
@@ -10,7 +11,7 @@ export interface Category {
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const res = await fetch(`${process.env.API_URL}categories`, {
+  const res = await apiFetch("categories", {
     cache: "force-cache",
     next: { revalidate: 60, tags: ["categories-data"] },
   });

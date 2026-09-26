@@ -5,6 +5,8 @@
  * و هم هر جای دیگه (بدون نیاز به 'use client').
  */
 
+import { DEFAULT_CABINS_LIMIT, MAX_CABINS_LIMIT } from "@/constants/cabins";
+
 export type PaginationMeta = {
   currentPage: number;
   totalPages: number;
@@ -13,12 +15,23 @@ export type PaginationMeta = {
 };
 
 export type SearchParamsInput =
-  | Record<string, string | string[] | undefined>
-  | URLSearchParams
-  | undefined;
+  Record<string, string | string[] | undefined> | URLSearchParams | undefined;
 
 const DOTS = "dots" as const;
 
+export function parseLimitParam(spLimit: string | string[] | undefined) {
+  const rawLimit = Array.isArray(spLimit) ? spLimit[0] : spLimit;
+  const parsedLimit = Number(rawLimit);
+  const limit =
+    Number.isInteger(parsedLimit) && parsedLimit > 0
+      ? Math.min(parsedLimit, MAX_CABINS_LIMIT)
+      : DEFAULT_CABINS_LIMIT;
+  return limit;
+}
+
+// export function parsePaginationParams(searchParams){
+
+// }
 /**
  * یک صفحهٔ خاص را به query string فعلی اضافه می‌کند و بقیهٔ پارامترها
  * (سرچ، سورت، فیلتر و ...) را دست‌نخورده نگه می‌دارد.
@@ -30,7 +43,7 @@ export function buildPageUrl(
   basePath: string,
   searchParams: SearchParamsInput,
   page: number,
-  pageParamName = "page"
+  pageParamName = "page",
 ): string {
   const params = new URLSearchParams();
 
@@ -60,7 +73,7 @@ export function buildPageUrl(
  */
 export function parsePageParam(
   searchParams: Record<string, string | string[] | undefined> | undefined,
-  pageParamName = "page"
+  pageParamName = "page",
 ): number {
   const raw = searchParams?.[pageParamName];
   const value = Array.isArray(raw) ? raw[0] : raw;
@@ -78,7 +91,7 @@ export function parsePageParam(
 export function getPaginationRange(
   currentPage: number,
   totalPages: number,
-  siblingCount = 1
+  siblingCount = 1,
 ): (number | typeof DOTS)[] {
   const totalSlots = siblingCount * 2 + 5;
 
