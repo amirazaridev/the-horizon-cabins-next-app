@@ -17,3 +17,12 @@ type ApiFailOrError = {
 
 export type ApiResponse<T extends string, K> =
   ApiSuccess<T, K> | ApiFailOrError;
+
+export type PaginationMeta = {
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};

@@ -12,7 +12,7 @@ import {
 
 import FilterCard, {
   type FilterCardItem,
-} from "@/components/ui/filter/FilterCard";
+} from "@/components/ui/Filter/FilterCard";
 import {
   formatPriceShort,
   type CabinFilterOptions,

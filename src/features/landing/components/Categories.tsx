@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { Home } from "lucide-react";
 import Container from "@/components/ui/Container";
-import { PROPERTY_CATEGORIES } from "@/features/landing/constants/horizon-home";
+import { getCategories } from "@/features/cabins/api/getCategories";
+import { getIconByName } from "@/libs/utils/icon-map";
 
-export default function Categories() {
+export default async function Categories() {
+  const categories = await getCategories();
+
   return (
     <section
       id="categories"
@@ -29,13 +31,13 @@ export default function Categories() {
         </div>
 
         <div className="hz-category-grid grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-5 lg:gap-y-1">
-          {PROPERTY_CATEGORIES.map((item) => {
-            const Icon = item.icon ?? Home;
+          {categories.map((item) => {
+            const Icon = getIconByName(item.icon);
 
             return (
               <Link
                 key={item.id}
-                href="/cabins"
+                href={`/cabins?category=${item.slug}`}
                 className="hz-category-card group hover:bg-surface-raised flex min-h-20.5 items-center gap-3 rounded-2xl px-2 py-3 transition-all duration-300 sm:px-3"
               >
                 <span className="hz-category-icon border-border bg-surface text-text group-hover:border-primary-400/40 group-hover:bg-primary-400/10 group-hover:text-primary-500 flex size-12 shrink-0 items-center justify-center rounded-xl border transition-all duration-300 group-hover:-translate-y-0.5">

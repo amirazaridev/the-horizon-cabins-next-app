@@ -24,6 +24,8 @@ export type CabinFilters = {
   price?: [number, number];
   /** شناسه شهر */
   cityId?: number;
+
+  category?: string;
 };
 
 export type PriceBucket = {
@@ -57,6 +59,8 @@ export function parseCabinFilters(sp: RawSearchParams): CabinFilters {
     .map((a) => a.trim())
     .filter(Boolean);
 
+  const category = one(sp.category);
+
   const priceRaw = one(sp.price);
   let price: [number, number] | undefined;
   if (priceRaw) {
@@ -77,6 +81,7 @@ export function parseCabinFilters(sp: RawSearchParams): CabinFilters {
     bedrooms: toInt(one(sp.bedrooms), 1, 20),
     amenities: amenities?.length ? amenities : undefined,
     price,
+    category,
     cityId: toInt(one(sp.city), 1, Number.MAX_SAFE_INTEGER),
   };
 }

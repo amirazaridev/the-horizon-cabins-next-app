@@ -5,12 +5,13 @@ import CabinList from "@/features/cabins/components/CabinList";
 import CabinsExplorer from "@/features/cabins/components/CabinsExplorer";
 import Spinner from "@/components/ui/Spinner";
 
-import { getCabins } from "@/features/cabins/api";
+import { getCabins, queryCabins } from "@/features/cabins/api";
 import {
-  applyCabinFilters,
   buildCabinFilterOptions,
   parseCabinFilters,
 } from "@/features/cabins/utils/cabin-filters";
+import { DEFAULT_CABINS_LIMIT, MAX_CABINS_LIMIT } from "@/constants/cabins";
+import { parsePageParam } from "@/libs/utils/pagination";
 
 export const metadata: Metadata = {
   title: "اقامتگاه‌ها",
@@ -25,20 +26,46 @@ export default async function CabinsPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const filters = parseCabinFilters(await searchParams);
+  const sp = await searchParams;
+  const filters = parseCabinFilters(sp);
 
-  const cabins = await getCabins();
-  const filterOptions = buildCabinFilterOptions(cabins);
-  const resultCount = applyCabinFilters(cabins, filters).length;
+  const page = parsePageParam(sp);
+  const rawLimit = Array.isArray(sp.limit) ? sp.limit[0] : sp.limit;
+  const parsedLimit = Number(rawLimit);
+  const limit =
+    Number.isInteger(parsedLimit) && parsedLimit > 0
+      ? Math.min(parsedLimit, MAX_CABINS_LIMIT)
+      : DEFAULT_CABINS_LIMIT;
+
+  const [allCabins, { cabins, meta }] = await Promise.all([
+    getCabins(),
+    queryCabins({
+      page,
+      limit,
+      category: filters.category,
+      guests: filters.guests,
+      bedrooms: filters.bedrooms,
+      amenities: filters.amenities?.join(","),
+      price: filters.price
+        ? `${filters.price[0]}-${filters.price[1]}`
+        : undefined,
+      city: filters.cityId,
+    }),
+  ]);
+
+  const filterOptions = buildCabinFilterOptions(allCabins);
 
   return (
     <section className="bg-background min-h-screen">
-      <CabinsExplorer resultCount={resultCount} filterOptions={filterOptions}>
+      <CabinsExplorer
+        resultCount={meta.totalItems}
+        filterOptions={filterOptions}
+      >
         <Suspense
           fallback={<Spinner size="lg" label="درحال بارگزاری ..." fullWidth />}
-          key={JSON.stringify(filters)}
+          key={JSON.stringify(filters) + page + limit}
         >
-          <CabinList filters={filters} />
+          <CabinList cabins={cabins} meta={meta} searchParams={sp} />
         </Suspense>
       </CabinsExplorer>
     </section>
