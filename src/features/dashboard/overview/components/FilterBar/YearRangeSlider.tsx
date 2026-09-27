@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { startOfDay } from "date-fns";
 
-import RangeGauge, { type GaugeRange } from "./RangeGauge";
+import RangeGauge, { type GaugeRange } from "@/components/ui/RangeGauge";
 import {
   clampToToday,
   formatDateKey,
@@ -20,7 +20,6 @@ interface YearRangeSliderProps {
   onChange: (from: Date, to: Date) => void;
 }
 
-/** اسلایدر بازه سالانه (تقویم جلالی) */
 export default function YearRangeSlider({
   from,
   to,
@@ -45,7 +44,7 @@ export default function YearRangeSlider({
       Array.from({ length: domain.count }, (_, i) => {
         const date = yearAtIndex(domain.start, i);
         return {
-          key: formatDateKey(date),
+          key: `year-${i}`,
           label: formatJalaliYear(date),
           position: i,
         };
@@ -55,7 +54,6 @@ export default function YearRangeSlider({
 
   function handleCommit({ start, end }: GaugeRange): void {
     const range = yearRangeAtIndices(domain.start, start, end);
-    // اگر سال پایان شامل امسال باشد، سقف بازه امروز است نه آخر سال
     const safeTo = clampToToday(range.to, today);
 
     if (
@@ -70,7 +68,9 @@ export default function YearRangeSlider({
     <RangeGauge
       startIndex={startIndex}
       endIndex={endIndex}
-      maxIndex={maxIndex}
+      min={0}
+      max={maxIndex}
+      step={1}
       formatValue={(index) =>
         formatJalaliYear(yearAtIndex(domain.start, index))
       }
@@ -78,7 +78,7 @@ export default function YearRangeSlider({
       startAriaLabel="انتخاب سال شروع"
       endAriaLabel="انتخاب سال پایان"
       onCommit={handleCommit}
-      hideTickLabelsOnMobile={false}
+      showInputs={false}
     />
   );
 }

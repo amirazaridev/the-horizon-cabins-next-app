@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { differenceInCalendarDays, startOfDay } from "date-fns";
 
-import RangeGauge, { type GaugeRange } from "./RangeGauge";
+import RangeGauge, { type GaugeRange } from "@/components/ui/RangeGauge";
 import {
   formatDateKey,
   formatJalaliDayMonth,
@@ -19,7 +19,6 @@ interface DateRangeFilterProps {
   onChange: (from: Date, to: Date) => void;
 }
 
-/** اسلایدر بازه روزانه — همان رفتار قبلی، روی گیج عمومی */
 export default function DateRangeFilter({
   from,
   to,
@@ -60,7 +59,9 @@ export default function DateRangeFilter({
     <RangeGauge
       startIndex={startIndex}
       endIndex={endIndex}
-      maxIndex={maxIndex}
+      min={0}
+      max={maxIndex}
+      step={1}
       formatValue={(index) =>
         formatJalaliDayMonth(getDateAtIndex(domain.from, index))
       }
@@ -72,6 +73,7 @@ export default function DateRangeFilter({
       startAriaLabel="انتخاب تاریخ شروع"
       endAriaLabel="انتخاب تاریخ پایان"
       onCommit={handleCommit}
+      showInputs={false}
     />
   );
 }
