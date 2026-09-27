@@ -2,7 +2,7 @@
 
 import { Map as MapIcon } from "lucide-react";
 
-import CabinsDesktopFilters from "./CabinsDesktopFilters";
+import CabinsCardFilters from "./CabinsCardFilters";
 import type { CabinFilterOptions } from "../../utils/cabin-filters";
 
 type Props = {
@@ -27,7 +27,7 @@ export default function CabinsFilterBar({
     <div className="sticky top-18 z-50 w-full">
       <div className="border-foreground/10 bg-background/90 border-b backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1800px] items-center gap-2 px-3 py-2.5 sm:px-4 lg:px-6">
-          <CabinsDesktopFilters
+          <CabinsCardFilters
             options={options}
             resultCount={resultCount}
             className="flex"

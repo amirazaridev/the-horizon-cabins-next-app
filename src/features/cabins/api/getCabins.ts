@@ -46,15 +46,16 @@ export async function queryCabins(
   const queryString = buildQueryString({...params});
   const res = await apiFetch(`cabins${queryString}`, {
     cache: "force-cache",
-    next: { revalidate: 560, tags: ["cabins-data"] },
+    next: { revalidate: 300, tags: ["cabins-data"] },
   });
 
   const json: ApiPaginatedResponse<"cabins", CabinDto> = await res.json();
 
   if (json.status != "success") throw new Error(json.message);
-
+  console.log(json);
+  
   return {
-    cabins: json.data.cabins.map(mapCabin),
+    cabins: json.data.cabins?.map(mapCabin),
     meta: json.data.meta,
   };
 }

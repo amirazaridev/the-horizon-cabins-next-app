@@ -31,8 +31,8 @@ export default async function CabinsPage({
   const page = parsePageParam(sp);
   const limit = parseLimitParam(sp.limit);
 
-  const [allCabins, { cabins, meta }] = await Promise.all([
-    getCabins(),
+  const [{ cabins, meta }] = await Promise.all([
+    // getCabins(),
     queryCabins({
       page,
       limit,
@@ -47,7 +47,7 @@ export default async function CabinsPage({
     }),
   ]);
 
-  const filterOptions = buildCabinFilterOptions(allCabins);
+  const filterOptions = buildCabinFilterOptions(cabins);
 
   return (
     <section className="bg-background min-h-screen">

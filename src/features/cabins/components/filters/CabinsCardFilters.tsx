@@ -44,7 +44,7 @@ type Props = {
  * هر تغییر با setParam/setParams به URL نوشته می‌شود (الگوی FilterBar داشبورد).
  * فقط در lg به بالا نمایش داده می‌شود؛ موبایل bottom-sheet قبلی را دارد.
  */
-export default function CabinsDesktopFilters({
+export default function CabinsCardFilters({
   options,
   className = "",
   resultCount,

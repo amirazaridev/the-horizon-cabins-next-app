@@ -445,21 +445,6 @@ function PriceBadge({ cabin }: { cabin: Cabin }): ReactNode {
   );
 }
 
-// function SpecItem({
-//   icon,
-//   children,
-// }: {
-//   icon: ReactNode;
-//   children: ReactNode;
-// }): ReactNode {
-//   return (
-//     <div className="flex items-center gap-2">
-//       {icon}
-//       <span>{children}</span>
-//     </div>
-//   );
-// }
-
 function SpecTile({
   icon,
   value,
