@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { List, X } from "lucide-react";
-import type { CabinFilterOptions } from "../../utils/cabin-filters";
 import { useCabinQuery } from "./useCabinQuery";
 import BedroomsPanel from "./panels/BedroomsPanel";
 import AmenitiesPanel from "./panels/AmenitiesPanel";
@@ -12,7 +11,8 @@ import CityPanel from "./panels/CityPanel";
 const CLOSE_THRESHOLD = 96;
 
 type Props = {
-  options: CabinFilterOptions;
+  cities: { id: number; name: string }[];
+  amenities: string[];
   resultCount: number;
   open: boolean;
   onClose: () => void;
@@ -24,9 +24,9 @@ type Section = {
   body: React.ReactNode;
 };
 
-/** شیت «سایر فیلترها» — فقط زیر lg؛ همه فیلترهای مخفی موبایل اینجاست */
 export default function MoreFiltersSheet({
-  options,
+  cities,
+  amenities,
   resultCount,
   open,
   onClose,
@@ -55,21 +55,20 @@ export default function MoreFiltersSheet({
     {
       id: "amenities",
       title: "امکانات اقامتگاه",
-      body: <AmenitiesPanel options={options} />,
+      body: <AmenitiesPanel amenities={amenities} />,
     },
-  ];
-  if (options.priceBuckets.length > 0) {
-    sections.push({
+    {
       id: "price",
       title: "بازه قیمت هر شب",
-      body: <PricePanel options={options} />,
-    });
-  }
-  if (options.cities.length > 0) {
+      body: <PricePanel />,
+    },
+  ];
+
+  if (cities.length > 0) {
     sections.push({
       id: "city",
       title: "شهر / مقصد",
-      body: <CityPanel options={options} />,
+      body: <CityPanel cities={cities} />,
     });
   }
 

@@ -1,13 +1,13 @@
-"use client";
-
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { HORIZON_IMAGES } from "@/features/landing/constants/horizon-home";
 import Search from "./search";
-import { useTheme } from "@/contexts/ThemeContext";
+import { getCities } from "@/features/cabins/api";
+// import { useTheme } from "@/contexts/ThemeContext";
 
-export default function Hero() {
-  const { theme } = useTheme();
+export default async function Hero() {
+  // const { theme } = useTheme();
+  const cities = await getCities();
 
   return (
     <header
@@ -25,9 +25,9 @@ export default function Hero() {
         />
       </div>
       {/* <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,30,.55)_0%,rgba(7,17,30,.35)_45%,rgba(7,17,30,.55)_100%)]" /> */}
-      {theme === "dark" && (
+      {/* {theme === "dark" && (
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(14,21,39,.5)_0%,rgba(5,13,22,.35)_0%,transparent_60%)]" />
-      )}
+      )} */}
 
       <div className="absolute inset-0 bg-[linear-gradient(225deg,rgba(7,17,30,.5)_0%,transparent_45%)]" />
 
@@ -70,7 +70,7 @@ export default function Hero() {
         </div>
 
         <div className="mt-6 md:mt-7">
-          <Search />
+          <Search cities={cities}/>
         </div>
         <div className="mt-4 flex justify-center text-white/55">
           <ChevronDown

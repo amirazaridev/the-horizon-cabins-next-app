@@ -3,22 +3,18 @@
 import { Map as MapIcon } from "lucide-react";
 
 import CabinsCardFilters from "./CabinsCardFilters";
-import type { CabinFilterOptions } from "../../utils/cabin-filters";
 
 type Props = {
-  options: CabinFilterOptions;
+  cities: { id: number; name: string }[];
+  amenities: string[];
   resultCount: number;
   mapVisible: boolean;
   onToggleMap: () => void;
 };
 
-/**
- * نوار فیلتر صفحه cabins.
- * ریسپانسیو داخل FilterCard مدیریت می‌شود:
- * دسکتاپ = popover روی هر دکمه، موبایل (زیر md) = تک‌دکمه «فیلترها» + شیت آکاردئونی.
- */
 export default function CabinsFilterBar({
-  options,
+  cities,
+  amenities,
   resultCount,
   mapVisible,
   onToggleMap,
@@ -28,7 +24,8 @@ export default function CabinsFilterBar({
       <div className="border-foreground/10 bg-background/90 border-b backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1800px] items-center gap-2 px-3 py-2.5 sm:px-4 lg:px-6">
           <CabinsCardFilters
-            options={options}
+            cities={cities}
+            amenities={amenities}
             resultCount={resultCount}
             className="flex"
           />
@@ -39,10 +36,6 @@ export default function CabinsFilterBar({
     </div>
   );
 }
-
-/* ===============================================================
-   MAP TOGGLE
-   =============================================================== */
 
 function MapToggle({
   visible,
@@ -60,7 +53,6 @@ function MapToggle({
       onClick={onToggle}
       className="bg-surface/85 border-foreground/10 hidden shrink-0 items-center gap-2.5 rounded-2xl border px-3 py-2.5 shadow-sm backdrop-blur-md transition-all active:scale-95 sm:px-4 md:flex"
     >
-      {/* Switch */}
       <span
         aria-hidden="true"
         className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${
@@ -74,10 +66,8 @@ function MapToggle({
         />
       </span>
 
-      {/* Icon */}
       <MapIcon className="text-primary-400 size-4" />
 
-      {/* Label */}
       <span className="text-text hidden text-sm font-bold whitespace-nowrap sm:inline">
         نمایش نقشه
       </span>

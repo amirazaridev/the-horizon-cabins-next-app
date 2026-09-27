@@ -5,11 +5,8 @@ import CabinList from "@/features/cabins/components/CabinList";
 import CabinsExplorer from "@/features/cabins/components/CabinsExplorer";
 import Spinner from "@/components/ui/Spinner";
 
-import { getCabins, queryCabins } from "@/features/cabins/api";
-import {
-  buildCabinFilterOptions,
-  parseCabinFilters,
-} from "@/features/cabins/utils/cabin-filters";
+import { getAmenities, getCities, queryCabins } from "@/features/cabins/api";
+import { parseCabinFilters } from "@/features/cabins/utils/cabin-filters";
 import { parseLimitParam, parsePageParam } from "@/libs/utils/pagination";
 
 export const metadata: Metadata = {
@@ -31,8 +28,7 @@ export default async function CabinsPage({
   const page = parsePageParam(sp);
   const limit = parseLimitParam(sp.limit);
 
-  const [{ cabins, meta }] = await Promise.all([
-    // getCabins(),
+  const [{ cabins, meta }, cities, amenities] = await Promise.all([
     queryCabins({
       page,
       limit,
@@ -45,15 +41,17 @@ export default async function CabinsPage({
         : undefined,
       city: filters.cityId,
     }),
+    getCities(),
+    getAmenities(),
   ]);
-
-  const filterOptions = buildCabinFilterOptions(cabins);
 
   return (
     <section className="bg-background min-h-screen">
+      
       <CabinsExplorer
+        cities={cities}
+        amenities={amenities}
         resultCount={meta.totalItems}
-        filterOptions={filterOptions}
       >
         <Suspense
           fallback={<Spinner size="lg" label="درحال بارگزاری ..." fullWidth />}

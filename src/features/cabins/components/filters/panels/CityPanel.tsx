@@ -2,20 +2,14 @@
 
 import SharedCityPanel from "@/components/ui/filter/panels/CityPanel";
 import { useCabinQuery } from "../useCabinQuery";
-import type { CabinFilterOptions } from "../../../utils/cabin-filters";
 
 type Props = {
-  options: CabinFilterOptions;
-  /**
-   * حالت controlled (داخل FilterCard دسکتاپ).
-   * اگر onChange داده نشود، پنل خودش مستقیم با useCabinQuery کار می‌کند (موبایل).
-   */
+  cities: { id: number; name: string }[];
   value?: string | null;
   onChange?: (value: string | null) => void;
 };
 
-/** شهر / مقصد — adapter پنل reusable روی URL اقامتگاه‌ها */
-export default function CityPanel({ options, value, onChange }: Props) {
+export default function CityPanel({ cities, value, onChange }: Props) {
   const { searchParams, setParam } = useCabinQuery();
   const current = onChange ? (value ?? null) : searchParams.get("city");
 
@@ -26,7 +20,7 @@ export default function CityPanel({ options, value, onChange }: Props) {
 
   return (
     <SharedCityPanel
-      cities={options.cities.map((city) => ({
+      cities={cities.map((city) => ({
         value: String(city.id),
         label: city.name,
       }))}

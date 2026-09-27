@@ -15,17 +15,18 @@ import {
 import FilterCard, {
   type FilterCardItem,
   type FilterCardValues,
-} from "@/components/ui/filter/FilterCard";
+} from "@/components/ui/Filter/FilterCard";
 import {
   formatJalaliDate,
   type DateRange,
 } from "@/components/ui/RangeDatePicker";
 import { SEARCH_CITIES, type SearchCity } from "../../constants/search";
 import CityPanel from "@/components/ui/filter/panels/CityPanel";
-import DateRangePanel from "@/components/ui/filter/panels/DateRangePanel";
+import DateRangePanel from "@/components/ui/Filter/panels/DateRangePanel";
 import GuestsPanel from "./search-panels/GuestsPanel";
 import SearchAction from "./SearchAction";
 import FieldContent from "./FieldContent";
+import { City } from "@/features/cabins/types/city.types";
 
 type SearchValues = {
   city: SearchCity | null;
@@ -41,7 +42,7 @@ const DEFAULT_VALUES: SearchValues = {
   guests: null,
 };
 
-export default function Search() {
+export default function Search({ cities }: { cities: City[] }) {
   const [values, setValues] = useState<SearchValues>(DEFAULT_VALUES);
   const router = useRouter();
 
@@ -111,15 +112,14 @@ export default function Search() {
         advanceTo: "checkIn",
         render: ({ value, setValue }) => (
           <CityPanel
-            cities={SEARCH_CITIES.map((city) => ({
+            cities={cities.map((city) => ({
               value: String(city.id),
               label: city.name,
-              hint: city.hint,
             }))}
             value={value != null ? String((value as SearchCity).id) : null}
             onChange={(next) => {
               const city =
-                SEARCH_CITIES.find((item) => String(item.id) === next) ?? null;
+                cities.find((item) => String(item.id) === next) ?? null;
               setValue(city);
             }}
           />

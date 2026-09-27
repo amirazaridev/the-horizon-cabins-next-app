@@ -2,20 +2,14 @@
 
 import MultiOptionList from "@/components/ui/filter/MultiOptionList";
 import { useCabinQuery } from "../useCabinQuery";
-import type { CabinFilterOptions } from "../../../utils/cabin-filters";
 
 type Props = {
-  options: CabinFilterOptions;
-  /**
-   * حالت controlled (داخل FilterCard دسکتاپ).
-   * اگر onChange داده نشود، پنل خودش مستقیم با useCabinQuery کار می‌کند (موبایل).
-   */
+  amenities: string[];
   value?: string[];
   onChange?: (value: string[]) => void;
 };
 
-/** امکانات — چندگزینه‌ای؛ اقامتگاه باید همه موارد را داشته باشد */
-export default function AmenitiesPanel({ options, value, onChange }: Props) {
+export default function AmenitiesPanel({ amenities, value, onChange }: Props) {
   const { searchParams, setParam } = useCabinQuery();
   const urlSelected =
     searchParams
@@ -30,7 +24,7 @@ export default function AmenitiesPanel({ options, value, onChange }: Props) {
     else setParam("amenities", next.length ? next.join(",") : null);
   };
 
-  if (!options.amenities.length) {
+  if (!amenities.length) {
     return (
       <p className="text-text-gray py-4 text-center text-sm">
         امکاناتی برای نمایش ثبت نشده است.
@@ -57,7 +51,7 @@ export default function AmenitiesPanel({ options, value, onChange }: Props) {
         )}
       </div>
       <MultiOptionList
-        options={options.amenities.map((amenity) => ({
+        options={amenities.map((amenity) => ({
           value: amenity,
           label: amenity,
         }))}

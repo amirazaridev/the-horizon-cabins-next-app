@@ -20,10 +20,7 @@ import BedroomsPanel from "@/features/cabins/components/filters/panels/BedroomsP
 import AmenitiesPanel from "@/features/cabins/components/filters/panels/AmenitiesPanel";
 import PricePanel from "@/features/cabins/components/filters/panels/PricePanel";
 import CityPanel from "@/features/cabins/components/filters/panels/CityPanel";
-import {
-  formatPriceShort,
-  type CabinFilterOptions,
-} from "@/features/cabins/utils/cabin-filters";
+import { formatPriceShort } from "@/features/cabins/utils/cabin-filters";
 
 const fa = (n: number | string) => Number(n).toLocaleString("fa-IR");
 
@@ -37,24 +34,21 @@ export const DASHBOARD_SORT_OPTIONS = [
 ] as const;
 
 type Props = {
-  options: CabinFilterOptions;
+  cities: { id: number; name: string }[];
+  amenities: string[];
   className?: string;
 };
 
-/**
- * فیلترهای داشبورد cabins بر پایه FilterCard عمومی.
- * مثل صفحه اصلی (شهر، ظرفیت، خواب، قیمت، امکانات) + مرتب‌سازی داخل FilterCard.
- * controlled از URL — بدون تاریخ سفر (در داشبورد بی‌معنی است).
- */
 export default function CabinDashboardFilters({
-  options,
+  cities,
+  amenities,
   className = "",
 }: Props) {
   const { searchParams, setParam, clearFilters } = useCabinQuery();
 
   const guests = searchParams.get("guests");
   const bedrooms = searchParams.get("bedrooms");
-  const amenities =
+  const amenitiesParam =
     searchParams
       .get("amenities")
       ?.split(",")
@@ -83,38 +77,33 @@ export default function CabinDashboardFilters({
 
   const handleClear = () => {
     clearFilters();
-    // clearFilters فقط کلیدهای CABIN_FILTER_KEYS را پاک می‌کند؛ sort هم ریست شود
     setParam("sortBy", null);
   };
 
   const cityName = city
-    ? (options.cities.find((item) => String(item.id) === city)?.name ??
-      // سازگاری با URLهای قدیمی داشبورد که نام شهر ذخیره می‌کرد
-      options.cities.find((item) => item.name === city)?.name)
+    ? (cities.find((item) => String(item.id) === city)?.name ??
+      cities.find((item) => item.name === city)?.name)
     : undefined;
 
   const priceSummary = (() => {
     if (!price) return undefined;
     const [lo, hi] = price.split("-").map(Number);
     if (!Number.isFinite(lo) || !Number.isFinite(hi)) return undefined;
-    const bucket = options.priceBuckets.find(
-      (item) => item.value[0] === lo && item.value[1] === hi,
-    );
-    return (
-      bucket?.label ?? `${formatPriceShort(lo)} تا ${formatPriceShort(hi)}`
-    );
+    return `${formatPriceShort(lo)} تا ${formatPriceShort(hi)}`;
   })();
 
   const sortLabel = sortBy
     ? DASHBOARD_SORT_OPTIONS.find((o) => o.value === sortBy)?.label
     : undefined;
 
-  const activeCount = [guests, bedrooms, amenities.length, price, city].filter(
+  const activeCount = [guests, bedrooms, amenitiesParam.length, price, city].filter(
     Boolean,
   ).length;
 
-  const items: FilterCardItem[] = [
-    {
+  const items: FilterCardItem[] = [];
+
+  if (cities.length > 0) {
+    items.push({
       id: "city",
       label: "شهر / مقصد",
       icon: <MapPin className="text-primary-400 size-4" />,
@@ -125,13 +114,16 @@ export default function CabinDashboardFilters({
         closeOnSelect: true,
         render: ({ value, setValue }) => (
           <CityPanel
-            options={options}
+            cities={cities}
             value={value as string | null}
             onChange={(next) => setValue(next)}
           />
         ),
       },
-    },
+    });
+  }
+
+  items.push(
     {
       id: "guests",
       label: "ظرفیت",
@@ -181,17 +173,14 @@ export default function CabinDashboardFilters({
         size: "md",
         render: ({ value, setValue }) => (
           <AmenitiesPanel
-            options={options}
+            amenities={amenities}
             value={(value as string[] | null) ?? []}
             onChange={(next) => setValue(next)}
           />
         ),
       },
     },
-  ];
-
-  if (options.priceBuckets.length > 0) {
-    items.push({
+    {
       id: "price",
       label: "بازه قیمت",
       icon: <Wallet className="text-primary-400 size-4" />,
@@ -202,37 +191,35 @@ export default function CabinDashboardFilters({
         closeOnSelect: true,
         render: ({ value, setValue }) => (
           <PricePanel
-            options={options}
             value={value as string | null}
             onChange={(next) => setValue(next)}
           />
         ),
       },
-    });
-  }
-
-  items.push({
-    id: "sortBy",
-    label: "مرتب‌سازی",
-    icon: <ArrowUpDown className="text-primary-400 size-4" />,
-    formatLabel: () => sortLabel,
-    panel: {
-      title: "مرتب‌سازی",
-      size: "sm",
-      closeOnSelect: true,
-      render: ({ value, setValue }) => (
-        <SingleOptionPanel
-          value={(value as string | null) ?? null}
-          onChange={(next) => setValue(next)}
-          allOption={{ label: "پیش‌فرض", hint: "ترتیب ثبت در سیستم" }}
-          options={DASHBOARD_SORT_OPTIONS.map((option) => ({
-            value: option.value,
-            label: option.label,
-          }))}
-        />
-      ),
     },
-  });
+    {
+      id: "sortBy",
+      label: "مرتب‌سازی",
+      icon: <ArrowUpDown className="text-primary-400 size-4" />,
+      formatLabel: () => sortLabel,
+      panel: {
+        title: "مرتب‌سازی",
+        size: "sm",
+        closeOnSelect: true,
+        render: ({ value, setValue }) => (
+          <SingleOptionPanel
+            value={(value as string | null) ?? null}
+            onChange={(next) => setValue(next)}
+            allOption={{ label: "پیش‌فرض", hint: "ترتیب ثبت در سیستم" }}
+            options={DASHBOARD_SORT_OPTIONS.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+          />
+        ),
+      },
+    },
+  );
 
   return (
     <div className={`flex flex-wrap items-center gap-3 ${className}`}>
@@ -242,7 +229,7 @@ export default function CabinDashboardFilters({
           city,
           guests,
           bedrooms,
-          amenities,
+          amenities: amenitiesParam,
           price,
           sortBy,
         }}

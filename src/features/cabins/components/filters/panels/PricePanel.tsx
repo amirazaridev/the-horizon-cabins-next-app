@@ -3,19 +3,17 @@
 import RangeGauge from "@/components/ui/RangeGauge";
 import { useCabinQuery } from "../useCabinQuery";
 import { formatPriceShort } from "../../../utils/cabin-filters";
-import type { CabinFilterOptions } from "../../../utils/cabin-filters";
 
 const MIN_PRICE = 1_000_000;
 const MAX_PRICE = 30_000_000;
 const STEP = 100_000;
 
 type Props = {
-  options: CabinFilterOptions;
   value?: string | null;
   onChange?: (value: string | null) => void;
 };
 
-export default function PricePanel({ options, value, onChange }: Props) {
+export default function PricePanel({ value, onChange }: Props) {
   const { searchParams, setParam } = useCabinQuery();
   const current = onChange ? (value ?? null) : searchParams.get("price");
 
@@ -42,14 +40,6 @@ export default function PricePanel({ options, value, onChange }: Props) {
   };
 
   const isFiltered = startIndex !== 0 || endIndex !== MAX_PRICE - MIN_PRICE;
-
-  if (!options.priceBuckets.length) {
-    return (
-      <p className="text-text-gray py-4 text-center text-sm">
-        بازه قیمتی متنوعی ثبت نشده است.
-      </p>
-    );
-  }
 
   return (
     <div className="space-y-4">

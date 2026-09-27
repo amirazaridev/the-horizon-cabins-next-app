@@ -13,10 +13,7 @@ import {
 import FilterCard, {
   type FilterCardItem,
 } from "@/components/ui/Filter/FilterCard";
-import {
-  formatPriceShort,
-  type CabinFilterOptions,
-} from "../../utils/cabin-filters";
+import { formatPriceShort } from "../../utils/cabin-filters";
 import {
   formatDateRangeLabel,
   type CabinDateValue,
@@ -32,20 +29,15 @@ import CityPanel from "./panels/CityPanel";
 const fa = (n: number | string) => Number(n).toLocaleString("fa-IR");
 
 type Props = {
-  options: CabinFilterOptions;
+  cities: { id: number; name: string }[];
+  amenities: string[];
   className?: string;
   resultCount?: number;
 };
 
-/**
- * فیلترهای دسکتاپ صفحه cabins بر پایه FilterCard عمومی.
- *
- * controlled از URL: مقدار هر آیتم از searchParams خوانده و
- * هر تغییر با setParam/setParams به URL نوشته می‌شود (الگوی FilterBar داشبورد).
- * فقط در lg به بالا نمایش داده می‌شود؛ موبایل bottom-sheet قبلی را دارد.
- */
 export default function CabinsCardFilters({
-  options,
+  cities,
+  amenities,
   className = "",
   resultCount,
 }: Props) {
@@ -55,7 +47,7 @@ export default function CabinsCardFilters({
   const checkOut = searchParams.get("checkOut");
   const guests = searchParams.get("guests");
   const bedrooms = searchParams.get("bedrooms");
-  const amenities =
+  const amenitiesParam =
     searchParams
       .get("amenities")
       ?.split(",")
@@ -64,7 +56,6 @@ export default function CabinsCardFilters({
   const price = searchParams.get("price");
   const city = searchParams.get("city");
 
-  /** تاریخِ خالی (هر دو null) یعنی null تا دکمه حالت idle بماند */
   const dateValue: CabinDateValue | null =
     checkIn || checkOut ? { checkIn, checkOut } : null;
 
@@ -93,26 +84,21 @@ export default function CabinsCardFilters({
   };
 
   const cityName = city
-    ? options.cities.find((item) => String(item.id) === city)?.name
+    ? cities.find((item) => String(item.id) === city)?.name
     : undefined;
 
   const priceSummary = (() => {
     if (!price) return undefined;
     const [lo, hi] = price.split("-").map(Number);
     if (!Number.isFinite(lo) || !Number.isFinite(hi)) return undefined;
-    const bucket = options.priceBuckets.find(
-      (item) => item.value[0] === lo && item.value[1] === hi,
-    );
-    return (
-      bucket?.label ?? `${formatPriceShort(lo)} تا ${formatPriceShort(hi)}`
-    );
+    return `${formatPriceShort(lo)} تا ${formatPriceShort(hi)}`;
   })();
 
   const activeCount = [
     checkIn ?? checkOut,
     guests,
     bedrooms,
-    amenities.length,
+    amenitiesParam.length,
     price,
     city,
   ].filter(Boolean).length;
@@ -193,17 +179,14 @@ export default function CabinsCardFilters({
         size: "md",
         render: ({ value, setValue }) => (
           <AmenitiesPanel
-            options={options}
+            amenities={amenities}
             value={(value as string[] | null) ?? []}
             onChange={(next) => setValue(next)}
           />
         ),
       },
     },
-  ];
-
-  if (options.priceBuckets.length > 0) {
-    items.push({
+    {
       id: "price",
       label: "بازه قیمت",
       icon: <Wallet className="text-primary-400 size-4" />,
@@ -214,16 +197,15 @@ export default function CabinsCardFilters({
         closeOnSelect: true,
         render: ({ value, setValue }) => (
           <PricePanel
-            options={options}
             value={value as string | null}
             onChange={(next) => setValue(next)}
           />
         ),
       },
-    });
-  }
+    },
+  ];
 
-  if (options.cities.length > 0) {
+  if (cities.length > 0) {
     items.push({
       id: "city",
       label: "شهر / مقصد",
@@ -235,7 +217,7 @@ export default function CabinsCardFilters({
         closeOnSelect: true,
         render: ({ value, setValue }) => (
           <CityPanel
-            options={options}
+            cities={cities}
             value={value as string | null}
             onChange={(next) => setValue(next)}
           />
@@ -252,7 +234,7 @@ export default function CabinsCardFilters({
           date: dateValue,
           guests,
           bedrooms,
-          amenities,
+          amenities: amenitiesParam,
           price,
           city,
         }}

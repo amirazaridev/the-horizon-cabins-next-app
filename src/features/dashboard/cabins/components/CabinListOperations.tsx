@@ -1,11 +1,9 @@
 import { type ReactNode } from "react";
-import { getCabins } from "@/features/cabins/api";
-import { buildCabinFilterOptions } from "@/features/cabins/utils/cabin-filters";
+import { getAmenities, getCities } from "@/features/cabins/api";
 import CabinDashboardFilters from "./CabinDashboardFilters";
 
 export default async function CabinListOperations(): Promise<ReactNode> {
-  const cabins = await getCabins();
-  const options = buildCabinFilterOptions(cabins);
+  const [cities, amenities] = await Promise.all([getCities(), getAmenities()]);
 
-  return <CabinDashboardFilters options={options} />;
+  return <CabinDashboardFilters cities={cities} amenities={amenities} />;
 }
