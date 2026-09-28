@@ -53,7 +53,7 @@ export default async function DashboardCabinDetailPage({
       </Link>
 
       {/* گالری + هدر روی تصویر */}
-      <CabinGallery images={cabin.images} altBase={cabin.name}>
+      <CabinGallery images={cabin.images ?? []} altBase={cabin.name}>
         <div className="pointer-events-none absolute right-5 bottom-5 left-5 z-10 flex flex-wrap items-end justify-between gap-4 sm:right-8 sm:bottom-8 sm:left-8">
           <div>
             <BadgeTitle className="text-text/80 mb-2 gap-2 px-3.5 py-1.5 text-xs">

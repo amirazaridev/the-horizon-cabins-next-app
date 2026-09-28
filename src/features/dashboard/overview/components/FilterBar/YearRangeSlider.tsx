@@ -66,10 +66,9 @@ export default function YearRangeSlider({
 
   return (
     <RangeGauge
-      startIndex={startIndex}
-      endIndex={endIndex}
-      min={0}
-      max={maxIndex}
+      value={{ start: startIndex, end: endIndex }}
+      minValue={0}
+      maxValue={maxIndex}
       step={1}
       formatValue={(index) =>
         formatJalaliYear(yearAtIndex(domain.start, index))

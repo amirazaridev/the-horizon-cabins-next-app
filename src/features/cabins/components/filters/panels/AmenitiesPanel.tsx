@@ -1,6 +1,6 @@
 "use client";
 
-import MultiOptionList from "@/components/ui/filter/MultiOptionList";
+import MultiOptionList from "@/components/ui/Filter/MultiOptionList";
 import { useCabinQuery } from "../useCabinQuery";
 
 type Props = {

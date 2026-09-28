@@ -1,6 +1,6 @@
 "use client";
 
-import SharedCityPanel from "@/components/ui/filter/panels/CityPanel";
+import SharedCityPanel from "@/components/ui/Filter/panels/CityPanel";
 import { useCabinQuery } from "../useCabinQuery";
 
 type Props = {

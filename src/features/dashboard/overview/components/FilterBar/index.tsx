@@ -7,13 +7,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import FilterCard, {
   type FilterCardItem,
-} from "@/components/ui/filter/FilterCard";
+} from "@/components/ui/Filter/FilterCard";
 import MultiOptionList, {
   type MultiOptionListOption,
-} from "@/components/ui/filter/MultiOptionList";
+} from "@/components/ui/Filter/MultiOptionList";
 import CityPanel, {
   type CityPanelOption,
-} from "@/components/ui/filter/panels/CityPanel";
+} from "@/components/ui/Filter/panels/CityPanel";
 import DateFilterPanel from "./DateFilterPanel";
 import {
   PARAM_CITY,

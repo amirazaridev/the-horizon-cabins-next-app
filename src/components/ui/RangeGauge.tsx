@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useRef,
   useState,
   type ChangeEvent,
@@ -19,187 +20,381 @@ export interface GaugeTick {
   position: number;
 }
 
+type CommitMode = "change" | "apply";
+
+/** دستگیرهٔ در حال کشیدن: start = مقدار کمینه، end = مقدار بیشینه */
+type DragHandle = "start" | "end";
+
 interface RangeGaugeProps {
-  startIndex: number;
-  endIndex: number;
-  min?: number;
-  max?: number;
+  /** حد پائین بازه (مقدار واقعی، نه آفست) */
+  minValue: number;
+  /** حد بالای بازه (مقدار واقعی، نه آفست) */
+  maxValue: number;
+  /** مقدار انتخاب‌شدهٔ فعلی؛ اگر ندهید، محدودهٔ کامل در نظر گرفته می‌شود */
+  value?: GaugeRange | null;
+  /** گام حرکت اسلایدر و دکمه‌های جهت‌دار */
   step?: number;
+  /** فاصلهٔ حداقل بین دو دستگیره (پیش‌فرض: یک step) */
+  minGap?: number;
   formatValue: (value: number) => string;
   startAriaLabel: string;
   endAriaLabel: string;
+  /**
+   * خروجی گرفتن از بازهٔ انتخاب‌شده:
+   * - `change` => با هر رها کردن موس / تغییر دستگیره (رفتار زندهٔ قبلی)
+   * - `apply`  => فقط وقتی مصرف‌کننده `submit()` را صدا بزند یا روی دکمهٔ اعمال بزند
+   */
   onCommit: (range: GaugeRange) => void;
+  /** `change` (پیش‌فرض) یا `apply` */
+  commitOn?: CommitMode;
+  /** برای `commitOn="apply"` — تابع submit را به مصرف‌کننده می‌دهد */
+  onReady?: (api: RangeGaugeApi) => void;
   ticks?: GaugeTick[];
   showInputs?: boolean;
 }
 
-type DragHandle = "start" | "end";
+export interface RangeGaugeApi {
+  /** مقادیر تأییدشدهٔ فعلی (برای دکمهٔ «اعمال») */
+  getRange: () => GaugeRange;
+  /** اعمال بازهٔ فعلی روی onCommit */
+  submit: () => void;
+  /** برگرداندن اسلایدر به محدودهٔ کامل */
+  reset: () => void;
+}
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
-}
-
-function snapToStep(value: number, step: number, min: number): number {
-  return Math.round((value - min) / step) * step + min;
 }
 
 function formatNumber(value: number): string {
   return value.toLocaleString("en-US");
 }
 
+/** عدد لاتین یا فارسی/عربی را به number تبدیل می‌کند */
+function parseDigits(raw: string): number {
+  const normalized = raw
+    .replace(/[\u06F0-\u06F9]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
+    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[^\d]/g, "");
+
+  return normalized === "" ? Number.NaN : Number(normalized);
+}
+
 export default function RangeGauge({
-  startIndex,
-  endIndex,
-  min = 1_000_000,
-  max = 30_000_000,
+  minValue,
+  maxValue,
+  value,
   step = 100_000,
+  minGap,
   formatValue,
   startAriaLabel,
   endAriaLabel,
   onCommit,
+  commitOn = "change",
+  onReady,
   ticks,
   showInputs = true,
 }: RangeGaugeProps) {
-  const [indices, setIndices] = useState<GaugeRange>({
-    start: startIndex,
-    end: endIndex,
-  });
-  const [startInput, setStartInput] = useState(formatNumber(startIndex));
-  const [endInput, setEndInput] = useState(formatNumber(endIndex));
+  const span = Math.max(maxValue - minValue, 0);
+  const gap = minGap ?? step;
 
-  const indicesRef = useRef<GaugeRange>(indices);
-  const activeHandleRef = useRef<DragHandle | null>(null);
+  const initial: GaugeRange = {
+    start: value ? clamp(value.start, minValue, maxValue) : minValue,
+    end: value ? clamp(value.end, minValue, maxValue) : maxValue,
+  };
+
+  const [range, setRange] = useState<GaugeRange>(initial);
+  const [startInput, setStartInput] = useState(formatNumber(initial.start));
+  const [endInput, setEndInput] = useState(formatNumber(initial.end));
+
+  const rangeRef = useRef<GaugeRange>(initial);
+  const activeHandleRef = useRef<"start" | "end" | null>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const maxIndex = max - min;
-  const startPercent = ((indices.start - min) / maxIndex) * 100;
-  const endPercent = ((indices.end - min) / maxIndex) * 100;
+  // مقادیر تأییدشدهٔ فعلی (mirror در ref، بدون نیاز به re-render)
+  const committedRef = useRef<GaugeRange>(initial);
 
-  function updateHandle(handle: DragHandle, nextValue: number): void {
-    const snapped = snapToStep(nextValue, step, min);
-    setIndices((current) => {
-      const next: GaugeRange =
-        handle === "start"
-          ? { start: Math.min(snapped, current.end), end: current.end }
-          : { start: current.start, end: Math.max(snapped, current.start) };
+  const syncInputs = (next: GaugeRange) => {
+    setStartInput(formatNumber(next.start));
+    setEndInput(formatNumber(next.end));
+  };
 
-      indicesRef.current = next;
-      setStartInput(formatNumber(next.start));
-      setEndInput(formatNumber(next.end));
-      return next;
-    });
+  /** مرتب‌سازی + کلمپ یک بازه؛ با `sort` ترتیب دستگیره‌ها هم اصلاح می‌شود */
+  function normalize(next: GaugeRange, sort = false): GaugeRange {
+    let { start, end } = next;
+
+    if (sort && start > end) [start, end] = [end, start];
+
+    start = clamp(start, minValue, maxValue);
+    end = clamp(end, minValue, maxValue);
+
+    return {
+      start: Math.min(start, end - gap),
+      end: Math.max(end, start + gap),
+    };
   }
 
-  function commitCurrentRange(): void {
-    onCommit({ ...indicesRef.current });
+  /** فقط state داخلی را عوض می‌کند (بدون onCommit) */
+  function setRangeState(next: GaugeRange, sort = false): GaugeRange {
+    const normalized = normalize(next, sort);
+    rangeRef.current = normalized;
+    setRange(normalized);
+    syncInputs(normalized);
+    return normalized;
+  }
+
+  // در ref نگه داشته می‌شود تا APIـی که به مصرف‌کننده می‌دهیم همیشه
+  // تازه‌ترین onCommit را صدا بزند (بدون وابستگی کهنیِ effect)
+  const onCommitRef = useRef(onCommit);
+  useEffect(() => {
+    onCommitRef.current = onCommit;
+  }, [onCommit]);
+
+  function commitRange(): void {
+    committedRef.current = { ...rangeRef.current };
+    onCommitRef.current({ ...rangeRef.current });
+  }
+
+  /** حرکت یک دستگیره به مقدار جدید (فقط state؛ commit جای دیگر) */
+  function moveHandle(handle: "start" | "end", nextValue: number): void {
+    setRangeState({
+      start: handle === "start" ? nextValue : rangeRef.current.start,
+      end: handle === "end" ? nextValue : rangeRef.current.end,
+    });
   }
 
   function getValueFromClientX(clientX: number): number {
     const track = trackRef.current;
-    if (!track) return min;
+    if (!track || span === 0) return minValue;
 
     const rect = track.getBoundingClientRect();
-    const ratio = (clientX - rect.left) / rect.width;
-    const rawValue = min + ratio * maxIndex;
-    return clamp(snapToStep(rawValue, step, min), min, max);
+
+    // صفحه RTL: مبدأ از سمت راست است، پس جهت را برمی‌گردانیم
+    const isRtl = getComputedStyle(track).direction === "rtl";
+    const offset = isRtl ? rect.right - clientX : clientX - rect.left;
+    const ratio = offset / rect.width;
+
+    const rawValue = minValue + ratio * span;
+
+    // اسنپ نسبت به minValue، نه نسبت به صفر — وگرنه وقتی minValue
+    // مضرب step نباشد مقدار از خودِ minValue بیرون میزند.
+    const snapped = minValue + Math.round((rawValue - minValue) / step) * step;
+
+    return clamp(snapped, minValue, maxValue);
+  }
+
+  /**
+   * اگر کلیک مستقیماً روی خودِ دستگیره شروع شده باشد، همان قفل می‌شود.
+   *
+   * این مهم است چون هنگام گرفتن دستگیره با موس، نقطهٔ کلیک روی بدنهٔ همان
+   * دستگیره است و در RTL (که start سمت راست است) ممکن است نقطهٔ محاسبه‌شده
+   * به دستگیرهٔ مقابل نزدیک‌تر باشد و اشتباهاً همان را بکشد.
+   */
+  function getClickedHandle(
+    target: EventTarget | null,
+  ): DragHandle | undefined {
+    const el = (target as HTMLElement | null)?.closest<HTMLElement>(
+      "[data-gauge-handle]",
+    );
+    const handle = el?.dataset.gaugeHandle;
+
+    return handle === "start" || handle === "end" ? handle : undefined;
   }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>): void {
     if (event.button !== 0 || !trackRef.current) return;
 
+    const clicked = getClickedHandle(event.target);
     const nextValue = getValueFromClientX(event.clientX);
-    const distanceToStart = Math.abs(nextValue - indicesRef.current.start);
-    const distanceToEnd = Math.abs(nextValue - indicesRef.current.end);
 
-    const handle: DragHandle =
-      distanceToStart <= distanceToEnd ? "start" : "end";
+    let handle: DragHandle;
+
+    if (clicked) {
+      // کلیک روی خود دستگیره => همان قفل میشود و مقدارش جابهجا نمیشود
+      handle = clicked;
+    } else {
+      // کلیک روی ترک => نزدیکترین دستگیره و پرش به نقطهٔ کلیک
+      const distanceToStart = Math.abs(nextValue - rangeRef.current.start);
+      const distanceToEnd = Math.abs(nextValue - rangeRef.current.end);
+      handle = distanceToStart <= distanceToEnd ? "start" : "end";
+      moveHandle(handle, nextValue);
+    }
 
     activeHandleRef.current = handle;
-    updateHandle(handle, nextValue);
-
     event.currentTarget.setPointerCapture(event.pointerId);
+    containerRef.current?.focus({ preventScroll: true });
   }
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>): void {
-    if (!activeHandleRef.current) return;
-    updateHandle(activeHandleRef.current, getValueFromClientX(event.clientX));
+    const handle = activeHandleRef.current;
+    if (!handle) return;
+
+    moveHandle(handle, getValueFromClientX(event.clientX));
   }
 
   function handlePointerUp(event: PointerEvent<HTMLDivElement>): void {
     if (!activeHandleRef.current) return;
-    commitCurrentRange();
+
     activeHandleRef.current = null;
-    event.currentTarget.releasePointerCapture(event.pointerId);
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    if (commitOn === "change") commitRange();
   }
 
-  function handleKeyDown(
-    handle: DragHandle,
-    event: KeyboardEvent<HTMLDivElement>,
-  ): void {
-    const currentValue = indicesRef.current[handle];
+  function handleTrackKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
+    // ناوبری با کلید فقط وقتی که کاربر روی خود دستگیره فوکوس دارد
+    if (event.target !== event.currentTarget) return;
+
     let nextValue: number | null = null;
 
     if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
-      nextValue = currentValue - step;
+      nextValue = rangeRef.current.start - step;
     }
     if (event.key === "ArrowRight" || event.key === "ArrowUp") {
-      nextValue = currentValue + step;
+      nextValue = rangeRef.current.start + step;
     }
-    if (event.key === "Home") nextValue = min;
-    if (event.key === "End") nextValue = max;
+    if (event.key === "Home") nextValue = minValue;
+    if (event.key === "End") nextValue = maxValue;
 
     if (nextValue === null) return;
 
     event.preventDefault();
-    updateHandle(handle, clamp(nextValue, min, max));
+    moveHandle("start", nextValue);
+  }
+
+  function handleHandleKeyDown(
+    handle: "start" | "end",
+    event: KeyboardEvent<HTMLDivElement>,
+  ): void {
+    let nextValue: number | null = null;
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+      nextValue = rangeRef.current[handle] - step;
+    }
+    if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+      nextValue = rangeRef.current[handle] + step;
+    }
+    if (event.key === "Home") nextValue = minValue;
+    if (event.key === "End") nextValue = maxValue;
+
+    if (nextValue === null) return;
+
+    event.preventDefault();
+    moveHandle(handle, nextValue);
+
+    if (commitOn === "change") commitRange();
   }
 
   function handleInputChange(
-    handle: DragHandle,
+    handle: "start" | "end",
     event: ChangeEvent<HTMLInputElement>,
   ): void {
-    const raw = event.target.value.replace(/[^\d]/g, "");
-    const numeric = Number(raw);
+    const raw = event.target.value;
 
-    if (handle === "start") {
-      setStartInput(raw ? formatNumber(numeric) : "");
-    } else {
-      setEndInput(raw ? formatNumber(numeric) : "");
-    }
+    if (handle === "start") setStartInput(raw);
+    else setEndInput(raw);
 
-    if (!Number.isFinite(numeric)) return;
+    const numeric = parseDigits(raw);
+    if (Number.isNaN(numeric)) return;
 
-    const clamped = clamp(numeric, min, max);
-    updateHandle(handle, clamped);
+    moveHandle(handle, clamp(numeric, minValue, maxValue));
   }
 
-  function handleInputBlur(handle: DragHandle): void {
-    const inputValue = handle === "start" ? startInput : endInput;
-    const numeric = Number(inputValue.replace(/[^\d]/g, ""));
+  function handleInputCommit(handle: "start" | "end"): void {
+    const raw = handle === "start" ? startInput : endInput;
+    const numeric = parseDigits(raw);
 
-    if (!Number.isFinite(numeric)) {
-      setStartInput(formatNumber(indicesRef.current.start));
-      setEndInput(formatNumber(indicesRef.current.end));
+    if (Number.isNaN(numeric)) {
+      syncInputs(rangeRef.current);
       return;
     }
 
-    const clamped = clamp(numeric, min, max);
-    updateHandle(handle, clamped);
-    commitCurrentRange();
-  }
+    const next = setRangeState(
+      {
+        start: handle === "start" ? numeric : rangeRef.current.start,
+        end: handle === "end" ? numeric : rangeRef.current.end,
+      },
+      true,
+    );
 
-  function handleInputKeyDown(
-    handle: DragHandle,
-    event: KeyboardEvent<HTMLInputElement>,
-  ): void {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleInputBlur(handle);
+    if (commitOn === "change") {
+      committedRef.current = { ...next };
+      onCommitRef.current({ ...next });
     }
   }
 
+  function handleInputKeyDown(
+    handle: "start" | "end",
+    event: KeyboardEvent<HTMLInputElement>,
+  ): void {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    handleInputCommit(handle);
+  }
+
+  // آخرین مقادیر مرزی در ref — تا API پایدار بماند و effect هر بار
+  // به‌خاطر تغییر تابع‌های محلی دوباره ساخته نشود
+  const boundsRef = useRef({ minValue, maxValue });
+  useEffect(() => {
+    boundsRef.current = { minValue, maxValue };
+  }, [minValue, maxValue]);
+
+  // مقدار تأییدشده را برای مصرف‌کننده (دکمهٔ «اعمال») در دسترس می‌گذارد
+  const onReadyRef = useRef(onReady);
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
+
+  useEffect(() => {
+    onReadyRef.current?.({
+      getRange: () => ({ ...rangeRef.current }),
+      submit: () => {
+        committedRef.current = { ...rangeRef.current };
+        onCommitRef.current({ ...rangeRef.current });
+      },
+      reset: () => {
+        const { minValue: lo, maxValue: hi } = boundsRef.current;
+        const full = { start: lo, end: hi };
+        rangeRef.current = full;
+        setRange(full);
+        setStartInput(formatNumber(full.start));
+        setEndInput(formatNumber(full.end));
+        committedRef.current = { ...full };
+      },
+    });
+  }, []);
+
+  const startPercent = span > 0 ? ((range.start - minValue) / span) * 100 : 0;
+  const endPercent = span > 0 ? ((range.end - minValue) / span) * 100 : 100;
+
+  const isFullRange = range.start === minValue && range.end === maxValue;
+
+  /**
+   * ترک `dir="rtl"` است، پس مبدأ بصری سمت راست است.
+   * موقعیت عناصر باید با `right` تنظیم شود تا مقدار min روی لبهٔ راست و
+   * مقدار max روی لبهٔ چپ بنشیند — هم‌راستا با `getValueFromClientX`.
+   * (اگر `left` استفاده شود، هر دو به‌صورت آینه‌ای جابه‌جا می‌شوند.)
+   */
+  const startOffset = { right: `${startPercent}%` } as const;
+  const endOffset = { right: `${endPercent}%` } as const;
+
+  // بازهٔ انتخاب‌شده از سمت راست (start) شروع می‌شود و تا end ادامه دارد
+  const selectionStyle = {
+    right: `${startPercent}%`,
+    width: `${Math.max(endPercent - startPercent, 0)}%`,
+  };
+
   return (
-    <div className="border-border bg-surface w-full rounded-2xl border p-4 sm:p-5">
+    <div
+      ref={containerRef}
+      dir="rtl"
+      tabIndex={-1}
+      className="border-border bg-surface w-full rounded-2xl border p-4 focus:outline-none sm:p-5"
+    >
       {showInputs && (
         <div dir="rtl" className="mb-5 flex items-center gap-3">
           <label className="flex flex-1 items-center gap-2">
@@ -211,7 +406,7 @@ export default function RangeGauge({
               aria-label={startAriaLabel}
               value={startInput}
               onChange={(e) => handleInputChange("start", e)}
-              onBlur={() => handleInputBlur("start")}
+              onBlur={() => handleInputCommit("start")}
               onKeyDown={(e) => handleInputKeyDown("start", e)}
               className="border-border bg-background focus:border-primary-400 w-full rounded-xl border px-3 py-2 text-center text-sm font-semibold focus:outline-none"
             />
@@ -228,7 +423,7 @@ export default function RangeGauge({
               aria-label={endAriaLabel}
               value={endInput}
               onChange={(e) => handleInputChange("end", e)}
-              onBlur={() => handleInputBlur("end")}
+              onBlur={() => handleInputCommit("end")}
               onKeyDown={(e) => handleInputKeyDown("end", e)}
               className="border-border bg-background focus:border-primary-400 w-full rounded-xl border px-3 py-2 text-center text-sm font-semibold focus:outline-none"
             />
@@ -238,35 +433,33 @@ export default function RangeGauge({
 
       <div
         ref={trackRef}
-        dir="ltr"
+        dir="rtl"
         className="relative h-12 cursor-ew-resize touch-none select-none"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onKeyDown={handleTrackKeyDown}
       >
         <div className="border-border bg-surface-raised absolute inset-x-0 top-1/2 h-2.5 -translate-y-1/2 overflow-hidden rounded-full border shadow-inner">
           <div
-            className="from-primary-300 via-primary-400 to-primary-500 absolute inset-y-0 bg-gradient-to-r"
-            style={{
-              left: `${startPercent}%`,
-              width: `${Math.max(endPercent - startPercent, 0)}%`,
-            }}
+            className="from-primary-300 via-primary-400 to-primary-500 absolute inset-y-0 rounded-full bg-gradient-to-l"
+            style={selectionStyle}
           />
         </div>
 
         <div
           role="slider"
           tabIndex={0}
+          data-gauge-handle="start"
           aria-label={startAriaLabel}
-          aria-valuemin={min}
-          aria-valuemax={max}
-          aria-valuenow={indices.start}
-          aria-valuetext={formatValue(indices.start)}
-          onKeyDown={(event) => handleKeyDown("start", event)}
-          onKeyUp={commitCurrentRange}
-          className="border-primary-500 bg-surface focus:ring-primary-400/30 absolute top-1/2 z-20 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 shadow-md transition-shadow focus:ring-4 focus:outline-none"
-          style={{ left: `${startPercent}%` }}
+          aria-valuemin={minValue}
+          aria-valuemax={maxValue}
+          aria-valuenow={range.start}
+          aria-valuetext={formatValue(range.start)}
+          onKeyDown={(event) => handleHandleKeyDown("start", event)}
+          className="border-primary-500 bg-surface focus:ring-primary-400/30 absolute top-1/2 z-20 size-5 -translate-y-1/2 translate-x-1/2 rounded-full border-2 shadow-md transition-shadow focus:ring-4 focus:outline-none"
+          style={startOffset}
         >
           <span className="bg-primary-400 absolute top-1/2 left-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full" />
         </div>
@@ -274,38 +467,45 @@ export default function RangeGauge({
         <div
           role="slider"
           tabIndex={0}
+          data-gauge-handle="end"
           aria-label={endAriaLabel}
-          aria-valuemin={min}
-          aria-valuemax={max}
-          aria-valuenow={indices.end}
-          aria-valuetext={formatValue(indices.end)}
-          onKeyDown={(event) => handleKeyDown("end", event)}
-          onKeyUp={commitCurrentRange}
-          className="border-primary-500 bg-surface focus:ring-primary-400/30 absolute top-1/2 z-30 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 shadow-md transition-shadow focus:ring-4 focus:outline-none"
-          style={{ left: `${endPercent}%` }}
+          aria-valuemin={minValue}
+          aria-valuemax={maxValue}
+          aria-valuenow={range.end}
+          aria-valuetext={formatValue(range.end)}
+          onKeyDown={(event) => handleHandleKeyDown("end", event)}
+          className="border-primary-500 bg-surface focus:ring-primary-400/30 absolute top-1/2 z-30 size-5 -translate-y-1/2 translate-x-1/2 rounded-full border-2 shadow-md transition-shadow focus:ring-4 focus:outline-none"
+          style={endOffset}
         >
           <span className="bg-primary-400 absolute top-1/2 left-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full" />
         </div>
       </div>
 
-      {ticks && ticks.length > 0 && (
-        <div dir="ltr" className="relative mt-2 h-7">
+      {ticks && ticks.length > 0 && span > 0 && (
+        <div dir="rtl" className="relative mt-2 h-7">
           {ticks.map((tick) => {
-            const percent = (tick.position / maxIndex) * 100;
+            // همان مبدأ ترک (سمت راست) برای هم‌راستا شدن تیک با اسلایدر
+            const percent = (tick.position / span) * 100;
             return (
               <div
                 key={tick.key}
-                className="absolute top-0 -translate-x-1/2"
-                style={{ left: `${percent}%` }}
+                className="absolute top-0 translate-x-1/2"
+                style={{ right: `${percent}%` }}
               >
                 <span className="bg-border-strong block h-1.5 w-px" />
-                <span className="mt-1.5 block text-[10px] whitespace-nowrap text-text-gray">
+                <span className="text-text-gray mt-1.5 block text-[10px] whitespace-nowrap">
                   {tick.label}
                 </span>
               </div>
             );
           })}
         </div>
+      )}
+
+      {!isFullRange && commitOn === "apply" && (
+        <p className="text-text-gray mt-3 text-center text-[11px]">
+          {formatValue(range.start)} تا {formatValue(range.end)}
+        </p>
       )}
     </div>
   );

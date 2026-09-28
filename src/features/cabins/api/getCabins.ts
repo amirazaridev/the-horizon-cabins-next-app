@@ -43,7 +43,7 @@ function buildQueryString({
 export async function queryCabins(
   params?: CabinsQueryParams,
 ): Promise<PaginatedCabins> {
-  const queryString = buildQueryString({...params});
+  const queryString = buildQueryString(params ?? {});
   const res = await apiFetch(`cabins${queryString}`, {
     cache: "force-cache",
     next: { revalidate: 300, tags: ["cabins-data"] },
@@ -51,11 +51,10 @@ export async function queryCabins(
 
   const json: ApiPaginatedResponse<"cabins", CabinDto> = await res.json();
 
-  if (json.status != "success") throw new Error(json.message);
-  console.log(json);
-  
+  if (json.status !== "success") throw new Error(json.message);
+
   return {
-    cabins: json.data.cabins?.map(mapCabin),
+    cabins: (json.data.cabins ?? []).map(mapCabin),
     meta: json.data.meta,
   };
 }

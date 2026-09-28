@@ -1,6 +1,9 @@
 import { Cabin } from "@/features/cabins/types/cabin.types";
 import type { City } from "@/features/cabins/types/city.types";
 
+// کامپوننتهای نمودار/آمار این تایپ را از همین ماژول میگیرند
+export type { Cabin };
+
 export type BookingStatus = "unconfirmed" | "confirmed" | "checked-out";
 
 export interface Booking {

@@ -19,7 +19,6 @@ export async function createCabinAction(
       body: formData,
     });
     const json = await res.json();
-    console.log(formData, json);
 
     if (!res.ok) throw new Error(json.message);
 
@@ -48,7 +47,6 @@ export async function updateCabinAction(
       body: formData,
     });
     const json = await res.json();
-    console.log(formData, json);
 
     if (!res.ok) throw new Error(json.message);
 

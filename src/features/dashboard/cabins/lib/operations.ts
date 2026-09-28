@@ -1,89 +1,91 @@
-import { type Cabin } from "@/features/cabins/types/cabin.types";
+import type { CabinsQueryParams, Cabin } from "@/features/cabins/types/cabin.types";
+import { parseCabinFilters } from "@/features/cabins/utils/cabin-filters";
+import { parseLimitParam, parsePageParam } from "@/libs/utils/pagination";
 
 export type CabinsSearchParams = Record<string, string | string[] | undefined>;
 
-/** مقدار تکرشده یک پارامتر کوئری را به‌صورت رشته برمی‌گرداند */
+/** کلیدهایی که در URL داشبورد معنا دارند و با «حذف فیلترها» پاک میشوند */
+export const DASHBOARD_FILTER_KEYS = [
+  "guests",
+  "bedrooms",
+  "amenities",
+  "price",
+  "city",
+  "category",
+  "sortBy",
+] as const;
+
+export const DASHBOARD_SORT_OPTIONS = [
+  { value: "name-asc", label: "نام (صعودی)" },
+  { value: "name-desc", label: "نام (نزولی)" },
+  { value: "regularPrice-asc", label: "مبلغ (ارزانترین)" },
+  { value: "regularPrice-desc", label: "مبلغ (گرانترین)" },
+  { value: "maxCapacity-asc", label: "ظرفیت (کمترین)" },
+  { value: "maxCapacity-desc", label: "ظرفیت (بیشترین)" },
+] as const;
+
+export type CabinSortValue = (typeof DASHBOARD_SORT_OPTIONS)[number]["value"];
+
+const faCollator = new Intl.Collator("fa");
+
+function one(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+/** مقدار تکررشده یک پارامتر کوئری را بهصورت رشته برمیگرداند */
 export function getParam(params: CabinsSearchParams, key: string): string {
   const value = params[key];
   if (Array.isArray(value)) return value[0] ?? "";
   return value ?? "";
 }
 
-const faCollator = new Intl.Collator("fa");
-
-function toInt(value: string, min: number, max: number): number | undefined {
-  const n = Number(value);
-  if (!Number.isInteger(n) || n < min || n > max) return undefined;
-  return n;
-}
-
-/** اعمال فیلترهای داشبورد (مثل صفحه اصلی) + مرتب‌سازی روی لیست سوییت‌ها */
-export function applyCabinsOperations(
-  cabins: Cabin[],
+/** مقدار sortBy فقط در صورتی پذیرفته میشود که یکی از گزینههای معتبر باشد */
+export function parseSortParam(
   params: CabinsSearchParams,
-): Cabin[] {
-  const discount = getParam(params, "discount") || "all";
-  const guests = toInt(getParam(params, "guests"), 1, 30);
-  const bedrooms = toInt(getParam(params, "bedrooms"), 1, 20);
-  const cityRaw = getParam(params, "city");
-  const priceRaw = getParam(params, "price");
-  const amenitiesRaw = getParam(params, "amenities");
-  const sortBy = getParam(params, "sortBy");
+): CabinSortValue | undefined {
+  const raw = one(params.sortBy);
+  if (!raw) return undefined;
 
-  let result = cabins;
-
-  // سازگاری با URLهای قدیمی (discount=all/with-discount/no-discount)
-  if (discount === "no-discount")
-    result = result.filter((c) => c.discount === 0);
-  if (discount === "with-discount")
-    result = result.filter((c) => c.discount > 0);
-
-  if (guests !== undefined)
-    result = result.filter((c) => c.maxCapacity >= guests);
-  if (bedrooms !== undefined)
-    result = result.filter((c) => c.bedrooms >= bedrooms);
-
-  if (amenitiesRaw) {
-    const selected = amenitiesRaw
-      .split(",")
-      .map((a) => a.trim())
-      .filter(Boolean);
-    if (selected.length > 0)
-      result = result.filter((c) =>
-        selected.every((a) => c.amenities.includes(a)),
-      );
-  }
-
-  if (priceRaw) {
-    const [lo, hi] = priceRaw.split("-").map(Number);
-    if (
-      Number.isFinite(lo) &&
-      Number.isFinite(hi) &&
-      lo >= 0 &&
-      hi >= lo &&
-      hi > 0
-    ) {
-      result = result.filter((c) => {
-        const finalPrice = c.regularPrice - c.discount;
-        return finalPrice >= lo && finalPrice <= hi;
-      });
-    }
-  }
-
-  if (cityRaw && cityRaw !== "all") {
-    // حالت جدید: شناسه شهر (مثل صفحه اصلی) + fallback به نام شهر (URL قدیمی)
-    const cityId = Number(cityRaw);
-    if (Number.isInteger(cityId)) {
-      result = result.filter((c) => c.city?.id === cityId);
-    } else {
-      result = result.filter((c) => c.city?.name === cityRaw);
-    }
-  }
-
-  return sortCabins(result, sortBy);
+  return DASHBOARD_SORT_OPTIONS.some((option) => option.value === raw)
+    ? (raw as CabinSortValue)
+    : undefined;
 }
 
-function sortCabins(cabins: Cabin[], sortBy: string): Cabin[] {
+/**
+ * تبدیل searchParams صفحه به پارامترهای کوئریِ API.
+ *
+ * تمام فیلترها (شهر، ظرفیت، خواب، امکانات، قیمت، دسته‌بندی) سمت بکند اعمال
+ * میشوند — دیگر نیازی به فیلتر کردن محلی روی کل لیست نیست.
+ */
+export function buildCabinsQuery(
+  params: CabinsSearchParams,
+): CabinsQueryParams {
+  const filters = parseCabinFilters(params);
+
+  return {
+    page: parsePageParam(params),
+    limit: parseLimitParam(params.limit),
+    category: filters.category,
+    guests: filters.guests,
+    bedrooms: filters.bedrooms,
+    amenities: filters.amenities?.join(","),
+    price: filters.price ? `${filters.price[0]}-${filters.price[1]}` : undefined,
+    city: filters.cityId,
+  };
+}
+
+/**
+ * مرتبسازی محلی روی آیتمهای همین صفحه.
+ *
+ * بکند پارامتر sort را پشتیبانی نمیکند، بنابراین ترتیب فقط در محدودهٔ صفحهٔ
+ * فعلی معتبر است. برای مرتبسازی روی کل مجموعه باید sort به بکند اضافه شود.
+ */
+export function sortCabins(
+  cabins: Cabin[],
+  sortBy?: CabinSortValue,
+): Cabin[] {
+  if (!sortBy) return cabins;
+
   const sorted = [...cabins];
 
   switch (sortBy) {

@@ -9,16 +9,19 @@ import CardDashContainer from "../../shared/components/CardDashContainer";
  * تا آن زمان Placeholder نمایش داده می‌شود.
  */
 export default function CabinLocation({ cabin }: { cabin: Cabin }): ReactNode {
+  // بکند فیلد location ندارد؛ موقعیت از مختصات + نام شهر ساخته میشود
+  const hasCoords = cabin.latitude !== null && cabin.longitude !== null;
+
   return (
     <section>
       <h2 className="text-text mb-4 text-xl font-bold">موقعیت مکانی</h2>
 
-      {cabin.location ? (
+      {hasCoords ? (
         <CardDashContainer className="flex flex-col gap-3 p-5">
-          {cabin.location.address && (
+          {cabin.city?.name && (
             <p className="text-text flex items-center gap-2 text-sm">
               <MapPin className="text-primary-400 size-4" />
-              {cabin.location.address}
+              {cabin.city.name}
             </p>
           )}
           {/* TODO: نقشه را با lat / lng رندر کنید */}

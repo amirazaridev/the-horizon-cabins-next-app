@@ -21,7 +21,7 @@ import {
   type DateRange,
 } from "@/components/ui/RangeDatePicker";
 import { SEARCH_CITIES, type SearchCity } from "../../constants/search";
-import CityPanel from "@/components/ui/filter/panels/CityPanel";
+import CityPanel from "@/components/ui/Filter/panels/CityPanel";
 import DateRangePanel from "@/components/ui/Filter/panels/DateRangePanel";
 import GuestsPanel from "./search-panels/GuestsPanel";
 import SearchAction from "./SearchAction";

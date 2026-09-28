@@ -12,57 +12,56 @@ import {
 
 import FilterCard, {
   type FilterCardItem,
-} from "@/components/ui/filter/FilterCard";
-import SingleOptionPanel from "@/components/ui/filter/panels/SingleOptionPanel";
-import { useCabinQuery } from "@/features/cabins/components/filters/useCabinQuery";
+} from "@/components/ui/Filter/FilterCard";
+import SingleOptionPanel from "@/components/ui/Filter/panels/SingleOptionPanel";
 import GuestsPanel from "@/features/cabins/components/filters/panels/GuestsPanel";
 import BedroomsPanel from "@/features/cabins/components/filters/panels/BedroomsPanel";
 import AmenitiesPanel from "@/features/cabins/components/filters/panels/AmenitiesPanel";
 import PricePanel from "@/features/cabins/components/filters/panels/PricePanel";
 import CityPanel from "@/features/cabins/components/filters/panels/CityPanel";
 import { formatPriceShort } from "@/features/cabins/utils/cabin-filters";
+import { useUrlQuery } from "@/hooks/useUrlQuery";
+import {
+  DASHBOARD_FILTER_KEYS,
+  DASHBOARD_SORT_OPTIONS,
+  getParam,
+  type CabinsSearchParams,
+} from "../lib/operations";
 
 const fa = (n: number | string) => Number(n).toLocaleString("fa-IR");
-
-export const DASHBOARD_SORT_OPTIONS = [
-  { value: "name-asc", label: "نام (صعودی)" },
-  { value: "name-desc", label: "نام (نزولی)" },
-  { value: "regularPrice-asc", label: "مبلغ (ارزان‌ترین)" },
-  { value: "regularPrice-desc", label: "مبلغ (گران‌ترین)" },
-  { value: "maxCapacity-asc", label: "ظرفیت (کمترین)" },
-  { value: "maxCapacity-desc", label: "ظرفیت (بیشترین)" },
-] as const;
 
 type Props = {
   cities: { id: number; name: string }[];
   amenities: string[];
+  /** searchParams خواندهشده در Server Component — جایگزین useSearchParams */
+  searchParams: CabinsSearchParams;
   className?: string;
 };
 
 export default function CabinDashboardFilters({
   cities,
   amenities,
+  searchParams,
   className = "",
 }: Props) {
-  const { searchParams, setParam, clearFilters } = useCabinQuery();
+  const { setParams, clearParams } = useUrlQuery(searchParams);
 
-  const guests = searchParams.get("guests");
-  const bedrooms = searchParams.get("bedrooms");
+  const guests = getParam(searchParams, "guests");
+  const bedrooms = getParam(searchParams, "bedrooms");
   const amenitiesParam =
-    searchParams
-      .get("amenities")
-      ?.split(",")
+    getParam(searchParams, "amenities")
+      .split(",")
       .map((item) => item.trim())
       .filter(Boolean) ?? [];
-  const price = searchParams.get("price");
-  const city = searchParams.get("city");
-  const sortBy = searchParams.get("sortBy");
+  const price = getParam(searchParams, "price");
+  const city = getParam(searchParams, "city");
+  const sortBy = getParam(searchParams, "sortBy");
 
   const handleValueChange = (id: string, next: unknown) => {
     switch (id) {
       case "amenities": {
         const list = (next as string[] | null) ?? [];
-        setParam("amenities", list.length ? list.join(",") : null);
+        setParams({ amenities: list.length ? list.join(",") : null });
         break;
       }
       case "guests":
@@ -70,19 +69,16 @@ export default function CabinDashboardFilters({
       case "price":
       case "city":
       case "sortBy":
-        setParam(id, (next as string | null) ?? null);
+        setParams({ [id]: (next as string | null) ?? null });
         break;
     }
   };
 
-  const handleClear = () => {
-    clearFilters();
-    setParam("sortBy", null);
-  };
+  // یک navigation واحد برای همهٔ کلیدها — از تداخلِ دو replace پشتسرهم جلوگیری میکند
+  const handleClear = () => clearParams(DASHBOARD_FILTER_KEYS);
 
   const cityName = city
-    ? (cities.find((item) => String(item.id) === city)?.name ??
-      cities.find((item) => item.name === city)?.name)
+    ? cities.find((item) => String(item.id) === city)?.name
     : undefined;
 
   const priceSummary = (() => {
@@ -96,9 +92,8 @@ export default function CabinDashboardFilters({
     ? DASHBOARD_SORT_OPTIONS.find((o) => o.value === sortBy)?.label
     : undefined;
 
-  const activeCount = [guests, bedrooms, amenitiesParam.length, price, city].filter(
-    Boolean,
-  ).length;
+  const activeCount = [guests, bedrooms, amenitiesParam.length, price, city]
+    .filter(Boolean).length;
 
   const items: FilterCardItem[] = [];
 
@@ -199,18 +194,18 @@ export default function CabinDashboardFilters({
     },
     {
       id: "sortBy",
-      label: "مرتب‌سازی",
+      label: "مرتبسازی",
       icon: <ArrowUpDown className="text-primary-400 size-4" />,
       formatLabel: () => sortLabel,
       panel: {
-        title: "مرتب‌سازی",
+        title: "مرتبسازی",
         size: "sm",
         closeOnSelect: true,
         render: ({ value, setValue }) => (
           <SingleOptionPanel
             value={(value as string | null) ?? null}
             onChange={(next) => setValue(next)}
-            allOption={{ label: "پیش‌فرض", hint: "ترتیب ثبت در سیستم" }}
+            allOption={{ label: "پیشفرض", hint: "ترتیب ثبت در سیستم" }}
             options={DASHBOARD_SORT_OPTIONS.map((option) => ({
               value: option.value,
               label: option.label,

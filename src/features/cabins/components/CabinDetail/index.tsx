@@ -15,7 +15,7 @@ export default function CabinDetail({ cabin }: Props): ReactNode {
 
   return (
     <div>
-      <CabinGallery images={images} altBase={cabin.name}>
+      <CabinGallery images={images ?? []} altBase={cabin.name}>
         <GalleryHeader cabin={cabin} />
       </CabinGallery>
 

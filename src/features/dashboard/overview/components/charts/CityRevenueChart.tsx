@@ -22,7 +22,8 @@ export default function CityRevenueChart({
   const data = useMemo(() => {
     const map = new Map<string, number>();
     bookings.forEach((b) => {
-      const city = CABINS.find((c) => c.id === b.cabinId)?.city ?? "نامشخص";
+      const city =
+        CABINS.find((c) => c.id === b.cabinId)?.city?.name ?? "نامشخص";
       map.set(city, (map.get(city) ?? 0) + b.totalPrice);
     });
     return [...map.entries()]

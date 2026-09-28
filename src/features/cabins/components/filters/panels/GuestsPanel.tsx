@@ -1,6 +1,6 @@
 "use client";
 
-import SingleOptionPanel from "@/components/ui/filter/panels/SingleOptionPanel";
+import SingleOptionPanel from "@/components/ui/Filter/panels/SingleOptionPanel";
 import { useCabinQuery } from "../useCabinQuery";
 
 const OPTIONS = [1, 2, 3, 4, 5, 6];

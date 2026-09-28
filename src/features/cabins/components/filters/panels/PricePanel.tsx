@@ -1,6 +1,10 @@
 "use client";
 
-import RangeGauge from "@/components/ui/RangeGauge";
+import { useRef } from "react";
+import RangeGauge, {
+  type GaugeRange,
+  type RangeGaugeApi,
+} from "@/components/ui/RangeGauge";
 import { useCabinQuery } from "../useCabinQuery";
 import { formatPriceShort } from "../../../utils/cabin-filters";
 
@@ -13,56 +17,57 @@ type Props = {
   onChange?: (value: string | null) => void;
 };
 
+function parsePrice(raw: string | null): GaugeRange | null {
+  if (!raw) return null;
+
+  const [lo, hi] = raw.split("-").map((part) => Number(part.trim()));
+  if (!Number.isFinite(lo) || !Number.isFinite(hi)) return null;
+
+  return {
+    start: Math.min(Math.max(lo, MIN_PRICE), MAX_PRICE),
+    end: Math.min(Math.max(hi, MIN_PRICE), MAX_PRICE),
+  };
+}
+
 export default function PricePanel({ value, onChange }: Props) {
   const { searchParams, setParam } = useCabinQuery();
   const current = onChange ? (value ?? null) : searchParams.get("price");
 
-  let startIndex = 0;
-  let endIndex = MAX_PRICE - MIN_PRICE;
+  const range = parsePrice(current);
+  const isFiltered = range !== null;
 
-  if (current) {
-    const [lo, hi] = current.split("-").map(Number);
-    if (Number.isFinite(lo) && Number.isFinite(hi)) {
-      startIndex = Math.min(Math.max(lo - MIN_PRICE, 0), MAX_PRICE - MIN_PRICE);
-      endIndex = Math.min(Math.max(hi - MIN_PRICE, 0), MAX_PRICE - MIN_PRICE);
-    }
-  }
+  // آخرین API گِیج — برای فراخوانی از دکمهٔ «اعمال»
+  const gaugeRef = useRef<RangeGaugeApi | null>(null);
 
-  const handleCommit = (range: { start: number; end: number }) => {
-    const priceValue = `${range.start}-${range.end}`;
+  const applyRange = (next: GaugeRange | null) => {
+    const priceValue = next ? `${next.start}-${next.end}` : null;
     if (onChange) onChange(priceValue);
     else setParam("price", priceValue);
   };
 
-  const handleClear = () => {
-    if (onChange) onChange(null);
-    else setParam("price", null);
-  };
-
-  const isFiltered = startIndex !== 0 || endIndex !== MAX_PRICE - MIN_PRICE;
-
   return (
     <div className="space-y-4">
       <RangeGauge
-        startIndex={startIndex}
-        endIndex={endIndex}
-        min={MIN_PRICE}
-        max={MAX_PRICE}
+        minValue={MIN_PRICE}
+        maxValue={MAX_PRICE}
+        value={range}
         step={STEP}
         formatValue={formatPriceShort}
         startAriaLabel="قیمت حداقل"
         endAriaLabel="قیمت حداکثر"
-        onCommit={handleCommit}
+        // اعمال فقط با دکمه انجام میشود، نه با رها کردن موس
+        commitOn="apply"
+        onCommit={(next) => applyRange(next)}
+        onReady={(api) => {
+          gaugeRef.current = api;
+        }}
         showInputs={true}
       />
 
       <div className="flex gap-3">
         <button
           type="button"
-          onClick={() => {
-            const range = { start: startIndex + MIN_PRICE, end: endIndex + MIN_PRICE };
-            handleCommit(range);
-          }}
+          onClick={() => gaugeRef.current?.submit()}
           className="bg-primary-400 text-text hover:bg-primary-500 flex-1 rounded-xl py-2.5 text-sm font-bold transition-colors"
         >
           اعمال فیلتر
@@ -70,7 +75,10 @@ export default function PricePanel({ value, onChange }: Props) {
         {isFiltered && (
           <button
             type="button"
-            onClick={handleClear}
+            onClick={() => {
+              gaugeRef.current?.reset();
+              applyRange(null);
+            }}
             className="border-border text-text-gray hover:text-text flex-1 rounded-xl border py-2.5 text-sm font-bold transition-colors"
           >
             حذف فیلتر
