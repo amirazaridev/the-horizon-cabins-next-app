@@ -7,8 +7,8 @@ import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { startOfDay } from "date-fns";
 import {
+  addMonths,
   endOfMonth,
-  endOfYear,
   startOfMonth,
   startOfYear,
 } from "date-fns-jalali";
@@ -17,6 +17,7 @@ import {
   clampToToday,
   formatDateKey,
   formatJalaliMonthYear,
+  formatJalaliYear,
   getJalaliYear,
 } from "../../lib/date-range";
 
@@ -45,60 +46,108 @@ function toJsDate(value: unknown): Date | null {
   return date instanceof Date && !Number.isNaN(date.getTime()) ? date : null;
 }
 
+/**
+ * انتخاب بازهٔ ماه با دو فیلد مستقل: «ماه شروع» و «ماه پایان».
+ *
+ * هر فیلد یک `DatePicker` است — دقیقاً همان کامپوننتی که تب «روز» استفاده
+ * می‌کند — تا پاپ‌آوری باز شود که خودِ کتابخانه مدیریتش می‌کند:
+ * موقعیت‌دهی هوشمند (بالا/پایین نسبت به فضا)، فلش، و بستن با کلیک بیرون
+ * یا اسکرول. تفاوت تنها در این است که هر تقویم تک‌ماه است
+ * (`numberOfMonths={1}` + `onlyMonthPicker`) و روی سالِ خودش قفل می‌شود.
+ *
+ * مقدار نهایی موقع «اعمال» روی URL می‌نشیند.
+ */
 export default function MonthRangePicker({
   from,
   to,
   onChange,
 }: MonthRangePickerProps) {
-  const value = useMemo<DateObject[]>(
-    () => [toDateObject(startOfMonth(from)), toDateObject(startOfMonth(to))],
-    [from, to],
-  );
-
   const today = useMemo(() => startOfDay(new Date()), []);
+  const currentMonth = useMemo(() => startOfMonth(today), [today]);
 
-  const minDate = useMemo(() => toDateObject(startOfYear(from)), [from]);
-  // آینده disable: سقف تقویم امروز است
-  const maxDate = useMemo(
-    () => toDateObject(clampToToday(endOfYear(to), today)),
-    [to, today],
-  );
+  const fromYear = getJalaliYear(from);
+  const toYear = getJalaliYear(to);
 
-  function handleChange(next: DatePickerValue): void {
-    if (!Array.isArray(next) || next.length === 0) return;
+  /* ---------------- سر شروع ---------------- */
 
-    const nextFrom = toJsDate(next[0]);
-    if (!nextFrom) return;
+  const fromValue = useMemo(() => toDateObject(startOfMonth(from)), [from]);
+  const fromWindow = useMemo(() => toDateObject(startOfYear(from)), [from]);
 
-    const startYear = getJalaliYear(from);
-    const endYear = getJalaliYear(to);
+  /**
+   * سقفِ تقویم شروع:
+   * - اگر سال شروع همان سال جاری باشد => تا ماه جاری
+   * - وگرنه => تا آخرِ همان سال
+   * و در هر دو حالت هیچ‌وقت بعد از ماه پایان نرود، چون بازه نباید برعکس شود.
+   */
+  const fromMax = useMemo(() => {
+    const yearCap =
+      fromYear === getJalaliYear(today)
+        ? currentMonth
+        : startOfMonth(addMonths(startOfYear(from), 11));
 
-    // در بازه چندساله، انتخاب اول فقط باید از سال شروع باشد.
-    if (next.length === 1) {
-      if (getJalaliYear(nextFrom) !== startYear) return;
+    const rangeCap = startOfMonth(to);
+
+    return toDateObject(endOfMonth(rangeCap < yearCap ? rangeCap : yearCap));
+  }, [fromYear, today, currentMonth, from, to]);
+
+  function handleFromChange(value: DatePickerValue): void {
+    const next = toJsDate(Array.isArray(value) ? value[0] : value);
+    if (!next) return;
+
+    const normalizedFrom = startOfMonth(next);
+
+    // سقف: از ماه پایان و از ماه جاری جلوتر نرو
+    if (normalizedFrom > startOfMonth(to) || normalizedFrom > currentMonth) {
       return;
     }
 
-    const nextTo = toJsDate(next[1]);
-    if (!nextTo || getJalaliYear(nextTo) !== endYear) return;
-
-    // اگر ماه آینده انتخاب شد، نادیده بگیر
-    if (startOfMonth(nextFrom) > today || startOfMonth(nextTo) > today) return;
-
-    const normalizedFrom = startOfMonth(nextFrom);
-    // سقف ماه پایان: آخر ماه، ولی نه بعد از امروز
-    const normalizedTo = clampToToday(endOfMonth(nextTo), today);
-
-    if (
-      formatDateKey(normalizedFrom) !== formatDateKey(from) ||
-      formatDateKey(normalizedTo) !== formatDateKey(to)
-    ) {
-      onChange(normalizedFrom, normalizedTo);
+    if (formatDateKey(normalizedFrom) !== formatDateKey(from)) {
+      onChange(normalizedFrom, to);
     }
   }
 
+  /* ---------------- سر پایان ---------------- */
+
+  const toValue = useMemo(() => toDateObject(startOfMonth(to)), [to]);
+  const toWindow = useMemo(() => toDateObject(startOfYear(to)), [to]);
+
+  /**
+   * سقفِ تقویم پایان:
+   * - اگر سال پایان همان سال جاری باشد => تا ماه جاری
+   * - وگرنه => تا آخرِ همان سال
+   */
+  const toMax = useMemo(() => {
+    const yearCap =
+      toYear === getJalaliYear(today)
+        ? currentMonth
+        : startOfMonth(addMonths(startOfYear(to), 11));
+
+    return toDateObject(endOfMonth(yearCap));
+  }, [toYear, today, currentMonth, to]);
+
+  function handleToChange(value: DatePickerValue): void {
+    const next = toJsDate(Array.isArray(value) ? value[0] : value);
+    if (!next) return;
+
+    const normalizedTo = clampToToday(endOfMonth(next), today);
+
+    // کف: از ماه شروع عقب‌تر نرو
+    if (normalizedTo < startOfMonth(from)) return;
+
+    if (formatDateKey(normalizedTo) !== formatDateKey(to)) {
+      onChange(from, normalizedTo);
+    }
+  }
+
+  /* ---------------- رندر ---------------- */
+
+  /** کلاس مشترک input — هم‌شکل با فیلدهای تب «روز» */
+  const inputClass =
+    "!w-full !h-11 !rounded-xl !border !border-border !bg-background !px-3 !text-sm !text-text text-center";
+
   return (
     <div className="border-border bg-surface rounded-2xl border p-4 sm:p-5">
+      {/* خلاصهٔ بازهٔ انتخاب‌شده */}
       <div className="mb-4 flex items-center justify-between gap-4 text-xs sm:text-sm">
         <div>
           <span className="text-text-gray block text-[11px]">ماه شروع</span>
@@ -115,27 +164,61 @@ export default function MonthRangePicker({
         </div>
       </div>
 
-      <DatePicker
-        value={value}
-        onChange={handleChange}
-        range
-        onlyMonthPicker
-        calendar={persian}
-        locale={persian_fa}
-        minDate={minDate}
-        maxDate={maxDate}
-        numberOfMonths={2}
-        format="MMMM YYYY"
-        calendarPosition="bottom-center"
-        className="horizon-date-picker horizon-month-picker"
-        containerClassName="w-full"
-        inputClass="!w-full !h-11 !rounded-xl !border !border-border !bg-background !px-3 !text-sm !text-text"
-      />
+      {/*
+        دو فیلد مستقل: در دسکتاپ کنار هم (`sm:grid-cols-2`) و در موبایل
+        زیر هم، تا هر تقویم روی فیلد خودش باز شود.
+      */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label className="text-text-gray mb-1.5 block text-xs font-medium">
+            ماه شروع — سال {formatJalaliYear(from)}
+          </label>
+          <DatePicker
+            value={fromValue}
+            onChange={handleFromChange}
+            onlyMonthPicker
+            calendar={persian}
+            locale={persian_fa}
+            currentDate={fromWindow}
+            minDate={fromWindow}
+            maxDate={fromMax}
+            format="MMMM YYYY"
+            shadow={false}
+            buttons={false}
+            calendarPosition="bottom-center"
+            className="horizon-date-picker horizon-month-picker"
+            containerClassName="w-full"
+            inputClass={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="text-text-gray mb-1.5 block text-xs font-medium">
+            ماه پایان — سال {formatJalaliYear(to)}
+          </label>
+          <DatePicker
+            value={toValue}
+            onChange={handleToChange}
+            onlyMonthPicker
+            calendar={persian}
+            locale={persian_fa}
+            currentDate={toWindow}
+            minDate={toWindow}
+            maxDate={toMax}
+            format="MMMM YYYY"
+            shadow={false}
+            buttons={false}
+            calendarPosition="bottom-center"
+            className="horizon-date-picker horizon-month-picker"
+            containerClassName="w-full"
+            inputClass={inputClass}
+          />
+        </div>
+      </div>
 
       <p className="text-text-gray mt-3 text-xs leading-6">
-        ابتدا ماه شروع را در سال {getJalaliYear(from)} و سپس ماه پایان را در سال{" "}
-        {getJalaliYear(to)} انتخاب کنید. ماه‌های بعد از ماه جاری قابل انتخاب
-        نیستند.
+        ماه شروع و ماه پایان را جداگانه انتخاب کنید. ماه‌های بعد از ماه جاری
+        قابل انتخاب نیستند و ماه پایان نمی‌تواند قبل از ماه شروع باشد.
       </p>
     </div>
   );

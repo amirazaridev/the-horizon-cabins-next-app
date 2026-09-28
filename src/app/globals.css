@@ -116,29 +116,21 @@
   font-size: 14px;
 }
 
-/* پاپ‌آپ تقویم ماه هیچ‌وقت از صفحه بیرون نزند */
-.horizon-month-picker {
+/*
+  تقویم ماه: یک تقویم تک‌ماه که با پاپ‌آور خودِ کتابخانه (react-element-popper)
+  زیر فیلد باز می‌شود — دقیقاً هم‌الگو با تب «روز».
+  پس عرضش ثابت و کم است و فقط نباید از عرض صفحه بیرون بزند.
+*/
+.horizon-month-picker.rmdp-wrapper {
+  width: 268px;
   max-width: calc(100vw - 2rem);
 }
-/* تقویم ماه دوقلو (onlyMonthPicker): هر سال ستون خودش با فاصله و جداکننده */
 .horizon-month-picker .only.rmdp-month-picker {
-  width: 548px;
+  width: 100%;
   max-width: 100%;
   height: auto;
-  min-height: 264px;
-  padding: 14px 16px;
-  overflow-x: auto;
-}
-/* ستون هر سال — حداقل ۲۴۰px تا اسم ماه‌ها جا شوند */
-.horizon-month-picker .only.rmdp-month-picker > div {
-  flex: 1 0 240px;
-  min-width: 240px;
-}
-/* فاصله و خط جداکننده بین ستون ۱۴۰۴ و ۱۴۰۵ */
-.horizon-month-picker .only.rmdp-month-picker > div + div {
-  border-inline-start: 1px solid var(--color-border);
-  margin-inline-start: 16px;
-  padding-inline-start: 16px;
+  min-height: 232px;
+  padding: 4px 0;
 }
 /* فاصله بین ماه‌ها در هر ردیف تا نوشته‌ها به هم نچسبند */
 .horizon-month-picker .rmdp-ym {
@@ -157,6 +149,14 @@
 }
 .horizon-month-picker .rmdp-header {
   font-size: 15px;
+}
+/* تقویم بدون قاب دوتایی — قاب را خود پاپ‌آپ دارد */
+.horizon-month-picker .rmdp-calendar {
+  width: 100%;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 /* ================================================================
