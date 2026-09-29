@@ -8,6 +8,7 @@ import Testimonials from "./components/Testimonials";
 import Destinations from "./components/Destinations";
 import Categories from "./components/Categories";
 import LandingAnimationProvider from "@/features/landing/components/LandingAnimationProvider";
+import { SearchPreview } from "@/features/search";
 import { getCabins } from "../cabins/api";
 
 type Props = {
@@ -25,6 +26,7 @@ export default async function Landing({ lastMinute, budgetStays }: Props) {
   return (
     <LandingAnimationProvider>
       <Hero />
+      <SearchPreview />
       <Categories />
       <Destinations />
       <Stays cabins={cabins} />

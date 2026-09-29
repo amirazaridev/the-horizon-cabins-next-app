@@ -3,6 +3,7 @@
 import { Users } from "lucide-react";
 
 import Counter from "@/components/ui/Counter";
+import { GUESTS_MAX, GUESTS_MIN } from "../../types/search.types";
 
 type Props = {
   value: number;
@@ -10,9 +11,7 @@ type Props = {
   onDone: () => void;
 };
 
-const MAX_GUESTS = 10;
-
-/** انتخاب تعداد مهمان با شمارنده + و - */
+/** انتخاب تعداد مهمان با شمارنده — بازه‌ی سرچ اصلی: ۱ تا ۱۰ نفر */
 export default function GuestsPanel({ value, onChange, onDone }: Props) {
   return (
     <div className="flex flex-col gap-4">
@@ -22,8 +21,8 @@ export default function GuestsPanel({ value, onChange, onDone }: Props) {
         icon={<Users className="size-4" />}
         value={value}
         onChange={onChange}
-        min={1}
-        max={MAX_GUESTS}
+        min={GUESTS_MIN}
+        max={GUESTS_MAX}
       />
 
       <button

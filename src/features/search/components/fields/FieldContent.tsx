@@ -1,19 +1,22 @@
 import { ChevronDown } from "lucide-react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
+type Props = {
+  icon: ReactNode;
+  label: string;
+  value?: string | null;
+  placeholder?: string;
+  caret?: boolean;
+};
+
+/** محتوای مشترک یک فیلد سرچ (آیکون + عنوان + مقدار + فلش) */
 export default function FieldContent({
   icon,
   label,
   value,
   placeholder,
   caret = false,
-}: {
-  icon: ReactNode;
-  label: string;
-  value?: string | null;
-  placeholder?: string;
-  caret?: boolean;
-}) {
+}: Props) {
   const filled = Boolean(value);
 
   return (
@@ -34,7 +37,7 @@ export default function FieldContent({
         </span>
       </span>
       {caret && (
-        <ChevronDown className="size-4 shrink-0 text-white/40 transition-transform duration-200 group-aria-expanded:rotate-180" />
+        <ChevronDown className="text-text-gray/60 size-4 shrink-0 transition-transform duration-200 group-aria-expanded:rotate-180" />
       )}
     </>
   );

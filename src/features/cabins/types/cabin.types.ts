@@ -32,4 +32,10 @@ export interface CabinsQueryParams {
   amenities?: string;
   price?: string;
   city?: number;
+  /**
+   * شناسه‌ی معنایی منطقه (`north`, `south`, …).
+   * بک‌اند فعلی این پارامتر را نادیده می‌گیرد؛ اما از الان فرستاده می‌شود
+   * تا وقتی endpoint از آن پشتیبانی کرد، هیچ تغییری سمت فرانت لازم نباشد.
+   */
+  region?: string;
 }

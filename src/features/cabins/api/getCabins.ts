@@ -24,6 +24,7 @@ function buildQueryString({
   guests,
   limit,
   price,
+  region,
 }: CabinsQueryParams): string {
   const searchParams = new URLSearchParams();
 
@@ -35,6 +36,7 @@ function buildQueryString({
   if (amenities) searchParams.set("amenities", amenities);
   if (price) searchParams.set("price", price);
   if (city) searchParams.set("city", String(city));
+  if (region) searchParams.set("region", region);
 
   const query = searchParams.toString();
   return query ? `?${query}` : "";

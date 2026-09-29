@@ -2,6 +2,9 @@
 
 import { useState, type ReactNode } from "react";
 
+import type { RawSearchParams } from "@/hooks/useUrlQuery";
+import { SearchBar } from "@/features/search";
+
 import CabinsFilterBar from "./filters/CabinsFilterBar";
 import CabinsMapPanel from "./CabinsMapPanel";
 import CabinsMobileMapSheet from "./CabinsMobileMapSheet";
@@ -10,6 +13,8 @@ type Props = {
   cities: { id: number; name: string }[];
   amenities: string[];
   resultCount: number;
+  /** searchParams خام سرور — برای نوار جستجوی بالای صفحه */
+  searchParams: RawSearchParams;
   children: ReactNode;
 };
 
@@ -17,12 +22,19 @@ export default function CabinsExplorer({
   cities,
   amenities,
   resultCount,
+  searchParams,
   children,
 }: Props) {
   const [mapVisible, setMapVisible] = useState(true);
 
   return (
     <>
+      {/*
+        نوار جستجو در جریان عادی صفحه است (sticky نیست) تا با FilterBar
+        چسبان رقابت نکند و ویوپورت را اشغال نکند.
+      */}
+      <SearchBar cities={cities} searchParams={searchParams} />
+
       <CabinsFilterBar
         cities={cities}
         amenities={amenities}

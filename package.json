@@ -24,7 +24,8 @@
     "react-multi-date-picker": "^4.5.2",
     "recharts": "^3.10.1",
     "server-only": "^0.0.1",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.4",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

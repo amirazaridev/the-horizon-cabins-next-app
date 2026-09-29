@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { HORIZON_IMAGES } from "@/features/landing/constants/horizon-home";
-import Search from "./search";
+import { HeroSearch } from "@/features/search";
 import { getCities } from "@/features/cabins/api";
 // import { useTheme } from "@/contexts/ThemeContext";
 
@@ -70,7 +70,7 @@ export default async function Hero() {
         </div>
 
         <div className="mt-6 md:mt-7">
-          <Search cities={cities}/>
+          <HeroSearch cities={cities} />
         </div>
         <div className="mt-4 flex justify-center text-white/55">
           <ChevronDown

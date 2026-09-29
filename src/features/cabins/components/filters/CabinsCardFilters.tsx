@@ -13,6 +13,8 @@ import {
 import FilterCard, {
   type FilterCardItem,
 } from "@/components/ui/Filter/FilterCard";
+import { getRegion } from "@/features/search/constants/regions";
+import { decodeDestinationWithName } from "@/features/search/utils/destination-value";
 import { formatPriceShort } from "../../utils/cabin-filters";
 import {
   formatDateRangeLabel,
@@ -24,7 +26,7 @@ import GuestsPanel from "./panels/GuestsPanel";
 import BedroomsPanel from "./panels/BedroomsPanel";
 import AmenitiesPanel from "./panels/AmenitiesPanel";
 import PricePanel from "./panels/PricePanel";
-import CityPanel from "./panels/CityPanel";
+import CityPanel, { readDestinationParam } from "./panels/CityPanel";
 
 const fa = (n: number | string) => Number(n).toLocaleString("fa-IR");
 
@@ -55,6 +57,9 @@ export default function CabinsCardFilters({
       .filter(Boolean) ?? [];
   const price = searchParams.get("price");
   const city = searchParams.get("city");
+  const region = searchParams.get("region");
+  /** مقصد کدگذاری‌شده‌ی فیلتر شهر: `city:12` یا `region:north` */
+  const destinationValue = readDestinationParam(searchParams);
 
   const dateValue: CabinDateValue | null =
     checkIn || checkOut ? { checkIn, checkOut } : null;
@@ -77,15 +82,27 @@ export default function CabinsCardFilters({
       case "guests":
       case "bedrooms":
       case "price":
-      case "city":
         setParam(id, (next as string | null) ?? null);
         break;
+      case "city": {
+        const destination = decodeDestinationWithName(
+          (next as string | null) ?? null,
+          cities,
+        );
+        setParams({
+          city: destination?.type === "city" ? String(destination.id) : null,
+          region: destination?.type === "region" ? destination.id : null,
+        });
+        break;
+      }
     }
   };
 
-  const cityName = city
-    ? cities.find((item) => String(item.id) === city)?.name
-    : undefined;
+  const cityName = region
+    ? getRegion(region)?.name
+    : city
+      ? cities.find((item) => String(item.id) === city)?.name
+      : undefined;
 
   const priceSummary = (() => {
     if (!price) return undefined;
@@ -100,7 +117,7 @@ export default function CabinsCardFilters({
     bedrooms,
     amenitiesParam.length,
     price,
-    city,
+    destinationValue,
   ].filter(Boolean).length;
 
   const items: FilterCardItem[] = [
@@ -236,7 +253,7 @@ export default function CabinsCardFilters({
           bedrooms,
           amenities: amenitiesParam,
           price,
-          city,
+          city: destinationValue,
         }}
         onValueChange={handleValueChange}
         onClearFilters={clearFilters}

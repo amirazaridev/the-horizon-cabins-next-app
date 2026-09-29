@@ -36,10 +36,14 @@ export default async function CabinsPage({
       guests: filters.guests,
       bedrooms: filters.bedrooms,
       amenities: filters.amenities?.join(","),
+      // بازه‌ی قیمت اولویت دارد؛ وگرنه سقف بودجه‌ی سرچ اصلی به بازه ترجمه می‌شود
       price: filters.price
         ? `${filters.price[0]}-${filters.price[1]}`
-        : undefined,
+        : filters.maxPrice != null
+          ? `0-${filters.maxPrice}`
+          : undefined,
       city: filters.cityId,
+      region: filters.region,
     }),
     getCities(),
     getAmenities(),
@@ -47,11 +51,11 @@ export default async function CabinsPage({
 
   return (
     <section className="bg-background min-h-screen">
-      
       <CabinsExplorer
         cities={cities}
         amenities={amenities}
         resultCount={meta.totalItems}
+        searchParams={sp}
       >
         <Suspense
           fallback={<Spinner size="lg" label="درحال بارگزاری ..." fullWidth />}
