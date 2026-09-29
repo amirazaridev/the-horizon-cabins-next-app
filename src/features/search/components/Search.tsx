@@ -33,6 +33,10 @@ import {
   destinationLabel,
   formatBudgetRangeLabel,
   formatBudgetRangeLabelCompact,
+  MOBILE_SEARCH_CHANGE_LABEL,
+  MOBILE_SEARCH_EMPTY_HINT,
+  MOBILE_SEARCH_RESULTS_LABEL,
+  MOBILE_SEARCH_TITLE,
 } from "../utils/search-summary";
 import type {
   BudgetRange,
@@ -82,11 +86,20 @@ export default function Search({
     return from ?? to ?? null;
   })();
 
-  const mobileSummary =
-    buildSearchSummary({ filters: draft, cities, compact: !isHero }) ||
-    (isHero
-      ? "مقصد، تاریخ و مهمان را انتخاب کنید"
-      : "برای فیلترکردن نتایج، جستجو را تغییر دهید");
+  /**
+   * خلاصه‌ی یک‌خطی زیر عنوان تریگر موبایل.
+   *
+   * ترتیب قطعات: مقصد · تاریخ · مهمان · بودجه. هر قطعه فقط وقتی می‌آید که
+   * واقعاً مقدار داشته باشد؛ بازه‌ی بودجه‌ی کامل هم «بدون محدودیت» است و
+   * عمداً نمایش داده نمی‌شود (تا کاربر بازه‌ی پیش‌فرض را «فیلتر» نپندارد).
+   */
+  const mobileSummaryRaw = buildSearchSummary({
+    filters: draft,
+    cities,
+    compact: !isHero,
+  });
+
+  const mobileSummary = mobileSummaryRaw || MOBILE_SEARCH_EMPTY_HINT;
 
   const handleValueChange = (id: string, value: unknown) => {
     switch (id) {
@@ -293,44 +306,52 @@ export default function Search({
   ];
 
   const wrapperClass = isHero
-    ? "hz-search text-text md:bg-background/60 mx-auto flex max-w-256 xl:max-w-264 flex-col gap-2 rounded-none border-0 bg-transparent p-0 shadow-none backdrop-blur-none md:flex-row md:items-center md:gap-0 md:rounded-2xl md:border md:border-white/15 md:p-2 md:shadow-2xl md:shadow-black/20 md:backdrop-blur-xl"
+    ? "hz-search text-text md:bg-background/60 mx-auto flex max-w-256 xl:max-w-264 flex-col gap-2 rounded-none border-0 bg-transparent p-2 shadow-none backdrop-blur-none md:flex-row md:items-center md:gap-0 md:rounded-2xl md:border md:border-white/15 md:p-2 md:shadow-2xl md:shadow-black/20 md:backdrop-blur-xl"
     : "text-text border-foreground/10 bg-surface flex flex-col gap-2 rounded-2xl border p-2 shadow-sm md:flex-row md:items-center md:gap-0";
 
   const fieldGridClass =
     "text-text grid min-w-0 flex-1 grid-cols-1 gap-1 md:grid-cols-[1.35fr_1fr_1fr_0.9fr_1.15fr] md:gap-0";
 
   /*
-   * در موبایل:
-   *  - لندینگ: «مقصد سفرت کجاست؟» + خلاصه + آیکن ذره‌بین
-   *  - /cabins : خلاصه‌ی فشرده + دکمه‌ی صریح «تغییر جستجو»
+   * تریگر موبایل:
+   *  - لندینگ : پرسش «مقصد، بودجه و تاریخ سفرت رو بگو» + خلاصه‌ی فیلترها + ذره‌بین
+   *  - /cabins: برچسب «جستجوی شما» + خلاصه + دکمه‌ی صریح «تغییر جستجو»
+   *
+   * `w-full` روی ریشه‌ی هر دو شاخه تضمین می‌کند دکمه تا لبه‌ی کانتینر
+   * والد (خودِ Search) کشیده شود؛ پدینگ کم و آیکن بزرگ‌تر هم نوار را
+   * جادارتر نشان می‌دهد.
    */
   const mobileTrigger = () =>
     isHero ? (
-      <span className="flex w-full items-center gap-3 px-2 py-1.5">
-        <span className="flex min-w-0 flex-1 flex-col text-start">
-          <span className="text-text text-sm font-extrabold">
-            مقصد سفرت کجاست؟
+      <span className="flex w-full min-w-80 items-center gap-3 py-2 ps-4.5 pe-2">
+        <span className="flex min-w-0 flex-1 flex-col gap-1 text-start">
+          <span className="text-text truncate text-[15px] leading-6 font-extrabold">
+            {MOBILE_SEARCH_TITLE}
           </span>
-          <span className="text-text-gray mt-0.5 truncate text-xs font-medium">
+          <span
+            className={`truncate text-[13px] leading-5 font-medium ${
+              mobileSummaryRaw ? "text-text-gray" : "text-text-gray/80"
+            }`}
+          >
             {mobileSummary}
           </span>
         </span>
-        <span className="bg-primary-400 grid size-11 shrink-0 place-items-center rounded-full text-black shadow-sm">
-          <SearchIcon className="size-5" />
+        <span className="bg-primary-400 grid size-12 shrink-0 place-items-center rounded-full text-black shadow-md shadow-black/20">
+          <SearchIcon className="size-5.5" />
         </span>
       </span>
     ) : (
-      <span className="flex w-full items-center gap-3 px-2 py-1.5">
-        <span className="flex min-w-0 flex-1 flex-col text-start">
-          <span className="text-text-gray text-xs font-semibold">
-            جستجوی شما
+      <span className="flex w-full min-w-0 items-center gap-3 py-2 ps-4 pe-2">
+        <span className="flex min-w-0 flex-1 flex-col gap-1 text-start">
+          <span className="text-text-gray truncate text-[11px] leading-4 font-semibold">
+            {MOBILE_SEARCH_RESULTS_LABEL}
           </span>
-          <span className="text-text mt-0.5 truncate text-xs font-bold">
+          <span className="text-text truncate text-[13px] leading-5 font-bold">
             {mobileSummary}
           </span>
         </span>
         <span className="border-primary-400/40 bg-primary-400/10 text-text flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold whitespace-nowrap">
-          تغییر جستجو
+          {MOBILE_SEARCH_CHANGE_LABEL}
           <PencilLine className="size-3.5" />
         </span>
       </span>
@@ -357,9 +378,13 @@ export default function Search({
         onMobileApply={handleApply}
         mobileApplyPending={isPending}
         renderMobileTrigger={mobileTrigger}
-        mobileTriggerClassName={`w-full rounded-full border py-2 pe-2 ps-4 shadow-lg backdrop-blur-md transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${
+        /*
+         * پدینگ/ارتفاع را خودِ تریگر می‌دهد، پس اینجا فقط ظاهر نوار است.
+         * `w-full` تضمین می‌کند دکمه تا انتهای کانتینر `Search` کشیده شود.
+         */
+        mobileTriggerClassName={`w-full rounded-full border shadow-lg backdrop-blur-md transition-all duration-200 active:scale-[0.99] md:shadow-xl ${FOCUS_RING} ${
           isHero
-            ? "border-white/15 bg-surface/80 shadow-black/15"
+            ? "border-white/15 bg-surface/85 shadow-black/15"
             : "border-foreground/10 bg-surface shadow-black/5"
         }`}
         className={fieldGridClass}
