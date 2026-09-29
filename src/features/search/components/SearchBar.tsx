@@ -2,6 +2,7 @@
 
 import type { City } from "@/features/cabins/types/city.types";
 import type { RawSearchParams } from "@/hooks/useUrlQuery";
+import { usePersistLastSearch } from "../hooks/useLastSearch";
 import { useUrlSearchController } from "../hooks/useUrlSearchController";
 import Search from "./Search";
 
@@ -20,6 +21,9 @@ type Props = {
  */
 export default function SearchBar({ cities, searchParams }: Props) {
   const controller = useUrlSearchController(searchParams);
+
+  // جستجوی این صفحه هم به‌عنوان «آخرین جستجو» ذخیره می‌شود
+  usePersistLastSearch(controller.applied);
 
   return (
     <div className="bg-background-2 border-foreground/10 border-b">

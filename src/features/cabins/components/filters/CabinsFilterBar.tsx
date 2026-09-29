@@ -5,7 +5,6 @@ import { Map as MapIcon } from "lucide-react";
 import CabinsCardFilters from "./CabinsCardFilters";
 
 type Props = {
-  cities: { id: number; name: string }[];
   amenities: string[];
   resultCount: number;
   mapVisible: boolean;
@@ -13,7 +12,6 @@ type Props = {
 };
 
 export default function CabinsFilterBar({
-  cities,
   amenities,
   resultCount,
   mapVisible,
@@ -24,7 +22,6 @@ export default function CabinsFilterBar({
       <div className="border-foreground/10 bg-background/90 border-b backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1800px] items-center gap-2 px-3 py-2.5 sm:px-4 lg:px-6">
           <CabinsCardFilters
-            cities={cities}
             amenities={amenities}
             resultCount={resultCount}
             className="flex"

@@ -18,7 +18,7 @@ export function useLandingSearchController(): SearchController {
   const setDestination = useSearchStore((state) => state.setDestination);
   const setDates = useSearchStore((state) => state.setDates);
   const setGuests = useSearchStore((state) => state.setGuests);
-  const setMaxPrice = useSearchStore((state) => state.setMaxPrice);
+  const setBudget = useSearchStore((state) => state.setBudget);
   const setFilters = useSearchStore((state) => state.setFilters);
   const apply = useSearchStore((state) => state.apply);
   const reset = useSearchStore((state) => state.reset);
@@ -38,14 +38,22 @@ export function useLandingSearchController(): SearchController {
         case "guests":
           setGuests(value as number | null);
           break;
-        case "maxPrice":
-          setMaxPrice(value as number | null);
+        case "budget":
+          setBudget(value as (typeof draft)["budget"]);
           break;
         default:
           setFilters({ [key]: value } as never);
       }
     },
-    [draft.checkIn, draft.checkOut, setDestination, setDates, setGuests, setMaxPrice, setFilters],
+    [
+      draft.checkIn,
+      draft.checkOut,
+      setDestination,
+      setDates,
+      setGuests,
+      setBudget,
+      setFilters,
+    ],
   );
 
   return useMemo(

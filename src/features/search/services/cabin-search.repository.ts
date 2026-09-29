@@ -48,14 +48,14 @@ function normalize(query: CabinSearchQuery) {
   return {
     destination: query.destination ?? null,
     guests: typeof query.guests === "number" ? query.guests : null,
-    maxPrice: typeof query.maxPrice === "number" ? query.maxPrice : null,
+    budget: query.budget ?? null,
     limit: query.limit ?? 6,
   };
 }
 
 export const mockCabinSearchRepository: CabinSearchRepository = {
   async search(query) {
-    const { destination, guests, maxPrice, limit } = normalize(query);
+    const { destination, guests, budget, limit } = normalize(query);
 
     // ⚠️ بک‌اند فعلی موجودی/تقویم ندارد؛ پس روی تاریخ فیلتر نمی‌کنیم
     // (به‌جای ادعای الکی، فقط فیلترهای قابل‌پشتیبانی اعمال می‌شوند).
@@ -64,7 +64,10 @@ export const mockCabinSearchRepository: CabinSearchRepository = {
         return false;
       }
       if (guests !== null && cabin.maxCapacity < guests) return false;
-      if (maxPrice !== null && finalNightPrice(cabin) > maxPrice) return false;
+      if (budget !== null) {
+        const nightly = finalNightPrice(cabin);
+        if (nightly < budget.min || nightly > budget.max) return false;
+      }
       return true;
     });
 

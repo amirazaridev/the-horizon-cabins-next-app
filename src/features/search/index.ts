@@ -6,17 +6,26 @@ export { default as Search } from "./components/Search";
 export { default as HeroSearch } from "./components/HeroSearch";
 export { default as SearchBar } from "./components/SearchBar";
 export { default as SearchPreview } from "./components/preview/SearchPreview";
+export { default as LastSearchChip } from "./components/LastSearchChip";
 
 export { useSearchStore } from "./store/search.store";
 export { useSearchPreview } from "./hooks/useSearchPreview";
 export { useLandingSearchController } from "./hooks/useLandingSearchController";
 export { useUrlSearchController } from "./hooks/useUrlSearchController";
+export { useLastSearch, usePersistLastSearch } from "./hooks/useLastSearch";
 
 export {
   cabinSearchRepository,
   mockCabinSearchRepository,
   type CabinSearchRepository,
 } from "./services/cabin-search.repository";
+
+export {
+  clearLastSearch,
+  getLastSearchQuery,
+  saveLastSearchQuery,
+  subscribeLastSearch,
+} from "./services/recent-search.storage";
 
 export {
   SEARCH_PARAM_KEYS,
@@ -35,16 +44,33 @@ export {
   buildSearchSummary,
   buildSearchSummaryParts,
   destinationLabel,
-  formatBudgetLabel,
+  formatBudgetRangeLabel,
+  formatBudgetRangeLabelCompact,
+  formatBudgetRangeValue,
   formatDateRangeSummary,
   formatGuestsLabel,
   formatNightsLabel,
 } from "./utils/search-summary";
 
+export {
+  SEARCH_PREVIEW_ID,
+  scheduleScrollToSearchPreview,
+  scrollToSearchPreview,
+} from "./utils/scroll-to-preview";
+
+export {
+  CITY_VALUE_PREFIX,
+  REGION_VALUE_PREFIX,
+  decodeDestination,
+  decodeDestinationWithName,
+  encodeDestination,
+} from "./utils/destination-value";
+
 export { REGIONS, getRegion, regionAllCitiesLabel } from "./constants/regions";
 export { groupCitiesByRegion, regionOfCityName } from "./data/destinations.mock";
 
 export type {
+  BudgetRange,
   CabinSearchQuery,
   CabinSearchResult,
   Destination,

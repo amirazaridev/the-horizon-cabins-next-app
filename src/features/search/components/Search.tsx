@@ -30,9 +30,14 @@ import { scheduleScrollToSearchPreview } from "../utils/scroll-to-preview";
 import {
   buildSearchSummary,
   destinationLabel,
-  formatBudgetLabel,
+  formatBudgetRangeLabel,
+  formatBudgetRangeLabelCompact,
 } from "../utils/search-summary";
-import type { Destination, SearchController } from "../types/search.types";
+import type {
+  BudgetRange,
+  Destination,
+  SearchController,
+} from "../types/search.types";
 
 export type SearchVariant = "hero" | "results";
 
@@ -95,7 +100,7 @@ export default function Search({
         setField("guests", typeof value === "number" ? value : null);
         break;
       case "budget":
-        setField("maxPrice", typeof value === "number" ? value : null);
+        setField("budget", (value as BudgetRange | null) ?? null);
         break;
       default:
         break;
@@ -107,7 +112,7 @@ export default function Search({
     checkIn: draft.checkIn,
     checkOut: draft.checkOut,
     guests: draft.guests,
-    budget: draft.maxPrice,
+    budget: draft.budget,
   };
 
   /**
@@ -252,33 +257,27 @@ export default function Search({
     },
     {
       id: "budget",
-      label: "بودجه‌ی هر شب",
+      label: "بازه‌ی بودجه",
       variant: "field",
       formatLabel: (value) =>
-        typeof value === "number" ? formatBudgetLabel(value) : undefined,
+        formatBudgetRangeLabel(value as BudgetRange | null),
       className: `md:rounded-none md:border-s ${divider}`,
       renderTrigger: ({ value }) => (
         <FieldContent
           icon={<Wallet className="size-4" />}
           label="بودجه‌ی هر شب"
-          value={
-            typeof value === "number"
-              ? `تا ${(value / 1_000_000).toLocaleString("fa-IR", {
-                  maximumFractionDigits: 1,
-                })} میلیون تومان`
-              : undefined
-          }
-          placeholder="حداکثر بودجه"
+          value={formatBudgetRangeLabelCompact(value as BudgetRange | null)}
+          placeholder="بازه‌ی بودجه"
           caret
         />
       ),
       panel: {
-        title: "بودجه‌ی هر شب",
+        title: "بازه‌ی بودجه‌ی هر شب",
         size: "md",
         placement: "end",
         render: ({ value, setValue, close }) => (
           <BudgetPanel
-            value={typeof value === "number" ? value : null}
+            value={(value as BudgetRange | null) ?? null}
             onChange={(next) => setValue(next)}
             onDone={close}
           />

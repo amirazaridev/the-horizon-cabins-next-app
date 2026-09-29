@@ -36,7 +36,6 @@ export default function CabinsExplorer({
       <SearchBar cities={cities} searchParams={searchParams} />
 
       <CabinsFilterBar
-        cities={cities}
         amenities={amenities}
         resultCount={resultCount}
         mapVisible={mapVisible}

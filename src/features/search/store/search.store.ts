@@ -4,17 +4,18 @@
  * استور گلوبال «جستجوی هسته».
  *
  * فقط پنج مقدار در اینجا نگه داشته می‌شود:
- *   destination · checkIn · checkOut · guests · maxPrice
+ *   destination · checkIn · checkOut · guests · budget
  *
- * فیلترهای پیشرفته‌ی /cabins (اتاق خواب، سرویس، امکانات، بازه‌ی قیمت، صفحه)
- * عمداً اینجا نیستند؛ آن‌ها در URL همان صفحه زندگی می‌کنند.
+ * فیلترهای پیشرفته‌ی /cabins (اتاق خواب، امکانات، صفحه) عمداً اینجا
+ * نیستند؛ آن‌ها در URL همان صفحه زندگی می‌کنند.
  *
  * دو نسخه‌ی مقدار نگه داشته می‌شود:
  *   draft   → چیزی که کاربر در حال ویرایش است (هیچ fetchی نمی‌زند)
  *   applied → چیزی که تأیید شده و مبنای پیش‌نمایش است
  *
- * هیچ persistence‌ای (localStorage/sessionStorage) اضافه نشده؛
- * عمر این استور فقط تا زنده‌بودن تب است و نقشش «تداوم ناوبری» است.
+ * هیچ persistence‌ای روی خود استور نیست؛ عمرش فقط تا زنده‌بودن تب است و
+ * نقشش «تداوم ناوبری» است. ذخیره‌ی «آخرین جستجو» یک فیچر جداگانه است
+ * (`services/recent-search.storage.ts`) و به این استور گره نخورده.
  */
 
 import { create } from "zustand";
@@ -31,7 +32,7 @@ type SearchStoreState = {
   setDestination: (destination: SearchFilters["destination"]) => void;
   setDates: (checkIn: Date | null, checkOut: Date | null) => void;
   setGuests: (guests: number | null) => void;
-  setMaxPrice: (maxPrice: number | null) => void;
+  setBudget: (budget: SearchFilters["budget"]) => void;
 
   /** به‌روزرسانی یک‌جای چند فیلد draft */
   setFilters: (patch: Partial<SearchFilters>) => void;
@@ -56,8 +57,8 @@ export const useSearchStore = create<SearchStoreState>((set) => ({
   setGuests: (guests) =>
     set((state) => ({ draft: { ...state.draft, guests } })),
 
-  setMaxPrice: (maxPrice) =>
-    set((state) => ({ draft: { ...state.draft, maxPrice } })),
+  setBudget: (budget) =>
+    set((state) => ({ draft: { ...state.draft, budget } })),
 
   setFilters: (patch) =>
     set((state) => ({ draft: { ...state.draft, ...patch } })),

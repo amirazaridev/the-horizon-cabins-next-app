@@ -16,10 +16,11 @@
  *   destination.type === "city"   → city=<id>
  *   destination.type === "region" → فعلاً پشتیبانی نمی‌شود (نیازمند endpoint)
  *   guests                        → guests
- *   maxPrice                      → price=0-<maxPrice>
+ *   budget                        → price=<min>-<max>
  */
 
 import { queryCabins } from "@/features/cabins/api/getCabins";
+import { formatPriceRange } from "@/libs/utils/price-range";
 import type {
   CabinSearchQuery,
   CabinSearchResult,
@@ -29,12 +30,12 @@ import type { CabinSearchRepository } from "./cabin-search.repository";
 export function createApiCabinSearchRepository(): CabinSearchRepository {
   return {
     async search(query: CabinSearchQuery): Promise<CabinSearchResult> {
-      const { destination, guests, maxPrice, limit } = query;
+      const { destination, guests, budget, limit } = query;
 
       const { cabins, meta } = await queryCabins({
         city: destination?.type === "city" ? destination.id : undefined,
         guests: guests ?? undefined,
-        price: maxPrice != null ? `0-${maxPrice}` : undefined,
+        price: budget ? formatPriceRange(budget.min, budget.max) : undefined,
         limit: limit ?? 6,
         page: 1,
       });

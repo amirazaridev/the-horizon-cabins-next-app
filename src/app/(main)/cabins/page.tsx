@@ -36,12 +36,10 @@ export default async function CabinsPage({
       guests: filters.guests,
       bedrooms: filters.bedrooms,
       amenities: filters.amenities?.join(","),
-      // بازه‌ی قیمت اولویت دارد؛ وگرنه سقف بودجه‌ی سرچ اصلی به بازه ترجمه می‌شود
+      // بازه‌ی بودجه‌ی سرچ، همان قرارداد `lo-hi` فیلتر قیمت است
       price: filters.price
         ? `${filters.price[0]}-${filters.price[1]}`
-        : filters.maxPrice != null
-          ? `0-${filters.maxPrice}`
-          : undefined,
+        : undefined,
       city: filters.cityId,
       region: filters.region,
     }),

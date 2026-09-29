@@ -50,13 +50,25 @@ export type Destination = CityDestination | RegionDestination;
 /* فیلترهای هسته‌ی جستجو (تنها چیزی که در استور گلوبال می‌نشیند)         */
 /* ------------------------------------------------------------------ */
 
+/**
+ * بازه‌ی بودجه‌ی هر شب (تومان).
+ * `null` یعنی «بدون محدودیت» — نه بازه‌ی کامل.
+ */
+export type BudgetRange = {
+  min: number;
+  max: number;
+};
+
 export type SearchFilters = {
   destination: Destination | null;
   checkIn: Date | null;
   checkOut: Date | null;
   guests: number | null;
-  /** سقف بودجه‌ی هر شب (تومان) — نه بازه‌ی قیمت */
-  maxPrice: number | null;
+  /**
+   * بازه‌ی بودجه‌ی هر شب. مفهوم «سقف بودجه» قبلاً تک‌مقداری بود؛ حالا بازه است.
+   * در URL با همان قرارداد موجود پروژه ذخیره می‌شود: `price=lo-hi`
+   */
+  budget: BudgetRange | null;
 };
 
 export const EMPTY_SEARCH_FILTERS: SearchFilters = {
@@ -64,7 +76,7 @@ export const EMPTY_SEARCH_FILTERS: SearchFilters = {
   checkIn: null,
   checkOut: null,
   guests: null,
-  maxPrice: null,
+  budget: null,
 };
 
 /* ------------------------------------------------------------------ */
@@ -78,7 +90,7 @@ export type CabinSearchQuery = {
   checkIn: string | null;
   checkOut: string | null;
   guests: number | null;
-  maxPrice: number | null;
+  budget: BudgetRange | null;
   /** حداکثر تعداد نتیجه */
   limit?: number;
 };
@@ -119,9 +131,10 @@ export type SearchController = {
 export const GUESTS_MIN = 1;
 export const GUESTS_MAX = 10;
 
+/** محدوده‌ی اسلایدر بودجه (هم‌محدوده با فیلتر قیمت قبلی) */
 export const BUDGET_MIN = 1_000_000;
 export const BUDGET_MAX = 30_000_000;
-export const BUDGET_STEP = 250_000;
+export const BUDGET_STEP = 100_000;
 
 /** حداکثر تعداد کارت در پیش‌نمایش جستجو */
 export const SEARCH_PREVIEW_LIMIT = 6;

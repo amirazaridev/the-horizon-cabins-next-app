@@ -1,53 +1,36 @@
 "use client";
 
-import {
-  BedDouble,
-  CalendarDays,
-  MapPin,
-  Sparkles,
-  Users,
-  Wallet,
-  X,
-} from "lucide-react";
+import { BedDouble, Sparkles, X } from "lucide-react";
 
 import FilterCard, {
   type FilterCardItem,
 } from "@/components/ui/Filter/FilterCard";
-import { getRegion } from "@/features/search/constants/regions";
-import { decodeDestinationWithName } from "@/features/search/utils/destination-value";
-import { formatPriceShort } from "../../utils/cabin-filters";
-import {
-  formatDateRangeLabel,
-  type CabinDateValue,
-} from "../../utils/cabin-date";
 import { useCabinQuery } from "./useCabinQuery";
-import DatePanel from "./panels/DatePanel";
-import GuestsPanel from "./panels/GuestsPanel";
 import BedroomsPanel from "./panels/BedroomsPanel";
 import AmenitiesPanel from "./panels/AmenitiesPanel";
-import PricePanel from "./panels/PricePanel";
-import CityPanel, { readDestinationParam } from "./panels/CityPanel";
 
 const fa = (n: number | string) => Number(n).toLocaleString("fa-IR");
 
 type Props = {
-  cities: { id: number; name: string }[];
   amenities: string[];
   className?: string;
   resultCount?: number;
 };
 
+/**
+ * فیلترهای پیشرفته‌ی `/cabins`.
+ *
+ * فقط «تعداد خواب» و «امکانات» اینجا هستند. مقصد، تاریخ، تعداد نفرات و
+ * بازه‌ی بودجه در نوار جستجوی بالای همین صفحه‌اند؛ نگه‌داشتنشان در هر دو
+ * جا باعث تکرار و دو منبع حقیقت می‌شد.
+ */
 export default function CabinsCardFilters({
-  cities,
   amenities,
   className = "",
   resultCount,
 }: Props) {
-  const { searchParams, setParam, setParams, clearFilters } = useCabinQuery();
+  const { searchParams, setParam, clearFilters } = useCabinQuery();
 
-  const checkIn = searchParams.get("checkIn");
-  const checkOut = searchParams.get("checkOut");
-  const guests = searchParams.get("guests");
   const bedrooms = searchParams.get("bedrooms");
   const amenitiesParam =
     searchParams
@@ -55,116 +38,23 @@ export default function CabinsCardFilters({
       ?.split(",")
       .map((item) => item.trim())
       .filter(Boolean) ?? [];
-  const price = searchParams.get("price");
-  const city = searchParams.get("city");
-  const region = searchParams.get("region");
-  /** مقصد کدگذاری‌شده‌ی فیلتر شهر: `city:12` یا `region:north` */
-  const destinationValue = readDestinationParam(searchParams);
-
-  const dateValue: CabinDateValue | null =
-    checkIn || checkOut ? { checkIn, checkOut } : null;
 
   const handleValueChange = (id: string, next: unknown) => {
     switch (id) {
-      case "date": {
-        const range = (next as CabinDateValue | null) ?? {
-          checkIn: null,
-          checkOut: null,
-        };
-        setParams({ checkIn: range.checkIn, checkOut: range.checkOut });
-        break;
-      }
       case "amenities": {
         const list = (next as string[] | null) ?? [];
         setParam("amenities", list.length ? list.join(",") : null);
         break;
       }
-      case "guests":
       case "bedrooms":
-      case "price":
-        setParam(id, (next as string | null) ?? null);
+        setParam("bedrooms", (next as string | null) ?? null);
         break;
-      case "city": {
-        const destination = decodeDestinationWithName(
-          (next as string | null) ?? null,
-          cities,
-        );
-        setParams({
-          city: destination?.type === "city" ? String(destination.id) : null,
-          region: destination?.type === "region" ? destination.id : null,
-        });
-        break;
-      }
     }
   };
 
-  const cityName = region
-    ? getRegion(region)?.name
-    : city
-      ? cities.find((item) => String(item.id) === city)?.name
-      : undefined;
-
-  const priceSummary = (() => {
-    if (!price) return undefined;
-    const [lo, hi] = price.split("-").map(Number);
-    if (!Number.isFinite(lo) || !Number.isFinite(hi)) return undefined;
-    return `${formatPriceShort(lo)} تا ${formatPriceShort(hi)}`;
-  })();
-
-  const activeCount = [
-    checkIn ?? checkOut,
-    guests,
-    bedrooms,
-    amenitiesParam.length,
-    price,
-    destinationValue,
-  ].filter(Boolean).length;
+  const activeCount = [bedrooms, amenitiesParam.length].filter(Boolean).length;
 
   const items: FilterCardItem[] = [
-    {
-      id: "date",
-      label: "تاریخ سفر",
-      icon: <CalendarDays className="text-primary-400 size-4" />,
-      formatLabel: (v) => {
-        const range = v as CabinDateValue | null;
-        if (!range) return undefined;
-        return formatDateRangeLabel(range.checkIn, range.checkOut);
-      },
-      panel: {
-        title: "تاریخ سفر",
-        size: "xl",
-        render: ({ value, setValue, close }) => (
-          <DatePanel
-            value={
-              (value as CabinDateValue | null) ?? {
-                checkIn: null,
-                checkOut: null,
-              }
-            }
-            onChange={(range) => setValue(range)}
-            onDone={close}
-          />
-        ),
-      },
-    },
-    {
-      id: "guests",
-      label: "تعداد نفرات",
-      icon: <Users className="text-primary-400 size-4" />,
-      formatLabel: (v) =>
-        (v as string | null) ? `${fa(v as string)} نفر` : undefined,
-      panel: {
-        title: "تعداد نفرات",
-        size: "sm",
-        closeOnSelect: true,
-        render: ({ value, setValue }) => (
-          <GuestsPanel
-            value={value as string | null}
-            onChange={(next) => setValue(next)}
-          />
-        ),
-      },
-    },
     {
       id: "bedrooms",
       label: "تعداد خواب",
@@ -203,57 +93,15 @@ export default function CabinsCardFilters({
         ),
       },
     },
-    {
-      id: "price",
-      label: "بازه قیمت",
-      icon: <Wallet className="text-primary-400 size-4" />,
-      formatLabel: () => priceSummary,
-      panel: {
-        title: "بازه قیمت هر شب",
-        size: "md",
-        closeOnSelect: true,
-        render: ({ value, setValue }) => (
-          <PricePanel
-            value={value as string | null}
-            onChange={(next) => setValue(next)}
-          />
-        ),
-      },
-    },
   ];
-
-  if (cities.length > 0) {
-    items.push({
-      id: "city",
-      label: "شهر / مقصد",
-      icon: <MapPin className="text-primary-400 size-4" />,
-      formatLabel: () => cityName,
-      panel: {
-        title: "شهر / مقصد",
-        size: "md",
-        closeOnSelect: true,
-        render: ({ value, setValue }) => (
-          <CityPanel
-            cities={cities}
-            value={value as string | null}
-            onChange={(next) => setValue(next)}
-          />
-        ),
-      },
-    });
-  }
 
   return (
     <div className={`min-w-0 flex-1 items-center gap-2 ${className}`}>
       <FilterCard
         items={items}
         value={{
-          date: dateValue,
-          guests,
           bedrooms,
           amenities: amenitiesParam,
-          price,
-          city: destinationValue,
         }}
         onValueChange={handleValueChange}
         onClearFilters={clearFilters}

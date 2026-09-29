@@ -10,10 +10,11 @@
  *   checkIn   = yyyy-MM-dd
  *   checkOut  = yyyy-MM-dd
  *   guests    = عدد صحیح
- *   maxPrice  = سقف بودجه‌ی هر شب (تومان)
+ *   price     = بازه‌ی بودجه‌ی هر شب       (مثل price=1000000-8000000)
  *
- * نکته: `price` (بازه‌ی قیمت فیلتر پیشرفته) با `maxPrice` یکی نیست؛
- * اولی متعلق به URL فیلترهای /cabins است و دومی به سرچ اصلی.
+ * `price` همان قرارداد موجود پروژه است و مستقیماً به پارامتر price ای‌پی‌آی
+ * نگاشت می‌شود. چون فیلتر «بازه قیمت» از فیلتربار `/cabins` حذف شد،
+ * این پارامتر حالا تنها به بودجه‌ی سرچ تعلق دارد و دو مفهوم موازی نداریم.
  */
 
 import {
@@ -21,6 +22,7 @@ import {
   parseDateParam,
 } from "@/features/cabins/utils/cabin-date";
 import { safeParseNumber } from "@/features/cabins/utils/safeParseNumber";
+import { formatPriceRange, parsePriceRange } from "@/libs/utils/price-range";
 import { getRegion, isRegionId } from "../constants/regions";
 import {
   EMPTY_SEARCH_FILTERS,
@@ -35,7 +37,7 @@ export const SEARCH_PARAM_KEYS = [
   "checkIn",
   "checkOut",
   "guests",
-  "maxPrice",
+  "price",
 ] as const;
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
@@ -74,7 +76,9 @@ export function serializeSearchFilters(
   if (filters.checkIn) out.checkIn = formatDateParam(filters.checkIn);
   if (filters.checkOut) out.checkOut = formatDateParam(filters.checkOut);
   if (filters.guests != null) out.guests = String(filters.guests);
-  if (filters.maxPrice != null) out.maxPrice = String(filters.maxPrice);
+  if (filters.budget) {
+    out.price = formatPriceRange(filters.budget.min, filters.budget.max);
+  }
 
   return out;
 }
@@ -131,20 +135,20 @@ export function parseSearchFilters(input: ParseInput): SearchFilters {
       1,
       Number.MAX_SAFE_INTEGER,
     );
-    if (cityId !== undefined) destination = { type: "city", id: cityId, name: "" };
+    if (cityId !== undefined) {
+      destination = { type: "city", id: cityId, name: "" };
+    }
   }
+
+  const priceRange = parsePriceRange(readParam(input, "price"));
 
   return {
     destination,
     checkIn: parseDateParam(readParam(input, "checkIn")),
     checkOut: parseDateParam(readParam(input, "checkOut")),
-    guests: safeParseNumber(readParam(input, "guests") ?? undefined, 1, 30) ?? null,
-    maxPrice:
-      safeParseNumber(
-        readParam(input, "maxPrice") ?? undefined,
-        0,
-        Number.MAX_SAFE_INTEGER,
-      ) ?? null,
+    guests:
+      safeParseNumber(readParam(input, "guests") ?? undefined, 1, 30) ?? null,
+    budget: priceRange ? { min: priceRange[0], max: priceRange[1] } : null,
   };
 }
 
@@ -158,7 +162,7 @@ export function hasAnySearchFilter(filters: SearchFilters): boolean {
     filters.checkIn !== null ||
     filters.checkOut !== null ||
     filters.guests !== null ||
-    filters.maxPrice !== null
+    filters.budget !== null
   );
 }
 
@@ -167,7 +171,7 @@ export function countActiveSearchFilters(filters: SearchFilters): number {
   if (filters.destination) count += 1;
   if (filters.checkIn || filters.checkOut) count += 1;
   if (filters.guests !== null) count += 1;
-  if (filters.maxPrice !== null) count += 1;
+  if (filters.budget !== null) count += 1;
   return count;
 }
 
@@ -181,7 +185,7 @@ export function toCabinSearchQuery(
     checkIn: filters.checkIn ? formatDateParam(filters.checkIn) : null,
     checkOut: filters.checkOut ? formatDateParam(filters.checkOut) : null,
     guests: filters.guests,
-    maxPrice: filters.maxPrice,
+    budget: filters.budget,
     limit,
   };
 }

@@ -8,20 +8,60 @@
 import type { City } from "@/features/cabins/types/city.types";
 import { formatPriceShort } from "@/features/cabins/utils/cabin-filters";
 import { formatJalaliDate } from "@/components/ui/RangeDatePicker";
-import type { Destination, SearchFilters } from "../types/search.types";
+import {
+  BUDGET_MAX,
+  BUDGET_MIN,
+  type BudgetRange,
+  type Destination,
+  type SearchFilters,
+} from "../types/search.types";
 
 const fa = (value: number) => value.toLocaleString("fa-IR");
 
-/** «تا ۸ میلیون تومان / شب» — صریحاً شبانه */
-export function formatBudgetLabel(maxPrice: number | null): string | undefined {
-  if (maxPrice == null) return undefined;
-  return `تا ${formatPriceShort(maxPrice)} تومان / شب`;
+/**
+ * دو سر بازه‌ی بودجه، فقط اگر واقعاً محدودکننده باشند.
+ * بازه‌ی کامل (کمینه تا بیشینه) یعنی «بدون محدودیت».
+ */
+function budgetEdges(range: BudgetRange | null): {
+  min: string | null;
+  max: string | null;
+} {
+  if (!range) return { min: null, max: null };
+  return {
+    min: range.min > BUDGET_MIN ? formatPriceShort(range.min) : null,
+    max: range.max < BUDGET_MAX ? formatPriceShort(range.max) : null,
+  };
 }
 
-/** «۸ میلیون تومان / شب» — بدون «تا» (برای داخل پنل) */
-export function formatBudgetValue(maxPrice: number | null): string {
-  if (maxPrice == null) return "بدون محدودیت";
-  return `${formatPriceShort(maxPrice)} تومان / شب`;
+/**
+ * «۲ تا ۸ میلیون تومان / شب» · «تا ۸ میلیون تومان / شب» · «از ۵ میلیون تومان / شب»
+ * بازه‌ی کامل یا `null` یعنی بدون محدودیت و `undefined` برمی‌گردد.
+ */
+export function formatBudgetRangeLabel(
+  range: BudgetRange | null,
+): string | undefined {
+  const { min, max } = budgetEdges(range);
+  if (min && max) return `${min} تا ${max} تومان / شب`;
+  if (max) return `تا ${max} تومان / شب`;
+  if (min) return `از ${min} تومان / شب`;
+  return undefined;
+}
+
+/** نسخه‌ی فشرده برای خلاصه‌های تک‌خطی: «۲ تا ۸ میلیون» */
+export function formatBudgetRangeLabelCompact(
+  range: BudgetRange | null,
+): string | undefined {
+  const { min, max } = budgetEdges(range);
+  if (min && max) return `${min} تا ${max}`;
+  if (max) return `تا ${max}`;
+  if (min) return `از ${min}`;
+  return undefined;
+}
+
+/** متن داخل پنل بودجه؛ همیشه مقدار برمی‌گرداند */
+export function formatBudgetRangeValue(range: BudgetRange | null): string {
+  const label = formatBudgetRangeLabel(range);
+  return label ?? "بدون محدودیت";
 }
 
 export function formatGuestsLabel(guests: number | null): string | undefined {
@@ -77,14 +117,6 @@ export type SearchSummaryInput = {
   compact?: boolean;
 };
 
-/** بودجه در قالب فشرده — فقط برای خلاصه‌های تک‌خطی */
-export function formatBudgetLabelCompact(
-  maxPrice: number | null,
-): string | undefined {
-  if (maxPrice == null) return undefined;
-  return `تا ${formatPriceShort(maxPrice)}`;
-}
-
 /** قطعات خلاصه: مقصد · تاریخ · مهمان · بودجه */
 export function buildSearchSummaryParts({
   filters,
@@ -96,8 +128,8 @@ export function buildSearchSummaryParts({
     formatDateRangeSummary(filters.checkIn, filters.checkOut),
     formatGuestsLabel(filters.guests),
     compact
-      ? formatBudgetLabelCompact(filters.maxPrice)
-      : formatBudgetLabel(filters.maxPrice),
+      ? formatBudgetRangeLabelCompact(filters.budget)
+      : formatBudgetRangeLabel(filters.budget),
   ].filter((part): part is string => Boolean(part));
 }
 
