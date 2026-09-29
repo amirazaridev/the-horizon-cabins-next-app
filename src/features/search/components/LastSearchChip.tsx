@@ -35,7 +35,7 @@ export default function LastSearchChip({ cities, controller }: Props) {
   if (!summary) return null;
 
   return (
-    <div className="flex max-w-full items-center gap-1 self-start rounded-full border border-white/15 bg-surface/80 py-1.5 ps-3.5 pe-1.5 shadow-lg shadow-black/15 backdrop-blur-md">
+    <div className="flex max-w-full items-center gap-1 self-start rounded-full border border-white/15 bg-surface/80 py-1.5 ps-3.5 pe-1.5 shadow-lg shadow-black/15 backdrop-blur-md absolute -top-11.5">
       <button
         type="button"
         onClick={() => {
@@ -46,7 +46,7 @@ export default function LastSearchChip({ cities, controller }: Props) {
         className="flex min-w-0 items-center gap-2 text-start"
       >
         <History className="text-primary-400 size-3.5 shrink-0" />
-        <span className="text-text-gray shrink-0 text-[11px] font-medium">
+        <span className="text-text-gray shrink-0 text-xs font-medium">
           آخرین جستجو:
         </span>
         <span className="text-text truncate text-xs font-bold">{summary}</span>

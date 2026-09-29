@@ -14,6 +14,7 @@ import FilterCard, {
   type FilterCardItem,
   type FilterCardValues,
 } from "@/components/ui/Filter/FilterCard";
+import { FOCUS_RING } from "@/components/ui/Filter/focus-ring";
 import DateRangePanel, {
   type DateRange,
 } from "@/components/ui/Filter/panels/DateRangePanel";
@@ -64,12 +65,14 @@ export default function Search({
   variant = "hero",
   className = "",
 }: Props) {
-  const { draft, applied, setField, apply, reset } = controller;
+  const { draft, applied, setField, apply, reset, resetDraft, isPending } =
+    controller;
 
   const isHero = variant === "hero";
   const divider = isHero ? "md:border-white/10" : "md:border-foreground/10";
 
-  const canApply = hasAnySearchFilter(draft);
+  /** جستجوی خالی هم معتبر است: یعنی «همه‌ی اقامتگاه‌ها» */
+  const hasDraftFilters = hasAnySearchFilter(draft);
   const hasApplied = hasAnySearchFilter(applied);
 
   const mobileDateSummary = (() => {
@@ -116,14 +119,14 @@ export default function Search({
   };
 
   /**
-   * اکشن «اعمال» موبایل.
+   * اکشن «اعمال» — هم دسکتاپ و هم موبایل.
    *
-   * بعد از اعمال، باتم‌شیت با انیمیشن بسته می‌شود و قفل اسکرول body آزاد
-   * می‌گردد؛ بعد از آن با تأخیر کوتاه به بخش پیش‌نمایش اسکرول نرم می‌کنیم
-   * تا کاربر نتیجه‌ی جستجو را ببیند. اگر صفحه بخش پیش‌نمایش نداشته باشد
+   * بعد از اعمال، با تأخیر کوتاه به بخش پیش‌نمایش اسکرول نرم می‌کنیم تا
+   * کاربر نتیجه‌ی جستجو را ببیند (در موبایل باتم‌شیت هم اول باید بسته شود
+   * و قفل اسکرول body آزاد گردد). اگر صفحه بخش پیش‌نمایش نداشته باشد
    * (مثل `/cabins`) این فراخوانی بی‌اثر است.
    */
-  const handleMobileApply = () => {
+  const handleApply = () => {
     apply();
     scheduleScrollToSearchPreview();
   };
@@ -193,6 +196,8 @@ export default function Search({
       id: "checkIn",
       label: "تاریخ ورود",
       variant: "field",
+      // ورود و خروج یک فیلتر حساب می‌شوند
+      group: "dates",
       formatLabel: () => mobileDateSummary ?? undefined,
       className: `md:rounded-none md:border-s ${divider}`,
       renderTrigger: ({ value }) => (
@@ -209,6 +214,7 @@ export default function Search({
       id: "checkOut",
       label: "تاریخ خروج",
       variant: "field",
+      group: "dates",
       hideOnMobile: true,
       className: `md:rounded-none md:border-s ${divider}`,
       renderTrigger: ({ value }) => (
@@ -248,7 +254,7 @@ export default function Search({
         placement: "end",
         render: ({ value, setValue, close }) => (
           <GuestsPanel
-            value={typeof value === "number" ? value : 1}
+            value={typeof value === "number" ? value : null}
             onChange={setValue}
             onDone={close}
           />
@@ -301,7 +307,7 @@ export default function Search({
   const mobileTrigger = () =>
     isHero ? (
       <span className="flex w-full items-center gap-3 px-2 py-1.5">
-        <span className="flex min-w-0 flex-1 flex-col text-right">
+        <span className="flex min-w-0 flex-1 flex-col text-start">
           <span className="text-text text-sm font-extrabold">
             مقصد سفرت کجاست؟
           </span>
@@ -315,8 +321,8 @@ export default function Search({
       </span>
     ) : (
       <span className="flex w-full items-center gap-3 px-2 py-1.5">
-        <span className="flex min-w-0 flex-1 flex-col text-right">
-          <span className="text-text-gray text-[10px] font-semibold">
+        <span className="flex min-w-0 flex-1 flex-col text-start">
+          <span className="text-text-gray text-xs font-semibold">
             جستجوی شما
           </span>
           <span className="text-text mt-0.5 truncate text-xs font-bold">
@@ -330,22 +336,28 @@ export default function Search({
       </span>
     );
 
+  /** جستجوی خالی یعنی «همه‌ی اقامتگاه‌ها» */
+  const mobileApplyLabel = isHero
+    ? hasDraftFilters
+      ? "اعمال و مشاهده نتایج"
+      : "مشاهده‌ی همه‌ی اقامتگاه‌ها"
+    : "مشاهده نتایج";
+
   return (
     <div className={`${wrapperClass} ${className}`}>
       <FilterCard
         items={items}
         value={values}
         onValueChange={handleValueChange}
-        onClearFilters={() => reset()}
+        // داخل شیت موبایل فقط draft پاک می‌شود تا نتایجِ پشت شیت نپرد
+        onClearFilters={resetDraft}
         placement="center"
         mobileTitle={isHero ? "جستجوی اقامتگاه" : "جستجوی شما"}
-        mobileApplyLabel={
-          isHero ? "اعمال و مشاهده نتایج" : "مشاهده نتایج"
-        }
-        mobileApplyDisabled={!canApply}
-        onMobileApply={handleMobileApply}
+        mobileApplyLabel={mobileApplyLabel}
+        onMobileApply={handleApply}
+        mobileApplyPending={isPending}
         renderMobileTrigger={mobileTrigger}
-        mobileTriggerClassName={`w-full rounded-full border py-2 pe-2 ps-4 shadow-lg backdrop-blur-md transition-all duration-200 active:scale-[0.99] ${
+        mobileTriggerClassName={`w-full rounded-full border py-2 pe-2 ps-4 shadow-lg backdrop-blur-md transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${
           isHero
             ? "border-white/15 bg-surface/80 shadow-black/15"
             : "border-foreground/10 bg-surface shadow-black/5"
@@ -357,8 +369,8 @@ export default function Search({
         {!isHero && hasApplied && (
           <button
             type="button"
-            onClick={reset}
-            className="text-text-gray hover:text-danger hover:bg-danger/10 flex h-12 shrink-0 items-center gap-1.5 rounded-xl px-3 text-xs font-bold whitespace-nowrap transition-colors"
+            onClick={() => reset()}
+            className={`text-text-gray hover:text-danger hover:bg-danger/10 flex h-12 shrink-0 items-center gap-1.5 rounded-xl px-3 text-xs font-bold whitespace-nowrap transition-colors ${FOCUS_RING}`}
           >
             <X className="size-4" />
             حذف جستجو
@@ -367,8 +379,8 @@ export default function Search({
 
         <SearchAction
           label={isHero ? "جستجو" : "اعمال جستجو"}
-          disabled={!canApply}
-          onClick={apply}
+          pending={isPending}
+          onClick={handleApply}
         />
       </div>
     </div>

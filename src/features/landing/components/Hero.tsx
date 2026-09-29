@@ -24,16 +24,24 @@ export default async function Hero() {
           className="object-cover object-center"
         />
       </div>
-      {/* <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,30,.55)_0%,rgba(7,17,30,.35)_45%,rgba(7,17,30,.55)_100%)]" /> */}
-      {/* {theme === "dark" && (
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(14,21,39,.5)_0%,rgba(5,13,22,.35)_0%,transparent_60%)]" />
-      )} */}
+      {/* پایه: کنتراست پایدار روی هر عکسی (روشن یا تیره) */}
+      <div aria-hidden="true" className="absolute inset-0 bg-black/30" />
 
-      <div className="absolute inset-0 bg-[linear-gradient(225deg,rgba(7,17,30,.5)_0%,transparent_45%)]" />
+      {/* سایه‌ی پایین‌به‌بالا برای ناحیه‌ی متن و جستجو */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-[linear-gradient(to_top,rgba(7,17,30,0.7)_0%,rgba(7,17,30,0.42)_38%,rgba(7,17,30,0.12)_68%,transparent_100%)]"
+      />
+
+      {/* گرادیان گوشه‌ای — سمت شروع متن در RTL — برای عمق */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-[linear-gradient(225deg,rgba(7,17,30,0.55)_0%,transparent_45%)]"
+      />
 
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-4 md:px-6">
         <div className="max-w-2xl py-4 md:py-6">
-          <div className="hz-hero-eyebrow text-primary-400 mb-4 flex items-center gap-3 text-[11px] font-semibold tracking-[0.22em]">
+          <div className="hz-hero-eyebrow text-primary-400 mb-4 flex items-center gap-3 text-[11px] font-semibold tracking-[0.22em] drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
             <span className="bg-primary-400/70 inline-block h-px w-8" />
             HORIZON — رزرو ویلا و اقامتگاه
           </div>
@@ -63,16 +71,16 @@ export default async function Hero() {
             </span>
           </h1>
 
-          <p className="hz-hero-copy mt-3 max-w-lg text-[13px] leading-7 text-white/85 sm:text-sm md:text-base md:leading-8">
+          <p className="hz-hero-copy mt-3 max-w-lg text-[13px] leading-7 text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.75)] sm:text-sm md:text-base md:leading-8">
             از جنگل‌های شمال تا ساحل و کویر؛ اقامتگاه‌های تمیز و تاییدشده را
             آنلاین رزرو کنید — بدون واسطه.
           </p>
         </div>
 
-        <div className="mt-6 md:mt-7">
+        <div className="mt-6 md:mt-17.5">
           <HeroSearch cities={cities} />
         </div>
-        <div className="mt-4 flex justify-center text-white/55">
+        <div className="mt-4 flex justify-center text-white/70">
           <ChevronDown
             className="hz-scroll-indicator animate-bounce"
             size={20}

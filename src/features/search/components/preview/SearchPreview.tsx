@@ -63,7 +63,7 @@ export default function SearchPreview() {
           <div ref={contentRef} className="pt-10 pb-2 md:pt-12">
             <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <div className="text-text-gray mb-2 flex items-center gap-3 text-[11px] font-semibold">
+                <div className="text-text-gray mb-2 flex items-center gap-3 text-xs font-semibold">
                   <span className="bg-primary-400 h-px w-8" />
                   نتیجه‌ی جستجوی شما
                 </div>

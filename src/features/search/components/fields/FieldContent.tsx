@@ -24,10 +24,8 @@ export default function FieldContent({
       <span className="text-primary-400 bg-primary-400/10 flex size-9 shrink-0 items-center justify-center rounded-full">
         {icon}
       </span>
-      <span className="flex min-w-0 flex-1 flex-col text-right">
-        <span className="text-text-gray/95 text-[11px] font-medium">
-          {label}
-        </span>
+      <span className="flex min-w-0 flex-1 flex-col text-start">
+        <span className="text-text-gray/95 text-xs font-medium">{label}</span>
         <span
           className={`truncate text-sm font-semibold ${
             filled ? "text-text" : "text-text/60"

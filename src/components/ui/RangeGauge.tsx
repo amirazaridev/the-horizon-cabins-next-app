@@ -493,7 +493,7 @@ export default function RangeGauge({
                 style={{ right: `${percent}%` }}
               >
                 <span className="bg-border-strong block h-1.5 w-px" />
-                <span className="text-text-gray mt-1.5 block text-[10px] whitespace-nowrap">
+                <span className="text-text-gray mt-1.5 block text-xs whitespace-nowrap">
                   {tick.label}
                 </span>
               </div>
@@ -503,7 +503,7 @@ export default function RangeGauge({
       )}
 
       {!isFullRange && commitOn === "apply" && (
-        <p className="text-text-gray mt-3 text-center text-[11px]">
+        <p className="text-text-gray mt-3 text-center text-xs">
           {formatValue(range.start)} تا {formatValue(range.end)}
         </p>
       )}

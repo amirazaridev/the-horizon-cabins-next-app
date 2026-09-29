@@ -112,7 +112,7 @@ function AccordionRow({
               />
             )}
             {typeof item.badge === "number" && item.badge > 0 && (
-              <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-[11px] leading-4 font-extrabold text-black tabular-nums">
+              <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-xs leading-4 font-extrabold text-black tabular-nums">
                 {item.badge.toLocaleString("fa-IR")}
               </span>
             )}

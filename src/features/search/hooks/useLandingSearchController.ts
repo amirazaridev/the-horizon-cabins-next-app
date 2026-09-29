@@ -22,6 +22,7 @@ export function useLandingSearchController(): SearchController {
   const setFilters = useSearchStore((state) => state.setFilters);
   const apply = useSearchStore((state) => state.apply);
   const reset = useSearchStore((state) => state.reset);
+  const resetDraft = useSearchStore((state) => state.resetDraft);
 
   const setField = useCallback(
     <K extends keyof typeof draft>(key: K, value: (typeof draft)[K]) => {
@@ -57,7 +58,7 @@ export function useLandingSearchController(): SearchController {
   );
 
   return useMemo(
-    () => ({ draft, applied, setField, setFilters, apply, reset }),
-    [draft, applied, setField, setFilters, apply, reset],
+    () => ({ draft, applied, setField, setFilters, apply, reset, resetDraft }),
+    [draft, applied, setField, setFilters, apply, reset, resetDraft],
   );
 }

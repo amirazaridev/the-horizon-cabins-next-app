@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useId, useRef, useState } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { Loader2, SlidersHorizontal } from "lucide-react";
 
 import Accordion from "../../Accordion";
 import FilterMobileSheet from "../FilterMobileSheet";
 import useIsMobile from "../../../../hooks/useIsMobile";
+import { FOCUS_RING } from "../focus-ring";
 import {
   FilterCardItem,
   FilterCardProps,
@@ -16,8 +17,7 @@ import Trigger, { ACTION_BUTTON_CLASS, TRIGGER_VARIANTS } from "./Trigger";
 import Panel from "./Panel";
 
 /** کلاس‌های دکمه‌ی تریگرِ پیش‌فرض موبایل (وقتی renderMobileTrigger داده نشده) */
-const CUSTOM_TRIGGER_FALLBACK =
-  "flex w-full items-center gap-2 rounded-full border border-foreground/10 bg-surface px-4 py-2.5";
+const CUSTOM_TRIGGER_FALLBACK = `flex w-full items-center gap-2 rounded-full border border-foreground/10 bg-surface px-4 py-2.5 ${FOCUS_RING}`;
 
 function FilterCard({
   items,
@@ -35,6 +35,7 @@ function FilterCard({
   mobileApplyLabel = "مشاهده نتایج",
   onMobileApply,
   mobileApplyDisabled = false,
+  mobileApplyPending = false,
   resultCount,
   onClearFilters,
 }: FilterCardProps) {
@@ -142,13 +143,30 @@ function FilterCard({
   if (isMobile) {
     const panelItems: FilterCardItem[] = [];
     const actionItems: FilterCardItem[] = [];
+    const countedGroups = new Set<string>();
     let activeCount = 0;
 
     for (const item of items) {
+      /*
+       * شمارش فیلترهای فعال:
+       *  - آیتم‌های hideOnMobile هم بررسی می‌شوند (مثل تاریخ خروج)؛
+       *  - آیتم‌های هم‌گروه فقط یک‌بار شمرده می‌شوند تا «تاریخ ورود و خروج»
+       *    یک فیلتر حساب شود، نه دو تا.
+       */
+      if (isFilterValueActive(getValue(item.id))) {
+        if (item.group) {
+          if (!countedGroups.has(item.group)) {
+            countedGroups.add(item.group);
+            activeCount += 1;
+          }
+        } else {
+          activeCount += 1;
+        }
+      }
+
       if (item.hideOnMobile) continue;
       if (item.panel) panelItems.push(item);
       else actionItems.push(item);
-      if (isFilterValueActive(getValue(item.id))) activeCount += 1;
     }
 
     /* باز شدن شیت: مقدار اولیه‌ی آکاردئون همین‌جا در event handler محاسبه می‌شود، نه در افکت */
@@ -202,7 +220,7 @@ function FilterCard({
                 </span>
                 <span className="max-w-40 truncate">{mobileTriggerLabel}</span>
                 {activeCount > 0 && (
-                  <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-[11px] leading-4 font-extrabold text-black tabular-nums">
+                  <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-xs leading-4 font-extrabold text-black tabular-nums">
                     {activeCount.toLocaleString("fa-IR")}
                   </span>
                 )}
@@ -216,7 +234,7 @@ function FilterCard({
               type="button"
               disabled={item.disabled}
               onClick={() => item.onClick?.()}
-              className={`${ACTION_BUTTON_CLASS} ${item.className ?? ""}`}
+              className={`${ACTION_BUTTON_CLASS} ${FOCUS_RING} ${item.className ?? ""}`}
             >
               {item.icon && (
                 <span className="text-primary-400 flex shrink-0 items-center">
@@ -239,7 +257,7 @@ function FilterCard({
                   type="button"
                   onClick={onClearFilters}
                   disabled={activeCount === 0}
-                  className="text-text-gray border-foreground/10 hover:text-text flex-1 rounded-xl border py-3 text-sm font-bold transition-colors disabled:opacity-40"
+                  className={`text-text-gray border-foreground/10 hover:text-text flex-1 rounded-xl border py-3 text-sm font-bold transition-colors disabled:opacity-40 ${FOCUS_RING}`}
                 >
                   حذف فیلترها
                 </button>
@@ -247,14 +265,27 @@ function FilterCard({
               <button
                 type="button"
                 onClick={handleApply}
-                disabled={mobileApplyDisabled}
-                className="bg-primary-400 flex flex-[2] items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={mobileApplyDisabled || mobileApplyPending}
+                aria-busy={mobileApplyPending}
+                className={`bg-primary-400 flex flex-[2] items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
               >
-                {mobileApplyLabel}
-                {typeof resultCount === "number" && (
-                  <span className="rounded-full bg-black/15 px-2 py-0.5 text-xs font-bold tabular-nums">
-                    {resultCount.toLocaleString("fa-IR")}
-                  </span>
+                {mobileApplyPending ? (
+                  <>
+                    <Loader2
+                      aria-hidden="true"
+                      className="size-5 animate-spin motion-reduce:animate-none"
+                    />
+                    <span className="sr-only">در حال جستجو…</span>
+                  </>
+                ) : (
+                  <>
+                    {mobileApplyLabel}
+                    {typeof resultCount === "number" && (
+                      <span className="rounded-full bg-black/15 px-2 py-0.5 text-xs font-bold tabular-nums">
+                        {resultCount.toLocaleString("fa-IR")}
+                      </span>
+                    )}
+                  </>
                 )}
               </button>
             </div>

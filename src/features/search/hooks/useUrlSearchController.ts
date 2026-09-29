@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { useUrlQuery, type RawSearchParams } from "@/hooks/useUrlQuery";
 import { useSearchStore } from "../store/search.store";
@@ -31,6 +31,12 @@ export function useUrlSearchController(
 ): SearchController {
   const { setParams, clearParams } = useUrlQuery(searchParams);
   const resetStore = useSearchStore((state) => state.reset);
+
+  /*
+   * ناوبری داخل `startTransition` می‌رود تا `isPending` تا لحظه‌ی
+   * رندر شدن نتایج جدید true بماند و UI بتواند spinner نشان دهد.
+   */
+  const [isPending, startTransition] = useTransition();
 
   const applied = useMemo(
     () => parseSearchFilters(searchParams),
@@ -76,17 +82,44 @@ export function useUrlSearchController(
   }, []);
 
   const apply = useCallback(() => {
-    setParams(serializeSearchFiltersForUpdate(draft));
+    startTransition(() => {
+      setParams(serializeSearchFiltersForUpdate(draft));
+    });
   }, [setParams, draft]);
+
+  /** فقط draft؛ نتایج/URL پشت شیت دست‌نخورده می‌ماند */
+  const resetDraft = useCallback(() => {
+    setDraft(EMPTY_SEARCH_FILTERS);
+  }, []);
 
   const reset = useCallback(() => {
     setDraft(EMPTY_SEARCH_FILTERS);
     resetStore();
-    clearParams(SEARCH_PARAM_KEYS);
+    startTransition(() => {
+      clearParams(SEARCH_PARAM_KEYS);
+    });
   }, [clearParams, resetStore]);
 
   return useMemo(
-    () => ({ draft, applied, setField, setFilters, apply, reset }),
-    [draft, applied, setField, setFilters, apply, reset],
+    () => ({
+      draft,
+      applied,
+      setField,
+      setFilters,
+      apply,
+      reset,
+      resetDraft,
+      isPending,
+    }),
+    [
+      draft,
+      applied,
+      setField,
+      setFilters,
+      apply,
+      reset,
+      resetDraft,
+      isPending,
+    ],
   );
 }

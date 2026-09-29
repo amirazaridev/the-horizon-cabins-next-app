@@ -231,7 +231,7 @@ function GroupSection({
 }) {
   return (
     <section className="flex flex-col gap-2">
-      <h4 className="text-text-gray flex items-center gap-1 px-1 text-[11px] font-bold tracking-wide">
+      <h4 className="text-text-gray flex items-center gap-1 px-1 text-xs font-bold tracking-wide">
         {group.title}
         {group.hint && (
           <span className="text-text-gray/70 font-medium">· {group.hint}</span>

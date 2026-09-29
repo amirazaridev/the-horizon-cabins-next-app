@@ -133,7 +133,7 @@ export default function RangeDatePicker({
                 : "border-foreground/10 bg-background-2"
             }`}
           >
-            <span className="text-text-gray flex items-center gap-1.5 text-[11px] font-medium">
+            <span className="text-text-gray flex items-center gap-1.5 text-xs font-medium">
               <CalendarDays className="size-3.5" />
               {stage.label}
             </span>

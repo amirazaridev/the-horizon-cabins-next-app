@@ -74,6 +74,10 @@ export default function useHorizonLandingAnimation() {
         });
 
         // ---------- هدر بخش دسته‌بندی‌ها ----------
+        /*
+         * فقط یک‌بار پخش می‌شود و با اسکرول به بالا معکوس نمی‌شود
+         * (`play none none none`) تا تیتر بخش بعد از دیده‌شدن ثابت بماند.
+         */
         gsap.from(".hz-category-heading > *", {
           y: 20,
           autoAlpha: 0,
@@ -83,7 +87,7 @@ export default function useHorizonLandingAnimation() {
           scrollTrigger: {
             trigger: ".hz-category-heading",
             start: "top 88%",
-            toggleActions: "play none none reverse",
+            toggleActions: "play none none none",
           },
         });
 

@@ -147,7 +147,7 @@ export default function DestinationPanel({ cities, value, onChange }: Props) {
           />
 
           {!value && (
-            <p className="text-text-gray flex items-center gap-1.5 px-1 text-[11px] leading-5">
+            <p className="text-text-gray flex items-center gap-1.5 px-1 text-xs leading-5">
               <Compass className="size-3.5 shrink-0" />
               با انتخاب یک منطقه، همه‌ی شهرهای آن منطقه جستجو می‌شوند.
             </p>

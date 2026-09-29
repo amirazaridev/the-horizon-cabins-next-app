@@ -21,9 +21,9 @@ export default function HeroSearch({ cities }: { cities: City[] }) {
   usePersistLastSearch(controller.applied);
 
   return (
-    <div className="flex flex-col gap-3">
-      <Search cities={cities} controller={controller} variant="hero" />
+    <div className="flex flex-col gap-3 relative">
       <LastSearchChip cities={cities} controller={controller} />
+      <Search cities={cities} controller={controller} variant="hero" />
     </div>
   );
 }

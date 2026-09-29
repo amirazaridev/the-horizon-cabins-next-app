@@ -9,7 +9,7 @@ export default async function Categories() {
   return (
     <section
       id="categories"
-      className="hz-reveal bg-background relative overflow-hidden pt-6 pb-10 sm:pt-8 sm:pb-12 md:pt-10 md:pb-16"
+      className="bg-background relative overflow-hidden pt-6 pb-10 sm:pt-8 sm:pb-12 md:pt-10 md:pb-16"
     >
       <Container>
         <div className="hz-category-heading mb-7 flex items-end justify-between gap-5 md:mb-8">

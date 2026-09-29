@@ -6,6 +6,7 @@
 
 import { useCallback, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
+import { FOCUS_RING } from "../focus-ring";
 import { FilterCardItem, FilterTriggerVariant } from "./types";
 import { isFilterValueActive } from "./value";
 
@@ -105,7 +106,7 @@ export default function Trigger({
       aria-controls={panelId}
       disabled={disabled}
       onClick={handleClick}
-      className={`${styles.base} ${open || filled ? styles.active : styles.idle} ${className}`}
+      className={`${styles.base} ${open || filled ? styles.active : styles.idle} ${FOCUS_RING} ${className}`}
     >
       {content ?? (
         <>

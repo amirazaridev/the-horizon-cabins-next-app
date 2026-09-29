@@ -42,6 +42,9 @@ type SearchStoreState = {
 
   /** پاک‌کردن کامل (draft + applied) */
   reset: () => void;
+
+  /** فقط draft را خالی می‌کند؛ applied دست‌نخورده می‌ماند */
+  resetDraft: () => void;
 };
 
 export const useSearchStore = create<SearchStoreState>((set) => ({
@@ -64,6 +67,8 @@ export const useSearchStore = create<SearchStoreState>((set) => ({
     set((state) => ({ draft: { ...state.draft, ...patch } })),
 
   apply: () => set((state) => ({ applied: { ...state.draft } })),
+
+  resetDraft: () => set({ draft: EMPTY_SEARCH_FILTERS }),
 
   reset: () =>
     set({ draft: EMPTY_SEARCH_FILTERS, applied: EMPTY_SEARCH_FILTERS }),

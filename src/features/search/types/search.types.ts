@@ -121,7 +121,19 @@ export type SearchController = {
   ) => void;
   setFilters: (patch: Partial<SearchFilters>) => void;
   apply: () => void;
+  /** پاک‌کردن کامل: draft + applied + URL */
   reset: () => void;
+  /**
+   * فقط draft را خالی می‌کند و applied/URL را دست نمی‌زند.
+   * برای دکمه‌ی «حذف فیلترها» داخل شیت موبایل لازم است تا نتایجِ پشت شیت
+   * وسط کار عوض نشود.
+   */
+  resetDraft: () => void;
+  /**
+   * آیا «اعمال» در جریان است؟ (برای نمایش spinner)
+   * فقط کنترلر URL مقدار می‌دهد؛ کنترلر لندینگ که ناوبری ندارد `undefined`.
+   */
+  isPending?: boolean;
 };
 
 /* ------------------------------------------------------------------ */
