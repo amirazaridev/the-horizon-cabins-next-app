@@ -293,7 +293,7 @@ export default function Search({
   ];
 
   const wrapperClass = isHero
-    ? "hz-search text-text md:bg-background/60 mx-auto flex max-w-255 flex-col gap-2 rounded-none border-0 bg-transparent p-0 shadow-none backdrop-blur-none md:flex-row md:items-center md:gap-0 md:rounded-2xl md:border md:border-white/15 md:p-2 md:shadow-2xl md:shadow-black/20 md:backdrop-blur-xl"
+    ? "hz-search text-text md:bg-background/60 mx-auto flex max-w-256 xl:max-w-264 flex-col gap-2 rounded-none border-0 bg-transparent p-0 shadow-none backdrop-blur-none md:flex-row md:items-center md:gap-0 md:rounded-2xl md:border md:border-white/15 md:p-2 md:shadow-2xl md:shadow-black/20 md:backdrop-blur-xl"
     : "text-text border-foreground/10 bg-surface flex flex-col gap-2 rounded-2xl border p-2 shadow-sm md:flex-row md:items-center md:gap-0";
 
   const fieldGridClass =
