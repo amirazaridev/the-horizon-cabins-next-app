@@ -23,7 +23,7 @@ import {
 } from "@/features/cabins/utils/cabin-date";
 import { safeParseNumber } from "@/features/cabins/utils/safeParseNumber";
 import { formatPriceRange, parsePriceRange } from "@/libs/utils/price-range";
-import { getRegion, isRegionId } from "../constants/regions";
+import { isRegionId, regionName } from "../constants/regions";
 import {
   EMPTY_SEARCH_FILTERS,
   type CabinSearchQuery,
@@ -123,11 +123,10 @@ export function parseSearchFilters(input: ParseInput): SearchFilters {
   let destination: Destination | null = null;
 
   if (regionRaw && isRegionId(regionRaw)) {
-    const region = getRegion(regionRaw);
     destination = {
       type: "region",
       id: regionRaw,
-      name: region?.name ?? regionRaw,
+      name: regionName(regionRaw),
     };
   } else {
     const cityId = safeParseNumber(

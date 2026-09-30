@@ -11,21 +11,30 @@ import type { Cabin } from "@/features/cabins/types/cabin.types";
 /* مقصد                                                               */
 /* ------------------------------------------------------------------ */
 
-/** شناسه‌ی معنایی مناطق — در URL هم همین مقدار ذخیره می‌شود */
+/**
+ * اسلاگ مناطق — همان `Region.slug` در بک‌اند.
+ *
+ * مقدار اسلاگ در URL ذخیره می‌شود (`region=north`) و در لحظه‌ی ساخت کوئری
+ * به `regionId` عددی ترجمه می‌شود. این یونیون عیناً با داده‌ی seed بک‌اند
+ * هم‌خوان است؛ اگر منطقه‌ای در بک‌اند اضافه شد، اینجا هم اضافه می‌شود.
+ */
 export type RegionId =
   | "north"
-  | "south"
   | "northeast"
   | "northwest"
-  | "center"
+  | "central"
+  | "west"
   | "east"
-  | "west";
+  | "south"
+  | "southeast";
 
 export type Region = {
   id: RegionId;
   name: string;
   /** توضیح کوتاه زیر عنوان منطقه */
   hint?: string;
+  /** تعداد شهرهای منطقه (از `citiesCount` بک‌اند) */
+  citiesCount?: number;
 };
 
 export type CityDestination = {

@@ -24,7 +24,7 @@ function buildQueryString({
   guests,
   limit,
   price,
-  region,
+  regionId,
 }: CabinsQueryParams): string {
   const searchParams = new URLSearchParams();
 
@@ -36,7 +36,8 @@ function buildQueryString({
   if (amenities) searchParams.set("amenities", amenities);
   if (price) searchParams.set("price", price);
   if (city) searchParams.set("city", String(city));
-  if (region) searchParams.set("region", region);
+  // نام پارامتر بک‌اند `regionId` است (عددی) — نه `region`
+  if (regionId) searchParams.set("regionId", String(regionId));
 
   const query = searchParams.toString();
   return query ? `?${query}` : "";

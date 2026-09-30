@@ -6,8 +6,9 @@ import { MapPin } from "lucide-react";
 import SharedCityPanel, {
   type CityPanelGroup,
 } from "@/components/ui/Filter/panels/CityPanel";
-import { REGIONS, regionAllCitiesLabel } from "@/features/search/constants/regions";
-import { groupCitiesByRegion } from "@/features/search/data/destinations.mock";
+import { regionAllCitiesLabel } from "@/features/search/constants/regions";
+import { groupCitiesByRegion } from "@/features/search/data/city-groups";
+import type { Region } from "@/features/search/types/search.types";
 import {
   CITY_VALUE_PREFIX,
   REGION_VALUE_PREFIX,
@@ -16,7 +17,9 @@ import {
 import { useCabinQuery } from "../useCabinQuery";
 
 type Props = {
-  cities: { id: number; name: string }[];
+  cities: { id: number; name: string; regionId: number }[];
+  /** مناطق واقعی از API — مبنای گروه‌بندی شهرها */
+  regions: Region[];
   /** در حالت کنترل‌شده، مقدار کدگذاری‌شده‌ی مقصد (`city:12` / `region:north`) */
   value?: string | null;
   onChange?: (value: string | null) => void;
@@ -43,9 +46,10 @@ export function readDestinationParam(
  *   - شهرها بر اساس منطقه گروه‌بندی شده‌اند
  *   - فقط یک جستجوی متنی ساده دارد
  *
+ * گروه‌بندی بر اساس `city.regionId` انجام می‌شود، نه نام شهر.
  * رندر لیست به `CityPanel` مشترک سپرده شده است.
  */
-export default function CityPanel({ cities, value, onChange }: Props) {
+export default function CityPanel({ cities, regions, value, onChange }: Props) {
   const { searchParams, setParams } = useCabinQuery();
 
   const current = onChange
@@ -53,25 +57,23 @@ export default function CityPanel({ cities, value, onChange }: Props) {
     : readDestinationParam(searchParams);
 
   const groups: CityPanelGroup[] = useMemo(() => {
-    const { groups: regionGroups, others } = groupCitiesByRegion(cities);
+    const { groups: regionGroups, others } = groupCitiesByRegion(
+      cities,
+      regions,
+    );
 
-    const result: CityPanelGroup[] = REGIONS.filter((region) =>
-      regionGroups.some((group) => group.region.id === region.id),
-    ).map((region) => {
-      const group = regionGroups.find((item) => item.region.id === region.id)!;
-      return {
-        id: region.id,
-        title: region.name,
-        hint: regionAllCitiesLabel(region.name),
-        allValue: `${REGION_VALUE_PREFIX}${region.id}`,
-        allLabel: regionAllCitiesLabel(region.name),
-        options: group.cities.map((city) => ({
-          value: `${CITY_VALUE_PREFIX}${city.id}`,
-          label: city.name,
-          icon: <MapPin className="text-primary-400 size-4 shrink-0" />,
-        })),
-      };
-    });
+    const result: CityPanelGroup[] = regionGroups.map((group) => ({
+      id: group.region.id,
+      title: group.region.name,
+      hint: regionAllCitiesLabel(group.region.name),
+      allValue: `${REGION_VALUE_PREFIX}${group.region.id}`,
+      allLabel: regionAllCitiesLabel(group.region.name),
+      options: group.cities.map((city) => ({
+        value: `${CITY_VALUE_PREFIX}${city.id}`,
+        label: city.name,
+        icon: <MapPin className="text-primary-400 size-4 shrink-0" />,
+      })),
+    }));
 
     if (others.length > 0) {
       result.push({
@@ -86,7 +88,7 @@ export default function CityPanel({ cities, value, onChange }: Props) {
     }
 
     return result;
-  }, [cities]);
+  }, [cities, regions]);
 
   const select = (next: string | null) => {
     if (onChange) {

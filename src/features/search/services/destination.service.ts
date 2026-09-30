@@ -1,18 +1,19 @@
 /**
  * سرویس مقصد — تنها نقطه‌ی دسترسی UI به داده‌ی مقصد.
  *
- * امروز روی داده‌ی ماک (`data/destinations.mock.ts`) کار می‌کند و
- * لیست شهرها را از API موجود (`City[]`) می‌گیرد.
- * فردا می‌توان همین امضاها را با یک منبع دیگر پیاده کرد.
+ * لیست شهرها و مناطق از API می‌آید (`getCities` / `getRegions`) و این لایه
+ * فقط منطق جستجو/گروه‌بندی را روی آن‌ها اجرا می‌کند. هیچ داده‌ی ماکی
+ * (مثل نگاشت دستی «نام شهر → منطقه») در فرانت‌اند باقی نمانده است.
  */
 
 import type { City } from "@/features/cabins/types/city.types";
-import { REGIONS, regionAllCitiesLabel } from "../constants/regions";
 import {
-  groupCitiesByRegion,
-  regionOfCityName,
-  type CityGroup,
-} from "../data/destinations.mock";
+  REGION_IDS,
+  regionAllCitiesLabel,
+  regionHint as regionHintOf,
+  regionName,
+} from "../constants/regions";
+import { groupCitiesByRegion, type CityGroup } from "../data/city-groups";
 import type { Destination, Region, RegionId } from "../types/search.types";
 
 export type DestinationSearchResult = {
@@ -21,30 +22,39 @@ export type DestinationSearchResult = {
   others: City[];
 };
 
-/** فیلتر کردن مناطق و شهرها بر اساس عبارت جستجو */
+/** شناسه‌ی عددی منطقه از اسلاگ */
+function regionNumericId(regionId: RegionId): number {
+  return REGION_IDS[regionId];
+}
+
+/**
+ * فیلتر کردن مناطق و شهرها بر اساس عبارت جستجو.
+ *
+ * بدون عبارت: همه‌ی مناطق (به ترتیب `displayOrder` بک‌اند) با شهرهایشان.
+ * با عبارت: منطقه‌هایی که نامشان شامل عبارت است + شهرهای منطبق.
+ */
 export function searchDestinations(
   cities: City[],
+  regions: Region[],
   query: string,
 ): DestinationSearchResult {
   const term = query.trim();
 
   if (!term) {
-    const { groups, others } = groupCitiesByRegion(cities);
-    return { regions: REGIONS, groups, others };
+    const { groups, others } = groupCitiesByRegion(cities, regions);
+    return { regions, groups, others };
   }
 
-  const regions = REGIONS.filter((region) => region.name.includes(term));
-
+  const matchedRegions = regions.filter((region) => region.name.includes(term));
   const matchedCities = cities.filter((city) => city.name.includes(term));
 
   const groups: CityGroup[] = [];
   const others: City[] = [];
 
   for (const city of matchedCities) {
-    const regionId = regionOfCityName(city.name);
-    const region = regionId
-      ? REGIONS.find((item) => item.id === regionId)
-      : undefined;
+    const region = regions.find(
+      (item) => regionNumericId(item.id) === city.regionId,
+    );
 
     if (!region) {
       others.push(city);
@@ -56,28 +66,28 @@ export function searchDestinations(
     else groups.push({ region, cities: [city] });
   }
 
-  return { regions, groups, others };
+  return { regions: matchedRegions, groups, others };
 }
 
-/** ساخت مقصد «منطقه» از شناسه‌ی معنایی */
+/** ساخت مقصد «منطقه» از اسلاگ */
 export function regionDestination(regionId: RegionId): Destination | null {
-  const region = REGIONS.find((item) => item.id === regionId);
-  if (!region) return null;
-  return { type: "region", id: region.id, name: region.name };
+  return { type: "region", id: regionId, name: regionName(regionId) };
 }
 
 /** برچسب کمکی هر منطقه برای نمایش تعداد شهر */
-export function regionHint(regionId: RegionId, cities: City[]): string {
-  const count = cities.filter(
-    (city) => regionOfCityName(city.name) === regionId,
-  ).length;
-
-  const region = REGIONS.find((item) => item.id === regionId);
-  const allLabel = region ? regionAllCitiesLabel(region.name) : "همه شهرها";
+export function regionHint(regionId: RegionId, regions: Region[]): string {
+  const region = regions.find((item) => item.id === regionId);
+  const allLabel = regionAllCitiesLabel(region?.name ?? regionName(regionId));
+  const count = region?.citiesCount ?? 0;
 
   return count > 0
     ? `${allLabel} · ${count.toLocaleString("fa-IR")} شهر`
     : allLabel;
+}
+
+/** توضیح کوتاه منطقه (فقط نمایشی — از نگاشت ثابت فرانت‌اند) */
+export function regionSubtitle(regionId: RegionId): string | undefined {
+  return regionHintOf(regionId);
 }
 
 /** پیدا کردن شهر متناظر با یک مقصد شهر در لیست شهرهای API */

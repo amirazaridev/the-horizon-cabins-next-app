@@ -41,6 +41,7 @@ import {
 import type {
   BudgetRange,
   Destination,
+  Region,
   SearchController,
 } from "../types/search.types";
 
@@ -48,6 +49,8 @@ export type SearchVariant = "hero" | "results";
 
 type Props = {
   cities: City[];
+  /** مناطق واقعی از API — برای گروه‌بندی شهرها در پنل مقصد */
+  regions: Region[];
   controller: SearchController;
   variant?: SearchVariant;
   className?: string;
@@ -65,6 +68,7 @@ type Props = {
  */
 export default function Search({
   cities,
+  regions,
   controller,
   variant = "hero",
   className = "",
@@ -199,6 +203,7 @@ export default function Search({
         render: ({ value, setValue }) => (
           <DestinationPanel
             cities={cities}
+            regions={regions}
             value={(value as Destination | null) ?? null}
             onChange={(next) => setValue(next)}
           />

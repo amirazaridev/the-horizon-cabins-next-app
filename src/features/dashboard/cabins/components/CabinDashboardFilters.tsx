@@ -20,6 +20,8 @@ import AmenitiesPanel from "@/features/cabins/components/filters/panels/Amenitie
 import PricePanel from "@/features/cabins/components/filters/panels/PricePanel";
 import CityPanel from "@/features/cabins/components/filters/panels/CityPanel";
 import { formatPriceShort } from "@/features/cabins/utils/cabin-filters";
+import type { City } from "@/features/cabins/types/city.types";
+import type { Region } from "@/features/search/types/search.types";
 import { useUrlQuery } from "@/hooks/useUrlQuery";
 import {
   DASHBOARD_FILTER_KEYS,
@@ -31,7 +33,9 @@ import {
 const fa = (n: number | string) => Number(n).toLocaleString("fa-IR");
 
 type Props = {
-  cities: { id: number; name: string }[];
+  cities: City[];
+  /** مناطق واقعی از API — مبنای گروه‌بندی شهرها در پنل فیلتر */
+  regions: Region[];
   amenities: string[];
   /** searchParams خواندهشده در Server Component — جایگزین useSearchParams */
   searchParams: CabinsSearchParams;
@@ -40,6 +44,7 @@ type Props = {
 
 export default function CabinDashboardFilters({
   cities,
+  regions,
   amenities,
   searchParams,
   className = "",
@@ -110,6 +115,7 @@ export default function CabinDashboardFilters({
         render: ({ value, setValue }) => (
           <CityPanel
             cities={cities}
+            regions={regions}
             value={value as string | null}
             onChange={(next) => setValue(next)}
           />

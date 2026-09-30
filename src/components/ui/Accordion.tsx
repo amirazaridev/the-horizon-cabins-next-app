@@ -27,27 +27,50 @@ type AccordionProps = {
   items: AccordionItemData[];
   /** حالت تک‌باز (پیش‌فرض) — فقط یک آیتم باز می‌ماند */
   openId?: string | null;
+  /**
+   * حالت چندباز کنترل‌شده — اگر داده شود بر `openId` اولویت دارد.
+   * برای جاهایی که باید چند ردیف هم‌زمان باز باشند (مثل نمایش نتایج جستجو
+   * در چند گروه).
+   */
+  openIds?: string[];
   defaultOpenId?: string | null;
+  /** در حالت تک‌باز: شناسه‌ی باز شده یا `null` */
   onOpenChange?: (id: string | null) => void;
+  /** در حالت چندباز: کدام ردیف و باز شد یا بسته */
+  onToggleItem?: (id: string, open: boolean) => void;
   className?: string;
 };
 
 export default function Accordion({
   items,
   openId,
+  openIds,
   defaultOpenId = null,
   onOpenChange,
+  onToggleItem,
   className = "",
 }: AccordionProps) {
+  const isMultiOpen = openIds !== undefined;
+
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {items.map((item) => (
         <AccordionRow
           key={item.id}
           item={item}
-          open={openId !== undefined ? openId === item.id : undefined}
+          open={
+            isMultiOpen
+              ? openIds.includes(item.id)
+              : openId !== undefined
+                ? openId === item.id
+                : undefined
+          }
           defaultOpen={defaultOpenId === item.id}
-          onToggle={(next) => onOpenChange?.(next)}
+          onToggle={(next) => {
+            const open = next !== null;
+            if (isMultiOpen) onToggleItem?.(item.id, open);
+            else onOpenChange?.(next);
+          }}
         />
       ))}
     </div>
@@ -144,6 +167,9 @@ function AccordionRow({
         id={panelId}
         role="region"
         aria-hidden={!isOpen}
+        // پنل بسته فقط با ارتفاع صفر پنهان می‌شود، پس بدون `inert` کاربر با
+        // Tab وارد محتوای نامرئی می‌شد.
+        inert={!isOpen}
         className={`grid transition-[grid-template-rows,opacity] duration-[400ms] ease-out ${
           isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}

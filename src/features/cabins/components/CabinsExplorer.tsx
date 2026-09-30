@@ -4,13 +4,17 @@ import { useState, type ReactNode } from "react";
 
 import type { RawSearchParams } from "@/hooks/useUrlQuery";
 import { SearchBar } from "@/features/search";
+import type { City } from "@/features/cabins/types/city.types";
+import type { Region } from "@/features/search/types/search.types";
 
 import CabinsFilterBar from "./filters/CabinsFilterBar";
 import CabinsMapPanel from "./CabinsMapPanel";
 import CabinsMobileMapSheet from "./CabinsMobileMapSheet";
 
 type Props = {
-  cities: { id: number; name: string }[];
+  cities: City[];
+  /** مناطق واقعی از API — برای گروه‌بندی شهرها در سرچ و فیلتر */
+  regions: Region[];
   amenities: string[];
   resultCount: number;
   /** searchParams خام سرور — برای نوار جستجوی بالای صفحه */
@@ -20,6 +24,7 @@ type Props = {
 
 export default function CabinsExplorer({
   cities,
+  regions,
   amenities,
   resultCount,
   searchParams,
@@ -33,7 +38,7 @@ export default function CabinsExplorer({
         نوار جستجو در جریان عادی صفحه است (sticky نیست) تا با FilterBar
         چسبان رقابت نکند و ویوپورت را اشغال نکند.
       */}
-      <SearchBar cities={cities} searchParams={searchParams} />
+      <SearchBar cities={cities} regions={regions} searchParams={searchParams} />
 
       <CabinsFilterBar
         amenities={amenities}

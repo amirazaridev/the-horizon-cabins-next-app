@@ -8,6 +8,7 @@ export {
   findCity,
   regionDestination,
   regionHint,
+  regionSubtitle,
   searchDestinations,
   type DestinationSearchResult,
 } from "./destination.service";

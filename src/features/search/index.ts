@@ -66,8 +66,19 @@ export {
   encodeDestination,
 } from "./utils/destination-value";
 
-export { REGIONS, getRegion, regionAllCitiesLabel } from "./constants/regions";
-export { groupCitiesByRegion, regionOfCityName } from "./data/destinations.mock";
+export {
+  REGION_HINTS,
+  REGION_IDS,
+  REGION_NAMES,
+  isRegionId,
+  regionAllCitiesLabel,
+  regionHint,
+  regionIdFromSlug,
+  regionName,
+  regionSlugFromId,
+  toSearchRegions,
+} from "./constants/regions";
+export { groupCitiesByRegion } from "./data/city-groups";
 
 export type {
   BudgetRange,

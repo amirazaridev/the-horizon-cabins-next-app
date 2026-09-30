@@ -5,8 +5,14 @@ import CabinList from "@/features/cabins/components/CabinList";
 import CabinsExplorer from "@/features/cabins/components/CabinsExplorer";
 import Spinner from "@/components/ui/Spinner";
 
-import { getAmenities, getCities, queryCabins } from "@/features/cabins/api";
+import {
+  getAmenities,
+  getCities,
+  getRegions,
+  queryCabins,
+} from "@/features/cabins/api";
 import { parseCabinFilters } from "@/features/cabins/utils/cabin-filters";
+import { regionIdFromSlug, toSearchRegions } from "@/features/search/constants/regions";
 import { parseLimitParam, parsePageParam } from "@/libs/utils/pagination";
 
 export const metadata: Metadata = {
@@ -28,7 +34,7 @@ export default async function CabinsPage({
   const page = parsePageParam(sp);
   const limit = parseLimitParam(sp.limit);
 
-  const [{ cabins, meta }, cities, amenities] = await Promise.all([
+  const [{ cabins, meta }, cities, apiRegions, amenities] = await Promise.all([
     queryCabins({
       page,
       limit,
@@ -41,16 +47,21 @@ export default async function CabinsPage({
         ? `${filters.price[0]}-${filters.price[1]}`
         : undefined,
       city: filters.cityId,
-      region: filters.region,
+      // بک‌اند پارامتر عددی `regionId` را می‌پذیرد، نه اسلاگِ `region`
+      regionId: regionIdFromSlug(filters.region),
     }),
     getCities(),
+    getRegions(),
     getAmenities(),
   ]);
+
+  const regions = toSearchRegions(apiRegions);
 
   return (
     <section className="bg-background min-h-screen">
       <CabinsExplorer
         cities={cities}
+        regions={regions}
         amenities={amenities}
         resultCount={meta.totalItems}
         searchParams={sp}

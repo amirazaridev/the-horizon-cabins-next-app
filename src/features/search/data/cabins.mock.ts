@@ -241,6 +241,36 @@ function cityId(name: string): number {
   return id;
 }
 
+/**
+ * منطقه‌ی هر شهرِ این دیتاست ماک.
+ *
+ * این یک «داده‌ی فیکسچر» است، نه منطق: چون MOCK_CABINS به API وصل نیست،
+ * باید خودش اعلام کند هر شهرش در کدام منطقه است. مسیر واقعی (API) از
+ * `city.regionId` استفاده می‌کند و به این نقشه کاری ندارد.
+ *
+ * مقادیر عددی همان `REGION_IDS` بک‌اند است.
+ */
+const MOCK_CITY_REGION_IDS: Record<string, number> = {
+  رامسر: 1,
+  چالوس: 1,
+  بابلسر: 1,
+  نوشهر: 1,
+  رشت: 1,
+  لاهیجان: 1,
+  ماسال: 1,
+  مشهد: 2,
+  تبریز: 3,
+  سرعین: 3,
+  تهران: 4,
+  اصفهان: 4,
+  یزد: 4,
+  سنندج: 5,
+  کرمانشاه: 5,
+  کیش: 7,
+  قشم: 7,
+  بندرعباس: 7,
+};
+
 export const MOCK_CABINS: Cabin[] = SEEDS.map((seed, index) => {
   const [
     name,
@@ -269,7 +299,11 @@ export const MOCK_CABINS: Cabin[] = SEEDS.map((seed, index) => {
     latitude: null,
     longitude: null,
     rating: Math.round((4 + ((index * 7) % 10) / 10) * 10) / 10,
-    city: { id: cityId(cityName), name: cityName },
+    city: {
+      id: cityId(cityName),
+      name: cityName,
+      regionId: MOCK_CITY_REGION_IDS[cityName],
+    },
     createdAt: CREATED_AT,
     updatedAt: CREATED_AT,
   };

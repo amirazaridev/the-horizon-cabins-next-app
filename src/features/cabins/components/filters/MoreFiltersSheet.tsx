@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { List, X } from "lucide-react";
+import type { Region } from "@/features/search/types/search.types";
 import { useCabinQuery } from "./useCabinQuery";
 import BedroomsPanel from "./panels/BedroomsPanel";
 import AmenitiesPanel from "./panels/AmenitiesPanel";
@@ -11,7 +12,9 @@ import CityPanel from "./panels/CityPanel";
 const CLOSE_THRESHOLD = 96;
 
 type Props = {
-  cities: { id: number; name: string }[];
+  cities: { id: number; name: string; regionId: number }[];
+  /** مناطق واقعی از API — برای گروه‌بندی شهرها */
+  regions: Region[];
   amenities: string[];
   resultCount: number;
   open: boolean;
@@ -26,6 +29,7 @@ type Section = {
 
 export default function MoreFiltersSheet({
   cities,
+  regions,
   amenities,
   resultCount,
   open,
@@ -68,7 +72,7 @@ export default function MoreFiltersSheet({
     sections.push({
       id: "city",
       title: "شهر / مقصد",
-      body: <CityPanel cities={cities} />,
+      body: <CityPanel cities={cities} regions={regions} />,
     });
   }
 

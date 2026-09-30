@@ -12,8 +12,8 @@
  * کجا می‌آید؛ همه فقط `cabinSearchRepository.search(...)` را صدا می‌زنند.
  */
 
-import { regionOfCityName } from "../data/destinations.mock";
 import { MOCK_CABINS } from "../data/cabins.mock";
+import { regionIdFromSlug } from "../constants/regions";
 import { finalNightPrice } from "@/features/cabins/utils/cabin-filters";
 import type {
   CabinSearchQuery,
@@ -30,17 +30,18 @@ export interface CabinSearchRepository {
 /* ------------------------------------------------------------------ */
 
 function matchesDestination(
-  cabinCityName: string | undefined,
+  cabinCity: { name: string; regionId?: number } | undefined,
   destination: Destination,
 ): boolean {
-  if (!cabinCityName) return false;
+  if (!cabinCity) return false;
 
   if (destination.type === "region") {
-    return regionOfCityName(cabinCityName) === destination.id;
+    const regionId = regionIdFromSlug(destination.id);
+    return regionId !== undefined && cabinCity.regionId === regionId;
   }
 
   // تطبیق با شناسه یا نام — تا قبل و بعد از اتصال API یکسان کار کند
-  return cabinCityName === destination.name;
+  return cabinCity.name === destination.name;
 }
 
 /** پاک‌سازی پارامترهای اختیاری */
@@ -60,7 +61,7 @@ export const mockCabinSearchRepository: CabinSearchRepository = {
     // ⚠️ بک‌اند فعلی موجودی/تقویم ندارد؛ پس روی تاریخ فیلتر نمی‌کنیم
     // (به‌جای ادعای الکی، فقط فیلترهای قابل‌پشتیبانی اعمال می‌شوند).
     const filtered = MOCK_CABINS.filter((cabin) => {
-      if (destination && !matchesDestination(cabin.city?.name, destination)) {
+      if (destination && !matchesDestination(cabin.city, destination)) {
         return false;
       }
       if (guests !== null && cabin.maxCapacity < guests) return false;

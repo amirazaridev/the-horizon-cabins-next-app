@@ -8,7 +8,7 @@
  */
 
 import type { City } from "@/features/cabins/types/city.types";
-import { getRegion } from "../constants/regions";
+import { isRegionId, regionName } from "../constants/regions";
 import type { Destination } from "../types/search.types";
 
 export const CITY_VALUE_PREFIX = "city:";
@@ -27,10 +27,9 @@ export function decodeDestination(value: string | null): Destination | null {
   if (!value) return null;
 
   if (value.startsWith(REGION_VALUE_PREFIX)) {
-    const regionId = value.slice(REGION_VALUE_PREFIX.length);
-    const region = getRegion(regionId);
-    if (!region) return null;
-    return { type: "region", id: region.id, name: region.name };
+    const slug = value.slice(REGION_VALUE_PREFIX.length);
+    if (!isRegionId(slug)) return null;
+    return { type: "region", id: slug, name: regionName(slug) };
   }
 
   if (value.startsWith(CITY_VALUE_PREFIX)) {

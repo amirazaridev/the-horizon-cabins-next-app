@@ -4,10 +4,13 @@ import type { City } from "@/features/cabins/types/city.types";
 import type { RawSearchParams } from "@/hooks/useUrlQuery";
 import { usePersistLastSearch } from "../hooks/useLastSearch";
 import { useUrlSearchController } from "../hooks/useUrlSearchController";
+import type { Region } from "../types/search.types";
 import Search from "./Search";
 
 type Props = {
   cities: City[];
+  /** مناطق واقعی از API */
+  regions: Region[];
   /** searchParams خام سرور — منبع حقیقت این صفحه */
   searchParams: RawSearchParams;
 };
@@ -19,7 +22,7 @@ type Props = {
  * ویوپورت را اشغال نکند. در موبایل همین کامپوننت خودش خلاصه‌ی جستجو +
  * دکمه‌ی «تغییر جستجو» را به‌صورت باتم‌شیت نشان می‌دهد.
  */
-export default function SearchBar({ cities, searchParams }: Props) {
+export default function SearchBar({ cities, regions, searchParams }: Props) {
   const controller = useUrlSearchController(searchParams);
 
   // جستجوی این صفحه هم به‌عنوان «آخرین جستجو» ذخیره می‌شود
@@ -28,7 +31,12 @@ export default function SearchBar({ cities, searchParams }: Props) {
   return (
     <div className="bg-background-2 border-foreground/10 border-b">
       <div className="mx-auto max-w-[1800px] px-3 py-3 sm:px-4 lg:px-6">
-        <Search cities={cities} controller={controller} variant="results" />
+        <Search
+          cities={cities}
+          regions={regions}
+          controller={controller}
+          variant="results"
+        />
       </div>
     </div>
   );

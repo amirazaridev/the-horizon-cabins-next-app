@@ -7,9 +7,9 @@ import CityPanel, {
   type CityPanelGroup,
 } from "@/components/ui/Filter/panels/CityPanel";
 import type { City } from "@/features/cabins/types/city.types";
-import { REGIONS, regionAllCitiesLabel } from "../../constants/regions";
+import { regionAllCitiesLabel } from "../../constants/regions";
 import { searchDestinations } from "../../services/destination.service";
-import type { Destination } from "../../types/search.types";
+import type { Destination, Region } from "../../types/search.types";
 import {
   CITY_VALUE_PREFIX,
   REGION_VALUE_PREFIX,
@@ -22,6 +22,8 @@ type View = "list" | "map";
 
 type Props = {
   cities: City[];
+  /** مناطق واقعی از API (`getRegions`) — منبع حقیقت دسته‌بندی شهرها */
+  regions: Region[];
   value: Destination | null;
   onChange: (destination: Destination | null) => void;
 };
@@ -36,32 +38,38 @@ type Props = {
  * انتخاب هر منطقه یعنی «همه شهرهای آن منطقه» و به‌صورت معنایی ذخیره می‌شود
  * (region=north)، نه به‌صورت فهرست ده‌ها cityId.
  *
+ * گروه‌بندی شهرها بر اساس `city.regionId` انجام می‌شود؛ نام شهر هیچ نقشی
+ * در تشخیص منطقه ندارد.
+ *
  * رندر لیست به `CityPanel` مشترک سپرده شده تا با فیلتر شهرِ `/cabins`
  * دو پیاده‌سازی موازی نداشته باشیم.
  */
-export default function DestinationPanel({ cities, value, onChange }: Props) {
+export default function DestinationPanel({
+  cities,
+  regions,
+  value,
+  onChange,
+}: Props) {
   const [view, setView] = useState<View>("list");
 
   const { groups, others } = useMemo(
-    () => searchDestinations(cities, ""),
-    [cities],
+    () => searchDestinations(cities, regions, ""),
+    [cities, regions],
   );
 
   const panelGroups: CityPanelGroup[] = useMemo(() => {
-    const regionGroups: CityPanelGroup[] = REGIONS.map((region) => ({
-      id: region.id,
-      title: region.name,
-      hint: regionAllCitiesLabel(region.name),
-      allValue: `${REGION_VALUE_PREFIX}${region.id}`,
-      allLabel: regionAllCitiesLabel(region.name),
-      options: (groups.find((group) => group.region.id === region.id)?.cities ?? []).map(
-        (city) => ({
-          value: `${CITY_VALUE_PREFIX}${city.id}`,
-          label: city.name,
-          icon: <MapPin className="text-primary-400 size-4 shrink-0" />,
-        }),
-      ),
-    })).filter((group) => group.options.length > 0);
+    const regionGroups: CityPanelGroup[] = groups.map((group) => ({
+      id: group.region.id,
+      title: group.region.name,
+      hint: regionAllCitiesLabel(group.region.name),
+      allValue: `${REGION_VALUE_PREFIX}${group.region.id}`,
+      allLabel: regionAllCitiesLabel(group.region.name),
+      options: group.cities.map((city) => ({
+        value: `${CITY_VALUE_PREFIX}${city.id}`,
+        label: city.name,
+        icon: <MapPin className="text-primary-400 size-4 shrink-0" />,
+      })),
+    }));
 
     if (others.length > 0) {
       regionGroups.push({

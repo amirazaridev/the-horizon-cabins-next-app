@@ -2,12 +2,14 @@ import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { HORIZON_IMAGES } from "@/features/landing/constants/horizon-home";
 import { HeroSearch } from "@/features/search";
-import { getCities } from "@/features/cabins/api";
+import { getCities, getRegions } from "@/features/cabins/api";
+import { toSearchRegions } from "@/features/search/constants/regions";
 // import { useTheme } from "@/contexts/ThemeContext";
 
 export default async function Hero() {
   // const { theme } = useTheme();
-  const cities = await getCities();
+  const [cities, apiRegions] = await Promise.all([getCities(), getRegions()]);
+  const regions = toSearchRegions(apiRegions);
 
   return (
     <header
@@ -78,7 +80,7 @@ export default async function Hero() {
         </div>
 
         <div className="mt-6 md:mt-17.5">
-          <HeroSearch cities={cities} />
+          <HeroSearch cities={cities} regions={regions} />
         </div>
         <div className="mt-4 flex justify-center text-white/70">
           <ChevronDown

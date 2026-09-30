@@ -381,12 +381,19 @@ export const CABINS: Cabin[] = [
     rating: 4,
   },
 ];
+/**
+ * شهرهای داشبورد از روی کابین‌های ماک ساخته می‌شوند.
+ * همه‌ی این شهرها ساحلی/شمالی‌اند، پس `regionId` ثابت `1` (شمال) می‌گیرند
+ * تا با مدل واقعی `City` هم‌خوان بمانند.
+ */
+const MOCK_NORTH_REGION_ID = 1;
+
 export const DASHBOARD_CITIES: City[] = CABINS.reduce<City[]>(
   (cities, cabin) => {
     const city = cabin.city;
 
     if (city && !cities.some((item) => item.id === city.id)) {
-      cities.push(city);
+      cities.push({ ...city, regionId: MOCK_NORTH_REGION_ID });
     }
 
     return cities;

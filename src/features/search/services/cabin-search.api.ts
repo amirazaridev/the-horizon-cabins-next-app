@@ -12,14 +12,15 @@
  *   2) یا endpoint جستجو را با یک `fetch` سبکِ کلاینت‌محور پیاده کنید
  *      و همانجا `mapCabin` را روی پاسخ اعمال کنید.
  *
- * نگاشت فیلترهای هسته → پارامترهای فعلی API:
+ * نگاشت فیلترهای هسته → پارامترهای API:
  *   destination.type === "city"   → city=<id>
- *   destination.type === "region" → فعلاً پشتیبانی نمی‌شود (نیازمند endpoint)
+ *   destination.type === "region" → regionId=<id>   (اسلاگ به شناسه‌ی عددی ترجمه می‌شود)
  *   guests                        → guests
  *   budget                        → price=<min>-<max>
  */
 
 import { queryCabins } from "@/features/cabins/api/getCabins";
+import { regionIdFromSlug } from "@/features/search/constants/regions";
 import { formatPriceRange } from "@/libs/utils/price-range";
 import type {
   CabinSearchQuery,
@@ -34,6 +35,10 @@ export function createApiCabinSearchRepository(): CabinSearchRepository {
 
       const { cabins, meta } = await queryCabins({
         city: destination?.type === "city" ? destination.id : undefined,
+        regionId:
+          destination?.type === "region"
+            ? regionIdFromSlug(destination.id)
+            : undefined,
         guests: guests ?? undefined,
         price: budget ? formatPriceRange(budget.min, budget.max) : undefined,
         limit: limit ?? 6,

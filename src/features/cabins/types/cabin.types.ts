@@ -13,7 +13,12 @@ export type Cabin = {
   latitude: number | null;
   longitude: number | null;
   rating: number | null;
-  city?: { id: number; name: string };
+  /**
+   * شهر اقامتگاه.
+   * `regionId` اختیاری است چون پاسخ لیست کابین بک‌اند فعلاً فقط `id` و
+   * `name` را برمی‌گرداند؛ دیتاست ماک برای فیلتر منطقه آن را پر می‌کند.
+   */
+  city?: { id: number; name: string; regionId?: number };
   createdAt: Date;
   updatedAt: Date;
 };
@@ -33,9 +38,11 @@ export interface CabinsQueryParams {
   price?: string;
   city?: number;
   /**
-   * شناسه‌ی معنایی منطقه (`north`, `south`, …).
-   * بک‌اند فعلی این پارامتر را نادیده می‌گیرد؛ اما از الان فرستاده می‌شود
-   * تا وقتی endpoint از آن پشتیبانی کرد، هیچ تغییری سمت فرانت لازم نباشد.
+   * شناسه‌ی عددی منطقه (`1`..`8`).
+   *
+   * بک‌اند پارامتر `regionId` را می‌پذیرد، نه `region`. مقدار اسلاگِ منطقه
+   * (`north`, `south`, …) در URL می‌ماند و در لحظه‌ی ساخت کوئری به این
+   * شناسه‌ی عددی ترجمه می‌شود.
    */
-  region?: string;
+  regionId?: number;
 }

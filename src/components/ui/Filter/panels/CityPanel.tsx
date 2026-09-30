@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import { MapPin, Search, X } from "lucide-react";
+import Accordion, { type AccordionItemData } from "../../Accordion";
 import OptionRow from "../OptionRow";
 
 export type CityPanelOption = {
@@ -13,7 +14,7 @@ export type CityPanelOption = {
 
 export type CityPanelGroup = {
   id: string;
-  /** عنوان گروه — مثل «شمال ایران» */
+  /** عنوان گروه — مثل «شمال» */
   title: string;
   /** توضیح کوچک کنار عنوان */
   hint?: string;
@@ -62,6 +63,11 @@ const DEFAULT_ICON = <MapPin className="text-primary-400 size-4 shrink-0" />;
  * دو حالت داده:
  *   - تخت (`cities`) با اختیار «همه شهرها»
  *   - گروه‌بندی‌شده (`groups`) با اختیار «همه شهرهای …» برای هر گروه
+ *
+ * در حالت گروه‌بندی‌شده، هر گروه یک ردیف **آکاردئونی** است: با کلیک روی
+ * عنوان منطقه، شهرهای همان منطقه باز می‌شود و منطقه‌ی قبلی بسته می‌شود
+ * (تک‌باز). موقع جستجو، همه‌ی منطقه‌های دارای نتیجه خودکار باز می‌شوند تا
+ * نتیجه داخل ردیف بسته پنهان نماند.
  *
  * مقدار در حالت تکی `string | null` و در حالت چندتایی `string[]` است.
  * کنترل کامل با والد است (داخل FilterCard یا هر جای دیگر).
@@ -140,9 +146,14 @@ export default function CityPanel(props: CityPanelProps) {
           />
         ))}
 
-        {visibleGroups.map((group) => (
-          <GroupSection key={group.id} group={group}>
-            {(group.options ?? []).map((option) => (
+        <GroupAccordion
+          groups={visibleGroups}
+          term={term}
+          isGroupActive={(group) =>
+            group.options.some((option) => selected.includes(option.value))
+          }
+          renderGroup={(group) =>
+            group.options.map((option) => (
               <OptionRow
                 key={option.value}
                 label={option.label}
@@ -151,9 +162,9 @@ export default function CityPanel(props: CityPanelProps) {
                 selected={selected.includes(option.value)}
                 onSelect={() => toggle(option.value)}
               />
-            ))}
-          </GroupSection>
-        ))}
+            ))
+          }
+        />
 
         {isEmpty && <EmptyState message={emptyMessage} />}
       </div>
@@ -193,27 +204,35 @@ export default function CityPanel(props: CityPanelProps) {
         />
       ))}
 
-      {visibleGroups.map((group) => (
-        <GroupSection key={group.id} group={group}>
-          {group.allValue && (
-            <OptionRow
-              label={group.allLabel ?? `همه ${group.title}`}
-              selected={props.value === group.allValue}
-              onSelect={() => select(group.allValue!)}
-            />
-          )}
-          {group.options.map((option) => (
-            <OptionRow
-              key={option.value}
-              label={option.label}
-              hint={option.hint}
-              icon={option.icon ?? defaultIcon}
-              selected={props.value === option.value}
-              onSelect={() => select(option.value)}
-            />
-          ))}
-        </GroupSection>
-      ))}
+      <GroupAccordion
+        groups={visibleGroups}
+        term={term}
+        isGroupActive={(group) =>
+          (group.allValue !== undefined && props.value === group.allValue) ||
+          group.options.some((option) => props.value === option.value)
+        }
+        renderGroup={(group) => (
+          <>
+            {group.allValue && (
+              <OptionRow
+                label={group.allLabel ?? `همه ${group.title}`}
+                selected={props.value === group.allValue}
+                onSelect={() => select(group.allValue!)}
+              />
+            )}
+            {group.options.map((option) => (
+              <OptionRow
+                key={option.value}
+                label={option.label}
+                hint={option.hint}
+                icon={option.icon ?? defaultIcon}
+                selected={props.value === option.value}
+                onSelect={() => select(option.value)}
+              />
+            ))}
+          </>
+        )}
+      />
 
       {isEmpty && <EmptyState message={emptyMessage} />}
     </div>
@@ -222,23 +241,82 @@ export default function CityPanel(props: CityPanelProps) {
 
 /* ------------------------------------------------------------------ */
 
-function GroupSection({
-  group,
-  children,
+/**
+ * مناطق به‌صورت آکاردئون.
+ *
+ * دو حالت باز بودن:
+ *   - مرور عادی: تک‌باز (`openId`) — با باز کردن یک منطقه، قبلی بسته می‌شود
+ *   - جستجو: چندباز (`openIds`) — همه‌ی منطقه‌های دارای نتیجه خودکار بازند
+ */
+function GroupAccordion({
+  groups,
+  term,
+  isGroupActive,
+  renderGroup,
 }: {
-  group: CityPanelGroup;
-  children: ReactNode;
+  groups: CityPanelGroup[];
+  /** عبارت جستجوی فعلی — تعیین می‌کند حالت چندباز فعال شود یا نه */
+  term: string;
+  isGroupActive: (group: CityPanelGroup) => boolean;
+  renderGroup: (group: CityPanelGroup) => ReactNode;
 }) {
+  const [browseOpenId, setBrowseOpenId] = useState<string | null>(null);
+
+  const isSearching = term.length > 0;
+
+  /** منطقه‌هایی که با عبارت جستجو نتیجه دارند */
+  const matchingIds = useMemo(() => groups.map((group) => group.id), [groups]);
+
+  /**
+   * شناسه‌های باز در حالت جستجو.
+   *
+   * همگام‌سازی با «تنظیم state هنگام تغییر prop» انجام می‌شود (الگوی رسمی
+   * React) تا نیازی به effect نباشد. وقتی کاربر عبارت را عوض کند، دوباره
+   * همه‌ی نتیجه‌ها باز می‌شوند؛ ولی بستن دستی یک ردیف وسط جستجو باقی می‌ماند.
+   */
+  const [searchState, setSearchState] = useState<{
+    term: string;
+    openIds: string[];
+  }>({ term: "", openIds: [] });
+
+  if (searchState.term !== term) {
+    setSearchState({ term, openIds: isSearching ? matchingIds : [] });
+  }
+
+  if (groups.length === 0) return null;
+
+  const items: AccordionItemData[] = groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    summary: group.hint,
+    badge: group.options.length,
+    active: isGroupActive(group),
+    content: <div className="flex flex-col gap-2">{renderGroup(group)}</div>,
+  }));
+
+  if (isSearching) {
+    return (
+      <Accordion
+        items={items}
+        openIds={searchState.openIds}
+        onToggleItem={(id, open) =>
+          setSearchState((prev) => ({
+            ...prev,
+            openIds: open
+              ? [...prev.openIds, id]
+              : prev.openIds.filter((item) => item !== id),
+          }))
+        }
+      />
+    );
+  }
+
   return (
-    <section className="flex flex-col gap-2">
-      <h4 className="text-text-gray flex items-center gap-1 px-1 text-xs font-bold tracking-wide">
-        {group.title}
-        {group.hint && (
-          <span className="text-text-gray/70 font-medium">· {group.hint}</span>
-        )}
-      </h4>
-      {children}
-    </section>
+    <Accordion
+      items={items}
+      openId={browseOpenId}
+      onOpenChange={setBrowseOpenId}
+    />
   );
 }
 
