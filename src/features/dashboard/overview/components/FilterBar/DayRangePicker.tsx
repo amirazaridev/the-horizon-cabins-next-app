@@ -13,6 +13,7 @@ import {
   formatJalaliDayMonth,
   formatJalaliFull,
 } from "../../lib/date-range";
+import { DATE_PICKER_INPUT_CLASS } from "./date-picker-input-class";
 
 interface DayRangePickerProps {
   from: Date;
@@ -88,9 +89,6 @@ export default function DayRangePicker({
     }
   }
 
-  const inputClass =
-    "!w-full !h-11 !rounded-xl !border !border-border !bg-background !px-3 !text-sm !text-text text-center";
-
   return (
     <div className="border-border bg-surface rounded-2xl border p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-4 text-xs sm:text-sm">
@@ -124,7 +122,7 @@ export default function DayRangePicker({
             calendarPosition="bottom-center"
             className="horizon-date-picker"
             containerClassName="w-full"
-            inputClass={inputClass}
+            inputClass={DATE_PICKER_INPUT_CLASS}
           />
         </div>
 
@@ -143,7 +141,7 @@ export default function DayRangePicker({
             calendarPosition="bottom-center"
             className="horizon-date-picker"
             containerClassName="w-full"
-            inputClass={inputClass}
+            inputClass={DATE_PICKER_INPUT_CLASS}
           />
         </div>
       </div>

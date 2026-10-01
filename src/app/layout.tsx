@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import fonts from "@/constants/fonts";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import "@/app/globals.css";
+import "@/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {

@@ -7,6 +7,16 @@ import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { CalendarDays, ChevronLeft } from "lucide-react";
 
+/**
+ * ⚠️ import جانبی (side-effect) است و هیچ نامی از آن استفاده نمی‌شود.
+ *
+ * دلیلش: استایل‌های مخصوص همین کامپوننت با `:global()` نوشته شده‌اند (چون
+ * کلاس‌های `rmdp-*` متعلق به کتابخانه‌اند و نباید hash شوند)، پس مقدار
+ * export‌شده‌ای نداریم؛ ولی همچنان باید این فایل import شود تا CSS آن در
+ * باندل بیاید و با خودِ کامپوننت کد-اسپلیت شود.
+ */
+import "./style.module.css";
+
 /** تایپ آزاد برای حالت range — جنریک‌های پیش‌فرض کتابخانه حالت single هستند */
 const RangeCalendarAny = RangeCalendar as unknown as ComponentType<{
   value?: unknown;
@@ -82,7 +92,13 @@ export function formatJalaliDate(
   return toDateObject(date).format(pattern);
 }
 
-/** کارت انتخاب بازه تاریخ — یک تقویم دوقلو (شمسی) برای ورود و خروج */
+/**
+ * کارت انتخاب بازه تاریخ — یک تقویم دوقلو (شمسی) برای ورود و خروج.
+ *
+ * استایل‌هایش در `./style.module.css` کنار همین فایل است؛ فقط
+ * `.horizon-date-picker` (پایه‌ی مشترک هر سه تقویم پروژه) در
+ * `globals.css` می‌ماند.
+ */
 export default function RangeDatePicker({
   value,
   onChange,

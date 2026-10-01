@@ -1,0 +1,172 @@
+/*
+  تم تقویم بازه — مخصوص `RangeDatePicker`.
+
+  ⚠️ چرا CSS Module و نه `globals.css`؟ این استایل‌ها فقط توسط همین یک
+  کامپوننت تولید می‌شوند، پس کنار خودش می‌مانند و فقط وقتی در باندل
+  می‌آیند که کامپوننت لود شود (سرچ لندینگ، فیلتر `/cabins`، صفحه‌ی جزئیات).
+
+  ⚠️ چرا همه‌جا `:global()`؟ دو دلیل:
+    ۱) `.horizon-range-picker` و `.horizon-date-picker` قرارداد عمومی این
+       کامپوننت‌اند و از بیرون هم هدف گرفته می‌شوند (مثلاً رزرو ارتفاع
+       تقویم در `CabinDatePicker`). اگر hash شوند از بیرون آدرس‌پذیر
+       نیستند.
+    ۲) `.rmdp-*` کلاس‌های خودِ کتابخانه‌اند و هرگز نباید hash شوند.
+  پس این فایل «سازمان‌دهی» است، نه scoping — و چون `:global()` در زمان
+  بیلد حذف می‌شود، اختصاصی‌بودن سلکتورها دقیقاً مثل قبل می‌ماند.
+
+  ⚠️ استایل‌های **مشترک** با تقویم‌های داشبورد (رنگ روزها، امروز، روز
+  انتخاب‌شده، فلش‌ها، قاب پاپ‌آپ، هدر) در `globals.css` زیر
+  `.horizon-date-picker` هستند و اینجا تکرار نمی‌شوند.
+*/
+
+/* ---------- تقویم درون‌خطی: بدون قاب خودِ کتابخانه ---------- */
+:global(.horizon-range-picker) :global(.horizon-date-picker.rmdp-wrapper) {
+  width: 100%;
+  max-width: 100%;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+:global(.horizon-range-picker)
+  :global(.horizon-date-picker)
+  :global(.rmdp-calendar) {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  padding: 10px 8px 12px;
+  background: transparent;
+}
+
+/* ---------- چیدمان ماه‌ها — موبایل‌محور ---------- */
+/*
+  ⚠️ چرا اینجا و نه فقط JS؟ `DateRangePanel` تعداد ماه‌ها را با
+  `useMediaQuery` تعیین می‌کند، ولی تکیه‌کردن به تنهاییِ JS دو مشکل دارد:
+    ۱) در اولین رندر کلاینت (پیش از اجرای افکت) مقدار `isNarrow` برابر
+       `false` است؛ پس تقویم با دو ماه mount می‌شود و بعد می‌پرد.
+    ۲) اگر هر دلیلی تغییرِ `numberOfMonths` به تقویم نرسد، چیدمان عملاً
+       در حالت دوقلو قفل می‌ماند.
+  پس چیدمان اینجا موبایل‌محور نوشته شده و هر ماهِ اضافه در موبایل پنهان
+  می‌شود: نتیجه در موبایل **فارغ از JS** «حتماً یک ماه» است، و از تبلت
+  به بالا همان رفتار دوماهه‌ی قبلی حفظ می‌شود.
+
+  ⚠️ نقطه‌ی شکست (640px) باید با `RANGE_PICKER_NARROW_QUERY` در
+  `Filter/panels/range-picker-breakpoint.ts` یکی بماند.
+*/
+
+/* `.rmdp-day-picker` یک `display:flex` اینلاین از خودِ کتابخانه دارد */
+:global(.horizon-range-picker)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day-picker) {
+  display: flex;
+  gap: 0;
+  width: 100%;
+}
+:global(.horizon-range-picker)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day-picker)
+  > div {
+  flex: 1 1 0;
+  min-width: 0;
+  /* حاشیه‌ی ۱۰px اینلاینِ کتابخانه روی هر ماه */
+  margin: 0 !important;
+}
+/* موبایل: فقط ماه اول — ماه‌های اضافه پنهان می‌شوند */
+:global(.horizon-range-picker)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day-picker)
+  > div
+  + div {
+  display: none;
+}
+
+/* تبلت و دسکتاپ (≥641px): دو ماه کنار هم با جداکنندهٔ عمودی */
+@media (min-width: 641px) {
+  :global(.horizon-range-picker)
+    :global(.horizon-date-picker)
+    :global(.rmdp-day-picker) {
+    gap: 12px;
+  }
+  :global(.horizon-range-picker)
+    :global(.horizon-date-picker)
+    :global(.rmdp-day-picker)
+    > div
+    + div {
+    display: block;
+    border-inline-start: 1px solid var(--color-border);
+    padding-inline-start: 12px;
+  }
+}
+
+/* ---------- هدر ماه/سال (اندازه و رنگش در globals است) ---------- */
+:global(.horizon-range-picker) :global(.horizon-date-picker) :global(.rmdp-header) {
+  margin-top: 0;
+  padding: 6px 0 10px;
+}
+
+/* ---------- سلول روز: کاملاً گرد ---------- */
+:global(.horizon-range-picker) :global(.horizon-date-picker) :global(.rmdp-day span) {
+  inset: 2px;
+  font-weight: 500;
+  border-radius: 9999px;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    transform 0.15s;
+}
+
+/*
+  در دسکتاپ سلول‌ها کمی فشرده‌تر می‌شوند تا دو ماه کنار هم جا شوند.
+  روی موبایل همان ۴۰px پایه‌ی `globals.css` می‌ماند، پس دیگر نیازی به
+  override معکوس در media query موبایل نیست.
+*/
+@media (min-width: 641px) {
+  :global(.horizon-range-picker) :global(.horizon-date-picker) :global(.rmdp-day) {
+    height: 38px;
+    width: 38px;
+  }
+}
+
+/* ---------- بدنه‌ی بازه ---------- */
+:global(.horizon-range-picker)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day)
+  :global(.rmdp-range) {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-400) 20%,
+    transparent
+  );
+  color: var(--color-text);
+  box-shadow: none;
+  border-radius: 0;
+}
+:global(.horizon-range-picker)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day)
+  :global(.rmdp-range-hover) {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-400) 12%,
+    transparent
+  );
+  color: var(--color-text);
+}
+
+/* ---------- روزهای رزروشده (از `disabledDates` در `mapDays`) ---------- */
+:global(.horizon-range-picker)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day.rmdp-booked)
+  span {
+  background-color: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: color-mix(in srgb, var(--color-danger) 75%, var(--color-text));
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  cursor: not-allowed;
+}
+:global(.horizon-range-picker)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day.rmdp-booked:not(.rmdp-day-hidden))
+  span:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 16%, transparent);
+}

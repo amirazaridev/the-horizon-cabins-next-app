@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import DateRangePanel from "@/components/ui/Filter/panels/DateRangePanel";
 import { toFaNumber } from "../../utils/booking";
 import { useBooking } from "./BookingProvider";
+import styles from "./CabinDatePicker.module.css";
 
 /**
  * تقویم شمسی داخل صفحه‌ی جزئیات (سکشن «نرخ و رزرو»).
@@ -42,15 +43,16 @@ export default function CabinDatePicker(): ReactNode {
 
       <div className="p-4 sm:p-6">
         {/*
-          ⚠️ `hz-reserve-calendar` ارتفاع تقویم را رزرو می‌کند.
-          `react-multi-date-picker` فقط روی کلاینت رندر می‌شود (در HTML سرور
-          جعبه‌اش خالی است)، پس بدون این رزرو، صفحه بعد از hydration حدود
-          ۳۳۰ پیکسل جهش می‌کرد (CLS). کلاس در `globals.css` تعریف شده و
-          عمداً از بیرون اعمال می‌شود تا سرچ لندینگ و فیلتر `/cabins` که
-          همین هسته را استفاده می‌کنند تغییری نبینند.
+          ⚠️ `styles.reserveCalendar` ارتفاع تقویم را رزرو می‌کند
+          (`react-multi-date-picker` فقط روی کلاینت رندر می‌شود؛ در HTML
+          سرور جعبه‌اش خالی است و بدون این رزرو، صفحه بعد از hydration
+          حدود ۳۳۰ پیکسل جهش می‌کرد). تعریفش در
+          `CabinDatePicker.module.css` است — چون تنها مصرف‌کننده‌اش همین
+          صفحه است — و عمداً از بیرون اعمال می‌شود تا سرچ لندینگ و فیلتر
+          `/cabins` که همین هسته را استفاده می‌کنند تغییری نبینند.
         */}
         <DateRangePanel
-          className="hz-reserve-calendar"
+          className={styles.reserveCalendar}
           value={range}
           onChange={setRange}
           showClear
