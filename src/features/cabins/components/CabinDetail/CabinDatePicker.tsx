@@ -41,7 +41,16 @@ export default function CabinDatePicker(): ReactNode {
       </div>
 
       <div className="p-4 sm:p-6">
+        {/*
+          ⚠️ `hz-reserve-calendar` ارتفاع تقویم را رزرو می‌کند.
+          `react-multi-date-picker` فقط روی کلاینت رندر می‌شود (در HTML سرور
+          جعبه‌اش خالی است)، پس بدون این رزرو، صفحه بعد از hydration حدود
+          ۳۳۰ پیکسل جهش می‌کرد (CLS). کلاس در `globals.css` تعریف شده و
+          عمداً از بیرون اعمال می‌شود تا سرچ لندینگ و فیلتر `/cabins` که
+          همین هسته را استفاده می‌کنند تغییری نبینند.
+        */}
         <DateRangePanel
+          className="hz-reserve-calendar"
           value={range}
           onChange={setRange}
           showClear

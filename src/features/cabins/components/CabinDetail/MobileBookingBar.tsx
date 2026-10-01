@@ -18,7 +18,7 @@ import { useBooking } from "./BookingProvider";
  *     فوتر می‌افتاد و آن‌ها را غیرقابل کلیک می‌کرد.
  */
 export default function MobileBookingBar(): ReactNode {
-  const { price, isComplete, openSheet } = useBooking();
+  const { price, isComplete, isSheetOpen, openSheet } = useBooking();
   const [isFooterVisible, setFooterVisible] = useState(false);
 
   useEffect(() => {
@@ -72,6 +72,7 @@ export default function MobileBookingBar(): ReactNode {
             onClick={openSheet}
             className="shrink-0 px-6"
             aria-haspopup="dialog"
+            aria-expanded={isSheetOpen}
           >
             <CalendarSearch className="size-5" />
             {isComplete ? "رزرو" : "انتخاب تاریخ"}

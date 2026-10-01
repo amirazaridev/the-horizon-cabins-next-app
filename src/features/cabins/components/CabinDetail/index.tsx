@@ -15,7 +15,6 @@ import GalleryHeader from "./GalleryHeader";
 import MapSection from "./MapSection";
 import MobileBookingBar from "./MobileBookingBar";
 import ReviewsSection from "./ReviewsSection";
-import RoomsSection from "./RoomsSection";
 import RulesSection from "./RulesSection";
 import SectionShell from "./SectionShell";
 import SpecsGrid from "./SpecsGrid";
@@ -43,9 +42,12 @@ type Props = {
  *     یک ستون، به‌همراه نوار ثابت پایین و باتم‌شیت.
  *
  * ⚠️ تفکیک سرور/کلاینت: این کامپوننت و همه‌ی سکشن‌های متنی (توضیحات،
- * مشخصات، اتاق‌ها، قوانین، نقشه) سروری و بدون state هستند و در HTML اولیه
+ * مشخصات، قوانین، نقشه) سروری و بدون state هستند و در HTML اولیه
  * رندر می‌شوند. فقط لایه‌ی تعاملی (Provider، تب‌ها، تقویم، امکانات با
  * مودال، نظرات با مرتب‌سازی، aside/نوار/شیت/مودال) کلاینت است.
+ *
+ * ⚠️ ستون aside (`25rem`) و گرید اسکلتون (`CabinDetailSkeleton`) باید
+ * دقیقاً یکی باشند، وگرنه عبور از حالت لودینگ به محتوا جهش می‌سازد.
  *
  * `BookingProvider` کلاینت است ولی `children` را از سرور می‌گیرد؛ پس
  * هیچ‌کدام از سکشن‌های سروری به باندل کلاینت منتقل نمی‌شوند.
@@ -68,7 +70,6 @@ export default function CabinDetail({ cabin, cityName }: Props): ReactNode {
           <div className="space-y-10">
             <CabinDescription cabin={cabin} />
             <SpecsGrid cabin={cabin} />
-            <RoomsSection cabin={cabin} />
             <AmenitiesSection amenities={cabin.amenities ?? []} />
 
             <SectionShell

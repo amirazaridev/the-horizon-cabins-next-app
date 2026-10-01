@@ -85,7 +85,8 @@ export default function AmenitiesSection({ amenities }: Props): ReactNode {
         title="همه‌ی امکانات اقامتگاه"
         description="امکانات این اقامتگاه بر اساس نوع، دسته‌بندی شده‌اند."
       >
-        <div className="max-h-[60dvh] space-y-6 overflow-y-auto pe-1">
+        {/* ارتفاع و اسکرول را خودِ Modal مدیریت می‌کند؛ اسکرول تودرتو نداریم */}
+        <div className="space-y-6">
           {groups.map((group) => {
             const Icon = GROUP_ICONS[group.id] ?? Sparkles;
 

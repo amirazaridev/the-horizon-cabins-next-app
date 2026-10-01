@@ -64,13 +64,13 @@ const PANEL_FRAME =
  *   StickyTabs          → نوار تب با دکمه‌های `h-11`
  *   سکشن‌ها             → `border-t pt-10` با سرتیتر یکسان
  *   SpecsGrid           → `grid-cols-2 lg:grid-cols-4` با همان پدینگ `p-8`
- *   RoomsSection        → `sm:grid-cols-2` با تصویر `aspect-16/10`
+ *   SpecsGrid           → `grid-cols-2 lg:grid-cols-4` با همان پدینگ `p-8`
  *   AmenitiesSection    → `sm:grid-cols-2` + دکمه‌ی «مشاهده‌ی همه»
  *   CabinDatePicker     → دو فیلد ورود/خروج + تقویم دوقلو + دکمه‌ی حذف
  *   RulesSection        → `md:grid-cols-2`
  *   MapSection          → `aspect-16/9`
  *   ReviewsSection      → خلاصه‌ی امتیاز + `md:grid-cols-2` کارت نظر
- *   BookingAside        → `lg:grid-cols-[minmax(0,1fr)_20rem]`
+ *   BookingAside        → `lg:grid-cols-[minmax(0,1fr)_25rem]`
  *   MobileBookingBar    → نوار ثابت پایین (`lg:hidden`)
  *
  * پس عبور از حالت لودینگ به محتوا هیچ جهشی در چیدمان ایجاد نمی‌کند.
@@ -137,7 +137,7 @@ export default function CabinDetailSkeleton(): ReactNode {
 
       {/* ================= بدنه ================= */}
       <Container variant="cabin-detail">
-        <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-8">
+        <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-start lg:gap-8">
           <div className="space-y-10">
             {/* ---------- توضیحات (CabinDescription) ---------- */}
             <SectionSkeleton titleWidth="w-40" hintWidth="w-32">
@@ -163,35 +163,6 @@ export default function CabinDetailSkeleton(): ReactNode {
                       lineClassName="mt-1 h-5 justify-center"
                       barClassName="h-3.5 w-20"
                     />
-                  </div>
-                ))}
-              </div>
-            </SectionSkeleton>
-
-            {/* ---------- اتاق‌ها (RoomsSection) ---------- */}
-            <SectionSkeleton titleWidth="w-48" hintWidth="w-60">
-              <div className="grid gap-5 sm:grid-cols-2">
-                {Array.from({ length: 2 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="border-foreground/10 bg-surface overflow-hidden rounded-3xl border shadow-md"
-                  >
-                    <Skeleton className="aspect-16/10 w-full" />
-                    <div className="p-5">
-                      <Line lineClassName="h-6" barClassName="h-4 w-32" />
-                      <div className="mt-3 flex gap-4">
-                        <Skeleton className="h-4 w-24 rounded-full" />
-                        <Skeleton className="h-4 w-20 rounded-full" />
-                      </div>
-                      <div className="mt-4 space-y-2">
-                        <Skeleton className="h-4 w-40 rounded-full" />
-                        <Skeleton className="h-4 w-36 rounded-full" />
-                      </div>
-                      <div className="mt-4 flex gap-2">
-                        <Skeleton className="h-7 w-24 rounded-full" />
-                        <Skeleton className="h-7 w-20 rounded-full" />
-                      </div>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -376,62 +347,76 @@ export default function CabinDetailSkeleton(): ReactNode {
           </div>
 
           {/* ---------- aside رزرو دسکتاپ (BookingAside) ---------- */}
+          {/*
+            آینه‌ی چیدمان فشرده‌ی `BookingSummary`:
+            عنوان text-base → بلوک مبلغ → دو فیلد تاریخ → شمارنده‌ی نفرات →
+            قاب «جزییات حساب» → دکمه‌ها. پدینگ `p-5` (نه `p-8 md:p-10`) و
+            بدون باکس «مزایای رزرو» که حذف شد.
+          */}
           <aside className="hidden lg:sticky lg:top-[calc(var(--hz-navbar-h)+var(--hz-tabs-h)+1rem)] lg:block lg:self-start">
             <div className="from-primary-400/40 via-foreground/10 relative rounded-3xl bg-linear-to-br to-transparent p-px">
-              <div className="bg-surface/80 relative h-full overflow-hidden rounded-3xl p-8 backdrop-blur-sm md:p-10">
-                <Line lineClassName="mb-6 h-7" barClassName="h-5 w-28" />
+              <div className="bg-surface/80 relative h-full overflow-hidden rounded-3xl p-5 backdrop-blur-sm">
+                <div className="flex flex-col gap-3.5">
+                  {/* عنوان شرطی («نرخ هر شب» / «صورت‌حساب») */}
+                  <Line lineClassName="h-6" barClassName="h-4 w-24" />
 
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-3">
-                    <Skeleton className="h-10 w-36 rounded-full" />
-                    <Skeleton className="h-7 w-16 rounded-full" />
-                  </div>
-                  <Line lineClassName="mt-2 h-5" barClassName="h-3.5 w-40" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  {Array.from({ length: 2 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="border-foreground/10 bg-background-2 rounded-2xl border px-3.5 py-3"
-                    >
-                      <Skeleton className="h-4 w-16 rounded-full" />
-                      <Skeleton className="mt-2 h-5 w-20 rounded-full" />
+                  {/* بلوک مبلغ (PriceDisplay) */}
+                  <div>
+                    <div className="flex flex-wrap items-baseline gap-2">
+                      <Skeleton className="h-8 w-32 rounded-full" />
+                      <Skeleton className="h-4 w-8 rounded-full" />
+                      <Skeleton className="h-5 w-20 rounded-full" />
                     </div>
-                  ))}
-                </div>
+                    <Line lineClassName="mt-1 h-4" barClassName="h-3 w-20" />
+                  </div>
 
-                <div className="border-foreground/10 bg-surface mt-5 flex items-center justify-between gap-4 rounded-2xl border px-4 py-3">
-                  <Skeleton className="h-4 w-24 rounded-full" />
-                  <Skeleton className="h-9 w-28 rounded-full" />
-                </div>
-
-                <div className="border-foreground/10 mt-5 border-y py-5">
-                  <div className="space-y-3">
-                    {Array.from({ length: 3 }).map((_, index) => (
+                  {/* دو فیلد تاریخ */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {Array.from({ length: 2 }).map((_, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between gap-3"
+                        className="border-foreground/10 bg-background-2 rounded-xl border px-3 py-2"
                       >
-                        <Skeleton className="h-4 w-24 rounded-full" />
-                        <Skeleton className="h-4 w-20 rounded-full" />
+                        <Skeleton className="h-3 w-14 rounded-full" />
+                        <Skeleton className="mt-1.5 h-4 w-20 rounded-full" />
                       </div>
                     ))}
                   </div>
 
-                  <div className="border-foreground/10 mt-5 space-y-3 border-t pt-5">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <Skeleton className="size-4 shrink-0 rounded-full" />
-                        <Skeleton className="h-3.5 w-4/5 rounded-full" />
-                      </div>
-                    ))}
+                  {/* شمارنده‌ی نفرات */}
+                  <div className="border-foreground/10 bg-surface flex items-center justify-between gap-4 rounded-2xl border px-4 py-3">
+                    <Skeleton className="h-4 w-24 rounded-full" />
+                    <Skeleton className="h-9 w-28 rounded-full" />
                   </div>
-                </div>
 
-                <div className="flex flex-col gap-3">
-                  <Skeleton className="h-14 w-full rounded-xl" />
-                  <Skeleton className="h-14 w-full rounded-xl" />
+                  {/* قاب «جزییات حساب» */}
+                  <div className="border-foreground/10 overflow-hidden rounded-2xl border">
+                    <div className="border-foreground/10 flex items-center justify-between gap-2 border-b px-3.5 py-2.5">
+                      <Skeleton className="h-4 w-20 rounded-full" />
+                      <Skeleton className="h-4 w-10 rounded-full" />
+                    </div>
+                    <div className="space-y-2.5 px-3.5 py-3">
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between gap-3"
+                        >
+                          <Skeleton className="h-3.5 w-24 rounded-full" />
+                          <Skeleton className="h-3.5 w-16 rounded-full" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* دکمه‌ها */}
+                  <div className="flex flex-col gap-2.5">
+                    <Skeleton className="h-14 w-full rounded-xl" />
+                    <Skeleton className="h-14 w-full rounded-xl" />
+                    <Line
+                      lineClassName="h-4 justify-center"
+                      barClassName="h-3 w-48 max-w-full"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

@@ -11,6 +11,7 @@ import {
 } from "react";
 import type { DateRange } from "@/components/ui/RangeDatePicker";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
+import { smoothScrollToId } from "@/libs/utils/scroll";
 import { SECTION_IDS } from "../../constants/cabin-detail";
 import {
   countNights,
@@ -103,6 +104,10 @@ export default function BookingProvider({ cabin, children }: Props): ReactNode {
     const signature = `${next.from.getTime()}-${next.to.getTime()}`;
     if (completedRangeRef.current === signature) return;
     completedRangeRef.current = signature;
+
+    // ⚠️ باتم‌شیت رزرو هم‌زمان با خلاصه باز نمی‌ماند: دو لایه‌ی شناور
+    // هم‌زمان یعنی دو تله‌ی فوکوس روی هم و ناوبری کیبورد شکسته.
+    setSheetOpen(false);
     setSummaryOpen(true);
   }, []);
 
@@ -119,9 +124,7 @@ export default function BookingProvider({ cabin, children }: Props): ReactNode {
   }, []);
 
   const scrollToRateSection = useCallback(() => {
-    document
-      .getElementById(SECTION_IDS.rate)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    smoothScrollToId(SECTION_IDS.rate, { block: "start" });
   }, []);
 
   const openSheet = useCallback(() => setSheetOpen(true), []);

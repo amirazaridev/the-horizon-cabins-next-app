@@ -159,7 +159,7 @@ export default function BottomSheet({
             type="button"
             onClick={onClose}
             aria-label="بستن"
-            className="text-text-gray hover:text-text hover:bg-foreground/5 grid size-9 shrink-0 place-items-center rounded-full transition-colors"
+            className="text-text-gray hover:text-text hover:bg-foreground/5 grid size-11 shrink-0 place-items-center rounded-full transition-colors"
           >
             <X className="size-5" />
           </button>

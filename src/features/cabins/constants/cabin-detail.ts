@@ -1,9 +1,7 @@
-import type { Cabin } from "../types/cabin.types";
 import type {
   CabinAmenityGroup,
   CabinReview,
   CabinReviewsData,
-  CabinRoom,
   CabinRules,
 } from "../types/cabin-detail.types";
 
@@ -20,7 +18,7 @@ export const CABIN_DETAIL_SECTIONS = [
   { id: "gallery", label: "تصاویر" },
   { id: "overview", label: "توضیحات" },
   { id: "specs", label: "مشخصات" },
-  { id: "rooms", label: "اتاق‌ها" },
+  // { id: "rooms", label: "اتاق‌ها" },
   { id: "amenities", label: "امکانات" },
   { id: "rate", label: "نرخ و رزرو" },
   { id: "rules", label: "قوانین" },
@@ -38,7 +36,6 @@ export const SECTION_IDS = {
   gallery: "gallery",
   overview: "overview",
   specs: "specs",
-  rooms: "rooms",
   amenities: "amenities",
   rate: "rate",
   rules: "rules",
@@ -48,52 +45,6 @@ export const SECTION_IDS = {
 
 /** چند مورد اول امکانات که در صفحه نمایش داده می‌شود */
 export const AMENITIES_PREVIEW_COUNT = 8;
-
-/* ============================== اتاق‌ها ============================== */
-
-const ROOM_NAME_POOL = [
-  "اتاق خواب اصلی",
-  "اتاق خواب دو نفره",
-  "اتاق خواب سه نفره",
-  "اتاق خواب مهمان",
-  "سوئیت مستر",
-  "اتاق خواب کودک",
-  "اتاق خواب طبقه‌ی بالا",
-  "اتاق خواب باغ",
-];
-
-/**
- * ساخت فهرست اتاق‌ها.
- *
- * ⚠️ TODO(backend): بک‌اند اندپوینتی برای اتاق‌ها ندارد؛ این فهرست از
- * تعداد اتاق خواب اقامتگاه ساخته می‌شود تا بخش «اتاق‌ها و دسته‌بندی»
- * خالی نماند. با اضافه‌شدن `GET /cabins/:id/rooms` فقط همین تابع با
- * `apiFetch` جایگزین می‌شود و هیچ کامپوننتی تغییر نمی‌کند.
- */
-export function buildRooms(cabin: Cabin): CabinRoom[] {
-  const count = Math.max(0, Math.min(cabin.bedrooms, ROOM_NAME_POOL.length));
-
-  return Array.from({ length: count }, (_, index) => {
-    const isMaster = index === 0;
-    const capacity = isMaster ? Math.min(2, cabin.maxCapacity) : 2;
-
-    return {
-      id: index + 1,
-      name: ROOM_NAME_POOL[index],
-      capacity,
-      sizeSqm: cabin.areaSqm
-        ? Math.max(12, Math.round(cabin.areaSqm / count))
-        : null,
-      beds: isMaster
-        ? [{ id: "king", label: "تخت دونفره بزرگ", count: 1 }]
-        : [{ id: "double", label: "تخت دونفره", count: Math.ceil(capacity / 2) }],
-      amenities: isMaster
-        ? ["حمام اختصاصی", "کولر و گرمایش", "پنجره با نما"]
-        : ["کولر و گرمایش", "پرده‌ی ضخیم"],
-      image: cabin.images?.[index % Math.max(1, cabin.images.length)] ?? null,
-    } satisfies CabinRoom;
-  });
-}
 
 /* =========================== قوانین و مقررات =========================== */
 

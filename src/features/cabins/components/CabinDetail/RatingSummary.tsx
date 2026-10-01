@@ -7,17 +7,19 @@ type Props = {
   data: CabinReviewsData;
 };
 
-const SCORE_KEYS = [
-  { key: "cleanliness", label: "نظافت" },
-  { key: "location", label: "موقعیت" },
-  { key: "value", label: "ارزش در برابر قیمت" },
-  { key: "accuracy", label: "دقت توضیحات" },
-  { key: "checkIn", label: "فرایند ورود" },
-] as const;
+// زیرمعیارها فعلاً نمایش داده نمی‌شوند (بلوک کامنت‌شده در بدنه).
+// داده‌اش در `CabinReviewsData.subscores` هست؛ با برگرداندن کامنت‌ها فعال می‌شود.
+// const SCORE_KEYS = [
+//   { key: "cleanliness", label: "نظافت" },
+//   { key: "location", label: "موقعیت" },
+//   { key: "value", label: "ارزش در برابر قیمت" },
+//   { key: "accuracy", label: "دقت توضیحات" },
+//   { key: "checkIn", label: "فرایند ورود" },
+// ] as const;
 
 /** خلاصه‌ی امتیاز: میانگین، توزیع ستاره‌ها و امتیاز زیرمعیارها */
 export default function RatingSummary({ data }: Props): ReactNode {
-  const { average, total, distribution, subscores } = data;
+  const { average, total, distribution } = data;
 
   return (
     <CardContainer className="shadow-md">
@@ -65,7 +67,7 @@ export default function RatingSummary({ data }: Props): ReactNode {
           </ul>
 
           {/* زیرمعیارها */}
-          <ul className="border-foreground/10 mt-6 grid grid-cols-2 gap-3 border-t pt-5 sm:grid-cols-3">
+          {/* <ul className="border-foreground/10 mt-6 grid grid-cols-2 gap-3 border-t pt-5 sm:grid-cols-3">
             {SCORE_KEYS.map(({ key, label }) => (
               <li
                 key={key}
@@ -77,7 +79,7 @@ export default function RatingSummary({ data }: Props): ReactNode {
                 </p>
               </li>
             ))}
-          </ul>
+          </ul> */}
         </div>
       </div>
     </CardContainer>

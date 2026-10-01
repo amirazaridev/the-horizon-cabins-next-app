@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Check, MoveLeft, Phone, Users } from "lucide-react";
+import { CalendarDays, MoveLeft, Phone, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import Button from "@/components/ui/Button";
 import Counter from "@/components/ui/Counter";
@@ -8,8 +8,7 @@ import { formatJalaliDate } from "@/components/ui/RangeDatePicker";
 import { SUPPORT_PHONE_HREF } from "@/constants/suport-phone";
 import PriceDisplay from "@/features/cabins/components/PriceDisplay";
 import { formatCurrency } from "@/libs/utils/format";
-import { BOOKING_PERKS } from "../../constants";
-import { toFaNumber } from "../../utils/booking";
+import { getBookingPanelLabels, toFaNumber } from "../../utils/booking";
 import { useBooking } from "./BookingProvider";
 
 type Props = {
@@ -20,19 +19,39 @@ type Props = {
    * باتم‌شیت این را override می‌کند تا اول خودش بسته شود.
    */
   onRequestDates?: () => void;
+  /**
+   * رندر عنوان شرطی («نرخ هر شب» / «صورت‌حساب»).
+   *
+   * داخل aside که هدر لایه ندارد `true` می‌ماند؛ در باتم‌شیت و مودال
+   * `false` می‌شود چون همان عنوان را در هدر خودِ لایه نشان می‌دهند و
+   * وگرنه دوبار تکرار می‌شد.
+   */
+  showHeading?: boolean;
   className?: string;
 };
 
 /**
  * محتوای مشترک رزرو — یک نسخه برای هر سه جا.
  *
- * aside چسبان دسکتاپ، باتم‌شیت موبایل و مودال خلاصه‌ی قیمت دقیقاً همین
- * کامپوننت را رندر می‌کنند؛ پس منطق قیمت و چیدمان در یک جا زندگی می‌کند و
- * هیچ‌وقت سه نسخه‌ی متفاوت از «مبلغ قابل پرداخت» به کاربر نشان داده نمی‌شود.
+ * aside چسبان دسکتاپ، باتم‌شیت موبایل و مودال خلاصه دقیقاً همین کامپوننت
+ * را رندر می‌کنند؛ پس منطق قیمت و چیدمان در یک جا زندگی می‌کند.
+ *
+ * **دو حالت نمایش:**
+ *  • «نرخ هر شب» — تا وقتی بازه‌ی تاریخ کامل نشده: عدد بزرگ همان قیمت یک شب است.
+ *  • «صورت‌حساب» — از همان رندری که بازه کامل می‌شود: عدد بزرگ مبلغ نهایی است.
+ *
+ * ⚠️ معیار تغییر حالت فقط کامل‌بودن بازه است، نه تعداد نفرات. شمارنده از
+ * ابتدا مقدار دارد؛ اگر عنوان به آن گره بخورد، کاربر بعد از انتخاب تاریخ
+ * تغییری نمی‌بیند و باید شمارنده را هم دست بزند.
+ *
+ * چیدمان عمداً فشرده است (فاصله‌های کوچک، فونت‌های ریزتر) تا پنل در ارتفاع
+ * دید یک لپ‌تاپ جا شود؛ چون aside چسبان است و با صفحه اسکرول نمی‌شود، اگر
+ * بلندتر از دید شود پایین پنل (دکمه‌ی رزرو) دست‌نیافتنی می‌ماند.
  */
 export default function BookingSummary({
   showCta = false,
   onRequestDates,
+  showHeading = true,
   className = "",
 }: Props): ReactNode {
   const {
@@ -46,6 +65,7 @@ export default function BookingSummary({
     scrollToRateSection,
   } = useBooking();
 
+  const labels = getBookingPanelLabels(isComplete);
   const handleDatesClick = onRequestDates ?? scrollToRateSection;
 
   const stages = [
@@ -64,32 +84,36 @@ export default function BookingSummary({
   ];
 
   return (
-    <div className={`flex flex-col gap-5 ${className}`}>
+    <div className={`flex flex-col gap-3.5 ${className}`}>
+      {showHeading && (
+        <h3 className="text-text text-base font-bold">{labels.heading}</h3>
+      )}
+
       <PriceDisplay
-        price={price.regularPerNight}
-        discount={price.regularPerNight - price.perNight}
-        perNightText="قیمت هر شب اقامت"
+        amount={isComplete ? price.total : price.perNight}
+        originalAmount={isComplete ? price.gross : price.regularPerNight}
+        caption={labels.amountCaption}
       />
 
       {/* فیلدهای تاریخ — کلیک، کاربر را به تقویم می‌برد */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {stages.map((stage) => (
           <button
             key={stage.key}
             type="button"
             onClick={handleDatesClick}
-            className={`rounded-2xl border px-3.5 py-3 text-start transition-colors ${
+            className={`rounded-xl border px-3 py-2 text-start transition-colors ${
               stage.active
                 ? "border-primary-400/60 bg-primary-400/10"
                 : "border-foreground/10 bg-background-2 hover:border-primary-400/40"
             }`}
           >
-            <span className="text-text-gray flex items-center gap-1.5 text-xs font-medium">
-              <CalendarDays className="size-3.5" />
+            <span className="text-text-gray flex items-center gap-1 text-[10px] font-medium">
+              <CalendarDays className="size-3" />
               {stage.label}
             </span>
             <span
-              className={`mt-1 block text-sm font-bold ${
+              className={`mt-0.5 block truncate text-xs font-bold ${
                 stage.value ? "text-text" : "text-text-gray/60"
               }`}
             >
@@ -105,64 +129,64 @@ export default function BookingSummary({
         min={1}
         max={maxCapacity}
         label="تعداد نفرات"
-        hint={`حداکثر ظرفیت این اقامتگاه ${toFaNumber(maxCapacity)} نفر است`}
+        hint={`حداکثر ${toFaNumber(maxCapacity)} نفر`}
         icon={<Users className="size-4" />}
       />
 
-      {/* خلاصه‌ی قیمت — فقط بعد از کامل‌شدن بازه */}
-      <div
-        aria-live="polite"
-        className="border-foreground/10 border-y py-5"
-      >
-        {isComplete ? (
-          <dl className="space-y-3 text-sm">
-            <div className="flex items-center justify-between gap-3">
-              <dt className="text-text-gray">
-                {`${formatCurrency(price.perNight)} تومان × ${toFaNumber(nights)} شب`}
-              </dt>
-              <dd className="text-text font-bold tabular-nums">
-                {formatCurrency(price.total)}
-              </dd>
-            </div>
+      {/* جزییات حساب — ارتفاع خودکار؛ در صورت زیاد‌شدن محتوا فقط همین بخش اسکرول می‌شود */}
+      <div className="border-foreground/10 overflow-hidden rounded-2xl border">
+        <div className="border-foreground/10 flex items-center justify-between gap-2 border-b px-3.5 py-2.5">
+          <h4 className="text-text text-xs font-extrabold">جزییات حساب</h4>
+          {isComplete && (
+            <span className="bg-primary-400/10 text-primary-600 dark:text-primary-400 rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums">
+              {toFaNumber(nights)} شب
+            </span>
+          )}
+        </div>
 
-            {price.discount > 0 && (
+        <div
+          aria-live="polite"
+          className="max-h-52 overflow-y-auto overscroll-contain px-3.5 py-3"
+        >
+          {isComplete ? (
+            <dl className="space-y-2.5 text-xs">
               <div className="flex items-center justify-between gap-3">
                 <dt className="text-text-gray">
-                  تخفیف ({toFaNumber(price.discountPercent)}٪)
+                  {`${formatCurrency(price.perNight)} × ${toFaNumber(nights)} شب`}
                 </dt>
-                <dd className="text-secondary-500 font-bold tabular-nums">
-                  {`− ${formatCurrency(price.discount)}`}
+                <dd className="text-text font-bold tabular-nums">
+                  {formatCurrency(price.gross)}
                 </dd>
               </div>
-            )}
 
-            <div className="border-foreground/10 flex items-center justify-between gap-3 border-t pt-3">
-              <dt className="text-text font-bold">مبلغ قابل پرداخت</dt>
-              <dd className="text-text text-base font-extrabold tabular-nums">
-                {`${formatCurrency(price.total)} تومان`}
-              </dd>
-            </div>
-          </dl>
-        ) : (
-          <p className="text-text-gray text-center text-xs leading-relaxed">
-            {range.from
-              ? "حالا تاریخ خروج را انتخاب کنید تا مبلغ کل محاسبه شود."
-              : "برای دیدن مبلغ کل، ابتدا تاریخ ورود و خروج را انتخاب کنید."}
-          </p>
-        )}
+              {price.discount > 0 && (
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-text-gray">
+                    {`تخفیف (${toFaNumber(price.discountPercent)}٪)`}
+                  </dt>
+                  <dd className="text-secondary-500 font-bold tabular-nums">
+                    {`− ${formatCurrency(price.discount)}`}
+                  </dd>
+                </div>
+              )}
 
-        <div className="border-foreground/10 mt-5 space-y-3 border-t pt-5 text-sm">
-          {BOOKING_PERKS.map((perk) => (
-            <p key={perk} className="text-text-gray flex items-center gap-3">
-              <Check className="text-primary-400 size-4 shrink-0" />
-              {perk}
+              <div className="border-foreground/10 flex items-center justify-between gap-3 border-t pt-2.5">
+                <dt className="text-text font-bold">مبلغ قابل پرداخت</dt>
+                <dd className="text-text text-sm font-extrabold tabular-nums">
+                  {`${formatCurrency(price.total)} تومان`}
+                </dd>
+              </div>
+            </dl>
+          ) : (
+            <p className="text-text-gray text-xs leading-relaxed">
+              برای دیدن جزییات حساب، تاریخ ورود و خروج را انتخاب کنید.
             </p>
-          ))}
+          )}
         </div>
       </div>
 
       {showCta && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           <Button shape="xl" fullWidth disabled={!isComplete}>
             رزرو این اقامتگاه
             <MoveLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-1" />
@@ -171,7 +195,7 @@ export default function BookingSummary({
             <Phone className="size-5" />
             مشاوره و تماس
           </Button>
-          <p className="text-text-gray text-center text-xs">
+          <p className="text-text-gray text-center text-[11px] leading-relaxed">
             {isComplete
               ? "رزرو نهایی در صفحه پرداخت انجام می‌شود"
               : "برای فعال‌شدن دکمه‌ی رزرو، تاریخ ورود و خروج را کامل کنید"}

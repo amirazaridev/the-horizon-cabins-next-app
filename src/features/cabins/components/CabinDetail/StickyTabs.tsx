@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
-  BedDouble,
   CalendarDays,
   FileText,
   Images,
@@ -24,7 +23,6 @@ const SECTION_ICONS: Record<CabinDetailSectionId, LucideIcon> = {
   gallery: Images,
   overview: FileText,
   specs: LayoutList,
-  rooms: BedDouble,
   amenities: Sparkles,
   rate: CalendarDays,
   rules: ScrollText,
@@ -85,7 +83,10 @@ export default function StickyTabs(): ReactNode {
 
     if (elements.length === 0) return;
 
+    // نقشه‌ی ارتفاع‌های دیده‌شده از اجرای قبلی پاک می‌شود؛ وگرنه مقادیر
+    // کهنه‌ی سکشنی که دیگر رصد نمی‌شود می‌تواند برنده‌ی Scroll Spy شود.
     const heights = visibleHeightsRef.current;
+    heights.clear();
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -118,16 +119,38 @@ export default function StickyTabs(): ReactNode {
     return () => observer.disconnect();
   }, [offset]);
 
-  /* تب فعال در موبایل خودش را وسط نوار می‌آورد */
+  /**
+   * تب فعال در موبایل خودش را وسط نوار می‌آورد.
+   *
+   * ⚠️ دو گارد لازم است، وگرنه این افکت صفحه را می‌پراند:
+   *
+   *  ۱) **`scrollWidth <= clientWidth`** ⇒ نوار سرریز ندارد (دسکتاپ)، پس
+   *     کاری برای انجام دادن نیست.
+   *  ۲) **نوار باید کامل در دید باشد.** Scroll Spy می‌تواند سکشنی را فعال
+   *     کند در حالی که نوار هنوز نچسبیده و پایین‌تر از دید است؛ در آن حالت
+   *     `scrollIntoView` صفحه را عمودی اسکرول می‌کند و کاربر وسط مطالعه‌ی
+   *     صفحه یک‌دفعه پایین می‌پرد. با این گارد، فقط وقتی نوار چسبیده و
+   *     کامل دیده می‌شود اسکرول افقی انجام می‌شود (`block: "nearest"` هم
+   *     عمودی بی‌اثر می‌ماند).
+   */
   useEffect(() => {
-    const target = listRef.current?.querySelector<HTMLElement>(
-      `[data-tab="${activeId}"]`,
-    );
-    target?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
+    const list = listRef.current;
+    if (!list || list.scrollWidth <= list.clientWidth) return;
+
+    const listRect = list.getBoundingClientRect();
+    if (listRect.top < 0 || listRect.bottom > window.innerHeight) return;
+
+    list
+      .querySelector<HTMLElement>(`[data-tab="${activeId}"]`)
+      ?.scrollIntoView({
+        behavior:
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "auto"
+            : "smooth",
+        block: "nearest",
+        inline: "center",
+      });
   }, [activeId]);
 
   return (
@@ -136,8 +159,9 @@ export default function StickyTabs(): ReactNode {
       className="border-foreground/10 bg-background-2/90 sticky top-[var(--hz-navbar-h)] z-30 border-b backdrop-blur-xl"
     >
       <Container variant="cabin-detail">
-        <div
+        <nav
           ref={listRef}
+          aria-label="بخش‌های این اقامتگاه"
           className="hz-hide-scrollbar flex gap-1.5 overflow-x-auto overscroll-x-contain py-2"
         >
           {CABIN_DETAIL_SECTIONS.map((section) => {
@@ -162,7 +186,7 @@ export default function StickyTabs(): ReactNode {
               </a>
             );
           })}
-        </div>
+        </nav>
       </Container>
     </div>
   );

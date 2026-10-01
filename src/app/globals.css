@@ -551,6 +551,24 @@ html[data-client-nav="1"] .hz-preloader[data-autohide="on"] {
   display: none;
 }
 
+/*
+  رزرو ارتفاع تقویم بازه در صفحه‌ی جزئیات اقامتگاه.
+
+  `react-multi-date-picker` فقط روی کلاینت رندر می‌شود؛ یعنی در HTML سرور
+  جعبه‌ی تقویم خالی و کوتاه است و بعد از hydration حدود ۳۳۰ پیکسل باز
+  می‌شود ⇒ کل محتوای پایین صفحه جهش می‌کرد (CLS).
+
+  ارتفاع یک‌ماه و دوماه **یکسان** است، چون در دسکتاپ دو ماه کنار هم
+  (نه زیر هم) چیده می‌شوند؛ پس یک عدد برای هر دو کافی است:
+    ۲۲ (padding تقویم) + ۳۷ (هدر) + ۳۶ (نام روزها) + ۶×۳۸ (روزها) + ۱۰ (قاب) ≈ ۳۳۶
+
+  عمداً از بیرون (کلاس روی `DateRangePanel`) اعمال می‌شود تا سرچ لندینگ و
+  فیلتر `/cabins` که همین هسته را استفاده می‌کنند تغییری نبینند.
+*/
+.hz-reserve-calendar .horizon-range-picker {
+  min-height: 21rem;
+}
+
 /* روزهای رزروشده در تقویم بازه */
 .horizon-range-picker .horizon-date-picker .rmdp-day.rmdp-booked span {
   background-color: color-mix(in srgb, var(--color-danger) 12%, transparent);

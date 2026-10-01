@@ -23,6 +23,11 @@ type Props = {
   showClear?: boolean;
   onClear?: () => void;
   clearLabel?: string;
+  /**
+   * کلاس تکمیلی روی ریشه — برای رزرو ارتفاع تقویم در مصرف‌کننده‌هایی که
+   * بعد از hydration جهش چیدمان می‌گیرند (مثل صفحه‌ی جزئیات اقامتگاه).
+   */
+  className?: string;
 };
 
 /**
@@ -37,13 +42,14 @@ export default function DateRangePanel({
   showClear = false,
   onClear,
   clearLabel = "حذف تاریخ",
+  className = "",
 }: Props) {
   const isNarrow = useMediaQuery("(max-width: 640px)");
 
   const hasSelection = value.from !== null || value.to !== null;
 
   return (
-    <div>
+    <div className={className}>
       <RangeDatePicker
         value={value}
         onChange={onChange}

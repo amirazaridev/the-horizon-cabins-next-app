@@ -26,6 +26,8 @@ export type PriceBreakdown = {
   perNight: number;
   /** قیمت بدون تخفیف هر شب */
   regularPerNight: number;
+  /** مجموع بدون تخفیف (قیمت خط‌خورده‌ی صورت‌حساب) */
+  gross: number;
   /** مجموع تخفیف در کل اقامت */
   discount: number;
   /** مبلغ قابل پرداخت */
@@ -50,18 +52,47 @@ export function getPriceBreakdown(
   const perNight = finalNightPrice(cabin);
   const regularPerNight = cabin.regularPrice;
   const total = perNight * safeNights;
-  const discount = (regularPerNight - perNight) * safeNights;
+  const gross = regularPerNight * safeNights;
+  const discount = gross - total;
 
   return {
     nights: safeNights,
     perNight,
     regularPerNight,
+    gross,
     discount,
     total,
     discountPercent: regularPerNight
       ? Math.round(((regularPerNight - perNight) / regularPerNight) * 100)
       : 0,
   };
+}
+
+/**
+ * برچسب‌های پنل رزرو — بسته به این‌که تاریخ اقامت مشخص شده یا نه.
+ *
+ * حالت «نرخ»: تاریخ ورود و خروج کامل نیست، پس پنل یک کارت نرخ است:
+ * عنوان «نرخ هر شب» و مبلغ همان قیمت یک شب.
+ *
+ * حالت «صورت‌حساب»: بازه کامل شد، پس پنل یک صورت‌حساب است: عنوان
+ * «صورت‌حساب» و مبلغ همان مبلغ نهایی.
+ *
+ * ⚠️ **معیار فقط کامل‌بودن بازه است.** تعداد نفرات عمداً در این شرط نیست:
+ * شمارنده از ابتدا مقدار دارد، پس گره‌زدن تغییر عنوان به آن یعنی کاربر با
+ * انتخاب تاریخ تغییر را نمی‌بیند و باید یک تعامل اضافه انجام دهد. با این
+ * تعریف، عنوان **دقیقاً در همان رندری که بازه کامل می‌شود** عوض می‌شود.
+ */
+export type BookingPanelLabels = {
+  heading: string;
+  amountCaption: string;
+};
+
+export function getBookingPanelLabels(
+  isComplete: boolean,
+): BookingPanelLabels {
+  return isComplete
+    ? { heading: "صورت‌حساب", amountCaption: "مبلغ نهایی" }
+    : { heading: "نرخ هر شب", amountCaption: "قیمت هر شب" };
 }
 
 /** عدد فارسی — برای نمایش تعداد شب و نفرات */

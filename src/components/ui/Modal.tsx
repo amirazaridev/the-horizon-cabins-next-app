@@ -30,10 +30,16 @@ const sizeClass: Record<NonNullable<ModalProps["size"]>, string> = {
 /**
  * مودال عمومی پروژه.
  *
- * نسبت به نسخه‌ی قبلی، دسترس‌پذیری کامل شد: تله‌ی فوکوس، بازگرداندن
- * فوکوس به عنصر بازکننده، `aria-labelledby`/`aria-describedby` و
- * انیمیشن خروج (قبلاً مودال همان لحظه‌ی بسته‌شدن از DOM حذف می‌شد و
- * فقط انیمیشن ورود داشت).
+ * ساختار سه‌تکه‌ی ثابت:
+ *  ۱) **هدر** (`title`/`description`) — `shrink-0` با جداکننده‌ی پایین،
+ *     پس هنگام اسکرول سر جای خودش می‌ماند.
+ *  ۲) **بدنه** — تنها ناحیه‌ی اسکرولی؛ `overscroll-contain` می‌گذارد
+ *     اسکرول به صفحه‌ی پشت سرایت نکند.
+ *  ۳) **دکمه‌ی بستن** — `absolute` روی پنل (نه داخل بدنه)، پس هرگز با
+ *     اسکرول جابه‌جا نمی‌شود.
+ *
+ * نسبت به نسخه‌ی اولیه: تله‌ی فوکوس، بازگرداندن فوکوس به عنصر بازکننده،
+ * `aria-labelledby`/`aria-describedby`، انیمیشن خروج و هدر ثابت اضافه شد.
  *
  * ⚠️ API عمومی دست‌نخورده مانده (`isOpen`/`onClose`/`title`/`description`/
  * `size`/`children`) تا مصرف‌کننده‌های فعلی — `ConfirmModal` و صفحات
@@ -56,6 +62,7 @@ export default function Modal({
 
   const mounted = isOpen || visible;
   const shown = isOpen && visible;
+  const hasHeader = Boolean(title || description);
 
   useScrollLock(isOpen);
 
@@ -103,34 +110,43 @@ export default function Modal({
         aria-modal="true"
         aria-labelledby={title ? titleId : undefined}
         aria-describedby={description ? descriptionId : undefined}
-        className={`bg-surface border-border relative max-h-[90dvh] w-full overflow-y-auto outline-none ${sizeClass[size]} rounded-2xl border p-6 shadow-xl transition-all duration-200 ${
-          shown ? "translate-y-0 scale-100 opacity-100" : "translate-y-2 scale-95 opacity-0"
+        className={`bg-surface border-border relative flex max-h-[90dvh] w-full flex-col overflow-hidden outline-none ${sizeClass[size]} rounded-3xl border shadow-2xl transition-all duration-200 ${
+          shown
+            ? "translate-y-0 scale-100 opacity-100"
+            : "translate-y-2 scale-95 opacity-0"
         } ${className}`}
       >
+        {/* دکمه‌ی بستن — روی پنل، بیرون از ناحیه‌ی اسکرولی */}
         <button
           type="button"
           onClick={onClose}
           aria-label="بستن"
-          className="text-text-gray hover:text-text hover:bg-background-2 absolute end-4 top-4 rounded-full p-1.5 transition"
+          className="text-text-gray hover:text-text hover:bg-foreground/5 absolute end-3 top-3 z-10 grid size-11 place-items-center rounded-full transition-colors"
         >
           <X className="size-4" />
         </button>
 
-        {title && (
-          <h3 id={titleId} className="text-text pe-8 text-lg font-bold">
-            {title}
-          </h3>
-        )}
-        {description && (
-          <p
-            id={descriptionId}
-            className="text-text-gray mt-2 pe-8 text-sm leading-relaxed"
-          >
-            {description}
-          </p>
+        {hasHeader && (
+          <header className="border-foreground/10 bg-surface/95 shrink-0 border-b px-6 pt-6 pb-4 backdrop-blur-sm">
+            {title && (
+              <h2 id={titleId} className="text-text pe-12 text-lg font-bold">
+                {title}
+              </h2>
+            )}
+            {description && (
+              <p
+                id={descriptionId}
+                className="text-text-gray mt-1.5 pe-12 text-sm leading-relaxed"
+              >
+                {description}
+              </p>
+            )}
+          </header>
         )}
 
-        <div className="mt-4">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5">
+          {children}
+        </div>
       </div>
     </div>,
     document.body,

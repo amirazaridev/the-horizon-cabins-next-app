@@ -138,7 +138,7 @@ export default function CabinGallery({
                 src={image}
                 alt={`تصویر ${i + 1}`}
                 fill
-                preload={i == 0}
+                sizes="(max-width: 640px) 25vw, (max-width: 1024px) 20vw, 16vw"
               />
             </button>
           ))}
