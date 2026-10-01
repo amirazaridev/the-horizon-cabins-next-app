@@ -43,6 +43,7 @@ import type {
   Destination,
   Region,
   SearchController,
+  SearchFilters,
 } from "../types/search.types";
 
 export type SearchVariant = "hero" | "results";
@@ -142,9 +143,15 @@ export default function Search({
    * کاربر نتیجه‌ی جستجو را ببیند (در موبایل باتم‌شیت هم اول باید بسته شود
    * و قفل اسکرول body آزاد گردد). اگر صفحه بخش پیش‌نمایش نداشته باشد
    * (مثل `/cabins`) این فراخوانی بی‌اثر است.
+   *
+   * `patch` اختیاری برای «اعمال اتمیک» است — دکمه‌ی «اعمال» پنل بودجه،
+   * مقدار تازه را همان لحظه ثبت می‌کند و جستجو را اجرا می‌کند.
+   *
+   * ⚠️ همیشه با wrapper صدا زده می‌شود (`() => handleApply()`)، وگرنه
+   * رویداد کلیک به‌جای patch به `apply` می‌رود.
    */
-  const handleApply = () => {
-    apply();
+  const handleApply = (patch?: Partial<SearchFilters>) => {
+    apply(patch);
     scheduleScrollToSearchPreview();
   };
 
@@ -270,11 +277,17 @@ export default function Search({
         title: "تعداد مهمان",
         size: "md",
         placement: "end",
-        render: ({ value, setValue, close }) => (
+        /*
+         * بعد از تأیید تعداد مهمان، پنل بعدی (بودجه) خودکار باز می‌شود —
+         * ادامه‌ی همان زنجیره‌ای که پنل تاریخ با `advanceTo: "checkIn"`
+         * شروع می‌کند. `openPanel` هم روی دسکتاپ (پاپ‌اور) و هم روی موبایل
+         * (آکاردئون شیت) کار می‌کند.
+         */
+        render: ({ value, setValue, openPanel }) => (
           <GuestsPanel
             value={typeof value === "number" ? value : null}
             onChange={setValue}
-            onDone={close}
+            onDone={() => openPanel("budget")}
           />
         ),
       },
@@ -299,11 +312,24 @@ export default function Search({
         title: "بازه‌ی بودجه‌ی هر شب",
         size: "md",
         placement: "end",
+        /*
+         * «اعمال» بودجه فقط مقدار را ثبت نمی‌کند؛ جستجو را هم همان لحظه
+         * اجرا می‌کند. مقدار تازه با `patch` می‌رود تا روی کنترلر URL — که
+         * draft را در state نگه می‌دارد — مقدار کهنه ثبت نشود.
+         * «حذف بودجه» این مسیر را طی نمی‌کند (onApply فقط از اعمال می‌آید).
+         *
+         * `commitFullRange` فقط در لندینگ فعال است: آنجا «اعمال» باید همیشه
+         * یک جستجوی واقعی بسازد، حتی وقتی کاربر فقط یک دستگیره را جابه‌جا
+         * کرده و نتیجه روی مرز بازه افتاده است. در `/cabins` بازه‌ی کامل
+         * همان `null` می‌ماند تا URL پارامتر بی‌مورد نگیرد.
+         */
         render: ({ value, setValue, close }) => (
           <BudgetPanel
             value={(value as BudgetRange | null) ?? null}
             onChange={(next) => setValue(next)}
             onDone={close}
+            onApply={(next) => handleApply({ budget: next })}
+            commitFullRange={isHero}
           />
         ),
       },
@@ -380,7 +406,7 @@ export default function Search({
         placement="center"
         mobileTitle={isHero ? "جستجوی اقامتگاه" : "جستجوی شما"}
         mobileApplyLabel={mobileApplyLabel}
-        onMobileApply={handleApply}
+        onMobileApply={() => handleApply()}
         mobileApplyPending={isPending}
         renderMobileTrigger={mobileTrigger}
         /*
@@ -410,7 +436,7 @@ export default function Search({
         <SearchAction
           label={isHero ? "جستجو" : "اعمال جستجو"}
           pending={isPending}
-          onClick={handleApply}
+          onClick={() => handleApply()}
         />
       </div>
     </div>

@@ -38,7 +38,7 @@ type SearchStoreState = {
   setFilters: (patch: Partial<SearchFilters>) => void;
 
   /** تأیید draft و تبدیل آن به مبنای fetch پیش‌نمایش */
-  apply: () => void;
+  apply: (patch?: Partial<SearchFilters>) => void;
 
   /** پاک‌کردن کامل (draft + applied) */
   reset: () => void;
@@ -66,7 +66,18 @@ export const useSearchStore = create<SearchStoreState>((set) => ({
   setFilters: (patch) =>
     set((state) => ({ draft: { ...state.draft, ...patch } })),
 
-  apply: () => set((state) => ({ applied: { ...state.draft } })),
+  /**
+   * تأیید draft و تبدیل آن به مبنای fetch پیش‌نمایش.
+   *
+   * `patch` اختیاری: مقداری که همان لحظه در یک پنل انتخاب شده و باید
+   * همراه با اعمال وارد draft شود (مثل دکمه‌ی «اعمال» پنل بودجه که هم
+   * مقدار را ثبت می‌کند و هم بلافاصله جستجو را اجرا می‌کند).
+   */
+  apply: (patch) =>
+    set((state) => {
+      const draft = patch ? { ...state.draft, ...patch } : state.draft;
+      return { draft, applied: { ...draft } };
+    }),
 
   resetDraft: () => set({ draft: EMPTY_SEARCH_FILTERS }),
 

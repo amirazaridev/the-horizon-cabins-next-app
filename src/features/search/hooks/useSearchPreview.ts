@@ -11,7 +11,6 @@ import {
 import {
   hasAnySearchFilter,
   searchFiltersToQueryString,
-  toCabinSearchQuery,
 } from "../utils/search-params";
 
 export type SearchPreviewStatus =
@@ -24,8 +23,8 @@ export type SearchPreviewStatus =
 export type SearchPreviewState = {
   status: SearchPreviewStatus;
   cabins: Cabin[];
+  /** تعداد کل نتایج پس از فیلتر (از `meta.totalItems`) — نه طول آرایه */
   total: number;
-  source: "mock" | "api";
   /** برای دکمه‌ی «تلاش دوباره» در حالت خطا */
   retry: () => void;
 };
@@ -51,7 +50,6 @@ export function useSearchPreview(
   const [status, setStatus] = useState<SearchPreviewStatus>("idle");
   const [cabins, setCabins] = useState<Cabin[]>([]);
   const [total, setTotal] = useState(0);
-  const [source, setSource] = useState<"mock" | "api">("mock");
   const [retryToken, setRetryToken] = useState(0);
 
   /**
@@ -80,12 +78,11 @@ export function useSearchPreview(
     setStatus("loading");
 
     cabinSearchRepository
-      .search(toCabinSearchQuery(current, limit))
+      .search(current, limit)
       .then((result) => {
         if (cancelled) return;
         setCabins(result.cabins);
         setTotal(result.total);
-        setSource(result.source);
         setStatus(result.cabins.length > 0 ? "success" : "empty");
       })
       .catch(() => {
@@ -102,5 +99,5 @@ export function useSearchPreview(
 
   const retry = useCallback(() => setRetryToken((token) => token + 1), []);
 
-  return { status, cabins, total, source, retry };
+  return { status, cabins, total, retry };
 }

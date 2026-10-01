@@ -1,54 +1,63 @@
 /**
- * آداپتور API واقعی برای جستجوی اقامتگاه — آماده برای فردا.
+ * آداپتور API واقعی جستجوی اقامتگاه — لایه‌ی سرور.
  *
- * ⚠️ این فایل عمداً در هیچ کامپوننتی import نشده است، چون `apiFetch`
- * با `server-only` علامت خورده و فقط باید سمت سرور اجرا شود.
+ * ⚠️ این ماژول فقط سمت سرور اجرا می‌شود: `apiFetch` با `server-only` علامت
+ * خورده و `API_URL` هم یک متغیر محیطی سروری است. مصرف‌کننده‌ی این فایل فقط
+ * Route Handler است:
  *
- * نحوه‌ی فعال‌سازی (یک خط):
- *   1) در `services/cabin-search.repository.ts` مقدار
- *      `cabinSearchRepository` را به این پیاده‌سازی وصل کنید،
- *      اما چون این ماژول server-only است، آن را از یک Server Action /
- *      Route Handler صدا بزنید و نتیجه را به کلاینت بدهید.
- *   2) یا endpoint جستجو را با یک `fetch` سبکِ کلاینت‌محور پیاده کنید
- *      و همانجا `mapCabin` را روی پاسخ اعمال کنید.
+ *     GET /api/search/cabins?city=1&guests=4&price=1000000-8000000&limit=6
+ *     → src/app/api/search/cabins/route.ts → searchCabinsFromApi()
+ *
+ * کلاینت هرگز این فایل را import نمی‌کند؛ از `cabin-search.repository.ts`
+ * (که همان مسیر داخلی را صدا می‌زند) عبور می‌کند.
  *
  * نگاشت فیلترهای هسته → پارامترهای API:
  *   destination.type === "city"   → city=<id>
  *   destination.type === "region" → regionId=<id>   (اسلاگ به شناسه‌ی عددی ترجمه می‌شود)
  *   guests                        → guests
  *   budget                        → price=<min>-<max>
+ *   limit                         → limit            (تعداد کارت پیش‌نمایش)
+ *
+ * ⚠️ محدودیت شناخته‌شده: بک‌اند پارامتر تاریخ (`checkIn`/`checkOut`) ندارد.
+ * ارسال آن‌ها نتیجه را تغییر نمی‌دهد، پس عمداً فرستاده نمی‌شوند و تاریخ‌ها
+ * فقط در UI و خلاصه‌ی جستجو می‌مانند. وقتی بک‌اند تقویم/موجودی گرفت، فقط
+ * همین‌جا دو خط اضافه می‌شود و بقیه‌ی زنجیره دست نمی‌خورد.
  */
 
+import "server-only";
+
 import { queryCabins } from "@/features/cabins/api/getCabins";
-import { regionIdFromSlug } from "@/features/search/constants/regions";
 import { formatPriceRange } from "@/libs/utils/price-range";
-import type {
-  CabinSearchQuery,
-  CabinSearchResult,
+import { regionIdFromSlug } from "../constants/regions";
+import {
+  SEARCH_PREVIEW_LIMIT,
+  type CabinSearchQuery,
+  type CabinSearchResult,
 } from "../types/search.types";
-import type { CabinSearchRepository } from "./cabin-search.repository";
 
-export function createApiCabinSearchRepository(): CabinSearchRepository {
-  return {
-    async search(query: CabinSearchQuery): Promise<CabinSearchResult> {
-      const { destination, guests, budget, limit } = query;
+/**
+ * جستجوی اقامتگاه روی API بک‌اند.
+ *
+ * `total` از `meta.totalItems` می‌آید؛ یعنی «تعداد کل نتایج پس از فیلتر»
+ * (نه طول آرایه‌ی برگشتی). این دقیقاً همان چیزی است که CTA پیش‌نمایش
+ * («مشاهده همه N اقامتگاه») لازم دارد، در حالی که آرایه به `limit` محدود است.
+ */
+export async function searchCabinsFromApi(
+  query: CabinSearchQuery,
+): Promise<CabinSearchResult> {
+  const { destination, guests, budget, limit } = query;
 
-      const { cabins, meta } = await queryCabins({
-        city: destination?.type === "city" ? destination.id : undefined,
-        regionId:
-          destination?.type === "region"
-            ? regionIdFromSlug(destination.id)
-            : undefined,
-        guests: guests ?? undefined,
-        price: budget ? formatPriceRange(budget.min, budget.max) : undefined,
-        limit: limit ?? 6,
-        page: 1,
-      });
+  const { cabins, meta } = await queryCabins({
+    city: destination?.type === "city" ? destination.id : undefined,
+    regionId:
+      destination?.type === "region"
+        ? regionIdFromSlug(destination.id)
+        : undefined,
+    guests: guests ?? undefined,
+    price: budget ? formatPriceRange(budget.min, budget.max) : undefined,
+    limit: limit ?? SEARCH_PREVIEW_LIMIT,
+    page: 1,
+  });
 
-      return { cabins, total: meta.totalItems, source: "api" };
-    },
-  };
+  return { cabins, total: meta.totalItems };
 }
-
-export const apiCabinSearchRepository: CabinSearchRepository =
-  createApiCabinSearchRepository();

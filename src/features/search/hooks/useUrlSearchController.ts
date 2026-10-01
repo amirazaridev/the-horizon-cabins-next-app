@@ -81,11 +81,24 @@ export function useUrlSearchController(
     setDraft((prev) => ({ ...prev, ...patch }));
   }, []);
 
-  const apply = useCallback(() => {
-    startTransition(() => {
-      setParams(serializeSearchFiltersForUpdate(draft));
-    });
-  }, [setParams, draft]);
+  /**
+   * اعمال جستجو روی URL.
+   *
+   * `patch` اختیاری برای «اعمال اتمیک» است: مقدار تازه‌ی یک پنل باید در
+   * همان فراخوانی وارد draft شود، چون `setDraft` (مثل هر setState) در همان
+   * تیک اعمال نمی‌شود و اگر دوباره `draft` کهنه را سریال می‌کردیم، آخرین
+   * انتخاب کاربر (مثلاً بودجه‌ی تازه‌کشیده) از URL می‌افتاد.
+   */
+  const apply = useCallback(
+    (patch?: Partial<SearchFilters>) => {
+      const next = patch ? { ...draft, ...patch } : draft;
+      if (patch) setDraft(next);
+      startTransition(() => {
+        setParams(serializeSearchFiltersForUpdate(next));
+      });
+    },
+    [setParams, draft],
+  );
 
   /** فقط draft؛ نتایج/URL پشت شیت دست‌نخورده می‌ماند */
   const resetDraft = useCallback(() => {

@@ -1,6 +1,6 @@
 export {
+  CABIN_SEARCH_ENDPOINT,
   cabinSearchRepository,
-  mockCabinSearchRepository,
   type CabinSearchRepository,
 } from "./cabin-search.repository";
 

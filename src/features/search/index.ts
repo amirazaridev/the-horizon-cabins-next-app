@@ -15,8 +15,8 @@ export { useUrlSearchController } from "./hooks/useUrlSearchController";
 export { useLastSearch, usePersistLastSearch } from "./hooks/useLastSearch";
 
 export {
+  CABIN_SEARCH_ENDPOINT,
   cabinSearchRepository,
-  mockCabinSearchRepository,
   type CabinSearchRepository,
 } from "./services/cabin-search.repository";
 

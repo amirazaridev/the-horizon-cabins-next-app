@@ -9,7 +9,6 @@ import Container from "@/components/ui/Container";
 import { useSearchPreview } from "../../hooks/useSearchPreview";
 import { useSearchPreviewAnimation } from "../../hooks/useSearchPreviewAnimation";
 import { useSearchStore } from "../../store/search.store";
-import { MOCK_CABIN_IMAGES } from "../../data/mock-images";
 import {
   hasAnySearchFilter,
   searchFiltersToHref,
@@ -35,7 +34,7 @@ export default function SearchPreview() {
   const applied = useSearchStore((state) => state.applied);
   const reset = useSearchStore((state) => state.reset);
 
-  const { status, cabins, total, source, retry } = useSearchPreview(applied);
+  const { status, cabins, total, retry } = useSearchPreview(applied);
 
   const hasFilters = hasAnySearchFilter(applied);
   const open = hasFilters && status !== "idle";
@@ -97,19 +96,12 @@ export default function SearchPreview() {
               <>
                 {/* دسکتاپ: گرید */}
                 <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-                  {cabins.map((cabin, index) => (
+                  {cabins.map((cabin) => (
                     <div key={cabin.id} data-preview-card>
                       <CabinCard
                         cabin={cabin}
                         variant="landing"
                         showPrice
-                        imageOverride={
-                          source === "mock"
-                            ? MOCK_CABIN_IMAGES[
-                                index % MOCK_CABIN_IMAGES.length
-                              ]
-                            : undefined
-                        }
                         className="h-full"
                       />
                     </div>
@@ -122,19 +114,12 @@ export default function SearchPreview() {
                     slideClassName="flex-[0_0_78%]"
                     showArrows={false}
                   >
-                    {cabins.map((cabin, index) => (
+                    {cabins.map((cabin) => (
                       <CabinCard
                         key={cabin.id}
                         cabin={cabin}
                         variant="landing"
                         showPrice
-                        imageOverride={
-                          source === "mock"
-                            ? MOCK_CABIN_IMAGES[
-                                index % MOCK_CABIN_IMAGES.length
-                              ]
-                            : undefined
-                        }
                         className="h-full"
                       />
                     ))}

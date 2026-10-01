@@ -105,14 +105,10 @@ export type CabinSearchQuery = {
 };
 
 export type CabinSearchResult = {
+  /** حداکثر `limit` نتیجه (برای پیش‌نمایش، پیش‌فرض ۶ کارت) */
   cabins: Cabin[];
-  /** تعداد کل نتایج (برای CTA) */
+  /** تعداد کل نتایج پس از فیلتر — برای متن CTA (از `meta.totalItems`) */
   total: number;
-  /**
-   * منبع داده — UI از این فیلد می‌فهمد آیا اجازه دارد تصاویر جایگزین
-   * ماک را اعمال کند یا نه. بعد از اتصال API واقعی «api» می‌شود.
-   */
-  source: "mock" | "api";
 };
 
 /* ------------------------------------------------------------------ */
@@ -129,7 +125,16 @@ export type SearchController = {
     value: SearchFilters[K],
   ) => void;
   setFilters: (patch: Partial<SearchFilters>) => void;
-  apply: () => void;
+  /**
+   * تأیید draft و تبدیل آن به مبنای fetch پیش‌نمایش/URL.
+   *
+   * `patch` اختیاری برای «اعمال اتمیک» است: وقتی یک پنل هم مقدار را عوض
+   * می‌کند و هم بلافاصله جستجو را اجرا می‌کند (مثل دکمه‌ی «اعمال» بودجه)،
+   * نباید به state کهنه‌ی draft تکیه کنیم — کنترلر URL مقدار draft را در
+   * `useState` نگه می‌دارد و به‌روزرسانی‌اش در همان تیک اعمال نمی‌شود.
+   * با `patch` مقدار تازه در همان فراخوانی وارد draft و applied می‌شود.
+   */
+  apply: (patch?: Partial<SearchFilters>) => void;
   /** پاک‌کردن کامل: draft + applied + URL */
   reset: () => void;
   /**

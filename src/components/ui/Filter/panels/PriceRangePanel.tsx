@@ -24,6 +24,26 @@ type Props = {
   onChange: (value: PriceRangeValue | null) => void;
   /** بعد از اعمال یا حذف صدا زده می‌شود (معمولاً برای بستن پنل) */
   onDone?: () => void;
+  /**
+   * **فقط** با کلیک روی دکمه‌ی «اعمال» صدا زده می‌شود — نه با «حذف».
+   *
+   * برای مصرف‌کننده‌ای که می‌خواهد با همان کلیک، جستجو را هم اجرا کند.
+   * مقدار، همان مقدار نرمال‌شده‌ای است که به `onChange` می‌رود
+   * (بازه‌ی کامل یعنی `null`).
+   */
+  onApply?: (value: PriceRangeValue | null) => void;
+  /**
+   * رفتار «بازه‌ی کامل» را عوض می‌کند (پیش‌فرض `false`).
+   *
+   *  - `false` → بازه‌ی کامل یعنی «بدون محدودیت» و `null` ثبت می‌شود
+   *    (مناسب `/cabins` و داشبورد تا URL تمیز بماند).
+   *  - `true`  → همان بازه‌ی کامل هم صریحاً `{min, max}` ثبت می‌شود.
+   *    سرچ لندینگ به این نیاز دارد: آنجا «اعمال» باید همیشه یک جستجوی
+   *    واقعی بسازد؛ وگرنه اگر کاربر فقط یک دستگیره را جابه‌جا کند و
+   *    نتیجه روی مرز بازه بیفتد، هیچ فیلتری ثبت نمی‌شود و بخش پیش‌نمایش
+   *    هرگز باز نمی‌شود.
+   */
+  commitFullRange?: boolean;
   /** توضیح بالای اسلایدر */
   hint?: string;
   applyLabel?: string;
@@ -51,6 +71,8 @@ export default function PriceRangePanel({
   value,
   onChange,
   onDone,
+  onApply,
+  commitFullRange = false,
   hint,
   applyLabel = "اعمال",
   clearLabel = "حذف فیلتر",
@@ -68,11 +90,32 @@ export default function PriceRangePanel({
       }
     : null;
 
+  /**
+   * `commit` فقط از مسیر دکمه‌ی «اعمال» صدا زده می‌شود: چون
+   * `commitOn="apply"` است، کشیدن دستگیره‌ها هیچ commitی تولید نمی‌کند و
+   * `submit()` تنها راه رسیدن به اینجاست. پس `onApply` دقیقاً معادل
+   * «کلیک روی اعمال» است (دکمه‌ی «حذف» این مسیر را طی نمی‌کند).
+   *
+   * ⚠️ هر لبه‌ای که ست نشده باشد روی مرز بازه‌ی خودش دیفالت می‌شود
+   * (`min` روی `min` و `max` روی `max`). این هم از حالت‌های لبه‌ای
+   * `RangeGauge.normalize` محافظت می‌کند (که می‌تواند `start` را کمی
+   * زیر `minValue` ببرد) و هم تضمین می‌کند مقدار ثبت‌شده همیشه یک بازه‌ی
+   * معتبر و در محدوده باشد.
+   */
   const commit = (next: GaugeRange) => {
-    // بازه‌ی کامل یعنی «بدون محدودیت» → null تا URL/state تمیز بماند
     const isFullRange = next.start <= min && next.end >= max;
-    onChange(isFullRange ? null : { min: next.start, max: next.end });
+
+    const normalized: PriceRangeValue | null =
+      isFullRange && !commitFullRange
+        ? null
+        : {
+            min: next.start <= min ? min : next.start,
+            max: next.end >= max ? max : next.end,
+          };
+
+    onChange(normalized);
     onDone?.();
+    onApply?.(normalized);
   };
 
   return (

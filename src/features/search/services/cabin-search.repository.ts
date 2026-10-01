@@ -1,97 +1,69 @@
 /**
- * قرارداد repository جستجوی اقامتگاه.
+ * repository جستجوی اقامتگاه — لایه‌ی کلاینت.
  *
  * ═══════════════════════════════════════════════════════════════════
- *  نقطه‌ی واحد تعویض Mock → API  ←  همین فایل، همین خط پایین
+ *  نقطه‌ی واحد دسترسی UI به داده‌ی جستجو  ←  همین فایل
  * ═══════════════════════════════════════════════════════════════════
  *
- *  امروز:  export const cabinSearchRepository = mockCabinSearchRepository
- *  فردا:   export const cabinSearchRepository = apiCabinSearchRepository
+ * هیچ کامپوننتی (SearchPreview, CabinCard, …) نمی‌داند داده از کجا می‌آید؛
+ * همه فقط `cabinSearchRepository.search(...)` را صدا می‌زنند.
  *
- * هیچ کامپوننتی (SearchPreview, CabinCard, SearchBar, …) نمی‌داند داده از
- * کجا می‌آید؛ همه فقط `cabinSearchRepository.search(...)` را صدا می‌زنند.
+ * زنجیره‌ی کامل:
+ *   UI → cabinSearchRepository (اینجا، کلاینت)
+ *      → GET /api/search/cabins  (Route Handler، سرور)
+ *      → searchCabinsFromApi     (آداپتور API، server-only)
+ *      → queryCabins             (getCabins)
+ *      → API بک‌اند
+ *
+ * داده‌ی ماک کاملاً حذف شده است؛ تنها منبع نتیجه‌ها API است.
  */
 
-import { MOCK_CABINS } from "../data/cabins.mock";
-import { regionIdFromSlug } from "../constants/regions";
-import { finalNightPrice } from "@/features/cabins/utils/cabin-filters";
-import type {
-  CabinSearchQuery,
-  CabinSearchResult,
-  Destination,
+import type { CabinDto } from "@/features/cabins/types/cabin.types";
+import { mapCabin } from "@/features/cabins/utils/mapCabin";
+import {
+  SEARCH_PREVIEW_LIMIT,
+  type CabinSearchResult,
+  type SearchFilters,
 } from "../types/search.types";
+import { serializeSearchFilters } from "../utils/search-params";
+
+/** مسیر داخلی پروکسی؛ تنها جایی که ساخته می‌شود همین فایل است */
+export const CABIN_SEARCH_ENDPOINT = "/api/search/cabins";
 
 export interface CabinSearchRepository {
-  search(query: CabinSearchQuery): Promise<CabinSearchResult>;
+  /**
+   * جستجوی اقامتگاه.
+   *
+   * @param filters فیلترهای هسته‌ی سرچ (همان `SearchFilters` دامنه)
+   * @param limit   حداکثر تعداد کارت برگشتی (پیش‌فرض: ۶ کارت پیش‌نمایش)
+   */
+  search(filters: SearchFilters, limit?: number): Promise<CabinSearchResult>;
 }
 
-/* ------------------------------------------------------------------ */
-/* منطق تطبیق (فقط داخل آداپتور ماک — هیچ‌وقت در UI)                    */
-/* ------------------------------------------------------------------ */
+/** شکل پاسخ JSON مسیر داخلی — تاریخ‌ها بعد از JSON رشته‌اند */
+type SearchResponseDto = {
+  cabins: CabinDto[];
+  total: number;
+};
 
-function matchesDestination(
-  cabinCity: { name: string; regionId?: number } | undefined,
-  destination: Destination,
-): boolean {
-  if (!cabinCity) return false;
+export const cabinSearchRepository: CabinSearchRepository = {
+  async search(filters, limit = SEARCH_PREVIEW_LIMIT) {
+    const params = new URLSearchParams(serializeSearchFilters(filters));
+    params.set("limit", String(limit));
 
-  if (destination.type === "region") {
-    const regionId = regionIdFromSlug(destination.id);
-    return regionId !== undefined && cabinCity.regionId === regionId;
-  }
-
-  // تطبیق با شناسه یا نام — تا قبل و بعد از اتصال API یکسان کار کند
-  return cabinCity.name === destination.name;
-}
-
-/** پاک‌سازی پارامترهای اختیاری */
-function normalize(query: CabinSearchQuery) {
-  return {
-    destination: query.destination ?? null,
-    guests: typeof query.guests === "number" ? query.guests : null,
-    budget: query.budget ?? null,
-    limit: query.limit ?? 6,
-  };
-}
-
-export const mockCabinSearchRepository: CabinSearchRepository = {
-  async search(query) {
-    const { destination, guests, budget, limit } = normalize(query);
-
-    // ⚠️ بک‌اند فعلی موجودی/تقویم ندارد؛ پس روی تاریخ فیلتر نمی‌کنیم
-    // (به‌جای ادعای الکی، فقط فیلترهای قابل‌پشتیبانی اعمال می‌شوند).
-    const filtered = MOCK_CABINS.filter((cabin) => {
-      if (destination && !matchesDestination(cabin.city, destination)) {
-        return false;
-      }
-      if (guests !== null && cabin.maxCapacity < guests) return false;
-      if (budget !== null) {
-        const nightly = finalNightPrice(cabin);
-        if (nightly < budget.min || nightly > budget.max) return false;
-      }
-      return true;
+    const res = await fetch(`${CABIN_SEARCH_ENDPOINT}?${params}`, {
+      headers: { accept: "application/json" },
     });
 
-    // تأخیر کوچک تا حالت Loading واقعی حس شود (شبیه‌سازی شبکه)
-    await new Promise((resolve) => setTimeout(resolve, 320));
+    if (!res.ok) {
+      throw new Error("دریافت نتایج جستجو ناموفق بود.");
+    }
+
+    const json = (await res.json()) as SearchResponseDto;
 
     return {
-      cabins: filtered.slice(0, limit),
-      total: filtered.length,
-      source: "mock",
+      cabins: (json.cabins ?? []).map(mapCabin),
+      total: json.total ?? 0,
     };
   },
 };
-
-/**
- * آداپتور واقعی (فعال‌نشده).
- *
- * وقتی endpoint جستجو آماده شد:
- *  1) این فایل را به `cabin-search.api.ts` منتقل کنید (چون `apiFetch`
- *     با `server-only` علامت خورده و نباید در باندل کلاینت بیاید)،
- *  2) یا این پیاده‌سازی را جای `mockCabinSearchRepository` بگذارید.
- *
- * نگاشت‌های لازم در همان نقطه انجام می‌شود و UI دست نمی‌خورد.
- */
-export const cabinSearchRepository: CabinSearchRepository =
-  mockCabinSearchRepository;
