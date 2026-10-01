@@ -4,6 +4,7 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import RangeDatePicker, {
   type DateRange,
 } from "@/components/ui/RangeDatePicker";
+import { RANGE_PICKER_NARROW_QUERY } from "./range-picker-breakpoint";
 
 export type { DateRange };
 
@@ -44,7 +45,21 @@ export default function DateRangePanel({
   clearLabel = "حذف تاریخ",
   className = "",
 }: Props) {
-  const isNarrow = useMediaQuery("(max-width: 640px)");
+  /*
+    فقط تعداد ماه‌ها را تعیین می‌کند؛ **چیدمان** را
+    `RangeDatePicker/style.module.css` به‌صورت موبایل‌محور کنترل می‌کند.
+    ⚠️ تکیه‌کردن به این مقدار به‌تنهایی کافی نیست: در اولین رندر کلاینت
+    (قبل از اجرای افکتِ `useMediaQuery`) مقدار `false` است، پس تقویم با
+    ۲ ماه mount می‌شود. برای همین CSS هم مستقلاً تک‌ماه را تضمین می‌کند.
+  */
+  /*
+    فقط تعداد ماه‌ها را تعیین می‌کند؛ **چیدمان** را
+    `RangeDatePicker/style.module.css` به‌صورت موبایل‌محور کنترل می‌کند.
+    ⚠️ تکیه‌کردن به این مقدار به‌تنهایی کافی نیست: در اولین رندر کلاینت
+    (قبل از اجرای افکتِ `useMediaQuery`) مقدار `false` است، پس تقویم با
+    ۲ ماه mount می‌شود. برای همین CSS هم مستقلاً تک‌ماه را تضمین می‌کند.
+  */
+  const isNarrow = useMediaQuery(RANGE_PICKER_NARROW_QUERY);
 
   const hasSelection = value.from !== null || value.to !== null;
 

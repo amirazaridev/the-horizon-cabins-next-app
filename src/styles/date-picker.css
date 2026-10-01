@@ -1,0 +1,248 @@
+
+/* ================================================================
+   پایه‌ی مشترک تقویم‌های شمسی پروژه — `.horizon-date-picker`
+
+   سه جا از این کلاس استفاده می‌کنند و همین باعث می‌شود استایل‌هایش
+   اینجا (و نه در فایل هیچ کامپوننتی) بماند:
+     • `RangeDatePicker` (سرچ لندینگ، فیلتر `/cabins`، صفحه‌ی جزئیات)
+     • `DayRangePicker` (داشبورد — تب «روز»)
+     • `MonthRangePicker` (داشبورد — تب «ماه»)
+
+   ⚠️ چرا این بلوک لازم است؟ `react-multi-date-picker` استایل پایه‌اش را
+   با رنگ‌های **هاردکد آبی/سفید** در یک تگ `<style>` تزریق می‌کند
+   (`#0074d9` روز انتخابی، `#7fdbff` امروز، `#fff` قاب و پنل ماه،
+   `#000` متن روزها، `#8798ad` سایه). بدون این بازنویسی‌ها، تقویم‌های
+   داشبورد در حالت تیره کارت سفید و روزهای آبی نشان می‌دادند.
+   اینجا همه‌ی رنگ‌ها از توکن‌های تم می‌آیند.
+
+   ⚠️ هر سلکتور با `.horizon-date-picker` شروع می‌شود تا از استایل
+   تزریقی کتابخانه (تک‌کلاسه) با اختصاصی‌بودن بالاتر جلو بزند و نتیجه
+   به ترتیب بارگذاری CSS وابسته نباشد.
+   ================================================================ */
+
+/* ---------- قاب پاپ‌آپ ---------- */
+.horizon-date-picker.rmdp-wrapper {
+  background-color: var(--color-surface);
+}
+.horizon-date-picker.rmdp-shadow {
+  box-shadow: 0 10px 30px -14px
+    color-mix(in srgb, var(--color-overlay) 55%, transparent);
+}
+.horizon-date-picker.rmdp-border {
+  border: 1px solid var(--color-border);
+}
+.horizon-date-picker.rmdp-border-top {
+  border-top: 1px solid var(--color-border);
+}
+.horizon-date-picker.rmdp-border-bottom {
+  border-bottom: 1px solid var(--color-border);
+}
+.horizon-date-picker.rmdp-border-left {
+  border-left: 1px solid var(--color-border);
+}
+.horizon-date-picker.rmdp-border-right {
+  border-right: 1px solid var(--color-border);
+}
+
+/* ---------- فلش پاپ‌آپ ---------- */
+.horizon-date-picker.rmdp-ep-arrow:after {
+  background-color: var(--color-surface);
+}
+.horizon-date-picker.rmdp-ep-shadow:after {
+  box-shadow: 0 0 6px color-mix(in srgb, var(--color-overlay) 45%, transparent);
+}
+.horizon-date-picker.rmdp-ep-border:after {
+  border: 1px solid var(--color-border);
+}
+.horizon-date-picker.rmdp-ep-arrow[direction="top"] {
+  border-bottom: 1px solid var(--color-surface);
+}
+.horizon-date-picker.rmdp-ep-arrow[direction="bottom"] {
+  border-top: 1px solid var(--color-surface);
+}
+.horizon-date-picker.rmdp-ep-arrow[direction="left"] {
+  border-right: 1px solid var(--color-surface);
+}
+.horizon-date-picker.rmdp-ep-arrow[direction="right"] {
+  border-left: 1px solid var(--color-surface);
+}
+
+/* ---------- اندازه‌های پایه (نرمال‌شده برای هر سه تقویم) ---------- */
+.horizon-date-picker .rmdp-calendar {
+  padding: 16px 14px;
+}
+.horizon-date-picker .rmdp-day {
+  height: 40px;
+  width: 40px;
+}
+.horizon-date-picker .rmdp-day span {
+  font-size: 13.5px;
+}
+.horizon-date-picker .rmdp-week {
+  margin-bottom: 2px;
+}
+.horizon-date-picker .rmdp-week-day {
+  height: 36px;
+  width: 36px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.horizon-date-picker .rmdp-header {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ---------- هدر ماه/سال ---------- */
+.horizon-date-picker .rmdp-header-values {
+  color: var(--color-text);
+}
+.horizon-date-picker .rmdp-header-values span {
+  padding: 0 4px;
+}
+.horizon-date-picker .rmdp-month-name {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ---------- فلش‌های هدر ---------- */
+.horizon-date-picker .rmdp-arrow-container {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  transition:
+    background-color 0.2s,
+    transform 0.15s;
+}
+.horizon-date-picker .rmdp-arrow-container:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-400) 18%,
+    transparent
+  );
+  box-shadow: none;
+}
+.horizon-date-picker .rmdp-arrow-container:active {
+  transform: scale(0.9);
+}
+.horizon-date-picker .rmdp-arrow {
+  border-color: var(--color-primary-500);
+  border-width: 0 2px 2px 0;
+  height: 4px;
+  width: 4px;
+}
+.horizon-date-picker .rmdp-arrow-container:hover .rmdp-arrow {
+  border: solid var(--color-primary-500);
+  border-width: 0 2px 2px 0;
+}
+.horizon-date-picker .rmdp-arrow-container.disabled .rmdp-arrow,
+.horizon-date-picker .rmdp-arrow-container.disabled:hover .rmdp-arrow {
+  border: solid var(--color-text-gray);
+  border-width: 0 2px 2px 0;
+  opacity: 0.5;
+}
+
+/* ---------- سلول روز ---------- */
+.horizon-date-picker .rmdp-day,
+.horizon-date-picker .rmdp-week-day {
+  color: var(--color-text);
+}
+.horizon-date-picker .rmdp-week-day {
+  color: var(--color-text-gray);
+}
+
+/* امروز */
+.horizon-date-picker .rmdp-day.rmdp-today span {
+  background-color: transparent;
+  color: var(--color-primary-600);
+  box-shadow: inset 0 0 0 1.5px var(--color-primary-400);
+}
+.dark .horizon-date-picker .rmdp-day.rmdp-today span {
+  color: var(--color-primary-400);
+}
+
+/* روز انتخاب‌شده (ورود/خروج یا تک‌روز) */
+.horizon-date-picker .rmdp-day.rmdp-selected span:not(.highlight) {
+  background-color: var(--color-primary-400);
+  color: var(--color-on-primary);
+  font-weight: 800;
+  box-shadow: 0 4px 14px -4px
+    color-mix(in srgb, var(--color-primary-400) 70%, transparent);
+}
+
+/* روزهای غیرفعال (قبل از امروز یا رزروشده) */
+.horizon-date-picker .rmdp-day.rmdp-disabled,
+.horizon-date-picker .rmdp-day.rmdp-deactive {
+  color: color-mix(in srgb, var(--color-text-gray) 45%, transparent);
+}
+.horizon-date-picker .rmdp-day.rmdp-deactive.rmdp-selected span {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-400) 45%,
+    transparent
+  );
+  box-shadow: none;
+}
+
+/* روزهای ماه‌های دیگر */
+.horizon-date-picker .rmdp-day-hidden,
+.horizon-date-picker .rmdp-day-hidden:hover span {
+  background-color: transparent;
+}
+
+/* hover و فشار */
+@media (hover: hover) {
+  .horizon-date-picker
+    .rmdp-day:not(.rmdp-disabled, .rmdp-day-hidden)
+    span:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--color-primary-400) 22%,
+      transparent
+    );
+    color: var(--color-text);
+  }
+  .horizon-date-picker
+    .rmdp-day:not(.rmdp-disabled, .rmdp-day-hidden):active
+    span {
+    transform: scale(0.88);
+  }
+}
+
+/* ---------- پنل ماه/سال داخل پاپ‌آپ ---------- */
+/* پس‌زمینه‌ی شفاف تا قاب خودِ پاپ‌آپ دیده شود و در تم تیره سفید نماند */
+.horizon-date-picker .rmdp-month-picker,
+.horizon-date-picker .rmdp-year-picker {
+  background-color: transparent;
+}
+
+/* ---------- دکمه‌های عملیات پاپ‌آپ (تأیید / لغو) ---------- */
+.horizon-date-picker .rmdp-button {
+  background-color: var(--color-primary-400);
+  color: var(--color-on-primary);
+}
+.horizon-date-picker .rmdp-button:hover {
+  background-color: var(--color-primary-300);
+}
+.horizon-date-picker .rmdp-button:disabled {
+  background-color: color-mix(in srgb, var(--color-text-gray) 35%, transparent);
+}
+.horizon-date-picker .rmdp-action-button,
+.horizon-date-picker .rmdp-action-button:hover {
+  background-color: transparent;
+  color: var(--color-primary-600);
+}
+.dark .horizon-date-picker .rmdp-action-button,
+.dark .horizon-date-picker .rmdp-action-button:hover {
+  color: var(--color-primary-400);
+}
+
+/* ---------- فوکوس صفحه‌کلید ---------- */
+/* کتابخانه `outline-color:#00539c` می‌گذارد؛ اینجا به رنگ تم برمی‌گردد */
+.horizon-date-picker .rmdp-calendar :focus {
+  outline-color: var(--color-primary-400);
+}
+.horizon-date-picker .rmdp-calendar :focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 1px;
+}

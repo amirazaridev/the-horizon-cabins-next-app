@@ -21,6 +21,15 @@ import {
   getJalaliYear,
 } from "../../lib/date-range";
 
+/**
+ * ⚠️ import جانبی (side-effect) — استایل‌های مخصوص همین کامپوننت با
+ * `:global()` نوشته شده‌اند (کلاس‌های `rmdp-*` کتابخانه‌اند و نباید hash
+ * شوند)، پس مقدار export‌شده‌ای ندارد؛ ولی باید import شود تا CSS در
+ * باندل بیاید و با داشبورد کد-اسپلیت شود.
+ */
+// import "./MonthRangePicker.module.css";
+import { DATE_PICKER_INPUT_CLASS } from "./date-picker-input-class";
+
 interface MonthRangePickerProps {
   from: Date;
   to: Date;
@@ -141,10 +150,6 @@ export default function MonthRangePicker({
 
   /* ---------------- رندر ---------------- */
 
-  /** کلاس مشترک input — هم‌شکل با فیلدهای تب «روز» */
-  const inputClass =
-    "!w-full !h-11 !rounded-xl !border !border-border !bg-background !px-3 !text-sm !text-text text-center";
-
   return (
     <div className="border-border bg-surface rounded-2xl border p-4 sm:p-5">
       {/* خلاصهٔ بازهٔ انتخاب‌شده */}
@@ -186,9 +191,9 @@ export default function MonthRangePicker({
             shadow={false}
             buttons={false}
             calendarPosition="bottom-center"
-            className="horizon-date-picker horizon-month-picker"
+            className="horizon-date-picker "
             containerClassName="w-full"
-            inputClass={inputClass}
+            inputClass={DATE_PICKER_INPUT_CLASS}
           />
         </div>
 
@@ -209,9 +214,9 @@ export default function MonthRangePicker({
             shadow={false}
             buttons={false}
             calendarPosition="bottom-center"
-            className="horizon-date-picker horizon-month-picker"
+            className="horizon-date-picker"
             containerClassName="w-full"
-            inputClass={inputClass}
+            inputClass={DATE_PICKER_INPUT_CLASS}
           />
         </div>
       </div>
