@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 
 import CabinList from "@/features/cabins/components/CabinList";
+import CabinCardsSkeleton from "@/features/cabins/components/CabinCardsSkeleton";
 import CabinsExplorer from "@/features/cabins/components/CabinsExplorer";
-import Spinner from "@/components/ui/Spinner";
 
 import {
   getAmenities,
@@ -67,7 +67,12 @@ export default async function CabinsPage({
         searchParams={sp}
       >
         <Suspense
-          fallback={<Spinner size="lg" label="درحال بارگزاری ..." fullWidth />}
+          fallback={
+            <CabinCardsSkeleton
+              count={limit}
+              gridClassName="grid grid-cols-1 gap-5 px-3 sm:grid-cols-2 lg:grid-cols-3"
+            />
+          }
           key={JSON.stringify(filters) + page + limit}
         >
           <CabinList cabins={cabins} meta={meta} searchParams={sp} />

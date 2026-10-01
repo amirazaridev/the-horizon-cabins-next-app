@@ -2,21 +2,8 @@
 
 import { RefreshCw, SearchX, TriangleAlert } from "lucide-react";
 
+import CabinCardsSkeleton from "@/features/cabins/components/CabinCardsSkeleton";
 import { SEARCH_PREVIEW_LIMIT } from "../../types/search.types";
-
-/** کارت اسکلتی هم‌ابعاد کارت واقعی — برای جلوگیری از پرش ارتفاع */
-function SkeletonCard() {
-  return (
-    <div className="border-foreground/5 bg-surface animate-pulse overflow-hidden rounded-3xl border">
-      <div className="bg-foreground/5 aspect-video" />
-      <div className="flex flex-col gap-3 p-4">
-        <div className="bg-foreground/5 h-4 w-2/3 rounded-full" />
-        <div className="bg-foreground/5 h-3 w-1/2 rounded-full" />
-        <div className="bg-foreground/5 mt-2 h-4 w-1/3 rounded-full" />
-      </div>
-    </div>
-  );
-}
 
 export function PreviewSkeleton() {
   return (
@@ -29,11 +16,20 @@ export function PreviewSkeleton() {
         در حال پیدا کردن اقامتگاه…
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: SEARCH_PREVIEW_LIMIT }).map((_, index) => (
-          <SkeletonCard key={index} />
-        ))}
-      </div>
+      {/*
+        همان چیدمان نتایج واقعی: موبایل کاروسل، از `sm` به بالا گرید.
+        اسکلتون‌ها هم‌ابعاد `CabinCard` (واریانت landing) هستند، پس تبدیل
+        لودینگ به محتوا هیچ پرشی در ارتفاع سکشن ایجاد نمی‌کند.
+      */}
+      <CabinCardsSkeleton
+        count={SEARCH_PREVIEW_LIMIT}
+        variant="landing"
+        layout="responsive"
+        gridClassName="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3"
+        slideClassName="flex-[0_0_78%]"
+        itemProps={{ "data-preview-card": true }}
+        showPrice
+      />
     </div>
   );
 }

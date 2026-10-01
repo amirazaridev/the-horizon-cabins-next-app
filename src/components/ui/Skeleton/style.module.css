@@ -1,0 +1,48 @@
+/*
+  اسکلتون لودینگ — بلوک پایه + افکت Shimmer.
+
+  رنگ‌ها از توکن تم (`--color-foreground`) ساخته می‌شوند؛ پس در حالت روشن
+  و تیره به‌درستی دیده می‌شوند و با پالت گرم سایت هم‌خوان می‌مانند.
+
+  انیمیشن روی `transform` یک شبه‌المان (`::after`) اجرا می‌شود، نه روی
+  `background-position`. چون transform کامپوزیت‌شدنی است و به‌جای
+  layout/repaint فقط روی GPU جابه‌جا می‌شود — همان چیزی که برای ده‌ها بلوک
+  هم‌زمان لازم داریم.
+*/
+
+.block {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: color-mix(in srgb, var(--color-foreground) 7%, transparent);
+}
+
+.block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translate3d(-100%, 0, 0);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-foreground) 5%, transparent) 30%,
+    color-mix(in srgb, var(--color-foreground) 11%, transparent) 50%,
+    color-mix(in srgb, var(--color-foreground) 5%, transparent) 70%,
+    transparent 100%
+  );
+  animation: shimmer 1.7s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+/* کاربرانی که انیمیشن کم می‌خواهند: فقط یک بلوک ثابت و آرام */
+@media (prefers-reduced-motion: reduce) {
+  .block::after {
+    animation: none;
+    opacity: 0;
+  }
+}

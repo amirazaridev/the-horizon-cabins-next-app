@@ -1,10 +1,11 @@
 import { Suspense, type ReactNode } from "react";
-import Spinner from "@/components/ui/Spinner";
 
 import AddCabin from "@/features/dashboard/cabins/components/AddCabin";
 import CabinListOperations from "@/features/dashboard/cabins/components/CabinListOperations";
 import CabinListDashboard from "@/features/dashboard/cabins/components/CabinListDashboard";
+import CabinCardsSkeleton from "@/features/cabins/components/CabinCardsSkeleton";
 import type { CabinsSearchParams } from "@/features/dashboard/cabins/lib/operations";
+import { parseLimitParam } from "@/libs/utils/pagination";
 
 export const metadata = { title: "مدیریت اقامتگاهها" };
 
@@ -37,7 +38,13 @@ export default async function CabinsPage({
 
       <Suspense
         key={JSON.stringify(sp)}
-        fallback={<Spinner size="lg" label="درحال بارگزاری ..." fullWidth />}
+        fallback={
+          <CabinCardsSkeleton
+            count={parseLimitParam(sp.limit)}
+            variant="dashboard"
+            gridClassName="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3"
+          />
+        }
       >
         <CabinListDashboard searchParams={sp} />
       </Suspense>
