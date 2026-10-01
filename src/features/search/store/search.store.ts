@@ -28,6 +28,15 @@ import {
 type SearchStoreState = {
   draft: SearchFilters;
   applied: SearchFilters;
+  /**
+   * شمارنده‌ی «نسل جستجو» — با هر `apply()` یکی زیاد می‌شود.
+   *
+   * چرا لازم است؟ کوئری فقط وقتی تغییر می‌کند که محتوای فیلترها عوض شود. پس
+   * اگر کاربر دوباره روی «جستجو» بزند (بدون تغییر فیلتر)، کلید کوئری ثابت
+   * می‌ماند و افکتِ fetch دوباره اجرا نمی‌شود — دکمه‌ی جستجو عملاً هیچ کاری
+   * نمی‌کند. این شمارنده باعث می‌شود هر «اعمال» یک پرس‌وجوی تازه بسازد.
+   */
+  appliedToken: number;
 
   setDestination: (destination: SearchFilters["destination"]) => void;
   setDates: (checkIn: Date | null, checkOut: Date | null) => void;
@@ -50,6 +59,7 @@ type SearchStoreState = {
 export const useSearchStore = create<SearchStoreState>((set) => ({
   draft: EMPTY_SEARCH_FILTERS,
   applied: EMPTY_SEARCH_FILTERS,
+  appliedToken: 0,
 
   setDestination: (destination) =>
     set((state) => ({ draft: { ...state.draft, destination } })),
@@ -76,11 +86,20 @@ export const useSearchStore = create<SearchStoreState>((set) => ({
   apply: (patch) =>
     set((state) => {
       const draft = patch ? { ...state.draft, ...patch } : state.draft;
-      return { draft, applied: { ...draft } };
+      return {
+        draft,
+        applied: { ...draft },
+        appliedToken: state.appliedToken + 1,
+      };
     }),
 
   resetDraft: () => set({ draft: EMPTY_SEARCH_FILTERS }),
 
+  /** پاک‌کردن کامل: draft + applied + شمارنده‌ی نسل */
   reset: () =>
-    set({ draft: EMPTY_SEARCH_FILTERS, applied: EMPTY_SEARCH_FILTERS }),
+    set({
+      draft: EMPTY_SEARCH_FILTERS,
+      applied: EMPTY_SEARCH_FILTERS,
+      appliedToken: 0,
+    }),
 }));

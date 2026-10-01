@@ -43,9 +43,16 @@ export type SearchPreviewState = {
  * بار دوم زودهنگام return می‌شد و وضعیت برای همیشه روی «loading» گیر می‌کرد
  * (باگ «گیرکردن سکشن بعد از بازگشت به صفحه»).
  */
+/**
+ * @param token نسلِ جستجو (`appliedToken` استور). با هر «اعمال» عوض می‌شود تا
+ *              زدن دوباره‌ی دکمه‌ی جستجو با همان فیلترها هم یک پرس‌وجوی تازه
+ *              بسازد (در غیر این صورت کلید کوئری ثابت می‌ماند و افکت اجرا
+ *              نمی‌شود).
+ */
 export function useSearchPreview(
   filters: SearchFilters,
   limit: number = SEARCH_PREVIEW_LIMIT,
+  token: number = 0,
 ): SearchPreviewState {
   const [status, setStatus] = useState<SearchPreviewStatus>("idle");
   const [cabins, setCabins] = useState<Cabin[]>([]);
@@ -67,7 +74,16 @@ export function useSearchPreview(
   useEffect(() => {
     const current = filtersRef.current;
 
-    if (!hasAnySearchFilter(current)) {
+    /*
+     * «جستجوی خالی» هم معتبر است: یعنی «همه‌ی اقامتگاه‌ها» — همان چیزی که
+     * برچسب دکمه‌ی موبایل و کامنت `Search.tsx` می‌گویند.
+     *
+     * پس فقط وقتی idle می‌مانیم که نه فیلتری باشد و نه هرگز «اعمال»ی
+     * انجام شده باشد (`token === 0`). با این تعریف، زدن «جستجو» بدون
+     * فیلتر هم یک پرس‌وجوی واقعی می‌سازد و سکشن باز می‌شود؛ و `reset`
+     * که توکن را صفر می‌کند، سکشن را به حالت بسته برمی‌گرداند.
+     */
+    if (!hasAnySearchFilter(current) && token === 0) {
       setStatus("idle");
       setCabins([]);
       setTotal(0);
@@ -95,7 +111,7 @@ export function useSearchPreview(
     return () => {
       cancelled = true;
     };
-  }, [key, limit, retryToken]);
+  }, [key, limit, token, retryToken]);
 
   const retry = useCallback(() => setRetryToken((token) => token + 1), []);
 

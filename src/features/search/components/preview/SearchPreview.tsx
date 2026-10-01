@@ -32,12 +32,37 @@ import { PreviewEmpty, PreviewError, PreviewSkeleton } from "./PreviewStates";
  */
 export default function SearchPreview() {
   const applied = useSearchStore((state) => state.applied);
+  const appliedToken = useSearchStore((state) => state.appliedToken);
   const reset = useSearchStore((state) => state.reset);
 
-  const { status, cabins, total, retry } = useSearchPreview(applied);
+  const { status, cabins, total, retry } = useSearchPreview(
+    applied,
+    undefined,
+    appliedToken,
+  );
 
   const hasFilters = hasAnySearchFilter(applied);
-  const open = hasFilters && status !== "idle";
+
+  /*
+   * «باز بودن» **فقط** به «اعمال‌شدنِ جستجو» بستگی دارد — نه به وضعیت fetch.
+   *
+   * چرا این مهم است؟ اگر شرط `status !== "idle"` بماند، درست بعد از «اعمال»
+   * (و در اولین رندرِ بازگشت به صفحه) یک رندر با `open=false` داریم؛ آن رندر
+   * شاخه‌ی «بستنِ» انیمیشن را اجرا می‌کند و بعد شاخه‌ی «باز شدن» با آن
+   * می‌جنگد. بدتر از آن، اگر به هر دلیلی fetch اجرا نشود، سکشن برای همیشه
+   * بسته می‌ماند و زدن دکمه‌ی جستجو هم کمکی نمی‌کند (چون کلید کوئری تغییر
+   * نکرده و افکت دوباره اجرا نمی‌شود).
+   *
+   * `appliedToken > 0` یعنی «کاربر حداقل یک‌بار جستجو را اعمال کرده» — حتی
+   * بدون هیچ فیلتری. این حالت یعنی «همه‌ی اقامتگاه‌ها» (همان چیزی که برچسب
+   * دکمه‌ی موبایل وعده می‌دهد) و با `reset` توکن صفر می‌شود و سکشن می‌بندد.
+   *
+   * با این تعریف، `open` تابعیِ قطعی از state است و هرگز گیر نمی‌کند.
+   */
+  const open = hasFilters || appliedToken > 0;
+
+  /** در همان رندرِ اولِ بعد از اعمال هم اسکلتی نشان بده (هم ارتفاع می‌دهد هم بازخورد) */
+  const showSkeleton = open && (status === "idle" || status === "loading");
 
   const revision = `${searchFiltersToQueryString(applied)}::${status}::${cabins.length}`;
   const { wrapperRef, contentRef } = useSearchPreviewAnimation(open, revision);
@@ -86,7 +111,7 @@ export default function SearchPreview() {
               </button>
             </header>
 
-            {status === "loading" && <PreviewSkeleton />}
+            {showSkeleton && <PreviewSkeleton />}
 
             {status === "error" && <PreviewError onRetry={retry} />}
 

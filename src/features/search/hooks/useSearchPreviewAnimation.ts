@@ -11,16 +11,25 @@ import gsap from "gsap";
  *   content   : y 16 → 0 + opacity 0 → 1
  *   cards     : stagger کوچک
  *
- * ── دو تله‌ای که این پیاده‌سازی عمداً از آن‌ها دوری می‌کند ──
+ * ── سه تله‌ای که این پیاده‌سازی عمداً از آن‌ها دوری می‌کند ──
  *
- * ۱) هرگز از `gsap.from()` استفاده نشده، فقط `fromTo()`.
+ * ۱) توینِ «بستن» باید پیش از ساخت تایملاینِ «باز شدن» کشته شود
+ *    (`killTweensOf`). اولین باز شدن همیشه یک رندر با `open=false` دارد،
+ *    پس شاخه‌ی بستن یک `gsap.to(wrapper, {height:0})` می‌سازد و زنده
+ *    می‌ماند. تایملاینِ بعدی هم روی همان `height` می‌نویسد؛ چون
+ *    `overwrite` گزینه‌ی **tween** است و روی **timeline** اعمال نمی‌شود،
+ *    آن توین زنده می‌ماند و با تایملاین می‌جنگد — نتیجه: سکشن «باز می‌شود»
+ *    ولی ارتفاع صفر می‌ماند، و فقط بعد از تغییر یک فیلتر (که دیگر از مسیر
+ *    `open=false` عبور نمی‌کند) درست می‌شود.
+ *
+ * ۲) هرگز از `gsap.from()` استفاده نشده، فقط `fromTo()`.
  *    `from()` مقادیر شروع را **فوراً روی المان می‌نویسد** (`opacity: 0`
  *    و `visibility: hidden`). اگر تایملاین وسط راه `kill()` شود — که
  *    طبیعتاً وقتی وضعیت fetch عوض می‌شود اتفاق می‌افتد — آن استایل‌های
  *    inline هرگز پاک نمی‌شوند و محتوا برای همیشه نامرئی می‌ماند
  *    (باگ «سکشن باز می‌شود ولی خالی است»).
  *
- * ۲) هر شاخه‌ای که انیمیت نمی‌کند، حالت نهایی و «قابل‌دیدن» را صریحاً
+ * ۳) هر شاخه‌ای که انیمیت نمی‌کند، حالت نهایی و «قابل‌دیدن» را صریحاً
  *    با `gsap.set` می‌نویسد. پس هر مسیری که افکت طی کند، به یک وضعیت
  *    قطعی و سالم ختم می‌شود.
  *
@@ -39,6 +48,17 @@ export function useSearchPreviewAnimation(open: boolean, revision: string) {
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+
+    /*
+     * ⭐ هر اجرا از یک وضعیت قطعی شروع می‌شود.
+     *
+     * بدون این خط، توینِ «بستنِ» اجرای قبلی زنده می‌ماند و همزمان با
+     * تایملاینِ «باز شدنِ» این اجرا روی `wrapper.style.height` می‌نویسد؛
+     * ارتفاع نهایی غیرقابل‌پیش‌بینی می‌شود و عملاً روی صفر می‌ماند
+     * (سکشن باز نمی‌شود). تایملاین جایگزین توینِ بستن نمی‌شود چون
+     * `overwrite` برای timeline معنا ندارد.
+     */
+    gsap.killTweensOf([wrapper, content]);
 
     const cards = Array.from(
       content.querySelectorAll<HTMLElement>("[data-preview-card]"),
@@ -85,12 +105,21 @@ export function useSearchPreviewAnimation(open: boolean, revision: string) {
       return;
     }
 
-    const target = content.offsetHeight;
+    /*
+     * اندازه‌گیری هدف. اگر به هر دلیلی (عدم محاسبه‌ی layout، محتوای خالی)
+     * صفر برگردد، انیمیت به ارتفاع صفر یعنی «سکشن باز نمی‌شود» — پس در این
+     * حالت مستقیماً حالتِ نهاییِ مرئی را می‌نویسیم.
+     */
+    const target = content.offsetHeight || content.scrollHeight;
+
+    if (target <= 0) {
+      showContent();
+      return;
+    }
 
     gsap.set(wrapper, { height: 0, autoAlpha: 0 });
 
     const tl = gsap.timeline({
-      overwrite: true,
       onComplete: () => {
         gsap.set(wrapper, { height: "auto" });
       },

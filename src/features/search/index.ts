@@ -78,7 +78,7 @@ export {
   regionSlugFromId,
   toSearchRegions,
 } from "./constants/regions";
-export { groupCitiesByRegion } from "./data/city-groups";
+export { groupCitiesByRegion } from "./utils/city-groups";
 
 export type {
   BudgetRange,

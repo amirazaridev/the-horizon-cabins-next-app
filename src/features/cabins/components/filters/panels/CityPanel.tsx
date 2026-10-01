@@ -7,7 +7,7 @@ import SharedCityPanel, {
   type CityPanelGroup,
 } from "@/components/ui/Filter/panels/CityPanel";
 import { regionAllCitiesLabel } from "@/features/search/constants/regions";
-import { groupCitiesByRegion } from "@/features/search/data/city-groups";
+import { groupCitiesByRegion } from "@/features/search/utils/city-groups";
 import type { Region } from "@/features/search/types/search.types";
 import {
   CITY_VALUE_PREFIX,
@@ -99,8 +99,7 @@ export default function CityPanel({ cities, regions, value, onChange }: Props) {
     const destination = decodeDestinationWithName(next, cities);
 
     setParams({
-      city:
-        destination?.type === "city" ? String(destination.id) : null,
+      city: destination?.type === "city" ? String(destination.id) : null,
       region: destination?.type === "region" ? destination.id : null,
     });
   };

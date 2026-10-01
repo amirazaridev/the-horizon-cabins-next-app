@@ -13,7 +13,7 @@ import {
   regionHint as regionHintOf,
   regionName,
 } from "../constants/regions";
-import { groupCitiesByRegion, type CityGroup } from "../data/city-groups";
+import { groupCitiesByRegion, type CityGroup } from "../utils/city-groups";
 import type { Destination, Region, RegionId } from "../types/search.types";
 
 export type DestinationSearchResult = {
