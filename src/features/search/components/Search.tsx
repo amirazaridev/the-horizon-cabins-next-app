@@ -413,7 +413,12 @@ export default function Search({
          * پدینگ/ارتفاع را خودِ تریگر می‌دهد، پس اینجا فقط ظاهر نوار است.
          * `w-full` تضمین می‌کند دکمه تا انتهای کانتینر `Search` کشیده شود.
          */
-        mobileTriggerClassName={`w-full rounded-full border shadow-lg backdrop-blur-md transition-all duration-200 active:scale-[0.99] md:shadow-xl ${FOCUS_RING} ${
+        /*
+         * `min-h-16` ارتفاع تریگر را از همان اول رزرو می‌کند: نه در رندر
+         * سرور و نه هنگام تعویض فونت، جعبه کوچک‌تر از مقدار نهایی نمی‌شود
+         * (و چون فقط یک خطِ ثابت دارد، بزرگ‌تر هم نمی‌شود) → بدون CLS.
+         */
+        mobileTriggerClassName={`w-full min-h-16 rounded-full border shadow-lg backdrop-blur-md transition-all duration-200 active:scale-[0.99] md:shadow-xl ${FOCUS_RING} ${
           isHero
             ? "border-white/15 bg-surface/85 shadow-black/15"
             : "border-foreground/10 bg-surface shadow-black/5"

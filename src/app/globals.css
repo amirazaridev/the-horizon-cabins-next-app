@@ -377,6 +377,133 @@
   }
 }
 
+/* ================================================================
+   landing — حالت اولیه (بدون JS) + پیش‌لودر
+   ================================================================ */
+
+/*
+  نوار جستجوی هیرو: ارتفاع رزرو‌شده.
+
+  `hz-search` فقط روی واریانتِ هیرو است. با این `min-height`، جعبه‌ی نوار
+  نه در HTML سرور و نه هنگام تعویض فونت جمع نمی‌شود؛ پس جابه‌جایی ناگهانی
+  (CLS) نداریم.
+*/
+.hz-search {
+  min-height: 5rem; /* موبایل: تریگر گردِ تکی (۶۴px) +Padding */
+}
+@media (min-width: 768px) {
+  .hz-search {
+    min-height: 4.75rem; /* دسکتاپ: ردیف ۵ فیلد (۶۰px) +Padding */
+  }
+}
+
+/* ---------- پیش‌لودر لندینگ ---------- */
+
+/*
+  پیش‌لودر کاملاً با CSS کار می‌کند و در HTML سرور حضور دارد؛ پس در اولین
+  paint دیده می‌شود. دو مسیر برای حذف دارد:
+    ۱) مسیر سریع — JS بعد از آماده شدن فونت/GSAP صفت `data-state="done"`
+       را می‌گذارد و بی‌درنگ محو می‌شود.
+    ۲) مسیر پشتیبان — اگر JS اصلاً اجرا نشود یا GSAP خطا بدهد، همان
+       انیمیشنِ CSS با یک تأخیرِ امن خودبه‌خود آن را حذف می‌کند.
+  در هر دو حالت سایت زیرِ آن سالم و قابل استفاده است (graceful degradation).
+*/
+.hz-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  /* هرگز تعامل کاربر را مسدود نمی‌کند */
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background-color: var(--color-overlay);
+  opacity: 1;
+  visibility: visible;
+  animation: hz-preloader-out 0.3s ease-out 0.62s forwards;
+}
+
+/* حالتِ پایدار (نمونه‌ی داخل loading.tsx): حذف خودکار خاموش است */
+.hz-preloader[data-autohide="off"] {
+  animation: none;
+}
+
+/*
+  ناوبری کلاینتی: مراسم ورود تکرار نمی‌شود.
+  Navbar صفت `data-client-nav` را روی `<html>` می‌گذارد و اینجا پیش‌لودرِ
+  خودِ صفحه پنهان می‌شود. نمونه‌ی `loading.tsx` (`data-autohide="off"`)
+  دست‌نخورده می‌ماند تا وقتی سرور کند است، کاربر نشانگر لودینگ داشته باشد.
+*/
+html[data-client-nav="1"] .hz-preloader[data-autohide="on"] {
+  display: none;
+}
+
+/* مسیر سریع: وقتی JS آماده است (بعد از حالت پایدار نوشته شده تا بر آن برد کند) */
+.hz-preloader[data-state="done"] {
+  animation: hz-preloader-out 0.3s ease-out 0s forwards;
+}
+
+@keyframes hz-preloader-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* میله‌های درخشانِ پیش‌لودر (روی پس‌زمینه‌ی تیره) */
+.hz-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.hz-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translate3d(-100%, 0, 0);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.08) 45%,
+    rgb(255 255 255 / 0.16) 50%,
+    rgb(255 255 255 / 0.08) 55%,
+    transparent 100%
+  );
+  animation: hz-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes hz-shimmer {
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+/* نوار پیشرفتِ پایینِ پیش‌لودر */
+.hz-preloader-bar {
+  position: relative;
+  overflow: hidden;
+  block-size: 2px;
+  border-radius: 9999px;
+  background-color: rgb(255 255 255 / 0.12);
+}
+.hz-preloader-bar::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inline-size: 38%;
+  border-radius: inherit;
+  background-color: var(--color-primary-400);
+  animation: hz-preloader-slide 1.1s ease-in-out infinite;
+}
+
+@keyframes hz-preloader-slide {
+  from {
+    transform: translateX(130%);
+  }
+  to {
+    transform: translateX(-230%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -385,5 +512,10 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* بدون انیمیشن: پیش‌لودر باید فوراً کنار برود، نه بعد از تأخیرِ پشتیبان */
+  .hz-preloader {
+    animation-delay: 0.04s;
   }
 }

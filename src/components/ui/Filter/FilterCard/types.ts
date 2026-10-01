@@ -73,6 +73,13 @@ export type FilterCardProps = {
   defaultOpenId?: string | null;
   className?: string;
   /* ---------- موبایل ---------- */
+  /**
+   * @deprecated دیگر استفاده نمی‌شود.
+   *
+   * شاخه‌ی موبایل/دسکتاپ حالا با **CSS** انتخاب می‌شود (`md:hidden` در برابر
+   * `hidden md:contents`)، نه با یک media query در JS. تصمیمِ JS باعث می‌شد
+   * HTML سرور همیشه شاخه‌ی دسکتاپ باشد و روی موبایل بعد از hydration بپرد.
+   */
   mobileBreakpoint?: string;
   mobileTitle?: string;
   mobileTriggerLabel?: string;

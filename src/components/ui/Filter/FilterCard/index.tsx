@@ -5,7 +5,6 @@ import { Loader2, SlidersHorizontal } from "lucide-react";
 
 import Accordion from "../../Accordion";
 import FilterMobileSheet from "../FilterMobileSheet";
-import useIsMobile from "../../../../hooks/useIsMobile";
 import { FOCUS_RING } from "../focus-ring";
 import {
   FilterCardItem,
@@ -27,7 +26,6 @@ function FilterCard({
   placement = "start",
   defaultOpenId = null,
   className = "",
-  mobileBreakpoint = "(max-width: 767.5px)",
   mobileTitle = "فیلترها",
   mobileTriggerLabel = "فیلترها",
   renderMobileTrigger,
@@ -46,7 +44,6 @@ function FilterCard({
   const [values, setValues] = useState<Record<string, unknown>>(defaultValue);
 
   /* ---------- موبایل ---------- */
-  const isMobile = useIsMobile(mobileBreakpoint);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [mobileOpenId, setMobileOpenId] = useState<string | null>(
     defaultOpenId,
@@ -139,230 +136,252 @@ function FilterCard({
   /** شناسه‌ی دیالوگ پنل (برای aria-controls) */
   const panelDomId = useCallback((id: string) => `${uid}-${id}`, [uid]);
 
-  /* ==========================   موبایل   ========================== */
-  if (isMobile) {
-    const panelItems: FilterCardItem[] = [];
-    const actionItems: FilterCardItem[] = [];
-    const countedGroups = new Set<string>();
-    let activeCount = 0;
+  /* ==========================   شاخه‌ی موبایل   ========================== */
+  const panelItems: FilterCardItem[] = [];
+  const actionItems: FilterCardItem[] = [];
+  const countedGroups = new Set<string>();
+  let activeCount = 0;
 
-    for (const item of items) {
-      /*
-       * شمارش فیلترهای فعال:
-       *  - آیتم‌های hideOnMobile هم بررسی می‌شوند (مثل تاریخ خروج)؛
-       *  - آیتم‌های هم‌گروه فقط یک‌بار شمرده می‌شوند تا «تاریخ ورود و خروج»
-       *    یک فیلتر حساب شود، نه دو تا.
-       */
-      if (isFilterValueActive(getValue(item.id))) {
-        if (item.group) {
-          if (!countedGroups.has(item.group)) {
-            countedGroups.add(item.group);
-            activeCount += 1;
-          }
-        } else {
+  for (const item of items) {
+    /*
+     * شمارش فیلترهای فعال:
+     *  - آیتم‌های hideOnMobile هم بررسی می‌شوند (مثل تاریخ خروج)؛
+     *  - آیتم‌های هم‌گروه فقط یک‌بار شمرده می‌شوند تا «تاریخ ورود و خروج»
+     *    یک فیلتر حساب شود، نه دو تا.
+     */
+    if (isFilterValueActive(getValue(item.id))) {
+      if (item.group) {
+        if (!countedGroups.has(item.group)) {
+          countedGroups.add(item.group);
           activeCount += 1;
         }
+      } else {
+        activeCount += 1;
       }
-
-      if (item.hideOnMobile) continue;
-      if (item.panel) panelItems.push(item);
-      else actionItems.push(item);
     }
 
-    /* باز شدن شیت: مقدار اولیه‌ی آکاردئون همین‌جا در event handler محاسبه می‌شود، نه در افکت */
-    const openSheet = () => {
-      if (!mobileOpenId) {
-        const firstActive = panelItems.find((item) =>
-          isFilterValueActive(getValue(item.id)),
-        );
-        setMobileOpenId(firstActive?.id ?? panelItems[0]?.id ?? null);
-      }
-      setSheetOpen(true);
-    };
-
-    const mobileTriggerCtx: MobileTriggerRenderProps = {
-      activeCount,
-      getValue,
-      open: openSheet,
-    };
-
-    const customTrigger =
-      typeof renderMobileTrigger === "function"
-        ? renderMobileTrigger(mobileTriggerCtx)
-        : renderMobileTrigger;
-
-    const handleApply = () => {
-      if (mobileApplyDisabled) return;
-      onMobileApply?.();
-      closeSheet();
-    };
-
-    const pill = TRIGGER_VARIANTS.pill;
-    const triggerClass = customTrigger
-      ? mobileTriggerClassName || CUSTOM_TRIGGER_FALLBACK
-      : `${pill.base} ${activeCount > 0 ? pill.active : pill.idle}`;
-
-    return (
-      <div className={className}>
-        {/* تریگر تکی موبایل + اکشن‌های بدون پنل */}
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          <button
-            type="button"
-            onClick={openSheet}
-            aria-haspopup="dialog"
-            aria-expanded={sheetOpen}
-            className={triggerClass}
-          >
-            {customTrigger ?? (
-              <>
-                <span className="text-primary-400 flex shrink-0 items-center">
-                  <SlidersHorizontal className="size-4" />
-                </span>
-                <span className="max-w-40 truncate">{mobileTriggerLabel}</span>
-                {activeCount > 0 && (
-                  <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-xs leading-4 font-extrabold text-black tabular-nums">
-                    {activeCount.toLocaleString("fa-IR")}
-                  </span>
-                )}
-              </>
-            )}
-          </button>
-
-          {actionItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              disabled={item.disabled}
-              onClick={() => item.onClick?.()}
-              className={`${ACTION_BUTTON_CLASS} ${FOCUS_RING} ${item.className ?? ""}`}
-            >
-              {item.icon && (
-                <span className="text-primary-400 flex shrink-0 items-center">
-                  {item.icon}
-                </span>
-              )}
-              <span className="max-w-40 truncate">{item.label ?? item.id}</span>
-            </button>
-          ))}
-        </div>
-
-        <FilterMobileSheet
-          open={sheetOpen}
-          title={mobileTitle}
-          onClose={closeSheet}
-          footer={
-            <div className="flex items-center gap-2">
-              {onClearFilters && (
-                <button
-                  type="button"
-                  onClick={onClearFilters}
-                  disabled={activeCount === 0}
-                  className={`text-text-gray border-foreground/10 hover:text-text flex-1 rounded-xl border py-3 text-sm font-bold transition-colors disabled:opacity-40 ${FOCUS_RING}`}
-                >
-                  حذف فیلترها
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={handleApply}
-                disabled={mobileApplyDisabled || mobileApplyPending}
-                aria-busy={mobileApplyPending}
-                className={`bg-primary-400 flex flex-[2] items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
-              >
-                {mobileApplyPending ? (
-                  <>
-                    <Loader2
-                      aria-hidden="true"
-                      className="size-5 animate-spin motion-reduce:animate-none"
-                    />
-                    <span className="sr-only">در حال جستجو…</span>
-                  </>
-                ) : (
-                  <>
-                    {mobileApplyLabel}
-                    {typeof resultCount === "number" && (
-                      <span className="rounded-full bg-black/15 px-2 py-0.5 text-xs font-bold tabular-nums">
-                        {resultCount.toLocaleString("fa-IR")}
-                      </span>
-                    )}
-                  </>
-                )}
-              </button>
-            </div>
-          }
-        >
-          <Accordion
-            openId={mobileOpenId}
-            onOpenChange={setMobileOpenId}
-            items={panelItems.map((item) => {
-              const panel = item.panel!;
-              const itemValue = getValue(item.id);
-              return {
-                id: item.id,
-                title: panel.title ?? item.label ?? item.id,
-                summary: getSummary(item, getValue),
-                icon: item.icon,
-                badge: getBadge(itemValue),
-                active: isFilterValueActive(itemValue),
-                content:
-                  typeof panel.render === "function" ? (
-                    panel.render({
-                      id: item.id,
-                      value: itemValue,
-                      getValue,
-                      setValue: (next: unknown) =>
-                        commitMobile(item.id, next, panel),
-                      setFieldValue: (targetId: string, next: unknown) =>
-                        setValue(targetId, next, false),
-                      openPanel: setMobileOpenId,
-                      close: () => setMobileOpenId(null),
-                    })
-                  ) : (
-                    <>{panel.children}</>
-                  ),
-              };
-            })}
-          />
-
-          {actionItems.length > 0 && (
-            <div className="mt-3 flex flex-col gap-2">
-              {actionItems.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  disabled={item.disabled}
-                  onClick={() => {
-                    closeSheet();
-                    item.onClick?.();
-                  }}
-                  className={`border-foreground/10 bg-surface flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold disabled:pointer-events-none disabled:opacity-50 ${item.className ?? ""}`}
-                >
-                  {item.icon}
-                  {item.label ?? item.id}
-                </button>
-              ))}
-            </div>
-          )}
-        </FilterMobileSheet>
-      </div>
-    );
+    if (item.hideOnMobile) continue;
+    if (item.panel) panelItems.push(item);
+    else actionItems.push(item);
   }
 
-  /* ==========================   دسکتاپ   ========================== */
+  /* باز شدن شیت: مقدار اولیه‌ی آکاردئون همین‌جا در event handler محاسبه می‌شود، نه در افکت */
+  const openSheet = () => {
+    if (!mobileOpenId) {
+      const firstActive = panelItems.find((item) =>
+        isFilterValueActive(getValue(item.id)),
+      );
+      setMobileOpenId(firstActive?.id ?? panelItems[0]?.id ?? null);
+    }
+    setSheetOpen(true);
+  };
+
+  const mobileTriggerCtx: MobileTriggerRenderProps = {
+    activeCount,
+    getValue,
+    open: openSheet,
+  };
+
+  const customTrigger =
+    typeof renderMobileTrigger === "function"
+      ? renderMobileTrigger(mobileTriggerCtx)
+      : renderMobileTrigger;
+
+  const handleApply = () => {
+    if (mobileApplyDisabled) return;
+    onMobileApply?.();
+    closeSheet();
+  };
+
+  const pill = TRIGGER_VARIANTS.pill;
+  const triggerClass = customTrigger
+    ? mobileTriggerClassName || CUSTOM_TRIGGER_FALLBACK
+    : `${pill.base} ${activeCount > 0 ? pill.active : pill.idle}`;
+
+  const mobileBranch = (
+    <>
+      {/* تریگر تکی موبایل + اکشن‌های بدون پنل */}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <button
+          type="button"
+          onClick={openSheet}
+          aria-haspopup="dialog"
+          aria-expanded={sheetOpen}
+          className={triggerClass}
+        >
+          {customTrigger ?? (
+            <>
+              <span className="text-primary-400 flex shrink-0 items-center">
+                <SlidersHorizontal className="size-4" />
+              </span>
+              <span className="max-w-40 truncate">{mobileTriggerLabel}</span>
+              {activeCount > 0 && (
+                <span className="bg-primary-400 grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-xs leading-4 font-extrabold text-black tabular-nums">
+                  {activeCount.toLocaleString("fa-IR")}
+                </span>
+              )}
+            </>
+          )}
+        </button>
+
+        {actionItems.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            disabled={item.disabled}
+            onClick={() => item.onClick?.()}
+            className={`${ACTION_BUTTON_CLASS} ${FOCUS_RING} ${item.className ?? ""}`}
+          >
+            {item.icon && (
+              <span className="text-primary-400 flex shrink-0 items-center">
+                {item.icon}
+              </span>
+            )}
+            <span className="max-w-40 truncate">{item.label ?? item.id}</span>
+          </button>
+        ))}
+      </div>
+
+      <FilterMobileSheet
+        open={sheetOpen}
+        title={mobileTitle}
+        onClose={closeSheet}
+        footer={
+          <div className="flex items-center gap-2">
+            {onClearFilters && (
+              <button
+                type="button"
+                onClick={onClearFilters}
+                disabled={activeCount === 0}
+                className={`text-text-gray border-foreground/10 hover:text-text flex-1 rounded-xl border py-3 text-sm font-bold transition-colors disabled:opacity-40 ${FOCUS_RING}`}
+              >
+                حذف فیلترها
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleApply}
+              disabled={mobileApplyDisabled || mobileApplyPending}
+              aria-busy={mobileApplyPending}
+              className={`bg-primary-400 flex flex-[2] items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-black transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+            >
+              {mobileApplyPending ? (
+                <>
+                  <Loader2
+                    aria-hidden="true"
+                    className="size-5 animate-spin motion-reduce:animate-none"
+                  />
+                  <span className="sr-only">در حال جستجو…</span>
+                </>
+              ) : (
+                <>
+                  {mobileApplyLabel}
+                  {typeof resultCount === "number" && (
+                    <span className="rounded-full bg-black/15 px-2 py-0.5 text-xs font-bold tabular-nums">
+                      {resultCount.toLocaleString("fa-IR")}
+                    </span>
+                  )}
+                </>
+              )}
+            </button>
+          </div>
+        }
+      >
+        <Accordion
+          openId={mobileOpenId}
+          onOpenChange={setMobileOpenId}
+          items={panelItems.map((item) => {
+            const panel = item.panel!;
+            const itemValue = getValue(item.id);
+            return {
+              id: item.id,
+              title: panel.title ?? item.label ?? item.id,
+              summary: getSummary(item, getValue),
+              icon: item.icon,
+              badge: getBadge(itemValue),
+              active: isFilterValueActive(itemValue),
+              content:
+                typeof panel.render === "function" ? (
+                  panel.render({
+                    id: item.id,
+                    value: itemValue,
+                    getValue,
+                    setValue: (next: unknown) =>
+                      commitMobile(item.id, next, panel),
+                    setFieldValue: (targetId: string, next: unknown) =>
+                      setValue(targetId, next, false),
+                    openPanel: setMobileOpenId,
+                    close: () => setMobileOpenId(null),
+                  })
+                ) : (
+                  <>{panel.children}</>
+                ),
+            };
+          })}
+        />
+
+        {actionItems.length > 0 && (
+          <div className="mt-3 flex flex-col gap-2">
+            {actionItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                disabled={item.disabled}
+                onClick={() => {
+                  closeSheet();
+                  item.onClick?.();
+                }}
+                className={`border-foreground/10 bg-surface flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold disabled:pointer-events-none disabled:opacity-50 ${item.className ?? ""}`}
+              >
+                {item.icon}
+                {item.label ?? item.id}
+              </button>
+            ))}
+          </div>
+        )}
+      </FilterMobileSheet>
+    </>
+  );
+
+  /*
+   * ⭐ تصمیمِ «موبایل در برابر دسکتاپ» با **CSS** گرفته می‌شود، نه با JS.
+   *
+   * چرا این مهم است؟ قبلاً این تصمیم با `useIsMobile` (یک matchMedia در
+   * افکت) گرفته می‌شد و مقدار اولیه‌ی آن همیشه `false` بود؛ یعنی HTML
+   * سرور-رندرشده و DOMِ قبل از hydration همیشه شاخه‌ی **دسکتاپ** بود. روی
+   * موبایل نتیجه این می‌شد:
+   *   - نوار سرچ هیرو (که در موبایل `bg-transparent border-0` است) پنج
+   *     فیلدِ بدون قاب و بدون پس‌زمینه را روی عکس هیرو می‌چید → ظاهر شکسته؛
+   *   - بعد از hydration ناگهان به یک تریگر گرد تبدیل می‌شد → پرش بزرگ
+   *     چیدمان (CLS).
+   *
+   * حالا هر دو شاخه همیشه رندر می‌شوند و فقط CSS یکی را پنهان می‌کند:
+   *   - `md:hidden` روی شاخه‌ی موبایل؛
+   *   - `hidden md:contents` روی شاخه‌ی دسکتاپ — `display: contents` می‌گذارد
+   *     تریگرها مستقیماً آیتمِ گرید/فلکسِ والد شوند، پس چیدمان درست می‌ماند.
+   *
+   * نتیجه: بدون JS هم فرم درست است، و چون چیدمان هیچ‌وقت عوض نمی‌شود،
+   * CLS هم صفر می‌ماند.
+   */
   return (
     <div className={className}>
-      {items.map((item) => (
-        <Trigger
-          key={item.id}
-          item={item}
-          value={getValue(item.id)}
-          isOpen={openId === item.id}
-          toggle={toggle}
-          close={close}
-          register={registerTrigger}
-          panelId={item.panel ? panelDomId(item.id) : undefined}
-        />
-      ))}
+      <div className="md:hidden flex min-w-0 flex-1">{mobileBranch}</div>
+
+      <div className="hidden md:contents">
+        {items.map((item) => (
+          <Trigger
+            key={item.id}
+            item={item}
+            value={getValue(item.id)}
+            isOpen={openId === item.id}
+            toggle={toggle}
+            close={close}
+            register={registerTrigger}
+            panelId={item.panel ? panelDomId(item.id) : undefined}
+          />
+        ))}
+      </div>
+
       {items.map((item) =>
         item.panel ? (
           <Panel
