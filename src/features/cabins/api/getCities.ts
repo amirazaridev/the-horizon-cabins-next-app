@@ -18,3 +18,20 @@ export async function getCities(): Promise<City[]> {
 
   return json.data.cities ?? [];
 }
+
+/**
+ * یک شهر را از روی شناسه‌اش پیدا می‌کند.
+ *
+ * چرا لازم است؟ اندپوینت جزئیات کابین (`GET /cabins/:id`) برخلاف اندپوینت
+ * لیست، به‌جای آبجکت `city` فقط `cityId` عددی برمی‌گرداند. صفحه‌ی جزئیات
+ * با این تابع نام شهر را روی سرور حل می‌کند تا بج مقصد روی گالری نمایش
+ * داده شود.
+ *
+ * ⚠️ اندپوینت `GET /locations/cities/:id` وجود ندارد؛ پس کل فهرست
+ * (کوچک و کش‌شدنی) خوانده و فیلتر می‌شود. با اضافه‌شدن آن اندپوینت،
+ * فقط بدنه‌ی همین تابع عوض می‌شود.
+ */
+export async function getCityById(cityId: number): Promise<City | undefined> {
+  const cities = await getCities();
+  return cities.find((city) => city.id === cityId);
+}

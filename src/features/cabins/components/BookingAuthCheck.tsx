@@ -4,11 +4,13 @@ import authImageUrl from "@/assets/images/auth.png";
 import Button from "@/components/ui/Button";
 import { User, UserRoundPlus } from "lucide-react";
 
-type Props = {};
+type Props = { className?: string };
 
-export default function BookingAuthCheck({}: Props): ReactNode {
+export default function BookingAuthCheck({ className = "" }: Props): ReactNode {
   return (
-    <div className="bg-surface/60 border-foreground/10 flex min-h-50 flex-col overflow-hidden rounded-3xl border pb-10 shadow-md backdrop-blur-md md:flex-row-reverse md:pb-0 lg:col-span-5">
+    <div
+      className={`bg-surface/60 border-foreground/10 flex min-h-50 flex-col overflow-hidden rounded-3xl border pb-10 shadow-md backdrop-blur-md md:flex-row-reverse md:pb-0 ${className}`}
+    >
       <Image
         className="mx-auto"
         height={300}
@@ -18,12 +20,12 @@ export default function BookingAuthCheck({}: Props): ReactNode {
       />
       <div className="flex flex-col gap-y-3 px-9 sm:px-17 md:px-10 md:py-10 lg:justify-center">
         <div className="text-2xl font-medium md:text-3xl lg:text-4xl">
-          برای انتخاب تاریخ و رزرو <br />
+          برای نهایی‌کردن رزرو <br />
           ابتدا وارد <span className="text-primary-400">حساب کاربری</span> شوید
         </div>
         <p className="text-text-gray text-sm md:text-base">
-          برای مشاهده تقویم و انتخاب تاریخ اقامت وارد حساب کاربری خود شوید یا
-          ثبت‌نام کنید
+          مشاهده‌ی تقویم و انتخاب تاریخ آزاد است؛ برای ثبت و پرداخت رزرو وارد
+          حساب کاربری خود شوید یا ثبت‌نام کنید
         </p>
         <div className="flex gap-x-2">
           <Button href="/login" shape="xl">

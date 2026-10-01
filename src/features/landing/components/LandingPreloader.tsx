@@ -57,7 +57,7 @@ export default function LandingPreloader({
           </div>
 
           {/* نوار جستجو — هم‌ارتفاع نوار واقعی */}
-          <div className="hz-shimmer border-white/15 mt-7 block h-16 w-full rounded-2xl border bg-white/10 md:h-[4.75rem]" />
+          <div className="hz-shimmer border-white/15 mt-7 block h-16 w-full rounded-2xl border bg-white/10 md:h-19" />
 
           {/* نوار پیشرفت */}
           <div className="hz-preloader-bar mt-8 w-full max-w-3xl" />

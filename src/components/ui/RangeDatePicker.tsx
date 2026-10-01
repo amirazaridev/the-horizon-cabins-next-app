@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type ComponentType } from "react";
+import { useCallback, useMemo, type ComponentType } from "react";
 import { Calendar as RangeCalendar } from "react-multi-date-picker";
 import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
@@ -20,6 +20,7 @@ const RangeCalendarAny = RangeCalendar as unknown as ComponentType<{
   rangeHover?: boolean;
   shadow?: boolean;
   className?: string;
+  mapDays?: (props: { date: DateObject }) => Record<string, unknown>;
 }>;
 
 export type DateRange = {
@@ -37,8 +38,30 @@ type Props = {
   numberOfMonths?: number;
   /** تاریخ‌های قبل از این غیرفعال می‌شوند (پیش‌فرض: امروز) */
   minDate?: Date;
+  /**
+   * روزهای رزروشده که کاربر نباید بتواند انتخاب کند.
+   * مقایسه بر اساس «ابتدای روز» انجام می‌شود، پس ساعت ورودی مهم نیست.
+   */
+  disabledDates?: Date[];
+  /**
+   * برچسب اختیاری هر روز (مثل «پرتقاضا» یا قیمت).
+   *
+   * ⚠️ فعلاً فقط به‌شکل `title` (راهنمای hover) استفاده می‌شود و متن
+   * داخل سلول روز را عوض نمی‌کند؛ چون ساختار داخلی سلول‌های
+   * `react-multi-date-picker` با استایل `rounded-full` فعلی در تضاد است.
+   * اگر بک‌اند نرخ روزانه داد، اینجا با `children` در `mapDays` و
+   * CSS `.rmdp-has-label` قابل توسعه است (TODO).
+   */
+  dayTitle?: (date: Date) => string | null;
   className?: string;
 };
+
+/** ابتدای روز — برای مقایسه‌ی تاریخ‌ها بدون ساعت */
+function startOfDay(date: Date): number {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  return copy.getTime();
+}
 
 function toDateObject(date: Date): DateObject {
   return new DateObject({ date, calendar: persian, locale: persian_fa });
@@ -66,6 +89,8 @@ export default function RangeDatePicker({
   onComplete,
   numberOfMonths = 2,
   minDate,
+  disabledDates,
+  dayTitle,
   className = "",
 }: Props) {
   const today = useMemo(() => {
@@ -75,6 +100,38 @@ export default function RangeDatePicker({
   }, []);
 
   const min = minDate ?? today;
+
+  const disabledSet = useMemo(
+    () => new Set((disabledDates ?? []).map(startOfDay)),
+    [disabledDates],
+  );
+
+  /**
+   * روزهای رزروشده را غیرفعال می‌کند.
+   *
+   * ⚠️ اگر نه تاریخ غیرفعالی باشد و نه برچسبی، `mapDays` اصلاً پاس داده
+   * نمی‌شود؛ چون `react-multi-date-picker` با دیدن `mapDays` کل روزها را
+   * از مسیر رندر سفارشی عبور می‌دهد و ما نمی‌خواهیم مصرف‌کننده‌های فعلی
+   * (سرچ لندینگ و فیلتر `/cabins`) هیچ تغییری نبینند.
+   */
+  const hasCustomDays = disabledSet.size > 0 || Boolean(dayTitle);
+
+  const mapDays = useCallback(
+    ({ date }: { date: DateObject }) => {
+      const jsDate = date.toDate();
+      const isBooked = disabledSet.has(startOfDay(jsDate));
+      const title = dayTitle?.(jsDate) ?? null;
+
+      if (!isBooked && !title) return {};
+
+      return {
+        disabled: isBooked,
+        className: isBooked ? "rmdp-booked" : undefined,
+        title: title ?? (isBooked ? "این روز قبلاً رزرو شده است" : undefined),
+      };
+    },
+    [disabledSet, dayTitle],
+  );
 
   const selected = useMemo(() => {
     const list: DateObject[] = [];
@@ -173,6 +230,7 @@ export default function RangeDatePicker({
           rangeHover
           shadow={false}
           className="horizon-date-picker"
+          {...(hasCustomDays ? { mapDays } : {})}
         />
       </div>
     </div>

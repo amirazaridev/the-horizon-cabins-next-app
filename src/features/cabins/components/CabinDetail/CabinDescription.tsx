@@ -1,52 +1,40 @@
-import { Check } from "lucide-react";
 import type { ReactNode } from "react";
+import ExpandableText from "@/components/ui/ExpandableText";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
+import { SECTION_IDS } from "../../constants/cabin-detail";
+import SectionShell from "./SectionShell";
 
 type Props = {
   cabin: Cabin;
 };
 
+/**
+ * «درباره این اقامتگاه».
+ *
+ * ⚠️ فهرست امکانات از این بخش جدا شد و سکشن مستقل خودش را دارد
+ * (`AmenitiesSection`). قبلاً همین آرایه یک‌بار به‌شکل چیپ و یک‌بار
+ * به‌شکل چک‌لیست رندر می‌شد و تکراری بود؛ الان توضیحات فقط متن است و
+ * امکانات یک جای مشخص.
+ *
+ * متن با `ExpandableText` جمع می‌شود: روی موبایل چهار خط، و دکمه‌ی
+ * «مشاهده‌ی همه» فقط وقتی ظاهر می‌شود که متن واقعاً سرریز کرده باشد.
+ */
 export default function CabinDescription({ cabin }: Props): ReactNode {
+  const description = cabin.description?.trim();
+
   return (
-    <div>
-      <SectionHeading>درباره این اقامتگاه</SectionHeading>
-      <p className="text-text-gray leading-loose">{cabin.description}</p>
-
-      <SectionHeading className="mt-10 mb-5">ویژگی‌ها</SectionHeading>
-      <div className="flex flex-wrap gap-2.5">
-        {cabin.amenities.map((amenitiy) => (
-          <div
-            key={amenitiy}
-            className="hover:border-primary-400/40 hover:text-primary-400 border-foreground/10 bg-foreground/5 text-text-gray rounded-full border px-4 py-1.5 text-sm transition-colors duration-300"
-          >
-            {amenitiy}
-          </div>
-        ))}
-      </div>
-
-      <SectionHeading className="mt-10 mb-5">امکانات</SectionHeading>
-      <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
-        {cabin.amenities.map((amenity) => (
-          <li key={amenity} className="flex items-center gap-3">
-            <span className="bg-primary-400/10 flex size-6 shrink-0 items-center justify-center rounded-full">
-              <Check className="text-primary-400 size-3.5" />
-            </span>
-            <span className="text-text/60">{amenity}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function SectionHeading({
-  children,
-  className = "mb-4",
-}: {
-  children: ReactNode;
-  className?: string;
-}): ReactNode {
-  return (
-    <h2 className={`text-text text-xl font-bold ${className}`}>{children}</h2>
+    <SectionShell
+      id={SECTION_IDS.overview}
+      title="درباره این اقامتگاه"
+      hint={cabin.city?.name ? `اقامتگاه در ${cabin.city.name}` : undefined}
+    >
+      {description ? (
+        <ExpandableText lines={4}>{description}</ExpandableText>
+      ) : (
+        <p className="text-text-gray text-sm">
+          توضیحاتی برای این اقامتگاه ثبت نشده است.
+        </p>
+      )}
+    </SectionShell>
   );
 }

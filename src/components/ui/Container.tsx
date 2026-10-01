@@ -4,7 +4,17 @@ type Variant = "default" | "cabin-detail";
 
 const containerClass: Record<Variant, string> = {
   default: "mx-auto max-w-7xl px-5 md:px-0",
-  "cabin-detail": "mx-auto max-w-5xl px-3 md:px-8 lg:px-0 overflow-x-hidden",
+  /**
+   * ⚠️ `overflow-x-hidden` از این واریانت برداشته شد.
+   *
+   * دلیل فنی: `overflow-x: hidden` روی یک والد، محور عمودی را هم به
+   * `auto` تبدیل می‌کند و آن والد را به یک scroll container تبدیل
+   * می‌کند. در نتیجه `position: sticky` نوار تب چسبان و aside رزرو
+   * به‌جای viewport به همین ظرف (که اسکرولی ندارد) می‌چسبید و عملاً
+   * کار نمی‌کرد. گاردِ سرریز افقی از قبل در `globals.css`
+   * (`html { overflow-x: hidden }`) وجود دارد، پس چیزی از دست نمی‌رود.
+   */
+  "cabin-detail": "mx-auto max-w-7xl px-3 md:px-8 lg:px-0",
 };
 
 type Props = ComponentProps<"div"> & { variant?: Variant };

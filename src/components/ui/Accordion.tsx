@@ -102,9 +102,9 @@ function AccordionRow({
 
   return (
     <div
-      className={`border-foreground/10 overflow-hidden rounded-2xl border transition-colors duration-[400ms] ${
+      className={`border-foreground/10 overflow-hidden rounded-2xl border transition-colors duration-400 ${
         isOpen
-          ? "border-primary-400/40 bg-primary-400/[0.04] shadow-sm"
+          ? "border-primary-400/40 bg-primary-400/4 shadow-sm"
           : item.active
             ? "border-primary-400/30 bg-surface"
             : "bg-surface"
@@ -148,14 +148,14 @@ function AccordionRow({
         </span>
 
         <span
-          className={`grid size-8 shrink-0 place-items-center rounded-full transition-all duration-[400ms] ${
+          className={`grid size-8 shrink-0 place-items-center rounded-full transition-all duration-400 ${
             isOpen
               ? "bg-primary-400 text-black"
               : "bg-foreground/5 text-text-gray"
           }`}
         >
           <ChevronDown
-            className={`size-4 transition-transform duration-[400ms] ${
+            className={`size-4 transition-transform duration-400 ${
               isOpen ? "rotate-180" : ""
             }`}
           />
@@ -170,13 +170,13 @@ function AccordionRow({
         // پنل بسته فقط با ارتفاع صفر پنهان می‌شود، پس بدون `inert` کاربر با
         // Tab وارد محتوای نامرئی می‌شد.
         inert={!isOpen}
-        className={`grid transition-[grid-template-rows,opacity] duration-[400ms] ease-out ${
+        className={`grid transition-[grid-template-rows,opacity] duration-400 ease-out ${
           isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
         <div className="min-h-0 overflow-hidden">
           <div
-            className={`border-foreground/10 border-t px-4 py-4 transition-transform duration-[400ms] ${
+            className={`border-foreground/10 border-t px-4 py-4 transition-transform duration-400 ${
               isOpen ? "translate-y-0" : "-translate-y-1"
             }`}
           >

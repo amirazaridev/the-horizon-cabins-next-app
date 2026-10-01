@@ -2,6 +2,25 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ================================================================
+   ارتفاع‌های چیدمان چسبان (صفحه‌ی جزئیات اقامتگاه)
+
+   منبع واحدِ این عددها همین‌جاست؛ نوار تب چسبان، `scroll-margin-top`
+   سکشن‌ها، aside رزرو و نوار ثابت موبایل همه از این متغیرها می‌خوانند.
+   Navbar ارتفاع واقعی خودش را در `--hz-navbar-h` می‌نویسد (هوک
+   `useNavbarHeight`) تا با تغییر فونت یا padding نوار بالا، چیدمان
+   به‌هم نریزد. مقادیر اینجا فقط «رزرو» هستند تا قبل از اجرای JS هم
+   چیدمان درست باشد.
+   ================================================================ */
+:root {
+  /* ارتفاع نوار بالا */
+  --hz-navbar-h: 4.5rem;
+  /* ارتفاع نوار تب چسبان (py-2 + دکمه‌ی ۴۴px = ۶۰px) */
+  --hz-tabs-h: 3.75rem;
+  /* ارتفاع نوار ثابت رزرو در موبایل — برای رزرو فضای پایین صفحه */
+  --hz-booking-bar-h: 5rem;
+}
+
 @theme {
   /* Primary — غروب (بدون تغییر، خوب کار می‌کنه) */
   --color-primary-300: #fcd34d;
@@ -502,6 +521,49 @@ html[data-client-nav="1"] .hz-preloader[data-autohide="on"] {
   to {
     transform: translateX(-230%);
   }
+}
+
+/* ================================================================
+   صفحه‌ی جزئیات اقامتگاه — کمک‌کلاس‌های چیدمان
+   ================================================================ */
+
+/*
+  جبران ارتفاع نوار بالا + نوار تب چسبان هنگام پرش لینک داخلی.
+
+  بدون این، لینک «نظرات» سکشن را دقیقاً زیر نوار چسبان می‌برد و عنوان
+  بخش پشت تب‌ها پنهان می‌شود.
+*/
+.hz-scroll-mt {
+  scroll-margin-top: calc(var(--hz-navbar-h) + var(--hz-tabs-h) + 0.75rem);
+}
+
+/* فاصله‌ی امن پایین لایه‌های تمام‌عرض (مودال/شیت) روی گوشی‌های notch‌دار */
+.hz-safe-b {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+
+/* نوار تب موبایل: اسکرول افقی بدون نمایش اسکرول‌بار */
+.hz-hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hz-hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* روزهای رزروشده در تقویم بازه */
+.horizon-range-picker .horizon-date-picker .rmdp-day.rmdp-booked span {
+  background-color: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: color-mix(in srgb, var(--color-danger) 75%, var(--color-text));
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  cursor: not-allowed;
+}
+.horizon-range-picker
+  .horizon-date-picker
+  .rmdp-day.rmdp-booked:not(.rmdp-day-hidden)
+  span:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 16%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

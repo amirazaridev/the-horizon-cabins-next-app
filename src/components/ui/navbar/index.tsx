@@ -101,6 +101,10 @@ export default function Navbar() {
     <>
       <nav
         ref={navRef}
+        /* قلاب اندازه‌گیری: هوک `useNavbarHeight` ارتفاع واقعی را از اینجا
+           می‌خواند و در `--hz-navbar-h` می‌نویسد (نوار تب چسبان و
+           `scroll-margin-top` سکشن‌ها از آن استفاده می‌کنند). */
+        data-navbar=""
         className={`${isLandingPage ? "fixed" : "sticky"} ${textColor} ${
           hasSolidBackground
             ? "border-foreground/10 bg-background/80 border-b shadow-lg backdrop-blur-xl"

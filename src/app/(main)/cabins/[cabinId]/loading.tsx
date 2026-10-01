@@ -7,19 +7,19 @@ import CabinDetailSkeleton from "@/features/cabins/components/CabinDetailSkeleto
 /**
  * اسکلتون مسیر `/cabins/[cabinId]` — **مستقل** از اسکلتون لیست اقامتگاه‌ها.
  *
- * همان قالب صفحه‌ی جزئیات: پوسته‌ی بخش، کانتینر `cabin-detail`، مسیر راهنما
- * (هم‌ابعاد `Navigate`: `text-sm` ⇒ ردیف ۲۰px و جداکننده‌های `size-4`) و
- * بدنه‌ی `CabinDetailSkeleton` که آینه‌ی گالری، مشخصات، توضیحات و سه پنل
- * پایین صفحه است.
+ * ساختارش آینه‌ی `page.tsx` است: پوسته‌ی بخش، مسیر راهنما (هم‌ابعاد
+ * `Navigate`: `text-sm` ⇒ ردیف ۲۰px و جداکننده‌های `size-4`) و سپس
+ * `CabinDetailSkeleton` که خودش کانتینرها، نوار تب چسبان، بدنه‌ی دوستونه
+ * و نوار ثابت موبایل را می‌سازد.
  *
  * مرز لودینگ لیست (`cabins/(list)/loading.tsx`) عمداً از درختِ این مسیر
  * بیرون کشیده شده تا اینجا فقط اسکلتون مخصوص همین صفحه دیده شود.
  */
 export default function Loading(): ReactNode {
   return (
-    <section className="bg-background-2 min-h-screen py-10 sm:py-14">
+    <section className="bg-background-2 min-h-screen pt-10 pb-28 sm:pt-14 lg:pb-14">
+      {/* مسیر راهنما (Navigate) */}
       <Container variant="cabin-detail">
-        {/* مسیر راهنما (Navigate) */}
         <div className="mb-6 flex items-center gap-1.5">
           <Skeleton className="h-5 w-14 rounded-full" />
           <Skeleton className="size-4 rounded-full" />
@@ -27,9 +27,9 @@ export default function Loading(): ReactNode {
           <Skeleton className="size-4 rounded-full" />
           <Skeleton className="h-5 w-28 rounded-full" />
         </div>
-
-        <CabinDetailSkeleton />
       </Container>
+
+      <CabinDetailSkeleton />
     </section>
   );
 }

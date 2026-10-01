@@ -2,7 +2,7 @@
 
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
 
@@ -48,6 +48,25 @@ export default function CabinGallery({
     };
   }, [emblaApi, onSelect]);
 
+  /**
+   * اقامتگاهی که تصویر ندارد: قابِ گالری بدون هیچ اسلایدی جمع می‌شد و
+   * صفحه با یک نوار خالی شروع می‌شد. حالا همان نسبت ابعاد با یک حالت خالی
+   * نگه داشته می‌شود تا چیدمان ثابت بماند و سرتیتر روی آن بنشیند.
+   */
+  if (images.length === 0) {
+    return (
+      <div className="group border-foreground/5 from-background-2 to-surface relative aspect-square overflow-hidden rounded-3xl border bg-linear-to-br sm:aspect-video lg:aspect-21/9">
+        <div className="absolute inset-0 grid place-items-center">
+          <div className="text-text-gray flex flex-col items-center gap-2">
+            <ImageOff className="size-8" />
+            <span className="text-sm">تصویری برای این اقامتگاه ثبت نشده</span>
+          </div>
+        </div>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="group border-foreground/5 relative overflow-hidden rounded-3xl border active:cursor-grabbing">
@@ -73,6 +92,15 @@ export default function CabinGallery({
         </div>
 
         <div className="from-background via-background/20 pointer-events-none absolute inset-0 bg-linear-to-t to-transparent" />
+
+        {/* شمارنده‌ی تصویر — مکمل بندانگشتی‌ها برای وقتی که تعداد زیاد است */}
+        <span
+          aria-hidden="true"
+          className="border-foreground/15 bg-background/40 text-text absolute top-4 right-4 z-10 rounded-full border px-3 py-1 text-xs font-bold tabular-nums backdrop-blur-md sm:top-6 sm:right-6"
+        >
+          {(selectedIndex + 1).toLocaleString("fa-IR")} /{" "}
+          {images.length.toLocaleString("fa-IR")}
+        </span>
 
         <button
           onClick={scrollPrev}
