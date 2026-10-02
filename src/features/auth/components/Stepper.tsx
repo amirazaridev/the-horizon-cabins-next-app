@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { Check } from "lucide-react";
-import { faNumber } from "../schemas/auth.schema";
+import { faNumber } from "../schemas";
 import {
   REGISTER_STEPS,
   getRegisterStepIndex,
@@ -10,14 +10,9 @@ import {
 import type { RegisterStep } from "../types/auth.types";
 
 type Props = {
-  /** مرحله‌ی فعال. */
+  //*  مرحله‌ی فعال. 
   current: RegisterStep;
-  /**
-   * بالاترین مرحله‌ای که کاربر به آن رسیده. فقط مراحل دیده‌شده قابل کلیک‌اند
-   * تا کاربر نتواند مرحله‌ی تاییدنشده را رد کند (مثلاً بدون کد برود سراغ رمز).
-   */
   maxReached: number;
-  /** برگشت به مرحله‌ای که قبلاً دیده شده. */
   onStepClick?: (step: RegisterStep) => void;
 };
 
@@ -36,15 +31,7 @@ const LABEL_STYLES: Record<StepState, string> = {
   upcoming: "text-text/35",
 };
 
-/**
- * استپر افقی ثبت‌نام (RTL-safe و ریسپانسیو).
- *
- * - هر مرحله `flex-1` است و دایره + عنوان وسط‌چین زیر هم قرار می‌گیرند.
- * - خط رابط `absolute` است و با ویژگی‌های منطقی (`start-*`) از لبه‌ی دایره‌ی
- *   فعلی تا لبه‌ی دایره‌ی بعدی کشیده می‌شود؛ پس جهت (RTL/LTR) مهم نیست.
- * - موبایل: فقط دایره‌ها و خطوط (عنوان فقط برای screen reader).
- *   از `sm` به بالا عنوان‌ها هم نمایش داده می‌شوند.
- */
+
 function Stepper({ current, maxReached, onStepClick }: Props) {
   const currentIndex = getRegisterStepIndex(current);
   const lastIndex = REGISTER_STEPS.length - 1;

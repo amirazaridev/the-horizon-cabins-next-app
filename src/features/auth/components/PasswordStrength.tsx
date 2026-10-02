@@ -4,8 +4,8 @@ import { Check, X } from "lucide-react";
 import {
   getPasswordStrength,
   PASSWORD_RULES,
-  type PasswordRuleId,
-} from "../schemas/auth.schema";
+  STRENGTH_SEGMENTS,
+} from "../schemas";
 
 type Props = {
   password: string;
@@ -27,13 +27,6 @@ const LEVEL_STYLES = [
   { bar: "bg-emerald-500", text: "text-emerald-600", glow: "shadow-emerald-500/30" },
 ] as const;
 
-const RULE_LABELS: Record<PasswordRuleId, string> = {
-  length: "حداقل ۸ کاراکتر",
-  case: "حرف بزرگ و کوچک انگلیسی",
-  digit: "حداقل یک عدد",
-  special: "حداقل یک کاراکتر ویژه",
-};
-
 /**
  * نشانگر قدرت رمز عبور.
  *
@@ -42,8 +35,9 @@ const RULE_LABELS: Record<PasswordRuleId, string> = {
  *  2. چک‌لیست قواعد با علامت ✓/✗ — کاربر دقیقاً می‌داند چه کم است،
  *     به‌جای حدس‌زدن از روی رنگ.
  *
- * همه‌ی قواعد از `PASSWORD_RULES` می‌آیند؛ همان تعریفی که اسکیمای zod
- * استفاده می‌کند. پس هرگز بین «چه می‌گوید» و «چه اجازه می‌دهد» فاصله نمی‌افتد.
+ * ⭐ برچسب هر قاعده از خودِ `PASSWORD_RULES[i].label` می‌آید — نه یک
+ * نگاشت محلی. قبلاً این‌جا یک `RULE_LABELS` جدا بود که با کوچک‌ترین
+ * تغییر در ماژول قواعد، بی‌سروصدا از آن جدا می‌شد.
  */
 export default function PasswordStrength({
   password,
@@ -51,13 +45,13 @@ export default function PasswordStrength({
   className = "",
 }: Props) {
   const strength = getPasswordStrength(password);
-  const level = LEVEL_STYLES[strength.score];
+  const level = LEVEL_STYLES[strength.score] ?? LEVEL_STYLES[0];
   const hasInput = password.length > 0;
 
   return (
     <div className={className} aria-live="polite">
       <div className="flex gap-1.5" role="presentation">
-        {[0, 1, 2, 3].map((index) => {
+        {Array.from({ length: STRENGTH_SEGMENTS }).map((_, index) => {
           const isActive = hasInput && index < strength.score;
           return (
             <span
@@ -106,7 +100,7 @@ export default function PasswordStrength({
                     <X className="size-2.5" />
                   )}
                 </span>
-                {RULE_LABELS[rule.id]}
+                {rule.label}
               </li>
             );
           })}

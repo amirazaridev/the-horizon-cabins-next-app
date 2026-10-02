@@ -8,7 +8,7 @@ import {
   type ClipboardEvent,
   type KeyboardEvent,
 } from "react";
-import { faNumber, normalizeDigits } from "../schemas/auth.schema";
+import { faNumber, normalizeDigits } from "../schemas";
 
 type Props = {
   /** طول کد — پیش‌فرض از `AUTH_LIMITS.otpLength`. */

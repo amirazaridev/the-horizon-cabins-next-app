@@ -1,57 +1,57 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Lock, Mail } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
-import Button from "@/components/ui/Button";
-import { loginSchema, type LoginFormValues } from "../schemas/auth.schema";
+
+import { FIELD_LABELS, loginSchema, type LoginFormValues } from "../schemas";
 import { login } from "../services/auth.service";
 import type { AuthError } from "../types/auth.types";
+import { useAsyncAction } from "../hooks/useAsyncAction";
 import Checkbox from "./Checkbox";
+import ErrorBanner from "./ErrorBanner";
 import FormContainer from "./FormContainer";
-import Input from "./Input";
+import StateField from "./StateField";
+import SubmitButton from "./SubmitButton";
 
 /**
  * فرم ورود.
  *
- * ⚠️ کل منطق فرم اینجاست و UI هیچ دانشی از API ندارد؛ فقط
+ * ⚠️ کل منطق این‌جاست و UI هیچ دانشی از API ندارد؛ فقط
  * `auth.service.login` را صدا می‌زند. برای اتصال واقعی، تنها
  * `services/auth.service.ts` عوض می‌شود.
  *
- * حالت اعتبارسنجی: `mode: "onTouched"` — یعنی خطا بعد از اولین خروج از
- * فیلد نشان داده می‌شود، نه با هر کاراکتر (که تجربه‌ی تایپ را آزار می‌دهد)
+ * حالت اعتبارسنجی: `mode: "onTouched"` — خطا بعد از اولین خروج از فیلد
+ * نشان داده می‌شود، نه با هر کاراکتر (که تجربه‌ی تایپ را آزار می‌دهد)
  * و نه فقط بعد از submit (که دیر است). بعد از اولین خطا `reValidateMode`
  * روی `onChange` است تا کاربر همان لحظه‌ی اصلاح، تایید ببیند.
  */
 export default function LoginForm(): ReactNode {
   const [formError, setFormError] = useState<AuthError | null>(null);
   const [succeeded, setSucceeded] = useState(false);
+  const action = useAsyncAction<"loggingIn">();
 
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors, isSubmitting, isValid },
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    mode: "onTouched",
-    defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
-  });
+  const { control, handleSubmit, setError, register, formState } =
+    useForm<LoginFormValues>({
+      resolver: zodResolver(loginSchema),
+      mode: "onTouched",
+      defaultValues: { email: "", password: "", rememberMe: false },
+    });
+
+  const isBusy = action.isAnyPending || succeeded;
 
   async function onSubmit(values: LoginFormValues) {
     setFormError(null);
 
-    const result = await login({
-      email: values.email,
-      password: values.password,
-      rememberMe: Boolean(values.rememberMe),
-    });
+    const result = await action.run("loggingIn", () =>
+      login({
+        email: values.email,
+        password: values.password,
+        rememberMe: Boolean(values.rememberMe),
+      }),
+    );
 
     if (!result.ok) {
       // خطای فیلد → روی همان ورودی؛ خطای کلی → بنر بالای فرم.
@@ -62,47 +62,38 @@ export default function LoginForm(): ReactNode {
       return;
     }
 
-    // ⚠️ TODO(backend): در اینجا توکن را ذخیره و کاربر را به مقصد هدایت کنید.
+    // ⚠️ TODO(backend): توکن را ذخیره و کاربر را به مقصد هدایت کنید.
     // مثلاً: `router.push(nextPath)` بعد از نوشتن کوکی نشست.
     setSucceeded(true);
   }
 
-  const isBusy = isSubmitting || succeeded;
-
   return (
     <FormContainer for="login">
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-        {formError && !formError.field && (
-          <div
-            role="alert"
-            className="border-danger-strong/30 bg-danger/8 text-danger rounded-xl border px-3.5 py-2.5 text-xs leading-relaxed"
-          >
-            {formError.message}
-          </div>
-        )}
+        <ErrorBanner message={!formError?.field ? formError?.message : undefined} />
 
-        <Input
-          label="ایمیل"
+        <StateField
+          control={control}
+          name="email"
+          label={FIELD_LABELS.email}
           type="email"
           dir="ltr"
           autoComplete="email"
           placeholder="you@example.com"
           icon={<Mail className="size-5" />}
-          error={errors.email?.message}
           disabled={isBusy}
-          {...register("email")}
         />
 
-        <Input
-          label="رمز عبور"
+        <StateField
+          control={control}
+          name="password"
+          label={FIELD_LABELS.password}
           type="password"
           dir="ltr"
           autoComplete="current-password"
           placeholder="••••••••"
           icon={<Lock className="size-5" />}
-          error={errors.password?.message}
           disabled={isBusy}
-          {...register("password")}
         />
 
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -118,24 +109,15 @@ export default function LoginForm(): ReactNode {
           </Link>
         </div>
 
-        <Button
-          type="submit"
+        <SubmitButton
           shape="xl"
           fullWidth
-          disabled={isBusy || !isValid}
           className="mt-2"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="size-5 animate-spin" />
-              در حال ورود...
-            </>
-          ) : succeeded ? (
-            "خوش آمدید!"
-          ) : (
-            "ورود به حساب"
-          )}
-        </Button>
+          label={succeeded ? "خوش آمدید!" : "ورود به حساب"}
+          loadingLabel="در حال ورود..."
+          isLoading={action.is("loggingIn")}
+          disabled={isBusy || !formState.isValid}
+        />
       </form>
     </FormContainer>
   );

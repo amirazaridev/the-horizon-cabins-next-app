@@ -18,7 +18,7 @@ import {
   normalizeDigits,
   normalizeText,
   AUTH_LIMITS,
-} from "../schemas/auth.schema";
+} from "../schemas";
 import type {
   AuthError,
   AuthErrorCode,

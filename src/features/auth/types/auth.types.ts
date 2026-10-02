@@ -71,8 +71,17 @@ export type VerifyEmailPayload = {
 };
 
 export type RegisterAccountPayload = RegisterIdentityPayload & {
-  /** ایمیل پس از تایید شدن — همان `email` ورودی. */
+  /** رمز عبور انتخاب‌شده در مرحله‌ی قبل از تایید ایمیل. */
   password: string;
+  /**
+   * توکن یک‌بارمصرف بازگشتی از `verifyEmailCode`.
+   *
+   * ⚠️ چون در جریان جدید، تایید ایمیل **آخرین** مرحله است، ساخت حساب
+   * باید مدرکی همراه داشته باشد که ثابت کند ایمیل واقعاً تایید شده.
+   * در بک‌اند واقعی: `POST /auth/register` با هدر `Authorization: Bearer`
+   * یا فیلد `verificationToken` در بدنه.
+   */
+  verificationToken?: string;
 };
 
 export type LoginPayload = {
