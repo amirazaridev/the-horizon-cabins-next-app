@@ -8,6 +8,7 @@ import { getRegisterStepIndex, REGISTER_STEPS } from "../constants/register-step
 import {
   AUTH_LIMITS,
   AUTH_MESSAGES,
+  normalizeDigits,
   normalizeText,
   registerPasswordSchema,
   registerStepOneSchema,
@@ -16,11 +17,8 @@ import {
   type RegisterStepOneValues,
   type RegisterVerificationValues,
 } from "../schemas";
-import {
-  registerAccount,
-  sendVerificationCode,
-  verifyEmailCode,
-} from "../services/auth.service";
+import { registerAction } from "../actions/auth.actions";
+import { requestOtpAction, verifyOtpAction } from "../actions/otp.actions";
 import type { AuthError, RegisterStep } from "../types/auth.types";
 import { useAsyncAction } from "./useAsyncAction";
 import { useResendTimer } from "./useResendTimer";
@@ -75,6 +73,12 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
   const [maxReached, setMaxReached] = useState(0);
   const [formError, setFormError] = useState<AuthError | null>(null);
   const [codeSentAt, setCodeSentAt] = useState<number | null>(null);
+  /**
+   * مدت تایمر ارسال مجدد — از پاسخ سرور می‌آید (`resendAfterSeconds`).
+   * مقدار اولیه از ثابت کلاینت می‌آید فقط تا قبل از اولین ارسال تایمر
+   * معنادار باشد؛ پس از آن منبع حقیقت پاسخ سرور است.
+   */
+  const [resendSeconds, setResendSeconds] = useState<number>(AUTH_LIMITS.resendSeconds);
   const [identity, setIdentity] = useState<RegisterStepOneValues>({
     firstName: "",
     lastName: "",
@@ -119,7 +123,7 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
     useWatch({ control: verificationForm.control, name: "code" }) ?? "";
 
   const resendTimer = useResendTimer({
-    seconds: AUTH_LIMITS.resendSeconds,
+    seconds: resendSeconds,
     startedAt: codeSentAt,
   });
 
@@ -127,12 +131,21 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
   /* ارسال کد تایید                                                     */
   /* ---------------------------------------------------------------- */
 
+  /**
+   * درخواست ارسال کد تایید به ایمیل.
+   *
+   * ⚠️ منبع حقیقت تایمر ارسال مجدد، پاسخ سرور است
+   * (`resendAfterSeconds`) نه ثابت کلاینت. این‌طور سیاست محدودیت نرخ
+   * سمت سرور و تایمر UI هم‌داستان می‌مانند و کاربر پیام «تلاش زیاد»
+   * نمی‌گیرد چون دکمه‌اش زودتر از سرور باز شده.
+   */
   const sendCode = useCallback(
     async (email: string, isResend: boolean) => {
+      void isResend;
       setFormError(null);
 
       const result = await action.run("sendingCode", () =>
-        sendVerificationCode(email),
+        requestOtpAction(email, "signup"),
       );
 
       if (!result.ok) {
@@ -148,16 +161,12 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
       }
 
       setCodeSentAt(Date.now());
+      setResendSeconds(result.data.resendAfterSeconds);
       verificationForm.reset({ code: "" });
-
-      if (!isResend && process.env.NODE_ENV !== "production") {
-        // فقط برای تست محلی — در بک‌اند واقعی هرگز کد را به کلاینت نفرستید.
-        console.info(`[auth:mock] کد تایید: ${result.data.devCode}`);
-      }
 
       return true;
     },
-    [action, identityForm, verificationForm],
+    [action, goTo, identityForm, verificationForm],
   );
 
   /* ---------------------------------------------------------------- */
@@ -257,8 +266,9 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
         return false;
       }
 
+      // مرحله‌ی ۱: بررسی کد تایید و گرفتن توکن یک‌بارمصرف.
       const verified = await action.run("verifyingCode", () =>
-        verifyEmailCode({ email: identity.email, code: normalizeText(code) }),
+        verifyOtpAction(identity.email, normalizeDigits(code), "signup"),
       );
 
       if (!verified.ok) {
@@ -266,9 +276,11 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
         return false;
       }
 
+      // مرحله‌ی ۲: ساخت حساب با توکن تایید.
       const registered = await action.run("registering", () =>
-        registerAccount({
-          ...identity,
+        registerAction({
+          fullName: `${normalizeText(identity.firstName)} ${normalizeText(identity.lastName)}`.trim(),
+          email: identity.email,
           password: credentials.password,
           verificationToken: verified.data.verificationToken,
         }),
@@ -288,7 +300,7 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
 
       // ✅ حساب ساخته شد و Server Action کوکی نشست را ست کرد؛
       // حالا بر اساس نقش به مقصد درست هدایت می‌شویم.
-      onSuccess?.(registered.data.redirectTo);
+      onSuccess?.(registered.redirectTo);
       return true;
     },
     [
