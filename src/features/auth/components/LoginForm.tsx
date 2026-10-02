@@ -1,112 +1,137 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Lock, Mail } from "lucide-react";
 import Link from "next/link";
-import { CheckCircle2, Loader2, Lock, LogIn, Mail } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { useState, type ReactNode } from "react";
+import { useForm } from "react-hook-form";
 import Button from "@/components/ui/Button";
-import Input from "@/features/auth/components/Input";
-import {
-  validateEmail,
-  validatePassword,
-} from "@/features/auth/utils/validation";
+import { loginSchema, type LoginFormValues } from "../schemas/auth.schema";
+import { login } from "../services/auth.service";
+import type { AuthError } from "../types/auth.types";
+import Checkbox from "./Checkbox";
 import FormContainer from "./FormContainer";
+import Input from "./Input";
 
-type FormValues = {
-  email: string;
-  password: string;
-};
+/**
+ * فرم ورود.
+ *
+ * ⚠️ کل منطق فرم اینجاست و UI هیچ دانشی از API ندارد؛ فقط
+ * `auth.service.login` را صدا می‌زند. برای اتصال واقعی، تنها
+ * `services/auth.service.ts` عوض می‌شود.
+ *
+ * حالت اعتبارسنجی: `mode: "onTouched"` — یعنی خطا بعد از اولین خروج از
+ * فیلد نشان داده می‌شود، نه با هر کاراکتر (که تجربه‌ی تایپ را آزار می‌دهد)
+ * و نه فقط بعد از submit (که دیر است). بعد از اولین خطا `reValidateMode`
+ * روی `onChange` است تا کاربر همان لحظه‌ی اصلاح، تایید ببیند.
+ */
+export default function LoginForm(): ReactNode {
+  const [formError, setFormError] = useState<AuthError | null>(null);
+  const [succeeded, setSucceeded] = useState(false);
 
-type FormErrors = Partial<Record<keyof FormValues, string>>;
-
-type Status = "idle" | "loading" | "success";
-
-export default function LoginForm() {
-  const [values, setValues] = useState<FormValues>({
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: "onTouched",
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
   });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [status, setStatus] = useState<Status>("idle");
 
-  function handleChange(field: keyof FormValues) {
-    return (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues((current) => ({
-        ...current,
-        [field]: event.target.value,
-      }));
-      setErrors((current) => ({ ...current, [field]: undefined }));
-    };
+  async function onSubmit(values: LoginFormValues) {
+    setFormError(null);
+
+    const result = await login({
+      email: values.email,
+      password: values.password,
+      rememberMe: Boolean(values.rememberMe),
+    });
+
+    if (!result.ok) {
+      // خطای فیلد → روی همان ورودی؛ خطای کلی → بنر بالای فرم.
+      if (result.error.field === "email" || result.error.field === "password") {
+        setError(result.error.field, { message: result.error.message });
+      }
+      setFormError(result.error);
+      return;
+    }
+
+    // ⚠️ TODO(backend): در اینجا توکن را ذخیره و کاربر را به مقصد هدایت کنید.
+    // مثلاً: `router.push(nextPath)` بعد از نوشتن کوکی نشست.
+    setSucceeded(true);
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const nextErrors: FormErrors = {
-      email: validateEmail(values.email),
-      password: validatePassword(values.password),
-    };
-    setErrors(nextErrors);
-    if (nextErrors.email || nextErrors.password) return;
-
-    setStatus("loading");
-    setTimeout(() => setStatus("success"), 1200);
-  }
+  const isBusy = isSubmitting || succeeded;
 
   return (
     <FormContainer for="login">
-      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        {formError && !formError.field && (
+          <div
+            role="alert"
+            className="border-danger-strong/30 bg-danger/8 text-danger rounded-xl border px-3.5 py-2.5 text-xs leading-relaxed"
+          >
+            {formError.message}
+          </div>
+        )}
+
         <Input
           label="ایمیل"
           type="email"
           dir="ltr"
-          placeholder="you@example.com"
-          value={values.email}
-          onChange={handleChange("email")}
-          error={errors.email}
           autoComplete="email"
+          placeholder="you@example.com"
           icon={<Mail className="size-5" />}
+          error={errors.email?.message}
+          disabled={isBusy}
+          {...register("email")}
         />
 
         <Input
           label="رمز عبور"
           type="password"
           dir="ltr"
-          placeholder="••••••••"
-          value={values.password}
-          onChange={handleChange("password")}
-          error={errors.password}
           autoComplete="current-password"
+          placeholder="••••••••"
           icon={<Lock className="size-5" />}
+          error={errors.password?.message}
+          disabled={isBusy}
+          {...register("password")}
         />
 
-        <div className="flex items-center justify-between">
-          <label className="text-text-gray flex cursor-pointer items-center gap-2.5 text-sm select-none">
-            <input
-              type="checkbox"
-              className="accent-primary-400 border-foreground/20 size-4 rounded"
-            />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Checkbox {...register("rememberMe")} disabled={isBusy}>
             مرا به خاطر بسپار
-          </label>
-          <a
-            href="#"
+          </Checkbox>
+
+          <Link
+            href="/forgot-password"
             className="text-primary-400/80 hover:text-primary-400 text-sm transition-colors duration-300"
           >
             فراموشی رمز عبور؟
-          </a>
+          </Link>
         </div>
 
         <Button
           type="submit"
           shape="xl"
           fullWidth
-          disabled={status === "loading"}
+          disabled={isBusy || !isValid}
           className="mt-2"
         >
-          {status === "loading" ? (
+          {isSubmitting ? (
             <>
               <Loader2 className="size-5 animate-spin" />
               در حال ورود...
             </>
+          ) : succeeded ? (
+            "خوش آمدید!"
           ) : (
             "ورود به حساب"
           )}

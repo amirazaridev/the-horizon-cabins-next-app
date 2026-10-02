@@ -49,7 +49,7 @@ export default function Footer() {
                 <a
                   key={social}
                   href="#"
-                  className="hover:bg-primary-400 bg-foreground/5 text-foreground/50 hover:text-background flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300"
+                  className="hover:bg-primary-400 bg-foreground/5 text-text/50 hover:text-background flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300"
                 >
                   <span className="sr-only">{social}</span>
                   <svg

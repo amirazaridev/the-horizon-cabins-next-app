@@ -23,7 +23,7 @@ export default function Sidebar({ pathname, open, onClose }: SidebarProps) {
             <div className="bg-primary-400 flex size-8 items-center justify-center rounded-lg">
               <Mountain className="size-5 text-black" />
             </div>
-            <span className="text-foreground text-lg font-bold">هورایزن</span>
+            <span className="text-text text-lg font-bold">هورایزن</span>
           </Link>
           <button
             onClick={onClose}
@@ -45,7 +45,7 @@ export default function Sidebar({ pathname, open, onClose }: SidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`${isActive ? "bg-primary-400/10 text-primary-600 dark:text-primary-400" : "text-text-gray hover:bg-foreground/5 hover:text-foreground"} flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200`}
+                className={`${isActive ? "bg-primary-400/10 text-primary-600 dark:text-primary-400" : "text-text-gray hover:bg-foreground/5 hover:text-text"} flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200`}
               >
                 <item.icon
                   className={`shrink-0 ${isActive && "text-primary-500 dark:text-primary-400"}`}
@@ -57,7 +57,7 @@ export default function Sidebar({ pathname, open, onClose }: SidebarProps) {
         </nav>
 
         <div className="mb-4 flex items-center justify-between px-6 md:hidden">
-          <span className="text-foreground/70 text-sm">تم</span>
+          <span className="text-text/70 text-sm">تم</span>
           <ThemeToggle forMobile />
         </div>
 

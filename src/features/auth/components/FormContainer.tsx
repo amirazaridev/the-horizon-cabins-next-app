@@ -1,20 +1,42 @@
-import BackDropBlur from "@/components/ui/BackDropBlur";
 import { LogIn, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { PropsWithChildren, type ReactNode } from "react";
+import { type ReactNode } from "react";
+import BackDropBlur from "@/components/ui/BackDropBlur";
 
-type Props = PropsWithChildren & { for: "login" | "register" };
+type Props = {
+  for: "login" | "register";
+  title?: string;
+  description?: string;
+  /** محتوای اضافی زیر فرم اصلی (قبل از خط جداکننده). */
+  footer?: ReactNode;
+  children: ReactNode;
+};
 
+/**
+ * قاب مشترک فرم‌های ورود/ثبت‌نام.
+ *
+ * ⚠️ عنوان و توضیح حالا قابل بازنویسی‌اند: فرم ثبت‌نام مرحله‌ای باید
+ * بتواند در هر مرحله سرتیتر خودش را عوض کند (مثلاً «تایید ایمیل»)،
+ * در حالی که قاب، لوگو و لینک متقابل ثابت می‌مانند.
+ *
+ * ⚠️ واحد ریسپانسیو: پدینگ و شعاع گوشه در موبایل کوچک‌تر است؛ `max-w-md`
+ * باعث می‌شود در تبلت/دسکتاپ فرم از عرض خوانا پهن‌تر نشود.
+ */
 export default function FormContainer({
   for: forType,
+  title,
+  description,
+  footer,
   children,
 }: Props): ReactNode {
   const isFormLogin = forType === "login";
+
   return (
     <div className="relative mx-auto w-full max-w-md">
       <div className="bg-surface/90 shadow-primary-300/15 relative overflow-hidden rounded-3xl shadow-2xl backdrop-blur-xl">
         <BackDropBlur type="double-top-down" />
-        <div className="relative px-6 py-6 md:px-8 md:py-8">
+
+        <div className="relative px-5 py-6 sm:px-8 sm:py-8">
           <div className="mb-5 text-center">
             <div className="relative mx-auto mb-3 size-12">
               <div className="bg-primary-400/10 absolute inset-0 rounded-xl blur-xl" />
@@ -26,20 +48,26 @@ export default function FormContainer({
                 )}
               </div>
             </div>
+
             <h1 className="text-text text-xl font-bold tracking-tight">
-              {isFormLogin ? "ساخت حساب کاربری" : "ورود به هورایزن"}
+              {title ??
+                (isFormLogin ? "ورود به هورایزن" : "ساخت حساب کاربری")}
             </h1>
             <p className="text-text-gray mt-1.5 text-xs">
-              {isFormLogin
-                ? "به دنیای کابین‌های لوکس خوش آمدید"
-                : "در چند ثانیه عضو خانواده هورایزن شوید"}
+              {description ??
+                (isFormLogin
+                  ? "به دنیای کابین‌های لوکس خوش آمدید"
+                  : "در چند ثانیه عضو خانواده هورایزن شوید")}
             </p>
           </div>
 
           {children}
+
+          {footer}
+
           <div className="my-5 flex items-center gap-4">
             <span className="via-foreground/10 h-px flex-1 bg-linear-to-r from-transparent to-transparent" />
-            <span className="text-foreground/30 text-xs font-medium">یا</span>
+            <span className="text-text/30 text-xs font-medium">یا</span>
             <span className="via-foreground/10 h-px flex-1 bg-linear-to-r from-transparent to-transparent" />
           </div>
 

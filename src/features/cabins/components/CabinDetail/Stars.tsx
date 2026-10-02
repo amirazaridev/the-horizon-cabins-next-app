@@ -33,7 +33,7 @@ export default function Stars({
           className={`${iconClassName} ${
             index < rounded
               ? "fill-primary-400 text-primary-400"
-              : "text-foreground/15"
+              : "text-text/15"
           }`}
         />
       ))}

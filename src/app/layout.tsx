@@ -26,7 +26,7 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <body className="bg-background text-foreground flex min-h-full flex-col justify-between">
+      <body className="bg-background text-text flex min-h-full flex-col justify-between">
         <ThemeProvider>
           {children}
           <Toaster position="top-center" reverseOrder={false} />

@@ -109,7 +109,25 @@
 }
 
 @layer base {
+  /*
+    گارد سرریز افقی سطح ریشه.
+
+    ⚠️ این قاعده در بازنویسی `globals.css` (انتقال از `src/app/` به
+    `src/styles/`) از دست رفت و باعث شد صفحه‌هایی که لکه‌ی نورانی تزئینی
+    با `absolute` و ابعاد بزرگ دارند (مثل پوسته‌ی احراز هویت) کل سند را
+    پهن‌تر از viewport کنند و اسکرول افقی بخورند.
+
+    چرا `clip` و نه `hidden`؟
+    `overflow-x: hidden` روی یک عنصر، محور دیگر را طبق spec به `auto`
+    تبدیل می‌کند و آن عنصر را به **scroll container** تبدیل می‌کند؛ در
+    نتیجه `position: sticky` فرزندان به‌جای viewport به همان ظرف (که
+    اسکرول ندارد) می‌چسبد و عملاً از کار می‌افتد — همان تله‌ای که در
+    صفحه‌ی جزئیات اقامتگاه (نوار تب چسبان، aside رزرو) به آن خوردیم.
+    `overflow-x: clip` این عارضه را ندارد چون scroll container نمی‌سازد
+    و چیدمان چسبان را سالم نگه می‌دارد.
+  */
   html {
+    overflow-x: clip;
     scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: var(--color-primary-400) var(--color-background-2);

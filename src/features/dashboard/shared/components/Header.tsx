@@ -40,9 +40,7 @@ export default function Header({ pathname, onMenuClick }: HeaderProps) {
         <div className="flex items-center gap-1.5">
           <span className="text-text-gray text-sm">داشبورد</span>
           <ChevronLeft className="text-text-gray size-4" />
-          <h1 className="text-foreground truncate text-base font-bold">
-            {title}
-          </h1>
+          <h1 className="text-text truncate text-base font-bold">{title}</h1>
         </div>
       </div>
 

@@ -54,7 +54,7 @@ export default function Spinner({
         </svg>
         {label && (
           <span
-            className={`${labelSize} ${styles["animate-sd-label-in"]} text-foreground font-normal opacity-50`}
+            className={`${labelSize} ${styles["animate-sd-label-in"]} text-text font-normal opacity-50`}
           >
             {label}
           </span>
@@ -88,7 +88,7 @@ export default function Spinner({
 
       {label && (
         <span
-          className={`${labelSize} text-foreground font-normal opacity-50`}
+          className={`${labelSize} text-text font-normal opacity-50`}
           style={{
             animation: "sd-label-in .4s ease-out both",
             animationDelay: ".3s",

@@ -89,7 +89,7 @@ export default function NavMobile({
 
             <button
               onClick={closeMenu}
-              className="text-foreground/70 hover:text-foreground flex h-10 w-10 items-center justify-center transition-colors"
+              className="text-text/70 hover:text-text flex h-10 w-10 items-center justify-center transition-colors"
               aria-label="Close menu"
             >
               <X />
@@ -113,7 +113,7 @@ export default function NavMobile({
 
           <div className="border-foreground/10 border-t p-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-foreground/70 text-sm">تم</span>
+              <span className="text-text/70 text-sm">تم</span>
               <ThemeToggle forMobile />
             </div>
             <LoginButton fullWidth />
