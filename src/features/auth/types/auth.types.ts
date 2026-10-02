@@ -7,6 +7,8 @@
  * انجام می‌شود و به هیچ فایل UI دست نمی‌خورد.
  */
 
+import type { UserRole } from "../constants/auth-cookie";
+
 /** مراحل فرم ثبت‌نام — ترتیب نمایش استپر از همین می‌آید. */
 export type RegisterStep = "identity" | "verification" | "password";
 
@@ -122,10 +124,14 @@ export type AuthSession = {
   accessToken: string;
   /** ثانیه — برای زمان‌بندی تازه‌سازی توکن. */
   expiresIn: number;
+  /** نقش کاربر — از پاسخ بک‌اند می‌آید و مبنای هدایت است. */
+  role: UserRole;
+  /** مسیری که بعد از احراز هویت باید برویم (بر اساس نقش). */
+  redirectTo: string;
 };
 
 export type AuthUser = {
-  id: string;
+  id: number | string;
   firstName: string;
   lastName: string;
   email: string;

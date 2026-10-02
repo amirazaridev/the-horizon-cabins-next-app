@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
 import { useRegisterForm } from "../hooks/useRegisterForm";
@@ -13,7 +14,14 @@ import VerificationStep from "./steps/VerificationStep";
 //?  فرم ثبت‌نام سه‌مرحله‌ای 
 export default function RegisterForm(): ReactNode {
   const [isDone, setIsDone] = useState(false);
-  const form = useRegisterForm({ onSuccess: () => setIsDone(true) });
+  const router = useRouter();
+  const form = useRegisterForm({
+    onSuccess: (redirectTo) => {
+      setIsDone(true);
+      router.replace(redirectTo);
+      router.refresh();
+    },
+  });
   const { step, stepMeta, direction, isTransitioning, formError } = form;
 
   return (

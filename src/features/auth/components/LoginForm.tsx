@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 
@@ -15,6 +16,7 @@ import ErrorBanner from "./ErrorBanner";
 import FormContainer from "./FormContainer";
 import StateField from "./StateField";
 import SubmitButton from "./SubmitButton";
+import toast from "react-hot-toast";
 
 /**
  * فرم ورود.
@@ -32,8 +34,10 @@ export default function LoginForm(): ReactNode {
   const [formError, setFormError] = useState<AuthError | null>(null);
   const [succeeded, setSucceeded] = useState(false);
   const action = useAsyncAction<"loggingIn">();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const { control, handleSubmit, setError, register, formState } =
+  const { control, handleSubmit, register, formState } =
     useForm<LoginFormValues>({
       resolver: zodResolver(loginSchema),
       mode: "onTouched",
@@ -54,23 +58,28 @@ export default function LoginForm(): ReactNode {
     );
 
     if (!result.ok) {
-      // خطای فیلد → روی همان ورودی؛ خطای کلی → بنر بالای فرم.
-      if (result.error.field === "email" || result.error.field === "password") {
-        setError(result.error.field, { message: result.error.message });
-      }
-      setFormError(result.error);
+      toast.error(result.error.message);
       return;
     }
 
-    // ⚠️ TODO(backend): توکن را ذخیره و کاربر را به مقصد هدایت کنید.
-    // مثلاً: `router.push(nextPath)` بعد از نوشتن کوکی نشست.
     setSucceeded(true);
+
+    const from = searchParams.get("from");
+    const destination =
+      (from && from.startsWith("/")) || from?.startsWith("%2F")
+        ? from
+        : result.data.redirectTo;
+
+    router.replace(destination);
+    router.refresh();
   }
 
   return (
     <FormContainer for="login">
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-        <ErrorBanner message={!formError?.field ? formError?.message : undefined} />
+        <ErrorBanner
+          message={!formError?.field ? formError?.message : undefined}
+        />
 
         <StateField
           control={control}

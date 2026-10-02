@@ -7,25 +7,41 @@ import {
   Menu,
   Search,
   Settings,
+  ShieldCheck,
   UserPen,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
 
+import { logoutAction } from "@/features/auth/actions/auth.actions";
+import type { UserRole } from "@/features/auth/constants/auth-cookie";
 import { SIDEBAR_ITEMS } from "../constants/sidebar-items";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-import Menus from "@/components/ui/Menus"; // مسیر رو مطابق ساختار پروژه‌ی خودتون تنظیم کنید
+import Menus from "@/components/ui/Menus";
 
 interface HeaderProps {
   pathname: string;
+  role: UserRole;
+  userId: number;
   onMenuClick: () => void;
 }
 
-export default function Header({ pathname, onMenuClick }: HeaderProps) {
+const ROLE_LABELS: Record<UserRole, string> = {
+  owner: "مالک / مدیر ارشد",
+  admin: "مدیر سایت",
+  guest: "مهمان",
+};
+
+export default function Header({ pathname, role, userId, onMenuClick }: HeaderProps) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const activeItem = SIDEBAR_ITEMS.find((item) => pathname === item.href);
   const title = activeItem?.name ?? "داشبورد";
+
+  const roleLabel = ROLE_LABELS[role];
+  const avatarLabel = role === "owner" ? "م" : "ع";
 
   return (
     <header className="bg-surface/80 border-border sticky inset-x-0 top-0 z-30 flex h-16 items-center justify-between gap-4 border-b px-4 backdrop-blur-md sm:px-6">
@@ -60,7 +76,7 @@ export default function Header({ pathname, onMenuClick }: HeaderProps) {
 
         <ThemeToggle />
 
-        {/* پروفایل ادمین — تک محل ورودی به اطلاعات و اکشن‌های اکانت */}
+        {/* پروفایل کاربر — نقش واقعی از نشست سرور می‌آید. */}
         <div className="border-border mr-1 flex items-center border-r pr-1">
           <Menus>
             <Menus.Toggle
@@ -69,13 +85,16 @@ export default function Header({ pathname, onMenuClick }: HeaderProps) {
                 <>
                   <span className="flex items-center gap-2.5 px-1.5">
                     <span className="from-primary-400 to-primary-600 grid size-9 shrink-0 place-items-center rounded-full bg-linear-to-br text-sm font-bold text-white">
-                      ع
+                      {avatarLabel}
                     </span>
                     <span className="hidden text-right lg:block">
                       <p className="text-text text-sm leading-none font-semibold">
-                        علی رضایی
+                        {role === "owner" ? "مدیر ارشد" : "مدیر سایت"}
                       </p>
-                      <p className="text-text-gray mt-1 text-xs">مدیر سایت</p>
+                      <p className="text-text-gray mt-1 flex items-center gap-1 text-xs">
+                        {role === "owner" && <ShieldCheck className="size-3" />}
+                        {roleLabel} · #{userId}
+                      </p>
                     </span>
                   </span>
                   <ChevronDown className="ms-3 size-5" />
@@ -99,11 +118,9 @@ export default function Header({ pathname, onMenuClick }: HeaderProps) {
               <Menus.Button
                 icon={<LogOut className="size-4" />}
                 danger
-                onClick={() => {
-                  router.push("/");
-                }}
+                onClick={() => startTransition(() => void logoutAction())}
               >
-                خروج
+                {isPending ? "در حال خروج…" : "خروج"}
               </Menus.Button>
             </Menus.List>
           </Menus>

@@ -2,16 +2,24 @@
 
 import { LogOut, Mountain, X } from "lucide-react";
 import Link from "next/link";
-import { SIDEBAR_ITEMS } from "../constants/sidebar-items";
+import { useTransition } from "react";
+
+import { logoutAction } from "@/features/auth/actions/auth.actions";
+import type { UserRole } from "@/features/auth/constants/auth-cookie";
+import { SIDEBAR_ITEMS, visibleSidebarItems } from "../constants/sidebar-items";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 type SidebarProps = {
   pathname: string;
+  role: UserRole;
   open: boolean;
   onClose: () => void;
 };
 
-export default function Sidebar({ pathname, open, onClose }: SidebarProps) {
+export default function Sidebar({ pathname, role, open, onClose }: SidebarProps) {
+  const [isPending, startTransition] = useTransition();
+  const items = visibleSidebarItems(role);
+
   return (
     <>
       <aside
@@ -34,11 +42,8 @@ export default function Sidebar({ pathname, open, onClose }: SidebarProps) {
           </button>
         </div>
 
-        <nav
-          className="flex-1 space-y-1 overflow-y-auto px-3 py-4"
-          role="navigation"
-        >
-          {SIDEBAR_ITEMS.map((item) => {
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4" role="navigation">
+          {items.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
@@ -54,6 +59,7 @@ export default function Sidebar({ pathname, open, onClose }: SidebarProps) {
               </Link>
             );
           })}
+          {items.length === 0 && SIDEBAR_ITEMS.length > 0 && null}
         </nav>
 
         <div className="mb-4 flex items-center justify-between px-6 md:hidden">
@@ -61,16 +67,17 @@ export default function Sidebar({ pathname, open, onClose }: SidebarProps) {
           <ThemeToggle forMobile />
         </div>
 
-        {/* اطلاعات و ویرایش اکانت الان در Header متمرکز شده؛
-            اینجا فقط یه میان‌بر سریع برای خروج نگه داشته شده. */}
+        {/* خروج واقعی — از طریق Server Action که کوکی نشست را پاک می‌کند. */}
         <div className="border-border border-t p-3">
-          <Link
-            href="/"
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-700"
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={() => startTransition(() => void logoutAction())}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
           >
             <LogOut className="size-5" />
-            خروج
-          </Link>
+            {isPending ? "در حال خروج…" : "خروج"}
+          </button>
         </div>
       </aside>
     </>

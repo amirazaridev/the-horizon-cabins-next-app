@@ -1,12 +1,24 @@
 import type { ReactNode } from "react";
 import Logo from "@/components/ui/Logo";
 import CopyrightText from "@/components/ui/CopyrightText";
+import { getCurrentUser } from "@/features/auth/services/session.service";
+import { canAccessDashboard } from "@/features/auth/constants/auth-cookie";
+import { redirect } from "next/navigation";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: ReactNode;
-}): ReactNode {
+}) {
+  const user = await getCurrentUser();
+
+  if (user) {
+    if (canAccessDashboard(user.role)) {
+      redirect("/dashboard");
+    }
+
+    redirect("/");
+  }
   return (
     <div className="bg-background relative flex min-h-dvh flex-col items-center overflow-hidden px-4 pb-1">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">

@@ -48,8 +48,12 @@ import { useStepTransition } from "./useStepTransition";
  */
 
 type Options = {
-  /** فراخوانی بعد از ساخت موفق حساب. */
-  onSuccess?: () => void;
+  /**
+   * فراخوانی بعد از ساخت موفق حساب.
+   * `redirectTo` مسیر مقصد بر اساس نقش کاربر است (admin/owner → داشبورد،
+   * guest → صفحه اصلی) و از پاسخ Server Action می‌آید.
+   */
+  onSuccess?: (redirectTo: string) => void;
 };
 
 export function useRegisterForm({ onSuccess }: Options = {}) {
@@ -282,8 +286,9 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
         return false;
       }
 
-      // ⚠️ TODO(backend): ذخیره‌ی نشست (کوکی/httpOnly) و هدایت به مقصد.
-      onSuccess?.();
+      // ✅ حساب ساخته شد و Server Action کوکی نشست را ست کرد؛
+      // حالا بر اساس نقش به مقصد درست هدایت می‌شویم.
+      onSuccess?.(registered.data.redirectTo);
       return true;
     },
     [

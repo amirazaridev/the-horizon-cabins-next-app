@@ -1,18 +1,40 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const COOKIE_NAME = "JWT";
-export function proxy(request: NextRequest) {
-  // const token = request.cookies.get(COOKIE_NAME)?.value;
+import { AUTH_COOKIE_NAME } from "@/features/auth/constants/auth-cookie";
 
-  // if (!token) {
-  //   const loginUrl = new URL("/login", request.url);
-  //   loginUrl.searchParams.set("from", request.nextUrl.pathname);
-  //       return NextResponse.redirect(loginUrl)
-  // }
+const PROTECTED_PREFIXES = ["/dashboard"];
+
+function isProtectedPath(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some(
+    (prefix) =>
+      pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  const hasToken = Boolean(
+    request.cookies.get(AUTH_COOKIE_NAME)?.value,
+  );
+
+  if (isProtectedPath(pathname) && !hasToken) {
+    const loginUrl = new URL("/login", request.url);
+
+    loginUrl.searchParams.set(
+      "from",
+      pathname + request.nextUrl.search,
+    );
+
+    return NextResponse.redirect(loginUrl);
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+  ],
 };

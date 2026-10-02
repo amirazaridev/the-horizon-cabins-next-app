@@ -4,12 +4,17 @@ import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/features/dashboard/shared/components/Sidebar";
 import Header from "@/features/dashboard/shared/components/Header";
+import type { UserRole } from "@/features/auth/constants/auth-cookie";
 
 interface DashboardLayoutProps {
   children: ReactNode;
+  /** نقش کاربر — از Server Component والد تزریق می‌شود. */
+  role: UserRole;
+  /** شناسه‌ی کاربر — برای نمایش/اکشن‌های وابسته به کاربر. */
+  userId: number;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, role, userId }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
@@ -18,6 +23,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="absolute w-75 lg:static">
         <Sidebar
           pathname={pathname}
+          role={role}
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
@@ -34,11 +40,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex w-full flex-col">
         <Header
           pathname={pathname}
+          role={role}
+          userId={userId}
           onMenuClick={() => setSidebarOpen((prev) => !prev)}
         />
-        <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">
-          {children}
-        </main>
+        <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );
