@@ -105,13 +105,15 @@ export async function loginAction(input: {
 /**
  * ثبت‌نام کاربر جدید.
  *
- * ⚠️ در این مرحله کد تایید ایمیل (OTP) ماک می‌ماند و صرفاً در سمت کلاینت
- * چک می‌شود؛ حساب واقعی با همین Action در بک‌اند ساخته می‌شود.
+ * ⚠️ پیش‌شرط: ایمیل باید قبلاً با `verifyOtpAction` تایید شده باشد و
+ * `verificationToken` یک‌بارمصرف همراه بیاید. بک‌اند بدون این توکن
+ * ثبت‌نام را رد می‌کند (جلوگیری از ساخت حساب بدون تایید ایمیل).
  */
 export async function registerAction(input: {
   fullName: string;
   email: string;
   password: string;
+  verificationToken: string;
 }): Promise<AuthActionResult> {
   let res: Response;
   try {
@@ -122,6 +124,7 @@ export async function registerAction(input: {
         fullName: normalizeText(input.fullName),
         email: normalizeText(input.email).toLowerCase(),
         password: input.password,
+        verificationToken: input.verificationToken,
       }),
       cache: "no-store",
     });

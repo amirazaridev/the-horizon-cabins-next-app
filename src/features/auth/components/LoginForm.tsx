@@ -8,7 +8,7 @@ import { useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 
 import { FIELD_LABELS, loginSchema, type LoginFormValues } from "../schemas";
-import { login } from "../services/auth.service";
+import { loginAction } from "../actions/auth.actions";
 import type { AuthError } from "../types/auth.types";
 import { useAsyncAction } from "../hooks/useAsyncAction";
 import Checkbox from "./Checkbox";
@@ -21,9 +21,9 @@ import toast from "react-hot-toast";
 /**
  * فرم ورود.
  *
- * ⚠️ کل منطق این‌جاست و UI هیچ دانشی از API ندارد؛ فقط
- * `auth.service.login` را صدا می‌زند. برای اتصال واقعی، تنها
- * `services/auth.service.ts` عوض می‌شود.
+ * ⚠️ این کامپوننت مستقیماً `loginAction` (Server Action) را صدا می‌زند؛
+ * لایه‌ی سرویس کلاینت حذف شد چون صرفاً یک پوسته‌ی نازک دور همین اکشن بود
+ * و هیچ منطق مستقلی نداشت.
  *
  * حالت اعتبارسنجی: `mode: "onTouched"` — خطا بعد از اولین خروج از فیلد
  * نشان داده می‌شود، نه با هر کاراکتر (که تجربه‌ی تایپ را آزار می‌دهد)
@@ -50,10 +50,9 @@ export default function LoginForm(): ReactNode {
     setFormError(null);
 
     const result = await action.run("loggingIn", () =>
-      login({
+      loginAction({
         email: values.email,
         password: values.password,
-        rememberMe: Boolean(values.rememberMe),
       }),
     );
 
@@ -68,7 +67,7 @@ export default function LoginForm(): ReactNode {
     const destination =
       (from && from.startsWith("/")) || from?.startsWith("%2F")
         ? from
-        : result.data.redirectTo;
+        : result.redirectTo;
 
     router.replace(destination);
     router.refresh();

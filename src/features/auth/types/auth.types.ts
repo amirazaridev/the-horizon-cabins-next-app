@@ -1,24 +1,16 @@
 /**
  * تایپ‌های دامنه‌ی احراز هویت.
  *
- * این فایل «قرارداد» بین لایه‌ی UI و لایه‌ی سرویس است. کامپوننت‌ها فقط
- * این تایپ‌ها را می‌شناسند و هیچ‌جا به شکل خام پاسخ API دست نمی‌زنند؛
- * پس اتصال به بک‌اند واقعی فقط با عوض‌کردن بدنه‌ی `auth.service.ts`
- * انجام می‌شود و به هیچ فایل UI دست نمی‌خورد.
+ * این فایل «قرارداد» بین لایه‌ی UI و لایه‌ی اکشن‌هاست. کامپوننت‌ها فقط
+ * این تایپ‌ها را می‌شناسند و هیچ‌جا به شکل خام پاسخ API دست نمی‌زنند.
+ *
+ * ⚠️ پس از اتصال واقعی OTP، تایپ‌های مربوط به سرویس ماک (payload/result
+ * سرویس کلاینت) حذف شدند و هر اکشن تایپ نتیجه‌ی خودش را کنار خودش
+ * (`actions/*.actions.ts`) نگه می‌دارد. اینجا فقط قراردادهای مشترک می‌مانند.
  */
-
-import type { UserRole } from "../constants/auth-cookie";
 
 /** مراحل فرم ثبت‌نام — ترتیب نمایش استپر از همین می‌آید. */
 export type RegisterStep = "identity" | "verification" | "password";
-
-/** وضعیت چرخه‌ی یک درخواست — برای loading/disabled/error. */
-export type RequestStatus = "idle" | "loading" | "success" | "error";
-
-/** هر پاسخ سرویس یا موفق است یا خطای قابل‌نمایش به کاربر. */
-export type AuthResult<TData = null> =
-  | { ok: true; data: TData }
-  | { ok: false; error: AuthError };
 
 /**
  * خطای دامنه‌ای.
@@ -56,88 +48,3 @@ export type AuthFieldName =
   | "confirmPassword"
   | "acceptedTerms"
   | "rememberMe";
-
-/* ------------------------------------------------------------------ */
-/* ورودی سرویس                                                         */
-/* ------------------------------------------------------------------ */
-
-export type RegisterIdentityPayload = {
-  firstName: string;
-  lastName: string;
-  email: string;
-};
-
-export type VerifyEmailPayload = {
-  email: string;
-  code: string;
-};
-
-export type RegisterAccountPayload = RegisterIdentityPayload & {
-  /** رمز عبور انتخاب‌شده در مرحله‌ی قبل از تایید ایمیل. */
-  password: string;
-  /**
-   * توکن یک‌بارمصرف بازگشتی از `verifyEmailCode`.
-   *
-   * ⚠️ چون در جریان جدید، تایید ایمیل **آخرین** مرحله است، ساخت حساب
-   * باید مدرکی همراه داشته باشد که ثابت کند ایمیل واقعاً تایید شده.
-   * در بک‌اند واقعی: `POST /auth/register` با هدر `Authorization: Bearer`
-   * یا فیلد `verificationToken` در بدنه.
-   */
-  verificationToken?: string;
-};
-
-export type LoginPayload = {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-};
-
-export type RequestPasswordResetPayload = {
-  email: string;
-};
-
-/* ------------------------------------------------------------------ */
-/* خروجی سرویس                                                         */
-/* ------------------------------------------------------------------ */
-
-/**
- * نتیجه‌ی ارسال کد تایید.
- *
- * ⚠️ `expiresInSeconds` منبع حقیقت تایمر ارسال مجدد است: وقتی بک‌اند
- * واقعی وصل شد، باید همین مقدار از پاسخ سرور بیاید (مثلاً `retryAfter`)
- * تا سیاست محدودیت نرخ سمت سرور و تایمر کلاینت هم‌داستان بمانند.
- */
-export type SendVerificationCodeResult = {
-  expiresInSeconds: number;
-  resendAfterSeconds: number;
-  /** در محیط توسعه/ماک: کد تولیدشده برای تست. هرگز از سرور واقعی نیاید. */
-  devCode?: string;
-};
-
-export type VerifyEmailResult = {
-  /** توکن یک‌بارمصرف برای مرحله‌ی ساخت رمز عبور. */
-  verificationToken: string;
-};
-
-export type AuthSession = {
-  user: AuthUser;
-  accessToken: string;
-  /** ثانیه — برای زمان‌بندی تازه‌سازی توکن. */
-  expiresIn: number;
-  /** نقش کاربر — از پاسخ بک‌اند می‌آید و مبنای هدایت است. */
-  role: UserRole;
-  /** مسیری که بعد از احراز هویت باید برویم (بر اساس نقش). */
-  redirectTo: string;
-};
-
-export type AuthUser = {
-  id: number | string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  createdAt?: string;
-};
-
-export type RegisterAccountResult = AuthSession;
-export type LoginResult = AuthSession;
-export type RequestPasswordResetResult = { sent: true };
