@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 
 import { FIELD_LABELS } from "../../schemas";
 import type { UseRegisterFormReturn } from "../../hooks/useRegisterForm";
-import StateField from "../StateField";
+import StateField from "@/components/ui/StateField";
 import SubmitButton from "../SubmitButton";
 
 type Props = {

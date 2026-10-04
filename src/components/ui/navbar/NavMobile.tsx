@@ -7,12 +7,20 @@ import { usePathname } from "next/navigation";
 import Logo from "../Logo";
 import ThemeToggle from "../ThemeToggle";
 import LoginButton from "./LoginButton";
+import MobileProfile from "./MobileProfile";
+import type { NavbarUser } from "./types";
 
-type Props = { handleCloseMenu: () => void; isOpen: boolean };
+type Props = {
+  handleCloseMenu: () => void;
+  isOpen: boolean;
+  /** کاربر وارد‌شده — اگر باشد، بلوک پروفایل جای دکمه‌ی ورود می‌نشیند. */
+  user?: NavbarUser | null;
+};
 
 export default function NavMobile({
   handleCloseMenu,
   isOpen,
+  user = null,
 }: Props): ReactNode {
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -116,7 +124,11 @@ export default function NavMobile({
               <span className="text-text/70 text-sm">تم</span>
               <ThemeToggle forMobile />
             </div>
-            <LoginButton fullWidth />
+            {user ? (
+              <MobileProfile user={user} closeMenu={closeMenu} />
+            ) : (
+              <LoginButton fullWidth />
+            )}
           </div>
         </nav>
       </div>

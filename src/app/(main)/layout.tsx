@@ -10,9 +10,17 @@ export default async function MainLayout({
   children: ReactNode;
 }) {
   const user = await getCurrentUser();
+
+  // admin/owner جایی در سایت عمومی ندارند؛ مستقیم به پنل می‌روند.
   if (user && canAccessDashboard(user.role)) {
     redirect("/dashboard");
   }
 
-  return <Layout>{children}</Layout>;
+  // فقط کاربران عادی (مهمان) به نوار بالا تزریق می‌شوند تا حالت پروفایل
+  // جای دکمه‌ی «ورود | ثبت‌نام» را بگیرد.
+  return (
+    <Layout user={user ? { email: user.email, role: user.role } : null}>
+      {children}
+    </Layout>
+  );
 }

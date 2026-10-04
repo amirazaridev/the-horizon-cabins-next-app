@@ -7,7 +7,7 @@ import { FIELD_LABELS } from "../../schemas";
 import type { UseRegisterFormReturn } from "../../hooks/useRegisterForm";
 import Checkbox from "../Checkbox";
 import PasswordStrength from "../PasswordStrength";
-import StateField from "../StateField";
+import StateField from "@/components/ui/StateField";
 import StepActions from "../StepActions";
 
 type Props = {

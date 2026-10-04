@@ -7,6 +7,7 @@ import NavbarItem from "@/components/ui/Navbar/NavbarItem";
 import Logo from "@/components/ui/Logo";
 import NavMenus from "@/components/ui/Navbar/NavMenus";
 import NavMobile from "@/components/ui/Navbar/NavMobile";
+import type { NavbarUser } from "@/components/ui/Navbar/types";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { usePathname } from "next/navigation";
 import {
@@ -22,7 +23,18 @@ import Container from "../Container";
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-export default function Navbar() {
+type Props = {
+  /**
+   * کاربر وارد‌شده — از Server Component والد تزریق می‌شود.
+   *
+   * ⚠️ عمداً پراپ است و نه fetch کلاینتی: وضعیت ورود همان‌جا روی سرور
+   * مشخص است، پس نوار بالا بدون فلاش/لودینگ و بدون درخواست اضافه، حالت
+   * درست (پروفایل یا دکمه‌ی ورود) را از همان رندر اول نشان می‌دهد.
+   */
+  user?: NavbarUser | null;
+};
+
+export default function Navbar({ user = null }: Props) {
   const navRef = useRef<HTMLElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -125,13 +137,17 @@ export default function Navbar() {
             ))}
           </ul>
 
-          <NavMenus onClickMenu={() => setIsOpen(true)} />
+          <NavMenus user={user} onClickMenu={() => setIsOpen(true)} />
         </Container>
       </nav>
 
       {/* Navbar Android*/}
       {isOpen && (
-        <NavMobile handleCloseMenu={() => setIsOpen(false)} isOpen={isOpen} />
+        <NavMobile
+          user={user}
+          handleCloseMenu={() => setIsOpen(false)}
+          isOpen={isOpen}
+        />
       )}
     </>
   );

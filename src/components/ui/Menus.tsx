@@ -67,9 +67,16 @@ interface ToggleProps {
   id: string;
   icon?: ReactNode;
   justBottom?: boolean;
+  /**
+   * کلاس‌های اضافی دکمه‌ی تریگر.
+   *
+   * ⚠️ برای بازنویسی رنگ استفاده می‌شود (مثلاً `text-inherit!` در نوار بالا،
+   * تا رنگ متن نوار — سفید روی هیرو / تیره روی پس‌زمینه‌ی جامد — حفظ شود).
+   */
+  className?: string;
 }
 
-function Toggle({ id, icon, justBottom = false }: ToggleProps) {
+function Toggle({ id, icon, justBottom = false, className = "" }: ToggleProps) {
   const { openId, open, close } = useMenuContext();
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
@@ -84,7 +91,7 @@ function Toggle({ id, icon, justBottom = false }: ToggleProps) {
 
   return (
     <button
-      className="text-text-gray hover:bg-primary-400/10 hover:text-primary-400 flex cursor-pointer items-center rounded-lg p-1.5 transition-colors duration-150"
+      className={`text-text-gray hover:bg-primary-400/10 hover:text-primary-400 flex cursor-pointer items-center rounded-lg p-1.5 transition-colors duration-150 ${className}`}
       onClick={handleClick}
     >
       {icon || <MoreHorizontal className="size-5" />}
@@ -95,12 +102,14 @@ function Toggle({ id, icon, justBottom = false }: ToggleProps) {
 interface ListProps {
   id: string;
   children: ReactNode;
+  /** کلاس‌های اضافی ظرف منو — برای عرض/فاصله‌ی سفارشی (مثلاً منوی پروفایل). */
+  className?: string;
 }
 
 const GAP = 8;
 const VIEWPORT_MARGIN = 8;
 
-function List({ id, children }: ListProps) {
+function List({ id, children, className = "" }: ListProps) {
   const { anchor, openId, close } = useMenuContext();
   const ref = useOutsideClick<HTMLUListElement>(close, true);
   const [style, setStyle] = useState<CSSProperties>({ visibility: "hidden" });
@@ -139,7 +148,7 @@ function List({ id, children }: ListProps) {
     <ul
       ref={ref}
       role="menu"
-      className="menu-dropdown border-border-strong bg-surface shadow-shadow-soft fixed z-50 min-w-44 flex-col overflow-hidden rounded-xl border p-1 md:min-w-48"
+      className={`menu-dropdown border-border-strong bg-surface shadow-shadow-soft fixed z-50 min-w-44 flex-col overflow-hidden rounded-xl border p-1 md:min-w-48 ${className}`}
       style={style}
     >
       {children}
@@ -195,9 +204,29 @@ function Divider() {
   return <li className="bg-border-strong my-1 h-px" />;
 }
 
+interface HeaderProps {
+  children: ReactNode;
+  className?: string;
+}
+
+/**
+ * سرصفحه‌ی غیرکلیکی منو — برای نمایش اطلاعات زمینه‌ای (مثلاً پروفایل کاربر)
+ * بالای آیتم‌ها. کلیک روی آن منو را نمی‌بندد.
+ */
+function Header({ children, className = "" }: HeaderProps) {
+  return (
+    <li
+      className={`border-border-strong/60 mb-1 border-b px-2.5 pt-1.5 pb-2.5 ${className}`}
+    >
+      {children}
+    </li>
+  );
+}
+
 Menus.Button = Button;
 Menus.Toggle = Toggle;
 Menus.List = List;
 Menus.Divider = Divider;
+Menus.Header = Header;
 
 export default Menus;
