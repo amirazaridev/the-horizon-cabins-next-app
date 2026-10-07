@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -23,6 +24,13 @@ interface AnchorInfo {
 interface MenuContextValue {
   openId: string;
   anchor: RefObject<AnchorInfo | null>;
+  /**
+   * المان دکمه‌ی تریگر منوی باز.
+   *
+   * ⚠️ لازم است تا «کلیک بیرون» کلیک روی خودِ تریگر را نبَرد؛ در غیر این
+   * صورت منو بسته و بی‌درنگ با `onClick` همان دکمه دوباره باز می‌شود.
+   */
+  toggleRef: RefObject<HTMLElement | null>;
   close: () => void;
   open: (id: string, info: AnchorInfo) => void;
 }
@@ -38,26 +46,41 @@ function useMenuContext() {
 function Menus({ children }: { children: ReactNode }) {
   const [openId, setOpenId] = useState("");
   const anchor = useRef<AnchorInfo | null>(null);
+  const toggleRef = useRef<HTMLElement | null>(null);
 
-  const close = () => setOpenId("");
-  const open = (id: string, info: AnchorInfo) => {
+  const close = useCallback(() => setOpenId(""), []);
+  const open = useCallback((id: string, info: AnchorInfo) => {
     anchor.current = info;
     setOpenId(id);
-  };
+  }, []);
 
+  /**
+   * بستن منو با اسکرول/تغییر اندازه و Escape.
+   *
+   * منو نسبت به `getBoundingClientRect` تریگر (یعنی نسبت به viewport)
+   * موقعیت‌دهی می‌شود؛ با اسکرول یا ریسایز آن مستطیل بی‌اعتبار می‌شود، پس
+   * به‌جای تعقیب موقعیت، منو را می‌بندیم.
+   */
   useEffect(() => {
     if (!openId) return;
-    const handleClose = () => close();
-    document.addEventListener("scroll", handleClose, true);
-    window.addEventListener("resize", handleClose);
-    return () => {
-      document.removeEventListener("scroll", handleClose, true);
-      window.removeEventListener("resize", handleClose);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
     };
-  }, [openId]);
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [openId, close]);
 
   return (
-    <MenuContext value={{ openId, anchor, close, open }}>
+    <MenuContext value={{ openId, anchor, toggleRef, close, open }}>
       {children}
     </MenuContext>
   );
@@ -77,20 +100,28 @@ interface ToggleProps {
 }
 
 function Toggle({ id, icon, justBottom = false, className = "" }: ToggleProps) {
-  const { openId, open, close } = useMenuContext();
+  const { openId, open, close, toggleRef } = useMenuContext();
+  const isOpen = openId === id;
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
 
-    if (openId === "" || openId !== id) {
-      open(id, { rect, justBottom });
-    } else {
+    if (isOpen) {
       close();
+    } else {
+      open(id, { rect, justBottom });
     }
   }
 
   return (
     <button
+      type="button"
+      /* ثبت المان تریگر برای تشخیص «کلیک بیرون» (به‌جای `useOutsideClick`). */
+      ref={(node) => {
+        toggleRef.current = node;
+      }}
+      aria-haspopup="menu"
+      aria-expanded={isOpen}
       className={`text-text-gray hover:bg-primary-400/10 hover:text-primary-400 flex cursor-pointer items-center rounded-lg p-1.5 transition-colors duration-150 ${className}`}
       onClick={handleClick}
     >
@@ -110,11 +141,21 @@ const GAP = 8;
 const VIEWPORT_MARGIN = 8;
 
 function List({ id, children, className = "" }: ListProps) {
-  const { anchor, openId, close } = useMenuContext();
-  const ref = useOutsideClick<HTMLUListElement>(close, true);
+  const { anchor, openId, toggleRef, close } = useMenuContext();
+  const isOpen = openId === id;
   const [style, setStyle] = useState<CSSProperties>({ visibility: "hidden" });
 
-  const isOpen = openId === id;
+  /**
+   * بستن با کلیک بیرون.
+   *
+   * ⚠️ `toggleRef` نادیده گرفته می‌شود تا کلیک روی دکمه‌ی پروفایل منو را
+   * نبندد؛ toggle را کامل به `onClick` خودِ دکمه می‌سپاریم.
+   */
+  const ref = useOutsideClick<HTMLUListElement>(close, {
+    ignore: [toggleRef],
+    event: "pointerdown",
+    enabled: isOpen,
+  });
 
   useLayoutEffect(() => {
     const info = anchor.current;
@@ -175,6 +216,7 @@ function Button({ children, onClick, icon, danger }: ButtonProps) {
   return (
     <li>
       <button
+        type="button"
         role="menuitem"
         onClick={handleClick}
         className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-150 ${

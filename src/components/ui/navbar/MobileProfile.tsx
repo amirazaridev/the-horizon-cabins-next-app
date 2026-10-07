@@ -1,10 +1,11 @@
 "use client";
 
-import { ChevronLeft, LogOut, Settings, Ticket } from "lucide-react";
+import { ChevronLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useTransition, type ReactNode } from "react";
 
 import { logoutAction } from "@/features/auth/actions/auth.actions";
+import { GUEST_NAV_ITEMS } from "@/features/guest/shared/constants/guest-nav-items";
 import { ROLE_LABELS } from "./constants";
 import type { NavbarUser } from "./types";
 
@@ -14,15 +15,13 @@ type Props = {
   closeMenu: () => void;
 };
 
-const ITEMS = [
-  { label: "رزروهای من", href: "/my/bookings", icon: Ticket },
-  { label: "تنظیمات حساب کاربری", href: "/my/account", icon: Settings },
-] as const;
-
 /**
  * بلوک پروفایل منوی موبایل — جایگزین دکمه‌ی «ورود | ثبت‌نام» برای کاربر
- * وارد‌شده. همان سه گزینه‌ی منوی دسکتاپ را به‌شکل ردیف‌های تمام‌عرض
+ * وارد‌شده. همان گزینه‌های منوی دسکتاپ را به‌شکل ردیف‌های تمام‌عرض
  * نشان می‌دهد (مناسب لمس).
+ *
+ * ⚠️ فهرست آیتم‌ها از `GUEST_NAV_ITEMS` می‌آید تا با سایدبار ناحیه‌ی مهمان
+ * و منوی دسکتاپ یکی بماند.
  */
 export default function MobileProfile({ user, closeMenu }: Props): ReactNode {
   const [isPending, startTransition] = useTransition();
@@ -35,7 +34,10 @@ export default function MobileProfile({ user, closeMenu }: Props): ReactNode {
           {initial}
         </span>
         <span className="min-w-0">
-          <span className="text-text block truncate text-sm font-semibold">
+          <span
+            className="text-text block truncate text-sm font-semibold"
+            dir="ltr"
+          >
             {user.email}
           </span>
           <span className="text-text-gray mt-0.5 block text-xs">
@@ -44,7 +46,7 @@ export default function MobileProfile({ user, closeMenu }: Props): ReactNode {
         </span>
       </div>
 
-      {ITEMS.map(({ label, href, icon: Icon }) => (
+      {GUEST_NAV_ITEMS.map(({ name, href, icon: Icon }) => (
         <Link
           key={href}
           href={href}
@@ -52,7 +54,7 @@ export default function MobileProfile({ user, closeMenu }: Props): ReactNode {
           className="text-text hover:bg-foreground/5 hover:text-primary-400 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors"
         >
           <Icon className="size-4.5 shrink-0" />
-          {label}
+          {name}
           <ChevronLeft className="text-text-gray/60 ms-auto size-4" />
         </Link>
       ))}

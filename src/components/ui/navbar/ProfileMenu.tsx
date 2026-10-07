@@ -1,18 +1,22 @@
 "use client";
 
-import { ChevronDown, LogOut, Settings, Ticket } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition, type ReactNode } from "react";
 
 import Menus from "@/components/ui/Menus";
 import { logoutAction } from "@/features/auth/actions/auth.actions";
+import { GUEST_NAV_ITEMS } from "@/features/guest/shared/constants/guest-nav-items";
 import { ROLE_LABELS } from "./constants";
 import type { NavbarUser } from "./types";
 
 /**
  * حالت پروفایل نوار بالا — جایگزین دکمه‌ی «ورود | ثبت‌نام» برای کاربر
- * وارد‌شده. با کلیک، منوی بازشویی شامل رزروها، تنظیمات حساب و خروج باز
- * می‌شود.
+ * وارد‌شده.
+ *
+ * ⚠️ تریگر فقط «عکس پروفایل + فلش» است و ایمیل کامل در نوار بالا نمایش
+ * داده نمی‌شود (جمع‌وجورتر و کم‌سروصداتر)؛ ایمیل داخل سرصفحه‌ی خودِ منو
+ * می‌آید تا همچنان در دسترس باشد.
  *
  * ⚠️ از `Menus` مشترک استفاده می‌کند (Portal + بستن با کلیک بیرون + تنظیم
  * موقعیت نسبت به viewport) تا نسخه‌ی دومی از دراپ‌داون ساخته نشود.
@@ -28,23 +32,13 @@ export default function ProfileMenu({ email, role }: NavbarUser): ReactNode {
       <Menus.Toggle
         id="profile-menu"
         /* رنگ متن از نوار بالا ارث می‌برد (سفید روی هیرو / تیره روی جامد). */
-        className="text-inherit!"
+        className="text-inherit! gap-1 rounded-full p-1"
         icon={
           <>
-            <span className="flex items-center gap-2.5">
-              <span className="from-primary-400 to-primary-600 grid size-9 shrink-0 place-items-center rounded-full bg-linear-to-br text-sm font-bold text-white">
-                {initial}
-              </span>
-              <span className="hidden max-w-40 text-right lg:block">
-                <span className="block truncate text-xs font-semibold">
-                  {email}
-                </span>
-                <span className="block text-[10px] opacity-70">
-                  {ROLE_LABELS[role]}
-                </span>
-              </span>
+            <span className="from-primary-400 to-primary-600 grid size-9 shrink-0 place-items-center rounded-full bg-linear-to-br text-sm font-bold text-white">
+              {initial}
             </span>
-            <ChevronDown className="ms-2 size-4 opacity-70" />
+            <ChevronDown className="size-4 opacity-70" />
           </>
         }
       />
@@ -56,7 +50,10 @@ export default function ProfileMenu({ email, role }: NavbarUser): ReactNode {
               {initial}
             </span>
             <span className="min-w-0">
-              <span className="text-text block truncate text-xs font-semibold">
+              <span
+                className="text-text block truncate text-xs font-semibold"
+                dir="ltr"
+              >
                 {email}
               </span>
               <span className="text-text-gray mt-0.5 block text-[10px]">
@@ -66,19 +63,16 @@ export default function ProfileMenu({ email, role }: NavbarUser): ReactNode {
           </span>
         </Menus.Header>
 
-        <Menus.Button
-          icon={<Ticket className="size-4" />}
-          onClick={() => router.push("/my/bookings")}
-        >
-          رزروهای من
-        </Menus.Button>
-
-        <Menus.Button
-          icon={<Settings className="size-4" />}
-          onClick={() => router.push("/my/account")}
-        >
-          تنظیمات حساب کاربری
-        </Menus.Button>
+        {/* بخش‌های ناحیه‌ی مهمان — تک‌منبع با سایدبار (`GUEST_NAV_ITEMS`). */}
+        {GUEST_NAV_ITEMS.map(({ name, href, icon: Icon }) => (
+          <Menus.Button
+            key={href}
+            icon={<Icon className="size-4" />}
+            onClick={() => router.push(href)}
+          >
+            {name}
+          </Menus.Button>
+        ))}
 
         <Menus.Divider />
 
