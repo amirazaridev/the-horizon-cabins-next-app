@@ -4,6 +4,12 @@ type Props = ComponentProps<"div"> & {
   noTransition?: boolean;
 };
 
+/**
+ * کارت پایه‌ی پنل‌های داخلی (داشبورد مدیریت و ناحیه‌ی مهمان).
+ *
+ * ⚠️ از `features/dashboard/shared` به `components/ui` منتقل شد تا هر دو
+ * ناحیه بتوانند از یک کارت مشترک استفاده کنند و ظاهرشان یکدست بماند.
+ */
 export default function CardDashContainer({
   children,
   className,

@@ -18,7 +18,9 @@ type Props = {
  * انتخاب تب هم قابل‌اشتراک/بوکمارک باشد (URL تنها منبع حقیقت).
  */
 function tabHref(tabId: GuestBookingsTabId): string {
-  return tabId === "all" ? "/my/bookings" : `/my/bookings?status=${tabId}`;
+  return tabId === "all"
+    ? "/account/bookings"
+    : `/account/bookings?status=${tabId}`;
 }
 
 /**

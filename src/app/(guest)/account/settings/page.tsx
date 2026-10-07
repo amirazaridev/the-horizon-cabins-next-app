@@ -15,11 +15,11 @@ export const metadata: Metadata = { title: "تنظیمات حساب کاربری
  * مشخصات واقعی کاربر از `GET /user/me` خوانده و به دو کامپوننت نمایشی
  * تزریق می‌شود؛ خودِ فرم کلاینتی است چون `react-hook-form` می‌خواهد.
  */
-export default async function GuestAccountPage(): Promise<ReactNode> {
+export default async function GuestAccountSettingsPage(): Promise<ReactNode> {
   const profile = await getGuestAccountProfile();
 
   // نشست نامعتبر/بک‌اند در دسترس ⇒ بازگشت به ورود با مسیر برگشت.
-  if (!profile) redirect("/login?from=/my/account");
+  if (!profile) redirect("/login?from=/account/settings");
 
   return (
     <div className="flex flex-col gap-5">

@@ -37,3 +37,19 @@ export async function requireDashboardAccess(from?: string): Promise<CurrentUser
   }
   return user;
 }
+
+/**
+ * گارد ناحیه‌ی مهمان (`/account/*`).
+ *
+ * ⚠️ آینه‌ی `requireDashboardAccess`: هر کاربری که به پنل دسترسی دارد
+ * (admin/owner) در ناحیه‌ی مهمان جایی ندارد و به پنل برگردانده می‌شود؛
+ * این همان رفتاری است که پیش‌تر `(main)/layout.tsx` انجام می‌داد و با
+ * جدا‌شدن ناحیه‌ی مهمان باید حفظ شود.
+ */
+export async function requireGuestArea(from?: string): Promise<CurrentUser> {
+  const user = await requireUser(from);
+  if (canAccessDashboard(user.role)) {
+    redirect("/dashboard");
+  }
+  return user;
+}

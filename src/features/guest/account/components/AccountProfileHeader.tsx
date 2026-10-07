@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import CardDashContainer from "@/components/ui/CardDashContainer";
 import type { GuestAccountProfile } from "../types/guest-account.types";
 
 type Props = { profile: GuestAccountProfile };
@@ -15,7 +16,12 @@ export default function AccountProfileHeader({ profile }: Props): ReactNode {
     (profile.fullName.trim() || profile.email).charAt(0).toUpperCase() || "؟";
 
   return (
-    <section className="border-foreground/10 bg-surface/70 relative overflow-hidden rounded-3xl border p-5 shadow-sm backdrop-blur-sm sm:p-6">
+    /* همان کارت مشترک پنل (`CardDashContainer`) تا ظاهر ناحیه‌ی مهمان با
+       داشبورد مدیریت یکدست بماند. */
+    <CardDashContainer
+      noTransition
+      className="relative overflow-hidden p-5 sm:p-6"
+    >
       <div
         className="bg-primary-400/10 pointer-events-none absolute -top-20 -left-12 size-48 rounded-full blur-3xl"
         aria-hidden="true"
@@ -39,6 +45,6 @@ export default function AccountProfileHeader({ profile }: Props): ReactNode {
           مهمان
         </span>
       </div>
-    </section>
+    </CardDashContainer>
   );
 }

@@ -2,6 +2,7 @@ import { Heart, HeartHandshake, Search, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 
 import Button from "@/components/ui/Button";
+import CardDashContainer from "@/components/ui/CardDashContainer";
 
 /** ویژگی‌های کوتاه لیست علاقه‌مندی‌ها — برای پرکردن معنادار حالت خالی. */
 const HINTS = [
@@ -61,21 +62,21 @@ export default function FavoritesEmptyState(): ReactNode {
 
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {HINTS.map(({ icon: Icon, title, description }) => (
-          <li
-            key={title}
-            className="border-foreground/10 bg-surface/60 flex items-start gap-3 rounded-2xl border p-4"
-          >
-            <span className="bg-primary-400/10 text-primary-500 grid size-9 shrink-0 place-items-center rounded-xl">
-              <Icon className="size-4.5" />
-            </span>
-            <span className="min-w-0">
-              <span className="text-text block text-sm font-semibold">
-                {title}
+          <li key={title}>
+            {/* کارت مشترک پنل (`CardDashContainer`) برای یکدستی با داشبورد. */}
+            <CardDashContainer className="flex h-full items-start gap-3 p-4">
+              <span className="bg-primary-400/10 text-primary-500 grid size-9 shrink-0 place-items-center rounded-xl">
+                <Icon className="size-4.5" />
               </span>
-              <span className="text-text-gray mt-1 block text-xs leading-relaxed">
-                {description}
+              <span className="min-w-0">
+                <span className="text-text block text-sm font-semibold">
+                  {title}
+                </span>
+                <span className="text-text-gray mt-1 block text-xs leading-relaxed">
+                  {description}
+                </span>
               </span>
-            </span>
+            </CardDashContainer>
           </li>
         ))}
       </ul>

@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardShell from "@/features/dashboard/shared/components/DashboardShell";
 import { requireDashboardAccess } from "@/features/auth/guards/server-guards";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -26,8 +26,8 @@ export default async function DashboardRootLayout({
   const user = await requireDashboardAccess("/dashboard");
 
   return (
-    <DashboardLayout role={user.role} userId={user.id}>
+    <DashboardShell role={user.role} userId={user.id}>
       {children}
-    </DashboardLayout>
+    </DashboardShell>
   );
 }

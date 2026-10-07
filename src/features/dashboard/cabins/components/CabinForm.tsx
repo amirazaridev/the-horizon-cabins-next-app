@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { MapPin, Save } from "lucide-react";
 
 import Button from "@/components/ui/Button";
-import CardDashContainer from "@/features/dashboard/shared/components/CardDashContainer";
+import CardDashContainer from "@/components/ui/CardDashContainer";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
 import type { City } from "@/features/cabins/types/city.types";
 import CabinImageDropzone, { type CabinImage } from "./CabinImageDropzone";

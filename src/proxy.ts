@@ -3,7 +3,11 @@ import type { NextRequest } from "next/server";
 
 import { AUTH_COOKIE_NAME } from "@/features/auth/constants/auth-cookie";
 
-const PROTECTED_PREFIXES = ["/dashboard"];
+/**
+ * مسیرهای محافظت‌شده — ناحیه‌ی مهمان (`/account/*`) هم مثل پنل مدیریت
+ * نیاز به نشست دارد؛ بدون کوکی، کاربر به `/login` می‌رود.
+ */
+const PROTECTED_PREFIXES = ["/dashboard", "/account"];
 
 function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(

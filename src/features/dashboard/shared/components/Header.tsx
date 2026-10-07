@@ -4,28 +4,27 @@ import {
   ChevronDown,
   ChevronLeft,
   LogOut,
-  Menu,
   Search,
   Settings,
   ShieldCheck,
   UserPen,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
 
+import ShellMenuButton from "@/components/layout/shell/ShellMenuButton";
+import { findActiveNavItem } from "@/components/layout/shell/shell-nav";
+import Menus from "@/components/ui/Menus";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import { logoutAction } from "@/features/auth/actions/auth.actions";
 import type { UserRole } from "@/features/auth/constants/auth-cookie";
-import { SIDEBAR_ITEMS } from "../constants/sidebar-items";
-import ThemeToggle from "@/components/ui/ThemeToggle";
-import Menus from "@/components/ui/Menus";
+import { visibleSidebarItems } from "../constants/sidebar-items";
 
 interface HeaderProps {
-  pathname: string;
   role: UserRole;
   userId: number;
-  onMenuClick: () => void;
 }
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -34,10 +33,19 @@ const ROLE_LABELS: Record<UserRole, string> = {
   guest: "مهمان",
 };
 
-export default function Header({ pathname, role, userId, onMenuClick }: HeaderProps) {
+/**
+ * هدر پنل مدیریت.
+ *
+ * ⚠️ مسیر جاری و «بازکردن دراور» از خود پوسته می‌آید (`usePathname` +
+ * `ShellMenuButton`)، پس این کامپوننت فقط به داده‌ی نقش/کاربر نیاز دارد و
+ * از هر پوسته‌ای قابل استفاده است.
+ */
+export default function Header({ role, userId }: HeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
-  const activeItem = SIDEBAR_ITEMS.find((item) => pathname === item.href);
+
+  const activeItem = findActiveNavItem(visibleSidebarItems(role), pathname);
   const title = activeItem?.name ?? "داشبورد";
 
   const roleLabel = ROLE_LABELS[role];
@@ -46,13 +54,7 @@ export default function Header({ pathname, role, userId, onMenuClick }: HeaderPr
   return (
     <header className="bg-surface/80 border-border sticky inset-x-0 top-0 z-30 flex h-16 items-center justify-between gap-4 border-b px-4 backdrop-blur-md sm:px-6">
       <div className="flex min-w-0 items-center gap-3">
-        <button
-          onClick={onMenuClick}
-          className="hover:bg-foreground/10 rounded-lg p-2 lg:hidden"
-          aria-label="باز کردن منو"
-        >
-          <Menu className="size-5" />
-        </button>
+        <ShellMenuButton />
         <div className="flex items-center gap-1.5">
           <span className="text-text-gray text-sm">داشبورد</span>
           <ChevronLeft className="text-text-gray size-4" />

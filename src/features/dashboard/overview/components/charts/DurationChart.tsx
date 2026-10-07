@@ -1,7 +1,7 @@
 "use client";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useTheme } from "@/contexts/ThemeContext";
-import CardDashContainer from "../../../shared/components/CardDashContainer";
+import CardDashContainer from "@/components/ui/CardDashContainer";
 
 interface DurationDatum {
   duration: string;

@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "علاقه‌مندی‌ها" };
  * وصل می‌شود. ساختار صفحه از قبل آماده است تا با اضافه‌شدن سرویس، فقط
  * همین‌جا یک لیست/`repository` تزریق شود و بقیه‌ی صفحه دست نخورد.
  */
-export default function MyFavoritesPage(): ReactNode {
+export default function GuestFavoritesPage(): ReactNode {
   return (
     <div className="flex flex-col gap-6">
       <GuestPageHeader

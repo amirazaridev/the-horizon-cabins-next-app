@@ -23,7 +23,7 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
  * کار می‌کند. داده از `GuestBookingsRepository` می‌آید (امروز ماک)؛ برای
  * اتصال به بک‌اند فقط همان repository عوض می‌شود.
  */
-export default async function MyBookingsPage({
+export default async function GuestBookingsPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -65,7 +65,7 @@ export default async function MyBookingsPage({
 
           <div className="flex justify-center pt-2">
             <Pagination
-              basePath="/my/bookings"
+              basePath="/account/bookings"
               currentPage={meta.currentPage}
               totalPages={meta.totalPages}
               searchParams={sp}

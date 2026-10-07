@@ -5,7 +5,7 @@ import Skeleton from "@/components/ui/Skeleton";
 /**
  * اسکلتون ناحیه‌ی مهمان.
  *
- * ⚠️ چیدمان را هم‌شکل پوسته (سایدبار + محتوا) رزرو می‌کند تا هنگام
+ * ⚠️ چیدمان را هم‌شکل پوسته (سایدبار + هدر + محتوا) رزرو می‌کند تا هنگام
  * بارگذاری پرش بصری نداشته باشیم.
  */
 export default function Loading(): ReactNode {
@@ -28,15 +28,20 @@ export default function Loading(): ReactNode {
       </div>
 
       {/* محتوا */}
-      <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 md:py-8">
-        <Skeleton width={220} height={28} radius={10} />
-        <div className="mt-6">
-          <Skeleton count={3} width="100%" height={190} radius={24} gap={16} />
+      <div className="flex w-full flex-col">
+        <div className="border-border flex h-16 items-center border-b px-4 sm:px-6">
+          <Skeleton width={200} height={24} radius={8} />
         </div>
+        <div className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">
+          <Skeleton width={220} height={28} radius={10} />
+          <div className="mt-6">
+            <Skeleton count={3} width="100%" height={190} radius={24} gap={16} />
+          </div>
+        </div>
+      </div>
 
-        <div role="status" className="sr-only">
-          در حال بارگذاری…
-        </div>
+      <div role="status" className="sr-only">
+        در حال بارگذاری…
       </div>
     </section>
   );
