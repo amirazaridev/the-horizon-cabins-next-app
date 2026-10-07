@@ -48,7 +48,7 @@ export default function Sidebar({
         open ? "translate-x-0" : "translate-x-full lg:translate-x-0"
       }`}
     >
-      <div className="border-border flex h-16 shrink-0 items-center justify-between border-b px-4">
+      <div className="border-border flex h-16 shrink-0 items-center justify-between border-b px-4 ">
         {brand}
         <button
           type="button"

@@ -22,6 +22,11 @@ export function formatJalaliDate(value: string): string {
   return format(parseDateOnly(value), "d MMMM yyyy", { locale: faIR });
 }
 
+/** تاریخ جلالی کوتاه بدون سال: «۱۵ مهر» — برای ردیف‌های صورت‌حساب. */
+export function formatJalaliDayMonth(value: string): string {
+  return format(parseDateOnly(value), "d MMMM", { locale: faIR });
+}
+
 /** بازه‌ی اقامت: «۱۵ تا ۱۸ مهر ۱۴۰۵». */
 export function formatStayRange(start: string, end: string): string {
   const from = format(parseDateOnly(start), "d", { locale: faIR });
@@ -46,6 +51,21 @@ export function formatToman(value: number): string {
 /** عدد فارسی ساده (شب‌ها، نفرات، شمارنده‌ها). */
 export function toFaNumber(value: number): string {
   return value.toLocaleString("fa-IR");
+}
+
+/**
+ * شمارش معکوس `mm:ss` با ارقام فارسی و صفر پیشوند — برای مهلت پرداخت.
+ * ورودی میلی‌ثانیه‌ی باقی‌مانده؛ مقدار منفی به `۰۰:۰۰` تبدیل می‌شود.
+ */
+export function formatCountdown(ms: number): string {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const pad = (value: number) =>
+    value.toLocaleString("fa-IR", {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+
+  return `${pad(Math.floor(totalSeconds / 60))}:${pad(totalSeconds % 60)}`;
 }
 
 /**

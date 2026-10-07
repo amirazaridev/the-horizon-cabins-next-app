@@ -50,7 +50,7 @@ export default function AppShell({
   return (
     <ShellContext value={contextValue}>
       <div className="bg-background min-h-screen md:flex">
-        <div className="absolute w-75 lg:static">
+        <div className="absolute w-93 lg:static">
           <Sidebar
             items={items}
             brand={brand}

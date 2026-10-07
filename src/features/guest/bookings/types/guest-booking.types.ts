@@ -19,11 +19,29 @@ export type CancellationReason =
   | "adminCancelled";
 
 /**
+ * قیمت‌گذاری یک شب از اقامت — آینه‌ی ردیف‌های `BookingNight` بک‌اند.
+ *
+ * ⚠️ موتور قیمت‌گذاری بک‌اند برای هر شب می‌تواند افزایش (آخر هفته/تعطیلات)
+ * یا تخفیف (اقامت بلند) اعمال کند؛ پس «اقلام» صورت‌حساب از همین آرایه
+ * ساخته می‌شود، نه از یک نرخ ثابت.
+ */
+export type GuestBookingNight = {
+  /** تاریخ آن شب (`YYYY-MM-DD`). */
+  date: string;
+  /** نرخ پایه‌ی آن شب — واحد تومان. */
+  basePrice: number;
+  discountPercent: number;
+  surchargePercent: number;
+  /** قیمت نهایی آن شب پس از تخفیف/افزایش — واحد تومان. */
+  finalPrice: number;
+};
+
+/**
  * یک رزرو مهمان.
  *
  * ⚠️ این تایپ **دقیقاً هم‌شکل پاسخ `GET /bookings`** بک‌اند است؛ تاریخ‌ها
  * رشته‌ی ISO هستند (JSON تاریخ را به رشته تبدیل می‌کند) و نمایش جلالی در
- * `lib/format-booking.ts` انجام می‌شود. با همین هم‌شکلی، تعویض ماک با API
+ * `lib/format.ts` انجام می‌شود. با همین هم‌شکلی، تعویض ماک با API
  * هیچ تغییری در UI لازم ندارد.
  */
 export type GuestBooking = {
@@ -34,7 +52,13 @@ export type GuestBooking = {
   endDate: string;
   numNights: number;
   numGuests: number;
-  /** قیمت هر شب (بعد از تخفیف) — واحد تومان. */
+  /**
+   * **جمع کل اقامت (subtotal)** — نه قیمت یک شب.
+   *
+   * ⚠️ در بک‌اند `createBooking` عمداً `cabinPrice = totalPrice` ست می‌شود
+   * («cabinPrice اکنون جمع کل اقامت است، نه قیمت یک شب»)؛ برای نرخ هر شب
+   * باید از `nights[]` استفاده کرد.
+   */
   cabinPrice: number;
   /** مبلغ کل رزرو — واحد تومان. */
   totalPrice: number;
@@ -50,6 +74,13 @@ export type GuestBooking = {
   updatedAt: string;
   cabin: { id: number; name: string };
   guest: { id: number; fullName: string };
+  /**
+   * قیمت هر شب اقامت — منبع اقلام صورت‌حساب.
+   *
+   * ⚠️ اختیاری در نظر گرفته شده تا UI در برابر پاسخ ناقص/قدیمی نترکد؛
+   * ولی بک‌اند همیشه آن را برمی‌گرداند.
+   */
+  nights?: readonly GuestBookingNight[];
 };
 
 /**

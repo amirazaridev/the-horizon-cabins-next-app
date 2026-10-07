@@ -1,8 +1,10 @@
 import { BOOKING_TABS, statusesForTab } from "../constants/booking-status";
+import { PAYMENT_WINDOW_MINUTES } from "../constants/payment";
 import { GUEST_BOOKINGS_PAGE_SIZE } from "../config/bookings.config";
 import type {
   CancellationReason,
   GuestBooking,
+  GuestBookingNight,
   GuestBookingStatus,
   GuestBookingsCounts,
   GuestBookingsPage,
@@ -49,6 +51,13 @@ type BookingSeed = {
   /** قیمت هر شب، تومان. */
   pricePerNight: number;
   cancellationReason?: CancellationReason;
+  /**
+   * فقط برای رزروهای `pending`: دقیقه‌ی باقی‌مانده تا مهلت پرداخت.
+   *
+   * ⚠️ عمداً دو مقدار متفاوت داریم (۳۰ و ۴ دقیقه) تا هر دو حالت هشدار —
+   * «عادی» و «فوری» — در UI قابل مشاهده و تست باشد.
+   */
+  paymentMinutesLeft?: number;
 };
 
 /**
@@ -75,6 +84,7 @@ const SEEDS: readonly BookingSeed[] = [
     guests: 4,
     status: "pending",
     pricePerNight: 2_100_000,
+    paymentMinutesLeft: PAYMENT_WINDOW_MINUTES,
   },
   {
     id: 1039,
@@ -147,6 +157,7 @@ const SEEDS: readonly BookingSeed[] = [
     guests: 2,
     status: "pending",
     pricePerNight: 2_600_000,
+    paymentMinutesLeft: 4,
   },
   {
     id: 1018,
@@ -181,21 +192,92 @@ const SEEDS: readonly BookingSeed[] = [
   },
 ];
 
+/**
+ * لغوهایی که کاربر در طول عمر همین پروسه انجام داده است.
+ *
+ * ⚠️ چون هنوز بک‌اندی برای ذخیره وجود ندارد، «لغو رزرو» در همین ماژول
+ * نگه داشته می‌شود تا جریان UI واقعاً کار کند (لغو → به‌روزشدن لیست).
+ * با اتصال API این Map و کل مسیر ماک حذف می‌شوند.
+ */
+const userCancellations = new Map<
+  number,
+  { at: string; reason: CancellationReason }
+>();
+
+/** روزهای آخر هفته‌ی ایران (`Date#getDay`): پنجشنبه و جمعه. */
+const PERSIAN_WEEKEND_DAYS: readonly number[] = [4, 5];
+
+/** درصد افزایش نرخ در آخر هفته — همان مفهوم موتور قیمت‌گذاری بک‌اند. */
+const WEEKEND_SURCHARGE_PERCENT = 15;
+
+/** درصد تخفیف اقامت بلند (۴ شب و بیشتر). */
+const LONG_STAY_DISCOUNT_PERCENT = 10;
+
+/**
+ * ساخت قیمت هر شب — هم‌شکل `BookingNight` بک‌اند.
+ *
+ * ⚠️ عمداً نرخ‌ها یکنواخت نیستند (آخر هفته گران‌تر، اقامت بلند ارزان‌تر) تا
+ * صورت‌حساب حالت واقعی «اقلام متفاوت» را نشان دهد و UI فقط برای داده‌ی
+ * یکنواخت تست نشده باشد.
+ */
+function buildNights(seed: BookingSeed): GuestBookingNight[] {
+  const discountPercent =
+    seed.nights >= 4 ? LONG_STAY_DISCOUNT_PERCENT : 0;
+
+  return Array.from({ length: seed.nights }, (_, index) => {
+    const date = dateOffset(seed.startOffset + index);
+    const weekday = new Date(`${date}T00:00:00`).getDay();
+    const surchargePercent = PERSIAN_WEEKEND_DAYS.includes(weekday)
+      ? WEEKEND_SURCHARGE_PERCENT
+      : 0;
+    const finalPrice = Math.round(
+      seed.pricePerNight *
+        (1 + surchargePercent / 100) *
+        (1 - discountPercent / 100),
+    );
+
+    return {
+      date,
+      basePrice: seed.pricePerNight,
+      discountPercent,
+      surchargePercent,
+      finalPrice,
+    };
+  });
+}
+
 function buildBooking(seed: BookingSeed, index: number): GuestBooking {
+  const override = userCancellations.get(seed.id);
+  const status: GuestBookingStatus = override ? "cancelled" : seed.status;
+
   const startDate = dateOffset(seed.startOffset);
   const endDate = dateOffset(seed.startOffset + seed.nights);
   // نزولی: آیتم صفر تازه‌ترین رزرو است.
   const createdAt = momentOffset(-(7 * index + 3));
   const isPaid =
-    seed.status === "confirmed" ||
-    seed.status === "checkedIn" ||
-    seed.status === "checkedOut";
-  const isCancelled = seed.status === "cancelled";
+    status === "confirmed" ||
+    status === "checkedIn" ||
+    status === "checkedOut";
+  const isCancelled = status === "cancelled";
 
+  const nights = buildNights(seed);
+  // ⚠️ هم‌خوان با بک‌اند: `cabinPrice` جمع کل اقامت (subtotal) است، نه نرخ شب.
+  const subtotal = nights.reduce((sum, night) => sum + night.finalPrice, 0);
+
+  /**
+   * ⚠️ مهلت پرداخت **نسبت به لحظه‌ی خواندن** ساخته می‌شود، نه لحظه‌ی
+   * بارگذاری ماژول؛ وگرنه شمارش معکوس صفحه بعد از ۳۰ دقیقه‌ای که سرور
+   * بالا مانده بی‌دلیل منقضی می‌شد.
+   */
   const paymentDeadline =
-    seed.status === "pending"
-      ? new Date(Date.now() + 26 * 60 * 60 * 1000).toISOString()
-      : new Date(new Date(createdAt).getTime() + 30 * 60 * 1000).toISOString();
+    status === "pending"
+      ? new Date(
+          Date.now() +
+            (seed.paymentMinutesLeft ?? PAYMENT_WINDOW_MINUTES) * 60_000,
+        ).toISOString()
+      : new Date(
+          new Date(createdAt).getTime() + PAYMENT_WINDOW_MINUTES * 60_000,
+        ).toISOString();
 
   return {
     id: seed.id,
@@ -203,27 +285,31 @@ function buildBooking(seed: BookingSeed, index: number): GuestBooking {
     endDate,
     numNights: seed.nights,
     numGuests: seed.guests,
-    cabinPrice: seed.pricePerNight,
-    totalPrice: seed.pricePerNight * seed.nights,
-    status: seed.status,
+    cabinPrice: subtotal,
+    totalPrice: subtotal,
+    status,
     paymentDeadline,
     paidAt: isPaid ? paymentDeadline : null,
     paymentReference: isPaid ? `PAY-${seed.id}` : null,
-    cancelledAt: isCancelled ? momentOffset(seed.startOffset - 20) : null,
+    cancelledAt: isCancelled
+      ? (override?.at ?? momentOffset(seed.startOffset - 20))
+      : null,
     cancellationReason: isCancelled
-      ? (seed.cancellationReason ?? "userCancelled")
+      ? (override?.reason ?? seed.cancellationReason ?? "userCancelled")
       : null,
     observations: null,
     createdAt,
-    updatedAt: createdAt,
+    updatedAt: override?.at ?? createdAt,
     cabin: { id: seed.cabinId, name: seed.cabinName },
     guest: MOCK_GUEST,
+    nights,
   };
 }
 
-const MOCK_BOOKINGS: readonly GuestBooking[] = SEEDS.map((seed, index) =>
-  buildBooking(seed, index),
-);
+/** همه‌ی رزروها با وضعیت به‌روز (شامل لغوهای همین پروسه). */
+function allBookings(): GuestBooking[] {
+  return SEEDS.map((seed, index) => buildBooking(seed, index));
+}
 
 export function createMockGuestBookingsRepository(): GuestBookingsRepository {
   return {
@@ -233,7 +319,7 @@ export function createMockGuestBookingsRepository(): GuestBookingsRepository {
       const requestedPage = Math.max(1, query.page ?? 1);
 
       const allowed = statusesForTab(tab);
-      const filtered = MOCK_BOOKINGS.filter((booking) =>
+      const filtered = allBookings().filter((booking) =>
         allowed.includes(booking.status),
       );
 
@@ -256,12 +342,36 @@ export function createMockGuestBookingsRepository(): GuestBookingsRepository {
     },
 
     async counts(): Promise<GuestBookingsCounts> {
+      const bookings = allBookings();
+
       return BOOKING_TABS.reduce((acc, tab) => {
-        acc[tab.id] = MOCK_BOOKINGS.filter((booking) =>
+        acc[tab.id] = bookings.filter((booking) =>
           tab.statuses.includes(booking.status),
         ).length;
         return acc;
       }, {} as GuestBookingsCounts);
+    },
+
+    async getById(id: number): Promise<GuestBooking | null> {
+      const index = SEEDS.findIndex((seed) => seed.id === id);
+      return index === -1 ? null : buildBooking(SEEDS[index], index);
+    },
+
+    async cancel(id: number): Promise<GuestBooking | null> {
+      const index = SEEDS.findIndex((seed) => seed.id === id);
+      if (index === -1) return null;
+
+      // ⚠️ فقط رزرو «در انتظار پرداخت» قابل لغو است؛ بقیه بی‌صدا رد می‌شوند
+      // تا UI پیام درستی نشان دهد (نه این‌که وضعیت را عوض کند).
+      const current = buildBooking(SEEDS[index], index);
+      if (current.status !== "pending") return null;
+
+      userCancellations.set(id, {
+        at: new Date().toISOString(),
+        reason: "userCancelled",
+      });
+
+      return buildBooking(SEEDS[index], index);
     },
   };
 }
