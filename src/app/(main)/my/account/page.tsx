@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import AccountForm from "@/features/guest/account/components/AccountForm";
 import AccountProfileHeader from "@/features/guest/account/components/AccountProfileHeader";
 import { getGuestAccountProfile } from "@/features/guest/account/services/account.service";
+import GuestPageHeader from "@/features/guest/shared/components/GuestPageHeader";
 
 export const metadata: Metadata = { title: "تنظیمات حساب کاربری" };
 
@@ -21,7 +22,11 @@ export default async function GuestAccountPage(): Promise<ReactNode> {
   if (!profile) redirect("/login?from=/my/account");
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
+      <GuestPageHeader
+        title="تنظیمات حساب کاربری"
+        description="مشخصات پروفایل خود را ببینید و ویرایش کنید."
+      />
       <AccountProfileHeader profile={profile} />
       <AccountForm profile={profile} />
     </div>

@@ -5,6 +5,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import BookingCard from "@/features/guest/bookings/components/BookingCard";
 import BookingStatusTabs from "@/features/guest/bookings/components/BookingStatusTabs";
 import BookingsEmptyState from "@/features/guest/bookings/components/BookingsEmptyState";
+import GuestPageHeader from "@/features/guest/shared/components/GuestPageHeader";
 import { GUEST_BOOKINGS_PAGE_SIZE } from "@/features/guest/bookings/config/bookings.config";
 import { parseBookingTab } from "@/features/guest/bookings/constants/booking-status";
 import { getGuestBookingsRepository } from "@/features/guest/bookings/services/guest-bookings.repository";
@@ -39,6 +40,11 @@ export default async function MyBookingsPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <GuestPageHeader
+        title="رزروهای من"
+        description="وضعیت و جزئیات همه‌ی رزروهای خود را اینجا ببینید."
+      />
+
       <BookingStatusTabs active={tab} counts={counts} />
 
       {bookings.length === 0 ? (
