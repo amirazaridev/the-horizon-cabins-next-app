@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ComponentProps, type ReactNode } from "react";
 
-type Variant = "primary" | "outline" | "success" | "warning";
+type Variant = "primary" | "outline" | "success" | "warning" | "danger";
 type Size = "md" | "lg";
 type Shape = "full" | "xl";
 
@@ -27,6 +27,15 @@ const variants: Record<Variant, string> = {
     "bg-emerald-400 text-black hover:bg-emerald-300 hover:shadow-lg hover:shadow-emerald-400/30",
   warning:
     "bg-orange-400 text-black hover:bg-orange-300 hover:shadow-lg hover:shadow-orange-400/30",
+  /**
+   * کنش مخرب/ثانویه (مثل «لغو رزرو»).
+   *
+   * ⚠️ به‌جای override کردن رنگ `outline` با `className` اضافه شد؛ چون
+   * هر دو کلاس هم‌ویژگی‌اند و ترتیب نهایی در CSS تولیدشده تعیین‌کننده است،
+   * پس بازنویسی از بیرون قابل‌اعتماد نیست.
+   */
+  danger:
+    "border border-danger/40 text-danger hover:border-danger/60 hover:bg-danger/10",
 };
 
 const sizes: Record<Size, string> = {

@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import CardDashContainer from "../../../shared/components/CardDashContainer";
+import CardDashContainer from "@/components/ui/CardDashContainer";
 
 const COLORS = {
   indigo: {

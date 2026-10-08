@@ -29,7 +29,7 @@ type Props = Omit<ComponentProps<"input">, "className"> & {
 };
 
 /**
- * فیلد ورودی مشترک فرم‌های احراز هویت.
+ * فیلد ورودی مشترک فرم‌های پروژه (احراز هویت، تنظیمات حساب کاربری، …).
  *
  * ⚠️ چرا `forwardRef`؟
  * `react-hook-form` با `register()` یک `ref` می‌فرستد. بدون forward، RHF

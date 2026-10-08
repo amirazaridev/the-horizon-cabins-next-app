@@ -33,6 +33,8 @@ export default function CabinList({
             cabin={cabin}
             href={`/cabins/${cabin.id}`}
             animation="hover"
+            /* قلب علاقه‌مندی فقط روی کارت صفحه‌ی «اقامتگاه‌ها». */
+            showFavorite
           />
         ))}
       </div>

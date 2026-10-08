@@ -14,6 +14,7 @@ import { format as formatJalali } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
 import { type Cabin } from "@/features/cabins/types/cabin.types";
 import { formatCurrency } from "@/libs/utils/format";
+import FavoriteButton from "./FavoriteButton";
 
 export interface CabinCardProps {
   cabin: Cabin;
@@ -28,6 +29,13 @@ export interface CabinCardProps {
   animation?: "none" | "hover";
   maxAmenities?: number;
   showPrice?: boolean;
+  /**
+   * نمایش دکمه‌ی «علاقه‌مندی» (قلب) روی تصویر کارت.
+   *
+   * ⚠️ فقط روی واریانت `default` (کارت صفحه‌ی اقامتگاه‌ها) اعمال می‌شود؛
+   * واریانت‌های `landing`/`dashboard` نشان داده نمی‌شوند.
+   */
+  showFavorite?: boolean;
 }
 
 const baseClasses =
@@ -42,6 +50,7 @@ const animationClasses = {
 export default function CabinCard({
   cabin,
   variant = "default",
+  showFavorite = false,
   ...props
 }: CabinCardProps): ReactNode {
   const card =
@@ -56,16 +65,42 @@ export default function CabinCard({
   // نسخه داشبورد هرگز لینک نیست (داخلش منوی دکمه‌دار داریم)
   if (variant === "dashboard" || props.disableLink) return card;
 
+  const href = props.href ?? `/cabins/${cabin.id}`;
+
+  /**
+   * ⚠️ بدون قلب، ساختار DOM عیناً مثل قبل می‌ماند (لینک، فرزندِ مستقیم).
+   *
+   * چرا مهم است؟ بعضی مصرف‌کننده‌ها (مثل `OfferCard`) با سلکتور `[&>a]`
+   * به لینکِ فرزندِ مستقیم استایل می‌دهند؛ یک `div` اضافه آن را می‌شکند.
+   */
+  if (!showFavorite || variant !== "default") {
+    return (
+      <Link href={href} className="block">
+        {card}
+      </Link>
+    );
+  }
+
   return (
-    <Link href={props.href ?? `/cabins/${cabin.id}`} className="block">
-      {card}
-    </Link>
+    /* قلب بیرون از لینک و به‌شکل خواهر (sibling) رندر می‌شود تا نه HTML
+       نامعتبر بسازیم (دکمه داخل لینک) و نه کلیک روی قلب صفحه را عوض کند. */
+    <div className="relative h-full">
+      <Link href={href} className="block h-full">
+        {card}
+      </Link>
+
+      {/* گوشه‌ی بالا-چپ تصویر: گوشه‌ی بالا-راست به نشان تخفیف اختصاص دارد. */}
+      <FavoriteButton
+        cabinId={cabin.id}
+        className="absolute top-3 left-3 z-10"
+      />
+    </div>
   );
 }
 
 type CardVariantProps = Omit<
   CabinCardProps,
-  "variant" | "href" | "disableLink"
+  "variant" | "href" | "disableLink" | "showFavorite"
 >;
 
 function LandingCard({
