@@ -43,7 +43,7 @@ export async function updateGuestProfileAction(input: unknown): Promise<AccountA
     };
   }
 
-  const { fullName, phoneNumber, nationalId, dateOfBirth } = parsed.data;
+  const { fullName, gender, phoneNumber, nationalId, dateOfBirth } = parsed.data;
 
   // تاریخ تولد در فرم جلالی است؛ بک‌اند میلادی (`YYYY-MM-DD`) می‌خواهد.
   // خالی یعنی «پاک کن» → null.
@@ -63,6 +63,7 @@ export async function updateGuestProfileAction(input: unknown): Promise<AccountA
       body: JSON.stringify({
         fullName,
         // رشته‌ی خالی یعنی پاک‌کردن مقدار (قرارداد PATCH بک‌اند).
+        gender: gender === "" ? null : gender,
         phoneNumber: phoneNumber === "" ? null : phoneNumber,
         nationalId: nationalId === "" ? null : nationalId,
         dateOfBirth: isoDateOfBirth,

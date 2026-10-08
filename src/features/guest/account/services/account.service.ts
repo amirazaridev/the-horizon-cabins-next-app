@@ -17,6 +17,7 @@ type ApiMeResponse = {
     user?: { id: number; email: string };
     guest?: {
       fullName?: string | null;
+      gender?: "male" | "female" | null;
       phoneNumber?: string | null;
       nationalId?: string | null;
       dateOfBirth?: string | null;
@@ -36,9 +37,14 @@ export async function getGuestAccountProfile(): Promise<GuestAccountProfile | nu
 
     const guest = json?.data?.guest ?? null;
 
+    // جنسیت در بک‌اند `null` است اگر ثبت نشده باشد؛ در فرم به `""` نگاشت
+    // می‌شود که یعنی «ثبت‌نشده» — پس هیچ گزینه‌ای در کنترل جنسیت فعال نیست.
+    const gender = guest?.gender === "male" || guest?.gender === "female" ? guest.gender : "";
+
     return {
       email: user.email,
       fullName: guest?.fullName ?? "",
+      gender,
       phoneNumber: guest?.phoneNumber ?? "",
       nationalId: guest?.nationalId ?? "",
       // `@db.Date` با زمان UTC می‌آید؛ فقط بخش تاریخ لازم است.

@@ -22,7 +22,9 @@ export default async function GuestAccountSettingsPage(): Promise<ReactNode> {
   if (!profile) redirect("/login?from=/account/settings");
 
   return (
-    <div className="flex flex-col gap-5">
+    /* عرض محدود و وسط‌چین: فرم تنظیمات نباید تمام عرض پنل را بگیرد وگرنه
+       طول خطوط و فیلدها غیرخوانا می‌شود. */
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <GuestPageHeader
         title="تنظیمات حساب کاربری"
         description="مشخصات پروفایل خود را ببینید و ویرایش کنید."
