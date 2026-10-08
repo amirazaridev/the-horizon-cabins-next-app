@@ -4,14 +4,24 @@ import type {
   GuestBookingsPage,
   GuestBookingsQuery,
 } from "../types/guest-booking.types";
-import { createMockGuestBookingsRepository } from "./mock-guest-bookings.repository";
+import { createApiGuestBookingsRepository } from "./api-guest-bookings.repository";
 
 /**
  * مرز داده‌ی رزروهای مهمان.
  *
- * ⚠️ تنها لایه‌ای که UI با آن حرف می‌زند. امروز پیاده‌سازی ماک پشت این
- * اینترفیس است؛ فردا فقط یک پیاده‌سازی API نوشته می‌شود و همین‌جا برگردانده
- * می‌شود — هیچ کامپوننتی تغییر نمی‌کند.
+ * ⚠️ تنها لایه‌ای که UI با آن حرف می‌زند. UI هیچ‌جا مستقیم با `fetch`
+ * تماس نمی‌گیرد؛ فقط این اینترفیس را می‌شناسد. پیاده‌سازی امروز روی
+ * بک‌اند واقعی است (`api-guest-bookings.repository.ts`، server-only)؛ اگر
+ * روزی منبع داده عوض شود، فقط همین نقطه‌ی تعویض تغییر می‌کند.
+ *
+ * ⚠️ قرارداد داده با بک‌اند:
+ *   - `GET  /bookings?page&limit&status` → `{ data: { bookings, meta } }`
+ *     (برای نقش `guest` خودکار به رزروهای خودِ کاربر محدود می‌شود)
+ *   - `GET  /bookings/:id`         → `getById` (صفحه‌ی پرداخت، شامل `nights[]`)
+ *   - `POST /bookings/:id/cancel`  → `cancel` (فقط رزرو `pending` را می‌پذیرد)
+ *
+ * ⚠️ نکته‌ی قرارداد داده: بک‌اند `cabinPrice` را **جمع کل اقامت** می‌گذارد
+ * (نه نرخ شب) و اقلام واقعی را در `nights[]` برمی‌گرداند.
  */
 export interface GuestBookingsRepository {
   /** یک صفحه از رزروها (فیلترشده بر اساس تب). */
@@ -31,28 +41,8 @@ export interface GuestBookingsRepository {
 
 let repository: GuestBookingsRepository | null = null;
 
-/**
- * ⭐ تنها نقطه‌ی تعویض mock ↔ API.
- *
- * TODO(backend): اندپوینت واقعی **از قبل موجود است** —
- *   `GET /bookings?page&limit&status`
- * که برای نقش `guest` خودکار به رزروهای خودِ کاربر محدود می‌شود. برای
- * اتصال، یک پیاده‌سازی با `authFetch` (server-only) بنویسید که همان شکل
- * `{ bookings, meta }` را برگرداند و اینجا جایگزین ماک شود. شمارنده‌ی
- * تب‌ها هم می‌تواند از `meta.totalItems` هر درخواست `status` ساخته شود.
- *
- * ⚠️ بقیه‌ی اندپوینت‌ها هم **از قبل در بک‌اند موجودند** و فقط اینترفیس
- * زیر باید با آن‌ها پیاده شود:
- *   - `GET  /bookings/:id`         → `getById` (صفحه‌ی پرداخت)
- *   - `POST /bookings/:id/cancel`  → `cancel` (فقط رزرو `pending` را می‌پذیرد)
- *   - `POST /bookings/:id/pay`     → تأیید پرداخت؛ در بک‌اند درگاه فعلاً
- *     شبیه‌سازی می‌شود (`simulatePaymentGateway`) و رزرو `pending` را
- *     `confirmed` می‌کند.
- *
- * ⚠️ نکته‌ی قرارداد داده: بک‌اند `cabinPrice` را **جمع کل اقامت** می‌گذارد
- * (نه نرخ شب) و اقلام واقعی را در `nights[]` برمی‌گرداند.
- */
+/** ⭐ تنها نقطه‌ی ساخت پیاده‌سازی — singleton در طول عمر سرور. */
 export function getGuestBookingsRepository(): GuestBookingsRepository {
-  repository ??= createMockGuestBookingsRepository();
+  repository ??= createApiGuestBookingsRepository();
   return repository;
 }

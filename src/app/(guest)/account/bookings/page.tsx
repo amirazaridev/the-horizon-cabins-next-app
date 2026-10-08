@@ -20,8 +20,8 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
  *
  * ⚠️ URL تنها منبع حقیقت است: تب از `status` و صفحه از `page` خوانده
  * می‌شود، پس هر ترکیب قابل‌اشتراک/بوکمارک است و دکمه‌ی back مرورگر درست
- * کار می‌کند. داده از `GuestBookingsRepository` می‌آید (امروز ماک)؛ برای
- * اتصال به بک‌اند فقط همان repository عوض می‌شود.
+ * کار می‌کند. داده از `GuestBookingsRepository` می‌آید که پیاده‌سازی‌اش
+ * روی بک‌اند واقعی است (`GET /bookings`، خودکار محدود به رزروهای همین کاربر).
  */
 export default async function GuestBookingsPage({
   searchParams,

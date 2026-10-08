@@ -12,14 +12,11 @@ export type BookingActionResult = {
 /**
  * لغو رزرو «در انتظار پرداخت» توسط خودِ مهمان.
  *
- * ⚠️ امروز از طریق `GuestBookingsRepository` روی داده‌ی ماک انجام می‌شود تا
- * جریان UI واقعاً کار کند (لغو → به‌روزشدن کارت رزرو). برای اتصال به
- * بک‌اند فقط بدنه‌ی همین تابع عوض می‌شود:
- *
- *   TODO(backend): `POST /bookings/:id/cancel` با `authFetch` — اندپوینت از
- *   قبل در بک‌اند موجود است و خودش هم فقط رزروِ `pending` را می‌پذیرد
- *   (`cancelBooking` → «Only pending bookings can be cancelled»)، پس همان
- *   قاعده‌ی این UI را دوباره اعمال می‌کند. پاسخش رزروِ به‌روزشده است.
+ * ⚠️ از طریق `GuestBookingsRepository` انجام می‌شود که پیاده‌سازی‌اش روی
+ * بک‌اند واقعی است (`POST /bookings/:id/cancel` با `authFetch`). بک‌اند هم
+ * فقط رزروِ `pending` را می‌پذیرد (`cancelBooking` → «Only pending bookings
+ * can be cancelled»)، پس همان قاعده‌ی این UI را دوباره اعمال می‌کند؛ اگر
+ * رزرو قابل لغو نباشد `null` برمی‌گردد و پیام درست نمایش داده می‌شود.
  */
 export async function cancelPendingBookingAction(
   bookingId: number,
