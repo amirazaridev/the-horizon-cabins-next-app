@@ -1,8 +1,9 @@
 "use client";
 
 import { CalendarDays } from "lucide-react";
-import type { ReactNode } from "react";
+import { useCallback, type ReactNode } from "react";
 import DateRangePanel from "@/components/ui/Filter/panels/DateRangePanel";
+import type { CalendarDayPrice } from "@/components/ui/RangeDatePicker";
 import { toFaNumber } from "../../utils/booking";
 import { useBooking } from "./BookingProvider";
 import styles from "./CabinDatePicker.module.css";
@@ -15,16 +16,50 @@ import styles from "./CabinDatePicker.module.css";
  * تم، دکمه‌ی «حذف تاریخ» و تفاوت یک‌ماه/دوماه موبایل و دسکتاپ همه
  * تک‌نسخه‌اند و اینجا فقط قاب و سرتیتر اضافه شده است.
  *
+ * ⚠️ اینجا سه چیز از داده‌ی سرور به تقویم تزریق می‌شود:
+ *   ۱) `minDate`/`maxDate` — افق رزرو از تنظیمات بک‌اند؛ روزهای بعد از سقف
+ *      غیرفعال می‌شوند.
+ *   ۲) `dayOccupancy` — وضعیت اشغال هر روز (هاشور کامل/نصفه).
+ *   ۳) `dayPrice` — نرخ شب هر روز؛ با دادنش تقویم وارد حالت «دارای نرخ»
+ *      می‌شود و زیر شماره‌ی روز، قیمت (و برای روزهای دارای تخفیف، نرخ پایه‌ی
+ *      خط‌خورده + نرخ نهایی) نمایش داده می‌شود.
+ *
  * state رزرو از `useBooking` می‌آید؛ پس انتخاب اینجا بلافاصله در aside،
  * نوار موبایل و خلاصه‌ی قیمت دیده می‌شود.
- *
- * ⚠️ TODO(backend): بک‌اند فهرست روزهای رزروشده نمی‌دهد. `RangeDatePicker`
- * پراپ `disabledDates` را پشتیبانی می‌کند؛ با اضافه‌شدن اندپوینت، فقط
- * کافی است همان آرایه به `DateRangePanel` منتقل شود (مسیر داده:
- * `/api/v1/cabins/:id/availability`).
  */
 export default function CabinDatePicker(): ReactNode {
-  const { range, setRange, clearRange, nights, isComplete } = useBooking();
+  const {
+    range,
+    setRange,
+    clearRange,
+    nights,
+    isComplete,
+    priceForDate,
+    dayOccupancy,
+    minDate,
+    maxDate,
+    settings,
+  } = useBooking();
+
+  /**
+   * نگاشت قیمت دامنه به شکل عمومیِ تقویم.
+   *
+   * ⚠️ `RangeDatePicker` یک کامپوننت `components/ui` است و نباید تایپ دامنه‌ی
+   * کابین را بشناسد؛ پس همین‌جا `CabinCalendarDay` به `CalendarDayPrice`
+   * تبدیل می‌شود.
+   */
+  const dayPrice = useCallback(
+    (date: Date): CalendarDayPrice | null => {
+      const day = priceForDate(date);
+      if (!day) return null;
+      return {
+        basePrice: day.basePrice,
+        finalPrice: day.finalPrice,
+        discounted: day.finalPrice < day.basePrice,
+      };
+    },
+    [priceForDate],
+  );
 
   return (
     <div className="border-foreground/10 bg-surface/60 overflow-hidden rounded-3xl border shadow-md backdrop-blur-sm">
@@ -55,6 +90,10 @@ export default function CabinDatePicker(): ReactNode {
           className={styles.reserveCalendar}
           value={range}
           onChange={setRange}
+          minDate={minDate}
+          maxDate={maxDate}
+          dayPrice={dayPrice}
+          dayOccupancy={dayOccupancy}
           showClear
           onClear={clearRange}
           clearLabel="حذف تاریخ"
@@ -62,9 +101,12 @@ export default function CabinDatePicker(): ReactNode {
       </div>
 
       <p className="border-foreground/5 text-text-gray border-t px-5 py-3 text-xs leading-relaxed sm:px-6">
-        روزهای پیش از امروز قابل انتخاب نیستند. با انتخاب تاریخ ورود، تقویم
-        منتظر تاریخ خروج می‌ماند و بعد از آن مبلغ کل در کنار همین تقویم و در
-        خلاصه‌ی رزرو محاسبه می‌شود.
+        روزهای هاشورخورده‌ی کامل رزرو شده‌اند. روزهای هاشور نصفه، روزِ ورود یا
+        خروج یک رزرو هستند (ورود ۱۴:۰۰ و خروج ۱۲:۰۰): نیمه‌ی آزادشان را
+        می‌توانید به‌عنوان یک سرِ رزرو خودتان انتخاب کنید — روزِ خروجِ رزروهای
+        دیگر می‌تواند تاریخ ورود شما و روزِ ورودشان می‌تواند تاریخ خروج شما
+        باشد. رزرو تا حداکثر {toFaNumber(settings.maxAdvanceBookingDays)} روز
+        آینده ممکن است.
       </p>
     </div>
   );

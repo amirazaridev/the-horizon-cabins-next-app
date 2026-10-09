@@ -1,14 +1,19 @@
 "use client";
 
-import { CalendarDays, MoveLeft, Phone, Users } from "lucide-react";
-import type { ReactNode } from "react";
+import { CalendarDays, LoaderCircle, MoveLeft, Phone, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, type ReactNode } from "react";
+import toast from "react-hot-toast";
+
 import Button from "@/components/ui/Button";
 import Counter from "@/components/ui/Counter";
 import { formatJalaliDate } from "@/components/ui/RangeDatePicker";
 import { SUPPORT_PHONE_HREF } from "@/constants/suport-phone";
 import PriceDisplay from "@/features/cabins/components/PriceDisplay";
 import { formatCurrency } from "@/libs/utils/format";
-import { getBookingPanelLabels, toFaNumber } from "../../utils/booking";
+import { createBookingAction } from "../../actions/booking.actions";
+import { useBookingDraftStore } from "../../store/booking-draft.store";
+import { getBookingPanelLabels, toDateKey, toFaNumber } from "../../utils/booking";
 import { useBooking } from "./BookingProvider";
 
 type Props = {
@@ -37,12 +42,17 @@ type Props = {
  * را رندر می‌کنند؛ پس منطق قیمت و چیدمان در یک جا زندگی می‌کند.
  *
  * **دو حالت نمایش:**
- *  • «نرخ هر شب» — تا وقتی بازه‌ی تاریخ کامل نشده: عدد بزرگ همان قیمت یک شب است.
+ *  • «نرخ هر شب» — تا وقتی بازه‌ی تاریخ کامل نشده: عدد بزرگ «شروع از» کمترین
+ *    نرخ شب پنجره‌ی تقویم است.
  *  • «صورت‌حساب» — از همان رندری که بازه کامل می‌شود: عدد بزرگ مبلغ نهایی است.
  *
  * ⚠️ معیار تغییر حالت فقط کامل‌بودن بازه است، نه تعداد نفرات. شمارنده از
  * ابتدا مقدار دارد؛ اگر عنوان به آن گره بخورد، کاربر بعد از انتخاب تاریخ
  * تغییری نمی‌بیند و باید شمارنده را هم دست بزند.
+ *
+ * ⚠️ اقلام صورت‌حساب از **قیمت واقعی شب‌ها** می‌آیند (تقویم بک‌اند)، نه
+ * «نرخ ثابت × تعداد شب»؛ چون موتور قیمت‌گذاری برای هر شب می‌تواند تخفیف یا
+ * افزایش جداگانه اعمال کند، جمع شب‌ها با «نرخ × تعداد» یکی نمی‌شود.
  *
  * چیدمان عمداً فشرده است (فاصله‌های کوچک، فونت‌های ریزتر) تا پنل در ارتفاع
  * دید یک لپ‌تاپ جا شود؛ چون aside چسبان است و با صفحه اسکرول نمی‌شود، اگر
@@ -55,18 +65,95 @@ export default function BookingSummary({
   className = "",
 }: Props): ReactNode {
   const {
+    cabin,
     range,
     nights,
     isComplete,
+    isAvailable,
     guests,
     maxCapacity,
     price,
+    startingNight,
     setGuests,
     scrollToRateSection,
   } = useBooking();
 
+  const router = useRouter();
+  const clearDraft = useBookingDraftStore((state) => state.clearDraft);
+  const [isBooking, setIsBooking] = useState(false);
+
   const labels = getBookingPanelLabels(isComplete);
   const handleDatesClick = onRequestDates ?? scrollToRateSection;
+
+  /**
+   * ثبت رزرو — قلب فاز دوم.
+   *
+   * مسیرها:
+   *  ۱) کاربر وارد نشده → پیش‌نویس ذخیره و به `/login` با بازگشت به همین
+   *     صفحه می‌رود (بعد از ورود، تاریخ‌ها از پیش‌نویس برمی‌گردند).
+   *  ۲) پروفایل ناقص → پیش‌نویس ذخیره و به `/account/settings` می‌رود؛ بعد از
+   *     ذخیره، صفحه‌ی تنظیمات خودش به همین صفحه برمی‌گرداند.
+   *  ۳) موفق → پیش‌نویس پاک و کاربر وارد تب «در انتظار پرداخت» می‌شود.
+   *
+   * ⚠️ تاریخ‌های ارسالی **میلادی** `YYYY-MM-DD` هستند (`toDateKey` خروجی
+   * تقویم شمسی را به روز میلادی تبدیل می‌کند) — همان قالب `dateOnlySchema`
+   * بک‌اند.
+   */
+  async function handleReserve(): Promise<void> {
+    if (!range.from || !range.to || isBooking) return;
+
+    const startDate = toDateKey(range.from);
+    const endDate = toDateKey(range.to);
+    const cabinPath = `/cabins/${cabin.id}`;
+
+    setIsBooking(true);
+    try {
+      //* ⚠️ پیش‌نویس لازم نیست اینجا ذخیره شود: بازه و نفرات خودشان در استور
+      //* `booking-draft` زندگی می‌کنند (منبع حقیقت) و هر تغییر آن‌ها را
+      //* ذخیره کرده است؛ پس رفت‌وبرگشتِ ورود/تنظیمات انتخاب کاربر را از دست
+      //* نمی‌دهد.
+      const result = await createBookingAction({
+        cabinId: cabin.id,
+        startDate,
+        endDate,
+        numGuests: guests,
+      });
+
+      if (result.status === "needs-auth") {
+        router.push(`/login?from=${encodeURIComponent(cabinPath)}`);
+        return;
+      }
+
+      if (result.status === "needs-profile") {
+        router.push(
+          `/account/settings?reason=booking&from=${encodeURIComponent(cabinPath)}`,
+        );
+        return;
+      }
+
+      if (result.status === "error") {
+        toast.error(result.message);
+        //* خطاهای «موجودی/قیمت» با تازه‌سازی صفحه حل می‌شوند (تقویم و
+        //* روزهای رزرو‌شده دوباره از سرور خوانده می‌شوند).
+        if (result.code === "BOOKING_DATE_OVERLAP") router.refresh();
+        return;
+      }
+
+      clearDraft();
+      toast.success("رزرو شما ثبت شد؛ برای نهایی‌شدن، پرداخت را کامل کنید.");
+      router.push("/account/bookings?status=pending");
+    } finally {
+      setIsBooking(false);
+    }
+  }
+
+  // مبلغ بلوک قیمت: بازه کامل ⇒ مبلغ نهایی؛ بازه ناقص ⇒ «شروع از» کمترین نرخ.
+  const displayAmount = isComplete
+    ? price.total
+    : (startingNight?.finalPrice ?? 0);
+  const displayOriginal = isComplete
+    ? price.gross
+    : (startingNight?.basePrice ?? null);
 
   const stages = [
     {
@@ -90,8 +177,8 @@ export default function BookingSummary({
       )}
 
       <PriceDisplay
-        amount={isComplete ? price.total : price.perNight}
-        originalAmount={isComplete ? price.gross : price.regularPerNight}
+        amount={displayAmount}
+        originalAmount={displayOriginal}
         caption={labels.amountCaption}
       />
 
@@ -151,9 +238,7 @@ export default function BookingSummary({
           {isComplete ? (
             <dl className="space-y-2.5 text-xs">
               <div className="flex items-center justify-between gap-3">
-                <dt className="text-text-gray">
-                  {`${formatCurrency(price.perNight)} × ${toFaNumber(nights)} شب`}
-                </dt>
+                <dt className="text-text-gray">{`اقامت (${toFaNumber(nights)} شب)`}</dt>
                 <dd className="text-text font-bold tabular-nums">
                   {formatCurrency(price.gross)}
                 </dd>
@@ -187,9 +272,25 @@ export default function BookingSummary({
 
       {showCta && (
         <div className="flex flex-col gap-2.5">
-          <Button shape="xl" fullWidth disabled={!isComplete}>
-            رزرو این اقامتگاه
-            <MoveLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-1" />
+          <Button
+            type="button"
+            shape="xl"
+            fullWidth
+            onClick={handleReserve}
+            disabled={!isComplete || !isAvailable || isBooking}
+            aria-busy={isBooking}
+          >
+            {isBooking ? (
+              <>
+                <LoaderCircle className="size-5 animate-spin" />
+                در حال ثبت رزرو...
+              </>
+            ) : (
+              <>
+                رزرو این اقامتگاه
+                <MoveLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-1" />
+              </>
+            )}
           </Button>
           <Button href={SUPPORT_PHONE_HREF} variant="outline" shape="xl">
             <Phone className="size-5" />

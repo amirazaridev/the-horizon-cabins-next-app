@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
+import type { CabinBookingData } from "@/features/cabins/types/cabin-booking.types";
 import { SECTION_IDS } from "../../constants/cabin-detail";
 import BookingAuthCheck from "../BookingAuthCheck";
 import AmenitiesSection from "./AmenitiesSection";
@@ -28,6 +29,20 @@ type Props = {
    * می‌کند و اینجا پاس می‌دهد.
    */
   cityName?: string | null;
+  /**
+   * داده‌ی رزرو که در **سرور** واکشی شده: تنظیمات عمومی، قیمت شب‌های تقویم و
+   * روزهای رزرو‌شده. به Provider تزریق می‌شود تا تقویم و پنل قیمت بدون هیچ
+   * درخواست سمت کلاینت پر باشند.
+   */
+  booking: CabinBookingData;
+  /**
+   * آیا کاربر جاری وارد شده است؟ فقط برای تصمیم «نمایش کارت ورود یا نه».
+   *
+   * ⚠️ خودِ منطق رزرو به این پراپ وابسته نیست؛ Server Action رزرو وضعیت
+   * نشست را دوباره و از سرور می‌خواند (`getCurrentUser`). این پراپ صرفاً
+   * جلوی نشان‌دادن «ابتدا وارد شوید» به کاربرِ واردشده را می‌گیرد.
+   */
+  isAuthenticated: boolean;
 };
 
 /**
@@ -52,9 +67,19 @@ type Props = {
  * `BookingProvider` کلاینت است ولی `children` را از سرور می‌گیرد؛ پس
  * هیچ‌کدام از سکشن‌های سروری به باندل کلاینت منتقل نمی‌شوند.
  */
-export default function CabinDetail({ cabin, cityName }: Props): ReactNode {
+export default function CabinDetail({
+  cabin,
+  cityName,
+  booking,
+  isAuthenticated,
+}: Props): ReactNode {
   return (
-    <BookingProvider cabin={cabin}>
+    <BookingProvider
+      cabin={cabin}
+      settings={booking.settings}
+      calendarDays={booking.calendarDays}
+      bookedRanges={booking.bookedRanges}
+    >
       <Container variant="cabin-detail">
         <section id={SECTION_IDS.gallery} className="hz-scroll-mt">
           <CabinGallery images={cabin.images ?? []} altBase={cabin.name}>
@@ -79,7 +104,6 @@ export default function CabinDetail({ cabin, cityName }: Props): ReactNode {
             >
               <div className="space-y-5">
                 <CabinDatePicker />
-                <BookingAuthCheck />
               </div>
             </SectionShell>
 

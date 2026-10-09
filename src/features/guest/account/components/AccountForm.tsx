@@ -27,7 +27,18 @@ import { accountSchema, type AccountFormValues } from "../schemas/account.schema
 import type { GuestAccountProfile } from "../types/guest-account.types";
 import GenderField from "./GenderField";
 
-type Props = { profile: GuestAccountProfile };
+type Props = {
+  profile: GuestAccountProfile;
+  /**
+   * مسیر بازگشت بعد از ذخیره‌ی موفق (جریان رزرو).
+   *
+   * ⚠️ وقتی ست باشد (کاربر از دکمه‌ی «رزرو» به تنظیمات آمده)، بعد از ذخیره
+   * خودکار به همان صفحه‌ی اقامتگاه برمی‌گردد؛ تاریخ‌ها و نفرات از پیش‌نویس
+   * `sessionStorage` دوباره نشانده می‌شوند. در بازدید عادی تنظیمات این مقدار
+   * `null` است و رفتار قبلی (ماندن در صفحه + تازه‌سازی) حفظ می‌شود.
+   */
+  returnTo?: string | null;
+};
 
 /**
  * فرم تنظیمات حساب کاربری.
@@ -41,7 +52,10 @@ type Props = { profile: GuestAccountProfile };
  * چشم سریع‌تر فیلد مرتبط را پیدا کند؛ نوار کنش‌ها در پایین، وضعیت ذخیره‌شدن
  * را هم‌زمان نشان می‌دهد.
  */
-export default function AccountForm({ profile }: Props): ReactNode {
+export default function AccountForm({
+  profile,
+  returnTo = null,
+}: Props): ReactNode {
   const router = useRouter();
   const {
     control,
@@ -76,6 +90,15 @@ export default function AccountForm({ profile }: Props): ReactNode {
     }
 
     toast.success(result.message);
+
+    //* جریان رزرو: به همان صفحه‌ی اقامتگاه برگرد؛ تاریخ‌ها و نفرات از
+    //* پیش‌نویس `sessionStorage` دوباره نشانده می‌شوند. عمداً `reset` و
+    //* `refresh` صدا زده نمی‌شوند چون صفحه در حال ترک‌شدن است.
+    if (returnTo) {
+      router.push(returnTo);
+      return;
+    }
+
     reset(values);
     router.refresh();
   }

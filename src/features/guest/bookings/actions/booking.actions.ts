@@ -44,3 +44,41 @@ export async function cancelPendingBookingAction(
     };
   }
 }
+
+/**
+ * پرداخت یک رزرو «در انتظار پرداخت» از طریق درگاه.
+ *
+ * ⚠️ درگاه **شبیه‌سازی‌شده** است: هیچ داده‌ی کارتی جایی نمی‌رود. فقط
+ * `POST /bookings/:id/pay` صدا زده می‌شود و بک‌اند رزرو را `confirmed`
+ * می‌کند (همان چیزی که در تب «جاری» دیده می‌شود).
+ *
+ * ⚠️ چرا آرگومان کارت نمی‌گیرد؟ چون درگاه واقعی هم این داده‌ها را به
+ * پذیرنده نمی‌دهد؛ اطلاعات کارت فقط داخل خود درگاه مصرف می‌شود.
+ */
+export async function payBookingAction(
+  bookingId: number,
+): Promise<BookingActionResult> {
+  try {
+    const booking = await getGuestBookingsRepository().pay(bookingId);
+
+    if (!booking) {
+      return {
+        success: false,
+        message:
+          "پرداخت انجام نشد؛ ممکن است مهلت این رزرو گذشته یا قبلاً پرداخت شده باشد.",
+      };
+    }
+
+    // رزرو از «در انتظار پرداخت» به «جاری» می‌رود؛ هر دو مسیر تازه‌سازی
+    // می‌شوند تا شمارنده‌ی تب‌ها و صفحه‌ی پرداخت هم درست بمانند.
+    revalidatePath("/account/bookings");
+    revalidatePath(`/account/bookings/${bookingId}/pay`);
+
+    return { success: true, message: "پرداخت با موفقیت انجام شد و رزرو تأیید شد." };
+  } catch {
+    return {
+      success: false,
+      message: "پرداخت ناموفق بود. دوباره تلاش کنید.",
+    };
+  }
+}

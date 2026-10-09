@@ -1,5 +1,10 @@
-import type { DateRange } from "@/components/ui/RangeDatePicker";
-import { finalNightPrice } from "./cabin-filters";
+import type { DateRange, DayOccupancy } from "@/components/ui/RangeDatePicker";
+import type {
+  BookedRange,
+  CabinCalendarDay,
+  CalendarPriceMap,
+} from "../types/cabin-booking.types";
+import { formatDateParam, parseDateParam } from "./cabin-date";
 
 export const EMPTY_DATE_RANGE: DateRange = { from: null, to: null };
 
@@ -19,68 +24,257 @@ export function isCompleteRange(range: DateRange): boolean {
   return countNights(range) > 0;
 }
 
-export type PriceBreakdown = {
-  /** تعداد شب */
+/* ==================== تاریخ: کلید، پیمایش، روزهای رزروشده ==================== */
+
+/**
+ * کلید تاریخ `YYYY-MM-DD` از یک `Date` محلی.
+ *
+ * ⚠️ عمداً از اجزای **محلی** استفاده می‌کند (نه `toISOString`) چون تقویم شمسی
+ * تاریخ‌ها را در نیمه‌شب محلی می‌سازد؛ `toISOString` در تایم‌زون‌های منفی یک
+ * روز عقب می‌اندازد و کلیدها با داده‌ی بک‌اند نمی‌خوانند.
+ */
+export function toDateKey(date: Date): string {
+  return formatDateParam(date);
+}
+
+/** یک روز جلوتر، همیشه در نیمه‌شب محلی (DST-safe). */
+export function addOneDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+}
+
+/** شب‌های یک بازه‌ی کامل را برمی‌گرداند: `[from, to)` — بازه‌ی ناقص ⇒ آرایه‌ی خالی. */
+export function eachNight(range: DateRange): Date[] {
+  if (!range.from || !range.to) return [];
+
+  const nights: Date[] = [];
+  const end = new Date(
+    range.to.getFullYear(),
+    range.to.getMonth(),
+    range.to.getDate(),
+  ).getTime();
+  let cursor = new Date(
+    range.from.getFullYear(),
+    range.from.getMonth(),
+    range.from.getDate(),
+  );
+
+  while (cursor.getTime() < end) {
+    nights.push(cursor);
+    cursor = addOneDay(cursor);
+  }
+
+  return nights;
+}
+
+/**
+ * بازه‌های رزروشده را به کلید روزهای اشغال‌شده تبدیل می‌کند.
+ *
+ * ⚠️ نیمه‌باز: روز خروج (`endDate`) جزو شب‌های اشغال نیست و برای ورود یک رزرو
+ * جدید آزاد است — همان رفتار استاندارد هتل.
+ */
+export function expandBookedRanges(ranges: readonly BookedRange[]): string[] {
+  const keys: string[] = [];
+
+  for (const range of ranges) {
+    const start = parseDateParam(range.startDate);
+    const end = parseDateParam(range.endDate);
+    if (!start || !end) continue;
+
+    let cursor = start;
+    while (cursor.getTime() < end.getTime()) {
+      keys.push(toDateKey(cursor));
+      cursor = addOneDay(cursor);
+    }
+  }
+
+  return keys;
+}
+
+/* ======================= اشغال نیمه‌روزی (۱۲:۰۰ / ۱۴:۰۰) ======================= */
+
+/**
+ * وضعیت اشغال نیمه‌های هر روز — از بازه‌های رزروشده ساخته می‌شود.
+ *
+ * ⚠️ مدل نیمه‌روزی: ورود از ساعت **۱۴:۰۰** و خروج تا ساعت **۱۲:۰۰** است. پس
+ * یک رزرو `[A, B)` این‌طور اشغال می‌کند:
+ *   - روز A (ورود): فقط **بعدازظهر** ⇒ نیمه‌ی صبحش آزاد است و می‌تواند
+ *     «تاریخ خروج» یک رزرو جدید باشد.
+ *   - روزهای میانی (A+1 … B-1): تمام روز.
+ *   - روز B (خروج): فقط **صبح** ⇒ نیمه‌ی بعدازظهرش آزاد است و می‌تواند
+ *     «تاریخ ورود» یک رزرو جدید باشد.
+ *
+ * ⚠️ اگر دو رزرو پشت‌سرهم باشند (خروج یکی روی ورود دیگری)، روزِ مرز از هر دو
+ * طرف اشغال می‌شود و طبیعتاً «کامل» حساب می‌شود.
+ */
+export type OccupancyMaps = {
+  /** روزهایی که نیمه‌ی صبحشان (تا ۱۲:۰۰) اشغال است. */
+  morning: ReadonlySet<string>;
+  /** روزهایی که نیمه‌ی بعدازظهرشان (از ۱۴:۰۰) اشغال است. */
+  afternoon: ReadonlySet<string>;
+};
+
+export function buildOccupancyMaps(
+  ranges: readonly BookedRange[],
+): OccupancyMaps {
+  const morning = new Set<string>();
+  const afternoon = new Set<string>();
+
+  for (const range of ranges) {
+    const start = parseDateParam(range.startDate);
+    const end = parseDateParam(range.endDate);
+    if (!start || !end || end.getTime() <= start.getTime()) continue;
+
+    //* روز ورود — نیمه‌ی بعدازظهر اشغال (ساعت ورود ۱۴:۰۰).
+    afternoon.add(toDateKey(start));
+
+    //* روزهای میانی — تمام روز مهمان حاضر است.
+    let cursor = addOneDay(start);
+    while (cursor.getTime() < end.getTime()) {
+      const key = toDateKey(cursor);
+      morning.add(key);
+      afternoon.add(key);
+      cursor = addOneDay(cursor);
+    }
+
+    //* روز خروج — نیمه‌ی صبح اشغال (ساعت خروج ۱۲:۰۰).
+    morning.add(toDateKey(end));
+  }
+
+  return { morning, afternoon };
+}
+
+/** وضعیت اشغال یک روز مشخص: آزاد / نیمه‌صبح / نیمه‌بعدازظهر / کامل. */
+export function occupancyOf(maps: OccupancyMaps, date: Date): DayOccupancy {
+  const key = toDateKey(date);
+  const isMorning = maps.morning.has(key);
+  const isAfternoon = maps.afternoon.has(key);
+
+  if (isMorning && isAfternoon) return "full";
+  if (isMorning) return "morning";
+  if (isAfternoon) return "afternoon";
+  return "none";
+}
+
+/* ================================ قیمت اقامت ================================ */
+
+/** نقشه‌ی قیمت بر اساس کلید روز — برای جست‌وجوی O(1) در تقویم. */
+export function buildPriceMap(
+  days: readonly CabinCalendarDay[],
+): CalendarPriceMap {
+  return new Map(days.map((day) => [day.date, day]));
+}
+
+export type StayPrice = {
+  /** تعداد شب‌های بازه (چه قیمت داشته باشند چه نه). */
   nights: number;
-  /** قیمت نهایی هر شب (بعد از تخفیف) */
-  perNight: number;
-  /** قیمت بدون تخفیف هر شب */
-  regularPerNight: number;
-  /** مجموع بدون تخفیف (قیمت خط‌خورده‌ی صورت‌حساب) */
+  /** مجموع نرخ پایه — همان عدد خط‌خورده‌ی صورت‌حساب. */
   gross: number;
-  /** مجموع تخفیف در کل اقامت */
+  /** مجموع تخفیف (اگر افزایش قیمت باشد صفر می‌ماند). */
   discount: number;
-  /** مبلغ قابل پرداخت */
+  /** مبلغ نهایی قابل پرداخت. */
   total: number;
-  /** درصد تخفیف؛ صفر یعنی تخفیفی وجود ندارد */
+  /** درصد تخفیف مؤثر. */
   discountPercent: number;
+  /** میانگین نرخ نهایی هر شب. */
+  perNight: number;
+  /** آیا همه‌ی شب‌های بازه قیمت داشتند (هیچ شبی بیرون پنجره نبود). */
+  fullyPriced: boolean;
+};
+
+const EMPTY_STAY_PRICE: StayPrice = {
+  nights: 0,
+  gross: 0,
+  discount: 0,
+  total: 0,
+  discountPercent: 0,
+  perNight: 0,
+  fullyPriced: false,
 };
 
 /**
- * تفکیک قیمت رزرو.
+ * مبلغ اقامت را از **قیمت واقعی شب‌ها** (تقویم بک‌اند) حساب می‌کند.
  *
- * ⚠️ TODO(backend): قیمت‌گذاری فعلی «قیمت هر شب × تعداد شب» است. بک‌اند
- * هیچ داده‌ای برای نرخ روزهای خاص (آخر هفته، تعطیلات) یا هزینه‌ی خدمات
- * نمی‌دهد؛ با اضافه‌شدن آن، فقط همین تابع تغییر می‌کند و همه‌ی UI
- * (aside، شیت و مودال) خودبه‌خود به‌روز می‌شود.
+ * ⚠️ دیگر «قیمت هر شب × تعداد شب» نیست: موتور قیمت‌گذاری بک‌اند می‌تواند برای
+ * هر شب جداگانه تخفیف (اقامت بلند) یا افزایش (آخر هفته/تعطیلات) اعمال کند، پس
+ * جمع واقعی از `finalPrice` هر شب ساخته می‌شود.
+ *
+ * ⚠️ شب‌هایی که بیرون پنجره‌ی تقویم‌اند قیمت ندارند؛ `fullyPriced` می‌گوید آیا
+ * همه‌ی شب‌ها قیمت داشتند یا نه (در حالت ناقص، مبلغ نباید نهایی تلقی شود).
  */
-export function getPriceBreakdown(
-  cabin: { regularPrice: number; discount: number },
-  nights: number,
-): PriceBreakdown {
-  const safeNights = nights > 0 ? nights : 0;
-  const perNight = finalNightPrice(cabin);
-  const regularPerNight = cabin.regularPrice;
-  const total = perNight * safeNights;
-  const gross = regularPerNight * safeNights;
-  const discount = gross - total;
+export function priceStay(
+  range: DateRange,
+  prices: CalendarPriceMap,
+): StayPrice {
+  const nights = eachNight(range);
+  if (nights.length === 0) return EMPTY_STAY_PRICE;
+
+  let gross = 0;
+  let total = 0;
+  let priced = 0;
+
+  for (const night of nights) {
+    const day = prices.get(toDateKey(night));
+    if (!day) continue;
+    gross += day.basePrice;
+    total += day.finalPrice;
+    priced += 1;
+  }
+
+  if (priced === 0) return { ...EMPTY_STAY_PRICE, nights: nights.length };
+
+  const discount = Math.max(0, gross - total);
 
   return {
-    nights: safeNights,
-    perNight,
-    regularPerNight,
+    nights: nights.length,
     gross,
     discount,
     total,
-    discountPercent: regularPerNight
-      ? Math.round(((regularPerNight - perNight) / regularPerNight) * 100)
-      : 0,
+    discountPercent: gross > 0 ? Math.round((discount / gross) * 100) : 0,
+    perNight: Math.round(total / priced),
+    fullyPriced: priced === nights.length,
   };
 }
 
 /**
- * برچسب‌های پنل رزرو — بسته به این‌که تاریخ اقامت مشخص شده یا نه.
+ * کمترین نرخ شب پنجره — برای کارت نرخِ حالت «بازه ناقص».
  *
- * حالت «نرخ»: تاریخ ورود و خروج کامل نیست، پس پنل یک کارت نرخ است:
- * عنوان «نرخ هر شب» و مبلغ همان قیمت یک شب.
+ * ⚠️ تا وقتی کاربر تاریخی انتخاب نکرده، «نرخ هر شب» یک عدد مشخص نیست؛ نمایش
+ * «شروع از کمترین نرخ» صادقانه‌ترین حالت است (همان کاری که سایت‌های رزرو
+ * می‌کنند). هم `finalPrice` و هم `basePrice` همان شب برگردانده می‌شود تا اگر
+ * آن شب تخفیف داشت، عدد خط‌خورده هم درست نمایش داده شود.
+ */
+export function cheapestNight(
+  days: readonly CabinCalendarDay[],
+): CabinCalendarDay | null {
+  let best: CabinCalendarDay | null = null;
+  for (const day of days) {
+    if (!best || day.finalPrice < best.finalPrice) best = day;
+  }
+  return best;
+}
+
+/**
+ * آیا همه‌ی شب‌های بازه آزاد (رزرونشده) هستند؟
  *
- * حالت «صورت‌حساب»: بازه کامل شد، پس پنل یک صورت‌حساب است: عنوان
- * «صورت‌حساب» و مبلغ همان مبلغ نهایی.
+ * ⚠️ روز خروج اشغال‌شده مشکلی ندارد (بازه نیمه‌باز است)؛ فقط شب‌ها بررسی
+ * می‌شوند. تقویم اجازه‌ی انتخاب روز غیرفعال را نمی‌دهد، ولی بازه‌ی انتخابی
+ * می‌تواند از روی یک روز رزروشده بگذرد — این تابع همان حالت را می‌گیرد.
+ */
+export function isRangeAvailable(
+  range: DateRange,
+  bookedKeys: ReadonlySet<string>,
+): boolean {
+  if (!isCompleteRange(range)) return false;
+  return eachNight(range).every((night) => !bookedKeys.has(toDateKey(night)));
+}
+
+/* ================================== نمایش ================================== */
+
+/**
+ * برچسب‌های پنل رزرو — بسته به این‌که بازه‌ی اقامت کامل شده یا نه.
  *
- * ⚠️ **معیار فقط کامل‌بودن بازه است.** تعداد نفرات عمداً در این شرط نیست:
- * شمارنده از ابتدا مقدار دارد، پس گره‌زدن تغییر عنوان به آن یعنی کاربر با
- * انتخاب تاریخ تغییر را نمی‌بیند و باید یک تعامل اضافه انجام دهد. با این
- * تعریف، عنوان **دقیقاً در همان رندری که بازه کامل می‌شود** عوض می‌شود.
+ * حالت «نرخ»: بازه ناقص است، پس پنل یک کارت نرخ است و عدد، «شروع از» کمترین
+ * نرخ شب است. حالت «صورت‌حساب»: بازه کامل شد و عدد، مبلغ نهایی است.
  */
 export type BookingPanelLabels = {
   heading: string;
@@ -92,7 +286,7 @@ export function getBookingPanelLabels(
 ): BookingPanelLabels {
   return isComplete
     ? { heading: "صورت‌حساب", amountCaption: "مبلغ نهایی" }
-    : { heading: "نرخ هر شب", amountCaption: "قیمت هر شب" };
+    : { heading: "نرخ هر شب", amountCaption: "شروع از" };
 }
 
 /** عدد فارسی — برای نمایش تعداد شب و نفرات */

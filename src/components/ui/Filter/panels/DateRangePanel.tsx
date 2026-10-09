@@ -2,7 +2,9 @@
 
 import useMediaQuery from "@/hooks/useMediaQuery";
 import RangeDatePicker, {
+  type CalendarDayPrice,
   type DateRange,
+  type DayOccupancy,
 } from "@/components/ui/RangeDatePicker";
 import { RANGE_PICKER_NARROW_QUERY } from "./range-picker-breakpoint";
 
@@ -24,6 +26,18 @@ type Props = {
   showClear?: boolean;
   onClear?: () => void;
   clearLabel?: string;
+  /** کمینه/بیشینه‌ی تاریخ‌های قابل‌انتخاب — به تقویم پاس داده می‌شوند. */
+  minDate?: Date;
+  maxDate?: Date;
+  /** روزهای رزرو‌شده که باید غیرفعال شوند. */
+  disabledDates?: Date[];
+  /** نرخ شب هر روز — با دادنش، قیمت داخل سلول‌های تقویم نمایش داده می‌شود. */
+  dayPrice?: (date: Date) => CalendarDayPrice | null;
+  /**
+   * وضعیت اشغال هر روز — هاشور کامل (کاملاً رزرو) یا نصفه (روز ورود/خروجِ
+   * یک رزرو). روزهای نیمه‌آزاد قابل کلیک می‌مانند.
+   */
+  dayOccupancy?: (date: Date) => DayOccupancy;
   /**
    * کلاس تکمیلی روی ریشه — برای رزرو ارتفاع تقویم در مصرف‌کننده‌هایی که
    * بعد از hydration جهش چیدمان می‌گیرند (مثل صفحه‌ی جزئیات اقامتگاه).
@@ -43,15 +57,13 @@ export default function DateRangePanel({
   showClear = false,
   onClear,
   clearLabel = "حذف تاریخ",
+  minDate,
+  maxDate,
+  disabledDates,
+  dayPrice,
+  dayOccupancy,
   className = "",
 }: Props) {
-  /*
-    فقط تعداد ماه‌ها را تعیین می‌کند؛ **چیدمان** را
-    `RangeDatePicker/style.module.css` به‌صورت موبایل‌محور کنترل می‌کند.
-    ⚠️ تکیه‌کردن به این مقدار به‌تنهایی کافی نیست: در اولین رندر کلاینت
-    (قبل از اجرای افکتِ `useMediaQuery`) مقدار `false` است، پس تقویم با
-    ۲ ماه mount می‌شود. برای همین CSS هم مستقلاً تک‌ماه را تضمین می‌کند.
-  */
   /*
     فقط تعداد ماه‌ها را تعیین می‌کند؛ **چیدمان** را
     `RangeDatePicker/style.module.css` به‌صورت موبایل‌محور کنترل می‌کند.
@@ -70,6 +82,11 @@ export default function DateRangePanel({
         onChange={onChange}
         onComplete={onComplete}
         numberOfMonths={isNarrow ? 1 : 2}
+        minDate={minDate}
+        maxDate={maxDate}
+        disabledDates={disabledDates}
+        dayPrice={dayPrice}
+        dayOccupancy={dayOccupancy}
       />
 
       {showClear && (

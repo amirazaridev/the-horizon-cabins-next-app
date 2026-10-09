@@ -4,7 +4,14 @@ import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import Navigate from "@/components/ui/Navigate";
 import CabinDetail from "@/features/cabins/components/CabinDetail";
-import { getCabin, getCityById } from "@/features/cabins/api";
+import {
+  getBookedDates,
+  getCabin,
+  getCabinPriceCalendar,
+  getCityById,
+} from "@/features/cabins/api";
+import { getPublicSettings } from "@/features/settings/api";
+import { getCurrentUser } from "@/features/auth/services/session.service";
 
 type Props = { params: Promise<{ cabinId: string }> };
 
@@ -18,25 +25,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/**
- * صفحه‌ی جزئیات اقامتگاه.
- *
- * ⚠️ نکته‌ی داده: اندپوینت جزئیات کابین آبجکت `city` را برنمی‌گرداند و
- * فقط `cityId` می‌دهد. پس نام شهر اینجا (سمت سرور) حل می‌شود تا بج مقصد
- * روی گالری نمایش داده شود. اگر `city` از خود پاسخ بیاید (مثل اندپوینت
- * لیست)، درخواست اضافه‌ای زده نمی‌شود.
- */
+ 
+//? صفحه‌ی جزئیات اقامتگاه.
+
 export default async function CabinPage({ params }: Props): Promise<ReactNode> {
   const { cabinId } = await params;
-  const cabin = await getCabin(Number(cabinId));
+  const id = Number(cabinId);
 
+  const cabin = await getCabin(id);
   if (!cabin) notFound();
 
-  const cityName =
-    cabin.city?.name ??
-    (typeof cabin.cityId === "number"
-      ? (await getCityById(cabin.cityId).catch(() => undefined))?.name
-      : undefined);
+  const [cityName, settings, priceCalendar, bookedRanges, currentUser] =
+    await Promise.all([
+      cabin.city?.name ??
+        (typeof cabin.cityId === "number"
+          ? getCityById(cabin.cityId)
+              .then((city) => city?.name)
+              .catch(() => undefined)
+          : undefined),
+      getPublicSettings(),
+      getCabinPriceCalendar(id),
+      getBookedDates(id),
+      getCurrentUser(),
+    ]);
 
   return (
     <section className="bg-background-2 min-h-screen pt-10 pb-28 sm:pt-14 lg:pb-14">
@@ -50,7 +61,16 @@ export default async function CabinPage({ params }: Props): Promise<ReactNode> {
         />
       </Container>
 
-      <CabinDetail cabin={cabin} cityName={cityName ?? null} />
+      <CabinDetail
+        cabin={cabin}
+        cityName={cityName ?? null}
+        isAuthenticated={Boolean(currentUser)}
+        booking={{
+          settings,
+          calendarDays: priceCalendar?.days ?? [],
+          bookedRanges,
+        }}
+      />
     </section>
   );
 }

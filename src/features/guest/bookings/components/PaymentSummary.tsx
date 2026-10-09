@@ -12,14 +12,10 @@ type Props = { booking: GuestBooking };
 /**
  * ستون کنش‌های صفحه‌ی پرداخت — مبلغ نهایی، دکمه‌ی پرداخت و لغو رزرو.
  *
- * ⚠️ **دکمه‌ی پرداخت عمداً غیرفعال است**: درگاه پرداخت هنوز در دسترس نیست.
- * به‌جای رهاکردن کاربر با یک دکمه‌ی بی‌واکنش، زیر آن صریح توضیح داده شده
- * که این قابلیت به‌زودی فعال می‌شود.
- *
- * TODO(backend): اندپوینت پرداخت از قبل در بک‌اند هست — `POST /bookings/:id/pay`
- * — ولی درگاه را شبیه‌سازی می‌کند (`simulatePaymentGateway` فقط یک UUID
- * می‌سازد). با آماده‌شدن درگاه واقعی: Server Action → دریافت لینک پرداخت →
- * `redirect` مرورگر به صفحه‌ی بانک؛ همین دکمه فعال می‌شود.
+ * ⚠️ دکمه‌ی پرداخت کاربر را به **درگاه نمونه** می‌برد
+ * (`/payment/gateway/[bookingId]`). آن صفحه فقط طرح و ظاهر یک درگاه ایرانی
+ * است؛ با زدن «پرداخت» همان‌جا، `POST /bookings/:id/pay` صدا زده می‌شود و
+ * رزرو «تأییدشده» می‌گردد (تب «جاری»).
  */
 export default function PaymentSummary({ booking }: Props): ReactNode {
   return (
@@ -32,13 +28,7 @@ export default function PaymentSummary({ booking }: Props): ReactNode {
       </div>
 
       <div className="flex flex-col gap-2.5">
-        <Button
-          type="button"
-          shape="xl"
-          fullWidth
-          disabled
-          title="درگاه پرداخت هنوز فعال نشده است"
-        >
+        <Button href={`/payment/gateway/${booking.id}`} shape="xl" fullWidth>
           <CreditCard className="size-4" />
           پرداخت و انتقال به درگاه
         </Button>
@@ -46,8 +36,8 @@ export default function PaymentSummary({ booking }: Props): ReactNode {
         <p className="text-text-gray flex items-start gap-2 text-[11px] leading-relaxed">
           <Info className="mt-px size-3.5 shrink-0" />
           <span>
-            درگاه پرداخت هنوز در دسترس نیست؛ به‌محض فعال‌شدن، با زدن این دکمه
-            به صفحه‌ی امن بانک منتقل می‌شوید.
+            با زدن این دکمه به درگاه پرداخت منتقل می‌شوید؛ پس از پرداخت، رزرو
+            شما تأیید و در تب «جاری» نمایش داده می‌شود.
           </span>
         </p>
       </div>

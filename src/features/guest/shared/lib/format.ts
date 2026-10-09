@@ -54,21 +54,6 @@ export function toFaNumber(value: number): string {
 }
 
 /**
- * شمارش معکوس `mm:ss` با ارقام فارسی و صفر پیشوند — برای مهلت پرداخت.
- * ورودی میلی‌ثانیه‌ی باقی‌مانده؛ مقدار منفی به `۰۰:۰۰` تبدیل می‌شود.
- */
-export function formatCountdown(ms: number): string {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const pad = (value: number) =>
-    value.toLocaleString("fa-IR", {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    });
-
-  return `${pad(Math.floor(totalSeconds / 60))}:${pad(totalSeconds % 60)}`;
-}
-
-/**
  * تاریخ ISO را به شکل ورودی جلالی (`۱۳۷۰/۰۵/۱۲`) درمی‌آورد — برای
  * پیش‌پرکردن فیلدهای تاریخ در فرم‌ها. ورودی خالی ⇒ رشته‌ی خالی.
  */
