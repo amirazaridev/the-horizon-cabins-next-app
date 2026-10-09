@@ -9,29 +9,57 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import toast from "react-hot-toast";
+
 import type { DateRange } from "@/components/ui/RangeDatePicker";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
+import type { PublicSettings } from "@/features/settings/types/public-settings.types";
 import { smoothScrollToId } from "@/libs/utils/scroll";
 import { SECTION_IDS } from "../../constants/cabin-detail";
+import { useBookingDraftStore } from "../../store/booking-draft.store";
+import type {
+  CabinCalendarDay,
+  BookedRange,
+} from "../../types/cabin-booking.types";
+import { parseDateParam } from "../../utils/cabin-date";
 import {
+  buildPriceMap,
+  cheapestNight,
   countNights,
   EMPTY_DATE_RANGE,
-  getPriceBreakdown,
+  expandBookedRanges,
   isCompleteRange,
-  type PriceBreakdown,
+  isRangeAvailable,
+  priceStay,
+  toDateKey,
+  type StayPrice,
 } from "../../utils/booking";
 
 export type BookingContextValue = {
   cabin: Cabin;
+  settings: PublicSettings;
   /** بازه‌ی انتخاب‌شده — ممکن است ناقص باشد (فقط ورود) */
   range: DateRange;
   /** تعداد شب؛ صفر یعنی بازه کامل نیست */
   nights: number;
   /** بازه کامل است (ورود + خروج) */
   isComplete: boolean;
+  /** همه‌ی شب‌های بازه آزادند (هیچ شبی رزرو‌شده نیست) */
+  isAvailable: boolean;
   guests: number;
   maxCapacity: number;
-  price: PriceBreakdown;
+  /** مبلغ اقامت — از قیمت **واقعی** شب‌های تقویم بک‌اند */
+  price: StayPrice;
+  /** کمترین نرخ شب پنجره — کارت نرخِ حالت «بازه ناقص» («شروع از ...») */
+  startingNight: CabinCalendarDay | null;
+  /** قیمت یک روز مشخص — برای رندر داخل سلول‌های تقویم */
+  priceForDate: (date: Date) => CabinCalendarDay | null;
+  /** روزهای اشغال‌شده — به تقویم داده می‌شود تا غیرفعال شوند */
+  disabledDates: Date[];
+  /** اولین روز قابل‌انتخاب (امروز به وقت مقصد) */
+  minDate: Date;
+  /** آخرین روز قابل‌انتخاب (سقف افق رزرو) */
+  maxDate: Date;
   setRange: (range: DateRange) => void;
   setGuests: (guests: number) => void;
   clearRange: () => void;
@@ -57,8 +85,25 @@ export function useBooking(): BookingContextValue {
 
 type Props = {
   cabin: Cabin;
+  /** تنظیمات عمومی مؤثر (افق رزرو، سقف نفرات، ...). */
+  settings: PublicSettings;
+  /** قیمت شب‌های پنجره‌ی تقویم (از بک‌اند). */
+  calendarDays: CabinCalendarDay[];
+  /** بازه‌های رزرو‌شده‌ی کابین (نیمه‌باز). */
+  bookedRanges: BookedRange[];
   children: ReactNode;
 };
+
+/** امروز در نیمه‌شب محلی. */
+function startOfToday(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+/** n روز جلوتر، همیشه در نیمه‌شب محلی (DST-safe). */
+function addDays(date: Date, days: number): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+}
 
 /**
  * نگه‌دارنده‌ی state رزرو صفحه‌ی جزئیات.
@@ -68,23 +113,115 @@ type Props = {
  * باتم‌شیت/مودال خلاصه. اگر state در هر کدام جدا نگه داشته شود، باید
  * بین‌شان prop-drill و همگام‌سازی دستی انجام شود.
  *
- * ⚠️ این state عمداً به URL یا استور جهانی وصل **نشده**: بک‌اند پارامتر
- * تاریخ ندارد، پس تاریخ به API فرستاده نمی‌شود و دکمه‌ی رزرو هم هنوز به
- * صفحه‌ی پرداخت وصل نیست. این Provider همان نقطه‌ی اتصال تمیز برای آینده است.
+ * ⚠️ داده‌ی رزرو (تنظیمات، قیمت شب‌ها و روزهای رزرو‌شده) در **سرور** واکشی
+ * می‌شود و به‌عنوان prop به این Provider می‌رسد؛ پس هیچ درخواستی از سمت
+ * کلاینت زده نمی‌شود و تقویم در همان رندر اول پر است.
  *
- * این کامپوننت کلاینت است، ولی `children` را از سرور می‌گیرد؛ پس سکشن‌های
- * ثابت (توضیحات، مشخصات، قوانین، نظرات) همچنان سروری و در HTML اولیه رندر
- * می‌شوند و این Provider فقط پوسته‌ی تعاملی آن‌هاست.
+ * ⚠️ این Provider فقط state **درون‌صفحه‌ای** (باز/بسته بودن لایه‌ها) را نگه
+ * می‌دارد. خودِ **بازه‌ی تاریخ و تعداد نفرات** در استور `booking-draft`
+ * (zustand + `sessionStorage`) زندگی می‌کنند، چون باید از یک ناوبری کامل
+ * (ورود / تکمیل پروفایل) جان سالم به در ببرند و Context با unmount از بین
+ * می‌رود.
  */
-export default function BookingProvider({ cabin, children }: Props): ReactNode {
-  const maxCapacity = Math.max(1, cabin.maxCapacity);
-
-  const [range, setRangeState] = useState<DateRange>(EMPTY_DATE_RANGE);
-  const [guests, setGuestsState] = useState(() =>
-    Math.min(2, maxCapacity),
+export default function BookingProvider({
+  cabin,
+  settings,
+  calendarDays,
+  bookedRanges,
+  children,
+}: Props): ReactNode {
+  //* سقف نفرات = همان قاعده‌ی سرور: کمینه‌ی ظرفیت کابین و سقف عمومی تنظیمات.
+  const maxCapacity = Math.max(
+    1,
+    Math.min(cabin.maxCapacity, settings.maxGuests),
   );
+
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [isSummaryOpen, setSummaryOpen] = useState(false);
+
+  /**
+   * پیش‌نویس رزرو — **منبع حقیقتِ** تاریخ‌ها و تعداد نفرات.
+   *
+   * ⚠️ چرا بازه در state محلی نیست؟ چون این مقدار باید از یک ناوبری کامل
+   * (رفتن به `/login` یا `/account/settings` و برگشتن) جان سالم به در ببرد؛
+   * state محلی و Context با unmount شدن صفحه از بین می‌روند. استور zustand
+   * روی `sessionStorage` می‌نشیند و همان مقدار را برمی‌گرداند.
+   *
+   * ⚠️ چرا برای «بازگرداندن» پیش‌نویس `useEffect` نداریم؟ استور خودش یک
+   * external store است و zustand آن را با `useSyncExternalStore` می‌خواند؛
+   * React هنگام هیدریشن از snapshot سرور (تهی) استفاده می‌کند و بلافاصله بعد
+   * از آن مقدار واقعی می‌نشیند. نتیجه: نه hydration mismatch داریم و نه
+   * `setState` داخل effect (که رندر آبشاری می‌سازد و لینتر هم آن را رد
+   * می‌کند).
+   */
+  const draft = useBookingDraftStore((state) => state.draft);
+  const saveDraft = useBookingDraftStore((state) => state.saveDraft);
+
+  /** پیش‌نویس فقط وقتی معتبر است که مربوط به **همین** کابین باشد. */
+  const cabinDraft = draft && draft.cabinId === cabin.id ? draft : null;
+
+  /**
+   * بازه‌ی انتخاب‌شده — از پیش‌نویس خوانده می‌شود.
+   *
+   * ⚠️ وابستگی `useMemo` عمداً خودِ `cabinDraft` است (نه فیلدهایش): React
+   * Compiler به فیلدهای تودرتو ایراد می‌گیرد و چون `cabinDraft` یا همان
+   * آبجکت پایدارِ استور است یا `null`، این وابستگی درست و ارزان است.
+   */
+  const range = useMemo<DateRange>(
+    () => ({
+      from: cabinDraft?.checkIn ? parseDateParam(cabinDraft.checkIn) : null,
+      to: cabinDraft?.checkOut ? parseDateParam(cabinDraft.checkOut) : null,
+    }),
+    [cabinDraft],
+  );
+
+  const guests = cabinDraft?.guests
+    ? Math.min(maxCapacity, Math.max(1, cabinDraft.guests))
+    : Math.min(2, maxCapacity);
+
+  /**
+   * نوشتن پیش‌نویس — تنها مسیر تغییر بازه و نفرات.
+   *
+   * ⚠️ تاریخ‌ها عمداً به‌شکل **میلادی** `YYYY-MM-DD` ذخیره می‌شوند: هم
+   * JSON-safe است، هم همان قالبی است که API می‌پذیرد، و هم با
+   * `parseDateParam` دوباره به `Date` محلی برمی‌گردد.
+   */
+  const persist = useCallback(
+    (next: DateRange, nextGuests: number) => {
+      saveDraft({
+        cabinId: cabin.id,
+        checkIn: next.from ? toDateKey(next.from) : null,
+        checkOut: next.to ? toDateKey(next.to) : null,
+        guests: nextGuests,
+      });
+    },
+    [cabin.id, saveDraft],
+  );
+
+  //* نقشه‌ی قیمت و مجموعه‌ی روزهای اشغال‌شده — یک‌بار از propها ساخته می‌شوند.
+  const priceMap = useMemo(() => buildPriceMap(calendarDays), [calendarDays]);
+  const bookedSet = useMemo(
+    () => new Set(expandBookedRanges(bookedRanges)),
+    [bookedRanges],
+  );
+
+  //* پنجره‌ی مجاز انتخاب: از «امروزِ مقصد» (اولین روز تقویم) تا سقف افق رزرو.
+  //* ⚠️ از داده‌ی تقویم استفاده می‌کنیم نه ساعت مرورگر، تا با افق بک‌اند
+  //* (که به وقت تهران حساب می‌شود) یکی بماند.
+  const minDate = useMemo(() => {
+    const first = calendarDays[0]?.date;
+    return (first ? parseDateParam(first) : null) ?? startOfToday();
+  }, [calendarDays]);
+
+  const maxDate = useMemo(
+    () => addDays(minDate, settings.maxAdvanceBookingDays),
+    [minDate, settings.maxAdvanceBookingDays],
+  );
+
+  const disabledDates = useMemo(
+    () => [...bookedSet].map(parseDateParam).filter((d): d is Date => d !== null),
+    [bookedSet],
+  );
 
   /**
    * امضای آخرین بازه‌ی کاملی که مودال خلاصه برایش باز شده.
@@ -93,35 +230,72 @@ export default function BookingProvider({ cabin, children }: Props): ReactNode {
    */
   const completedRangeRef = useRef<string | null>(null);
 
-  const setRange = useCallback((next: DateRange) => {
-    setRangeState(next);
+  const setRange = useCallback(
+    (next: DateRange) => {
+      if (!next.from || !next.to) {
+        completedRangeRef.current = null;
+        persist(next, guests);
+        return;
+      }
 
-    if (!next.from || !next.to) {
-      completedRangeRef.current = null;
-      return;
-    }
+      const signature = `${next.from.getTime()}-${next.to.getTime()}`;
+      if (completedRangeRef.current === signature) return;
+      completedRangeRef.current = signature;
 
-    const signature = `${next.from.getTime()}-${next.to.getTime()}`;
-    if (completedRangeRef.current === signature) return;
-    completedRangeRef.current = signature;
+      //* بازه‌ای که از روی یک شب رزرو‌شده می‌گذرد معتبر نیست: انتخاب را به
+      //* «تاریخ ورود» برمی‌گردانیم تا کاربر تاریخ خروج دیگری انتخاب کند.
+      if (!isRangeAvailable(next, bookedSet)) {
+        toast.error("بازه‌ی انتخاب‌شده شامل روزهای رزرو‌شده است.");
+        completedRangeRef.current = null;
+        persist({ from: next.from, to: null }, guests);
+        return;
+      }
 
-    // ⚠️ باتم‌شیت رزرو هم‌زمان با خلاصه باز نمی‌ماند: دو لایه‌ی شناور
-    // هم‌زمان یعنی دو تله‌ی فوکوس روی هم و ناوبری کیبورد شکسته.
-    setSheetOpen(false);
-    setSummaryOpen(true);
-  }, []);
+      //* طول اقامت: همان قاعده‌ی سرور (`validateStayRange`) را همان‌جا به
+      //* کاربر نشان می‌دهیم تا انتخاب غیرمجاز به خطای انتهای مسیر تبدیل نشود.
+      const selectedNights = countNights(next);
+      if (selectedNights < settings.minBookingLength) {
+        toast.error(`حداقل طول اقامت ${settings.minBookingLength} شب است.`);
+        completedRangeRef.current = null;
+        persist({ from: next.from, to: null }, guests);
+        return;
+      }
+      if (selectedNights > settings.maxBookingLength) {
+        toast.error(
+          `حداکثر طول اقامت ${settings.maxBookingLength} شب است. بازه‌ی کوتاه‌تری انتخاب کنید.`,
+        );
+        completedRangeRef.current = null;
+        persist({ from: next.from, to: null }, guests);
+        return;
+      }
+
+      persist(next, guests);
+
+      // ⚠️ باتم‌شیت رزرو هم‌زمان با خلاصه باز نمی‌ماند: دو لایه‌ی شناور
+      // هم‌زمان یعنی دو تله‌ی فوکوس روی هم و ناوبری کیبورد شکسته.
+      setSheetOpen(false);
+      setSummaryOpen(true);
+    },
+    [
+      bookedSet,
+      guests,
+      persist,
+      settings.minBookingLength,
+      settings.maxBookingLength,
+    ],
+  );
 
   const setGuests = useCallback(
     (next: number) => {
-      setGuestsState(Math.min(maxCapacity, Math.max(1, next)));
+      persist(range, Math.min(maxCapacity, Math.max(1, next)));
     },
-    [maxCapacity],
+    [maxCapacity, persist, range],
   );
 
   const clearRange = useCallback(() => {
     completedRangeRef.current = null;
-    setRangeState(EMPTY_DATE_RANGE);
-  }, []);
+    persist(EMPTY_DATE_RANGE, guests);
+  }, [guests, persist]);
 
   const scrollToRateSection = useCallback(() => {
     smoothScrollToId(SECTION_IDS.rate, { block: "start" });
@@ -131,22 +305,39 @@ export default function BookingProvider({ cabin, children }: Props): ReactNode {
   const closeSheet = useCallback(() => setSheetOpen(false), []);
   const closeSummary = useCallback(() => setSummaryOpen(false), []);
 
+  const priceForDate = useCallback(
+    (date: Date) => priceMap.get(toDateKey(date)) ?? null,
+    [priceMap],
+  );
+
   const nights = useMemo(() => countNights(range), [range]);
   const isComplete = useMemo(() => isCompleteRange(range), [range]);
-  const price = useMemo(
-    () => getPriceBreakdown(cabin, nights),
-    [cabin, nights],
+  const isAvailable = useMemo(
+    () => isRangeAvailable(range, bookedSet),
+    [range, bookedSet],
+  );
+  const price = useMemo(() => priceStay(range, priceMap), [range, priceMap]);
+  const startingNight = useMemo(
+    () => cheapestNight(calendarDays),
+    [calendarDays],
   );
 
   const value = useMemo<BookingContextValue>(
     () => ({
       cabin,
+      settings,
       range,
       nights,
       isComplete,
+      isAvailable,
       guests,
       maxCapacity,
       price,
+      startingNight,
+      priceForDate,
+      disabledDates,
+      minDate,
+      maxDate,
       setRange,
       setGuests,
       clearRange,
@@ -159,12 +350,19 @@ export default function BookingProvider({ cabin, children }: Props): ReactNode {
     }),
     [
       cabin,
+      settings,
       range,
       nights,
       isComplete,
+      isAvailable,
       guests,
       maxCapacity,
       price,
+      startingNight,
+      priceForDate,
+      disabledDates,
+      minDate,
+      maxDate,
       setRange,
       setGuests,
       clearRange,

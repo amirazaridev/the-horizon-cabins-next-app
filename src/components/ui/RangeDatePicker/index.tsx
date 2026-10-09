@@ -7,6 +7,8 @@ import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { CalendarDays, ChevronLeft } from "lucide-react";
 
+import { formatCompactPrice, formatCurrency } from "@/libs/utils/format";
+
 /**
  * ⚠️ import جانبی (side-effect) است و هیچ نامی از آن استفاده نمی‌شود.
  *
@@ -26,16 +28,37 @@ const RangeCalendarAny = RangeCalendar as unknown as ComponentType<{
   calendar?: unknown;
   locale?: unknown;
   minDate?: unknown;
+  maxDate?: unknown;
   format?: string;
   rangeHover?: boolean;
   shadow?: boolean;
   className?: string;
-  mapDays?: (props: { date: DateObject }) => Record<string, unknown>;
+  mapDays?: (props: {
+    date: DateObject;
+    /** شماره‌ی ماهِ ماهِ در حال نمایش — برای تشخیص روزهای همین ماه. */
+    currentMonth?: unknown;
+  }) => Record<string, unknown>;
 }>;
 
 export type DateRange = {
   from: Date | null;
   to: Date | null;
+};
+
+/**
+ * قیمتی که داخل یک سلول روز نمایش داده می‌شود.
+ *
+ * ⚠️ عمداً تایپ عمومی است و به دامنه‌ی کابین وابسته نیست، تا `RangeDatePicker`
+ * یک کامپوننت `components/ui` بماند. مصرف‌کننده داده‌ی دامنه‌اش را به این شکل
+ * نگاشت می‌کند.
+ */
+export type CalendarDayPrice = {
+  /** نرخ پایه — وقتی `discounted` است، خط‌خورده نمایش داده می‌شود. */
+  basePrice: number;
+  /** نرخ نهایی قابل پرداخت آن شب. */
+  finalPrice: number;
+  /** آیا تخفیف دارد (نرخ نهایی کمتر از نرخ پایه است). */
+  discounted: boolean;
 };
 
 type Props = {
@@ -48,29 +71,69 @@ type Props = {
   numberOfMonths?: number;
   /** تاریخ‌های قبل از این غیرفعال می‌شوند (پیش‌فرض: امروز) */
   minDate?: Date;
+  /** تاریخ‌های بعد از این غیرفعال می‌شوند (سقف افق رزرو). */
+  maxDate?: Date;
   /**
    * روزهای رزروشده که کاربر نباید بتواند انتخاب کند.
    * مقایسه بر اساس «ابتدای روز» انجام می‌شود، پس ساعت ورودی مهم نیست.
    */
   disabledDates?: Date[];
   /**
-   * برچسب اختیاری هر روز (مثل «پرتقاضا» یا قیمت).
+   * برچسب اختیاری هر روز (مثل «پرتقاضا»).
    *
-   * ⚠️ فعلاً فقط به‌شکل `title` (راهنمای hover) استفاده می‌شود و متن
-   * داخل سلول روز را عوض نمی‌کند؛ چون ساختار داخلی سلول‌های
-   * `react-multi-date-picker` با استایل `rounded-full` فعلی در تضاد است.
-   * اگر بک‌اند نرخ روزانه داد، اینجا با `children` در `mapDays` و
-   * CSS `.rmdp-has-label` قابل توسعه است (TODO).
+   * ⚠️ فقط به‌شکل `title` (راهنمای hover) استفاده می‌شود و متن داخل سلول را
+   * عوض نمی‌کند.
    */
   dayTitle?: (date: Date) => string | null;
+  /**
+   * نرخ شب هر روز — وقتی بدهید، زیر شماره‌ی روز داخل همان سلول نمایش داده
+   * می‌شود و روزهای دارای تخفیف، نرخ پایه‌ی خط‌خورده + نرخ نهایی می‌گیرند.
+   *
+   * ⚠️ با دادن این پراپ، ریشه‌ی تقویم کلاس `horizon-range-picker--priced`
+   * می‌گیرد و سلول‌ها بلندتر و گوشه‌هایشان کم‌گرد می‌شود (چون سه خط محتوا
+   * داخلشان می‌نشیند). تقویم‌های بدون قیمت هیچ تغییری نمی‌بینند.
+   */
+  dayPrice?: (date: Date) => CalendarDayPrice | null;
   className?: string;
 };
 
-/** ابتدای روز — برای مقایسه‌ی تاریخ‌ها بدون ساعت */
-function startOfDay(date: Date): number {
+/** ابتدای روز به‌شکل `Date` (بدون ساعت) — برای نرمال‌سازی مقادیر بازه */
+function atStartOfDay(date: Date): Date {
   const copy = new Date(date);
   copy.setHours(0, 0, 0, 0);
-  return copy.getTime();
+  return copy;
+}
+
+/** ابتدای روز — برای مقایسه‌ی تاریخ‌ها بدون ساعت */
+function startOfDay(date: Date): number {
+  return atStartOfDay(date).getTime();
+}
+
+/**
+ * نرمال‌سازی بازه‌ی انتخاب‌شده تا همیشه قرارداد «ورود < خروج» برقرار باشد.
+ *
+ * - ساعت هر دو تاریخ به ابتدای روز برده می‌شود (مقایسه‌ها مستقل از ساعت شوند)؛
+ * - اگر ترتیب معکوس باشد (خروج قبل از ورود)، دو تاریخ جابه‌جا می‌شوند؛
+ * - اگر ورود و خروج روی یک روز بیفتند، بازه معتبر نیست و خروج `null`
+ *   می‌ماند تا کاربر روزِ خروج را دوباره و درست انتخاب کند.
+ *
+ * این گارد در تنها نقطه‌ای اعمال می‌شود که بازه تولید می‌شود، پس همه‌ی
+ * مصرف‌کننده‌ها (سرچ لندینگ، فیلتر `/cabins` و تقویم جزئیات اقامتگاه)
+ * همیشه بازه‌ی مرتب و معتبر می‌گیرند.
+ */
+function normalizeRange(
+  from: Date | null,
+  to: Date | null,
+): [Date | null, Date | null] {
+  const start = from ? atStartOfDay(from) : null;
+  const end = to ? atStartOfDay(to) : null;
+
+  if (start && end) {
+    if (end.getTime() < start.getTime()) return [end, start];
+    if (end.getTime() === start.getTime()) return [start, null];
+  }
+
+  return [start, end];
 }
 
 function toDateObject(date: Date): DateObject {
@@ -105,8 +168,10 @@ export default function RangeDatePicker({
   onComplete,
   numberOfMonths = 2,
   minDate,
+  maxDate,
   disabledDates,
   dayTitle,
+  dayPrice,
   className = "",
 }: Props) {
   const today = useMemo(() => {
@@ -116,6 +181,16 @@ export default function RangeDatePicker({
   }, []);
 
   const min = minDate ?? today;
+  const isPriced = Boolean(dayPrice);
+
+  /** کلاس‌های ریشه — `--priced` فقط وقتی نرخ شب می‌دهیم اضافه می‌شود. */
+  const rootClassName = [
+    "horizon-range-picker",
+    isPriced && "horizon-range-picker--priced",
+    "border-border bg-surface overflow-hidden rounded-2xl border p-1",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   const disabledSet = useMemo(
     () => new Set((disabledDates ?? []).map(startOfDay)),
@@ -123,30 +198,67 @@ export default function RangeDatePicker({
   );
 
   /**
-   * روزهای رزروشده را غیرفعال می‌کند.
+   * روزهای رزروشده را غیرفعال و نرخ شب را داخل سلول رندر می‌کند.
    *
-   * ⚠️ اگر نه تاریخ غیرفعالی باشد و نه برچسبی، `mapDays` اصلاً پاس داده
+   * ⚠️ اگر نه تاریخ غیرفعالی باشد و نه قیمتی، `mapDays` اصلاً پاس داده
    * نمی‌شود؛ چون `react-multi-date-picker` با دیدن `mapDays` کل روزها را
    * از مسیر رندر سفارشی عبور می‌دهد و ما نمی‌خواهیم مصرف‌کننده‌های فعلی
    * (سرچ لندینگ و فیلتر `/cabins`) هیچ تغییری نبینند.
+   *
+   * ⚠️ نکته‌ی کتابخانه: `className` که از `mapDays` برگردد روی روزهای
+   * **غیرفعال** اعمال نمی‌شود (کتابخانه آن را فقط وقتی روز disabled نباشد
+   * به span می‌چسباند). پس برای نشانه‌گذاری روز رزروشده از یک data-attribute
+   * استفاده می‌کنیم که همیشه روی span می‌نشیند. در عوض `children` همیشه
+   * رندر می‌شود، پس محتوای سلول قابل‌کنترل است.
    */
-  const hasCustomDays = disabledSet.size > 0 || Boolean(dayTitle);
+  const hasCustomDays =
+    disabledSet.size > 0 || Boolean(dayTitle) || Boolean(dayPrice);
 
   const mapDays = useCallback(
-    ({ date }: { date: DateObject }) => {
+    ({ date }: { date: DateObject }): Record<string, unknown> => {
       const jsDate = date.toDate();
       const isBooked = disabledSet.has(startOfDay(jsDate));
+      const price = dayPrice?.(jsDate) ?? null;
       const title = dayTitle?.(jsDate) ?? null;
 
-      if (!isBooked && !title) return {};
+      const props: Record<string, unknown> = {};
 
-      return {
-        disabled: isBooked,
-        className: isBooked ? "rmdp-booked" : undefined,
-        title: title ?? (isBooked ? "این روز قبلاً رزرو شده است" : undefined),
-      };
+      if (isBooked) {
+        props.disabled = true;
+        props.title = "این روز قبلاً رزرو شده است";
+        props["data-booked"] = "";
+        return props;
+      }
+
+      if (price) {
+        // ⚠️ عمداً از `<b>` و `<s>` استفاده می‌کنیم، نه `<span>`: کتابخانه
+        // قاعده‌ی `.rmdp-day span { position:absolute; inset:3px }` را تزریق
+        // می‌کند و هر span تودرتویی را روی هم می‌اندازد. این عناصر تحت تأثیر
+        // آن سلکتور نیستند و به‌شکل flex-item داخل span بیرونی (که
+        // `display:flex; flex-direction:column` دارد) زیر هم می‌نشینند.
+        props.children = (
+          <>
+            <b className="hz-day-num">{date.day.toLocaleString("fa-IR")}</b>
+            {price.discounted && (
+              <s className="hz-day-base">
+                {formatCompactPrice(price.basePrice)}
+              </s>
+            )}
+            <b className="hz-day-final">
+              {formatCompactPrice(price.finalPrice)}
+            </b>
+          </>
+        );
+        // داخل سلول قیمت خلاصه است؛ عدد کامل به‌عنوان راهنما می‌آید.
+        props.title = `${formatCurrency(price.finalPrice)} تومان`;
+        return props;
+      }
+
+      if (title) props.title = title;
+
+      return props;
     },
-    [disabledSet, dayTitle],
+    [disabledSet, dayTitle, dayPrice],
   );
 
   const selected = useMemo(() => {
@@ -167,8 +279,8 @@ export default function RangeDatePicker({
     const list = (
       Array.isArray(dates) ? dates : dates ? [dates] : []
     ) as unknown[];
-    const from = toJsDate(list[0]);
-    const to = toJsDate(list[1]);
+    // ⭐ گارد ترتیب: همیشه `from < to` (و هر دو در ابتدای روز).
+    const [from, to] = normalizeRange(toJsDate(list[0]), toJsDate(list[1]));
 
     onChange({ from, to });
 
@@ -233,7 +345,7 @@ export default function RangeDatePicker({
             : "بازه انتخاب شد؛ می‌توانید تغییرش دهید."}
       </p>
 
-      <div className="horizon-range-picker border-border bg-surface overflow-hidden rounded-2xl border p-1">
+      <div className={rootClassName}>
         <RangeCalendarAny
           value={selected}
           onChange={handleChange}
@@ -242,6 +354,7 @@ export default function RangeDatePicker({
           calendar={persian}
           locale={persian_fa}
           minDate={min}
+          {...(maxDate ? { maxDate } : {})}
           format="YYYY/MM/DD"
           rangeHover
           shadow={false}
