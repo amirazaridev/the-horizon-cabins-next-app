@@ -60,8 +60,13 @@ export type Destination = CityDestination | RegionDestination;
 /* ------------------------------------------------------------------ */
 
 /**
- * بازه‌ی بودجه‌ی هر شب (تومان).
+ * بازه‌ی بودجه (تومان).
  * `null` یعنی «بدون محدودیت» — نه بازه‌ی کامل.
+ *
+ * ⚠️ واحد این بازه به **حالت بودجه** بستگی دارد (نگاه کنید به
+ * `utils/budget.ts`):
+ *   - بدون تاریخ → بودجه‌ی «هر شب»  (به API به‌عنوان `price`)
+ *   - با تاریخ   → بودجه‌ی «کل سفر» (به API به‌عنوان `totalPrice`)
  */
 export type BudgetRange = {
   min: number;
@@ -74,8 +79,9 @@ export type SearchFilters = {
   checkOut: Date | null;
   guests: number | null;
   /**
-   * بازه‌ی بودجه‌ی هر شب. مفهوم «سقف بودجه» قبلاً تک‌مقداری بود؛ حالا بازه است.
-   * در URL با همان قرارداد موجود پروژه ذخیره می‌شود: `price=lo-hi`
+   * بازه‌ی بودجه — در واحدِ حالت فعال (هر شب یا کل سفر؛ نگاه کنید به
+   * `BudgetRange`). در URL با قرارداد پروژه ذخیره می‌شود: `price=lo-hi`
+   * بدون تاریخ و `totalPrice=lo-hi` با تاریخ.
    */
   budget: BudgetRange | null;
 };

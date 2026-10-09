@@ -4,6 +4,7 @@ import { useCallback, useMemo } from "react";
 
 import { useSearchStore } from "../store/search.store";
 import type { SearchController, SearchFilters } from "../types/search.types";
+import { nightsBetween, rescaleBudgetBetween } from "../utils/budget";
 
 /**
  * کنترلر سرچ روی استور گلوبال — برای صفحه‌ی لندینگ.
@@ -43,11 +44,28 @@ export function useLandingSearchController(): SearchController {
           setDestination(value as SearchFilters["destination"]);
           break;
         case "checkIn":
-          setFilters({ checkIn: value as Date | null });
+        case "checkOut": {
+          /*
+           * بودجه یک مقدار است با دو معنا (هر شب / کل سفر)؛ با تغییر تاریخ
+           * تعداد شب عوض می‌شود و مقدار باید مقیاس بگیرد تا قصد «هر شب»
+           * کاربر حفظ شود (۵–۱۰ م/شب × ۳ شب ← ۱۵–۳۰ م کل).
+           *
+           * مقدار قبلی از **آخرین draft استور** خوانده می‌شود، نه از closure
+           * این رندر؛ چون پنل تقویم با هر انتخابِ بازه دو فراخوانی پشت‌سرهم
+           * (checkIn و بعد checkOut) می‌زند و closure کهنه می‌شود.
+           */
+          const prev = useSearchStore.getState().draft;
+          const next = { ...prev, [key]: value } as SearchFilters;
+          setFilters({
+            [key]: value,
+            budget: rescaleBudgetBetween(
+              nightsBetween(prev.checkIn, prev.checkOut),
+              nightsBetween(next.checkIn, next.checkOut),
+              next.budget,
+            ),
+          } as Partial<SearchFilters>);
           break;
-        case "checkOut":
-          setFilters({ checkOut: value as Date | null });
-          break;
+        }
         case "guests":
           setGuests(value as number | null);
           break;

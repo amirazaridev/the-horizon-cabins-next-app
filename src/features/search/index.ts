@@ -39,6 +39,7 @@ export {
 } from "./utils/search-params";
 
 export {
+  budgetFieldLabel,
   buildPreviewCtaLabel,
   buildPreviewHeading,
   buildSearchSummary,
@@ -51,6 +52,14 @@ export {
   formatGuestsLabel,
   formatNightsLabel,
 } from "./utils/search-summary";
+
+export {
+  budgetBoundsFor,
+  budgetModeFor,
+  nightsBetween,
+  rescaleBudgetBetween,
+  type BudgetMode,
+} from "./utils/budget";
 
 export {
   SEARCH_PREVIEW_ID,

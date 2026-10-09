@@ -15,6 +15,7 @@ import {
   searchFiltersToQueryString,
   serializeSearchFiltersForUpdate,
 } from "../utils/search-params";
+import { nightsBetween, rescaleBudgetBetween } from "../utils/budget";
 
 /**
  * کنترلر سرچ بر پایه‌ی URL — برای صفحه‌ی `/cabins`.
@@ -72,7 +73,26 @@ export function useUrlSearchController(
 
   const setField = useCallback(
     <K extends keyof SearchFilters>(key: K, value: SearchFilters[K]) => {
-      setDraft((prev) => ({ ...prev, [key]: value }));
+      setDraft((prev) => {
+        const next = { ...prev, [key]: value };
+
+        /*
+         * بودجه یک مقدار است با دو معنا (هر شب / کل سفر)؛ با تغییر تاریخ
+         * تعداد شب عوض می‌شود و مقدار باید مقیاس بگیرد تا قصد «هر شب»
+         * کاربر حفظ شود. چون به‌روزرسانی تابعی است، `prev` همیشه تازه است و
+         * دو فراخوانی پشت‌سرهمِ پنل تقویم (checkIn و بعد checkOut) درست
+         * روی هم می‌نشینند.
+         */
+        if (key === "checkIn" || key === "checkOut") {
+          next.budget = rescaleBudgetBetween(
+            nightsBetween(prev.checkIn, prev.checkOut),
+            nightsBetween(next.checkIn, next.checkOut),
+            prev.budget,
+          );
+        }
+
+        return next;
+      });
     },
     [],
   );

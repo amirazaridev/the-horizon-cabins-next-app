@@ -12,6 +12,8 @@ import {
   queryCabins,
 } from "@/features/cabins/api";
 import { parseCabinFilters } from "@/features/cabins/utils/cabin-filters";
+import { isValidStayRange } from "@/features/cabins/utils/cabin-date";
+import { getPublicSettings } from "@/features/settings/api/getPublicSettings";
 import { regionIdFromSlug, toSearchRegions } from "@/features/search/constants/regions";
 import { parseLimitParam, parsePageParam } from "@/libs/utils/pagination";
 
@@ -34,6 +36,15 @@ export default async function CabinsPage({
   const page = parsePageParam(sp);
   const limit = parseLimitParam(sp.limit);
 
+  /*
+   * تنظیمات عمومی لازم است تا بازه‌ی تاریخ را **قبل از ارسال** اعتبارسنجی
+   * کنیم: بک‌اند هر بازه‌ی خارج از افق یا طول مجاز را با ۴۰۰ رد می‌کند و آن
+   * استثنا صفحه را می‌ترکاند. پس با بازه‌ی ناقص/نامعتبر هیچ تاریخی
+   * نمی‌فرستیم و بودجه هم در حالت «هر شب» می‌ماند (تصمیم پروژه).
+   */
+  const settings = await getPublicSettings();
+  const hasStay = isValidStayRange(filters.checkIn, filters.checkOut, settings);
+
   const [{ cabins, meta }, cities, apiRegions, amenities] = await Promise.all([
     queryCabins({
       page,
@@ -42,10 +53,17 @@ export default async function CabinsPage({
       guests: filters.guests,
       bedrooms: filters.bedrooms,
       amenities: filters.amenities?.join(","),
-      // بازه‌ی بودجه‌ی سرچ، همان قرارداد `lo-hi` فیلتر قیمت است
-      price: filters.price
-        ? `${filters.price[0]}-${filters.price[1]}`
-        : undefined,
+      //* بدون تاریخ: بودجه‌ی هر شب. با تاریخ: بودجه‌ی کل سفر.
+      price:
+        !hasStay && filters.price
+          ? `${filters.price[0]}-${filters.price[1]}`
+          : undefined,
+      totalPrice:
+        hasStay && filters.totalPrice
+          ? `${filters.totalPrice[0]}-${filters.totalPrice[1]}`
+          : undefined,
+      startDate: hasStay ? filters.checkIn : undefined,
+      endDate: hasStay ? filters.checkOut : undefined,
       city: filters.cityId,
       // بک‌اند پارامتر عددی `regionId` را می‌پذیرد، نه اسلاگِ `region`
       regionId: regionIdFromSlug(filters.region),
@@ -65,6 +83,7 @@ export default async function CabinsPage({
         amenities={amenities}
         resultCount={meta.totalItems}
         searchParams={sp}
+        bookingWindowDays={settings.maxAdvanceBookingDays}
       >
         <Suspense
           fallback={

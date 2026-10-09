@@ -8,50 +8,68 @@
 import type { City } from "@/features/cabins/types/city.types";
 import { formatPriceShort } from "@/features/cabins/utils/cabin-filters";
 import { formatJalaliDate } from "@/components/ui/RangeDatePicker";
-import {
-  BUDGET_MAX,
-  BUDGET_MIN,
-  type BudgetRange,
-  type Destination,
-  type SearchFilters,
-} from "../types/search.types";
+import { type BudgetRange, type Destination, type SearchFilters } from "../types/search.types";
+import { budgetBoundsFor, budgetModeFor, nightsBetween } from "./budget";
+
+export { nightsBetween };
 
 const fa = (value: number) => value.toLocaleString("fa-IR");
 
 /**
  * دو سر بازه‌ی بودجه، فقط اگر واقعاً محدودکننده باشند.
  * بازه‌ی کامل (کمینه تا بیشینه) یعنی «بدون محدودیت».
+ *
+ * ⚠️ سقفِ «کامل» به تعداد شب وابسته است: بدون تاریخ ۳۰ میلیون و با تاریخ
+ * ۳۰ میلیون × تعداد شب.
  */
-function budgetEdges(range: BudgetRange | null): {
+function budgetEdges(
+  range: BudgetRange | null,
+  nights: number,
+): {
   min: string | null;
   max: string | null;
 } {
   if (!range) return { min: null, max: null };
+  const bounds = budgetBoundsFor(nights);
   return {
-    min: range.min > BUDGET_MIN ? formatPriceShort(range.min) : null,
-    max: range.max < BUDGET_MAX ? formatPriceShort(range.max) : null,
+    min: range.min > bounds.min ? formatPriceShort(range.min) : null,
+    max: range.max < bounds.max ? formatPriceShort(range.max) : null,
   };
+}
+
+/** پسوند واحد بودجه: «/ شب» یا «برای کل سفر» */
+function budgetUnitSuffix(nights: number): string {
+  return budgetModeFor(nights) === "total" ? "برای کل سفر" : "/ شب";
+}
+
+/** برچسب فیلد بودجه (تریگر/پنل) — بسته به وجود تاریخ */
+export function budgetFieldLabel(nights: number): string {
+  return budgetModeFor(nights) === "total" ? "بودجه‌ی کل سفر" : "بودجه‌ی هر شب";
 }
 
 /**
  * «۲ تا ۸ میلیون تومان / شب» · «تا ۸ میلیون تومان / شب» · «از ۵ میلیون تومان / شب»
+ * با تاریخ، پسوند «برای کل سفر» می‌شود.
  * بازه‌ی کامل یا `null` یعنی بدون محدودیت و `undefined` برمی‌گردد.
  */
 export function formatBudgetRangeLabel(
   range: BudgetRange | null,
+  nights = 0,
 ): string | undefined {
-  const { min, max } = budgetEdges(range);
-  if (min && max) return `${min} تا ${max} تومان / شب`;
-  if (max) return `تا ${max} تومان / شب`;
-  if (min) return `از ${min} تومان / شب`;
+  const { min, max } = budgetEdges(range, nights);
+  const suffix = budgetUnitSuffix(nights);
+  if (min && max) return `${min} تا ${max} تومان ${suffix}`;
+  if (max) return `تا ${max} تومان ${suffix}`;
+  if (min) return `از ${min} تومان ${suffix}`;
   return undefined;
 }
 
 /** نسخه‌ی فشرده برای خلاصه‌های تک‌خطی: «۲ تا ۸ میلیون» */
 export function formatBudgetRangeLabelCompact(
   range: BudgetRange | null,
+  nights = 0,
 ): string | undefined {
-  const { min, max } = budgetEdges(range);
+  const { min, max } = budgetEdges(range, nights);
   if (min && max) return `${min} تا ${max}`;
   if (max) return `تا ${max}`;
   if (min) return `از ${min}`;
@@ -59,22 +77,17 @@ export function formatBudgetRangeLabelCompact(
 }
 
 /** متن داخل پنل بودجه؛ همیشه مقدار برمی‌گرداند */
-export function formatBudgetRangeValue(range: BudgetRange | null): string {
-  const label = formatBudgetRangeLabel(range);
+export function formatBudgetRangeValue(
+  range: BudgetRange | null,
+  nights = 0,
+): string {
+  const label = formatBudgetRangeLabel(range, nights);
   return label ?? "بدون محدودیت";
 }
 
 export function formatGuestsLabel(guests: number | null): string | undefined {
   if (guests == null) return undefined;
   return `${fa(guests)} مهمان`;
-}
-
-/** تعداد شب بین دو تاریخ */
-export function nightsBetween(checkIn: Date | null, checkOut: Date | null): number {
-  if (!checkIn || !checkOut) return 0;
-  const ms = checkOut.getTime() - checkIn.getTime();
-  if (ms <= 0) return 0;
-  return Math.round(ms / 86_400_000);
 }
 
 export function formatNightsLabel(
@@ -123,13 +136,15 @@ export function buildSearchSummaryParts({
   cities = [],
   compact = false,
 }: SearchSummaryInput): string[] {
+  //* بودجه با تاریخ یعنی «کل سفر»؛ پس پسوند و مرزها به تعداد شب وابسته‌اند.
+  const nights = nightsBetween(filters.checkIn, filters.checkOut);
   return [
     destinationLabel(filters.destination, cities),
     formatDateRangeSummary(filters.checkIn, filters.checkOut),
     formatGuestsLabel(filters.guests),
     compact
-      ? formatBudgetRangeLabelCompact(filters.budget)
-      : formatBudgetRangeLabel(filters.budget),
+      ? formatBudgetRangeLabelCompact(filters.budget, nights)
+      : formatBudgetRangeLabel(filters.budget, nights),
   ].filter((part): part is string => Boolean(part));
 }
 

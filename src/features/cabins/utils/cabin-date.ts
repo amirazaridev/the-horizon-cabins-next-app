@@ -1,10 +1,50 @@
 import { formatJalaliDate } from "@/components/ui/RangeDatePicker";
+import { todayInTehran } from "@/libs/utils/tehran-date";
 
 /** مقدار تاریخ سفر در URL (قالب yyyy-MM-dd، مثل سرچ لندینگ) */
 export type CabinDateValue = {
   checkIn: string | null;
   checkOut: string | null;
 };
+
+/** محدودیت‌های اقامت که بک‌اند اعمال می‌کند (از `GET /settings/public`). */
+export type StayLimits = {
+  minBookingLength: number;
+  maxBookingLength: number;
+  maxAdvanceBookingDays: number;
+};
+
+const DAY_MS = 86_400_000;
+
+/**
+ * آیا این بازه‌ی اقامت با قواعد بک‌اند هم‌خوان است؟
+ *
+ * بک‌اند هر کدام از این‌ها را با ۴۰۰ رد می‌کند (`cabin.validation.ts`)؛ چون
+ * `queryCabins` در غیر این صورت استثنا پرتاب می‌کند و صفحه را می‌ترکاند،
+ * قبل از ارسال همین‌جا بررسی می‌کنیم تا در صورت نامعتبر بودن، تاریخ‌ها
+ * نادیده گرفته شوند (تصمیم پروژه: بازه‌ی ناقص/نامعتبر = بدون تاریخ).
+ */
+export function isValidStayRange(
+  checkIn: string | null | undefined,
+  checkOut: string | null | undefined,
+  limits: StayLimits,
+  today: Date = todayInTehran(),
+): boolean {
+  const from = parseDateParam(checkIn ?? null);
+  const to = parseDateParam(checkOut ?? null);
+  if (!from || !to) return false;
+
+  const nights = Math.round((to.getTime() - from.getTime()) / DAY_MS);
+  if (nights < limits.minBookingLength) return false;
+  if (nights > limits.maxBookingLength) return false;
+  if (from.getTime() < today.getTime()) return false;
+
+  const horizonEnd = new Date(today);
+  horizonEnd.setDate(horizonEnd.getDate() + limits.maxAdvanceBookingDays);
+  if (to.getTime() > horizonEnd.getTime()) return false;
+
+  return true;
+}
 
 const PARAM_RE = /^\d{4}-\d{2}-\d{2}$/;
 

@@ -1,7 +1,7 @@
 /**
  * Route Handler جستجوی اقامتگاه — پروکسی داخلی به API بک‌اند.
  *
- *     GET /api/search/cabins?city=1&guests=4&price=1000000-8000000&limit=6
+ *     GET /api/search/cabins?city=1&guests=4&checkIn=2026-10-15&checkOut=2026-10-18&totalPrice=15000000-30000000&limit=6
  *
  * چرا Route Handler و نه fetch مستقیم در کلاینت؟
  *  - `apiFetch` با `server-only` علامت خورده و `API_URL` یک متغیر محیطی
@@ -9,9 +9,10 @@
  *  - با این پروکسی، آدرس بک‌اند و کلیدها هرگز به باندل مرورگر نمی‌رسند و
  *    درگیر CORS هم نمی‌شویم.
  *
- * قرارداد پارامترها همان `search-params.ts` است (`city`, `region`, `guests`,
- * `price`, `limit`)؛ این فایل هیچ نام پارامتری را از خودش نمی‌سازد.
- * پارامترهای ناشناخته/نامعتبر توسط `parseSearchFilters` بی‌اثر می‌شوند.
+ * قرارداد پارامترها همان `search-params.ts` است (`city`, `region`, `checkIn`,
+ * `checkOut`, `guests`, `price`/`totalPrice`, `limit`)؛ این فایل هیچ نام
+ * پارامتری را از خودش نمی‌سازد. پارامترهای ناشناخته/نامعتبر توسط
+ * `parseSearchFilters` بی‌اثر می‌شوند.
  *
  * پاسخ: `{ cabins: CabinDto[], total: number }` — تاریخ‌ها به‌صورت ISO
  * رشته‌ای می‌شوند (طبیعت JSON)، پس مصرف‌کننده‌ی کلاینت آن‌ها را با

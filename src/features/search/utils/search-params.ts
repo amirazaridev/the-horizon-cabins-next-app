@@ -5,16 +5,19 @@
  * نباید خودش query بسازد یا بخواند.
  *
  * قرارداد پارامترها:
- *   city      = شناسه‌ی عددی شهر           (مثل city=12)
- *   region    = شناسه‌ی معنایی منطقه        (مثل region=north)
- *   checkIn   = yyyy-MM-dd
- *   checkOut  = yyyy-MM-dd
- *   guests    = عدد صحیح
- *   price     = بازه‌ی بودجه‌ی هر شب       (مثل price=1000000-8000000)
+ *   city       = شناسه‌ی عددی شهر           (مثل city=12)
+ *   region     = شناسه‌ی معنایی منطقه        (مثل region=north)
+ *   checkIn    = yyyy-MM-dd
+ *   checkOut   = yyyy-MM-dd
+ *   guests     = عدد صحیح
+ *   price      = بازه‌ی بودجه‌ی هر شب       (مثل price=1000000-8000000)
+ *   totalPrice = بازه‌ی بودجه‌ی کل سفر       (مثل totalPrice=15000000-30000000)
  *
- * `price` همان قرارداد موجود پروژه است و مستقیماً به پارامتر price ای‌پی‌آی
- * نگاشت می‌شود. چون فیلتر «بازه قیمت» از فیلتربار `/cabins` حذف شد،
- * این پارامتر حالا تنها به بودجه‌ی سرچ تعلق دارد و دو مفهوم موازی نداریم.
+ * ⭐ بودجه یک مقدار است با دو نام پارامتر، بسته به وجود تاریخ:
+ *   - بدون تاریخ → `price`      (بودجه‌ی هر شب)
+ *   - با تاریخ   → `totalPrice` (بودجه‌ی کل سفر)
+ * این دو هرگز با هم نمی‌آیند. هر دو مستقیماً به پارامتر هم‌نام ای‌پی‌آی
+ * نگاشت می‌شوند.
  */
 
 import {
@@ -30,6 +33,7 @@ import {
   type Destination,
   type SearchFilters,
 } from "../types/search.types";
+import { nightsBetween } from "./budget";
 
 export const SEARCH_PARAM_KEYS = [
   "city",
@@ -38,6 +42,7 @@ export const SEARCH_PARAM_KEYS = [
   "checkOut",
   "guests",
   "price",
+  "totalPrice",
 ] as const;
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
@@ -77,7 +82,12 @@ export function serializeSearchFilters(
   if (filters.checkOut) out.checkOut = formatDateParam(filters.checkOut);
   if (filters.guests != null) out.guests = String(filters.guests);
   if (filters.budget) {
-    out.price = formatPriceRange(filters.budget.min, filters.budget.max);
+    //* با تاریخ، بودجه «کل سفر» است و به `totalPrice` می‌رود.
+    const key =
+      nightsBetween(filters.checkIn, filters.checkOut) > 0
+        ? "totalPrice"
+        : "price";
+    out[key] = formatPriceRange(filters.budget.min, filters.budget.max);
   }
 
   return out;
@@ -139,12 +149,20 @@ export function parseSearchFilters(input: ParseInput): SearchFilters {
     }
   }
 
-  const priceRange = parsePriceRange(readParam(input, "price"));
+  const checkIn = parseDateParam(readParam(input, "checkIn"));
+  const checkOut = parseDateParam(readParam(input, "checkOut"));
+  const hasStay = nightsBetween(checkIn, checkOut) > 0;
+
+  //* با تاریخ، `totalPrice` مرجع است (و `price` فقط به‌عنوان fallback سازگاری).
+  const budgetRaw = hasStay
+    ? (readParam(input, "totalPrice") ?? readParam(input, "price"))
+    : readParam(input, "price");
+  const priceRange = parsePriceRange(budgetRaw);
 
   return {
     destination,
-    checkIn: parseDateParam(readParam(input, "checkIn")),
-    checkOut: parseDateParam(readParam(input, "checkOut")),
+    checkIn,
+    checkOut,
     guests:
       safeParseNumber(readParam(input, "guests") ?? undefined, 1, 30) ?? null,
     budget: priceRange ? { min: priceRange[0], max: priceRange[1] } : null,
