@@ -423,3 +423,61 @@
   line-height: 1.05;
   white-space: nowrap;
 }
+
+/* ---------- روزهای اشغال‌شده: هاشور کامل / نصفه ---------- */
+/*
+  ⚠️ این نشانه‌ها از `dayOccupancy` در `mapDays` می‌آیند و روی `span` روز
+  می‌نشینند (`data-occupied`). عمداً داخل ناحیه‌ی `--priced` قید شده‌اند تا
+  فقط تقویم صفحه‌ی جزئیات اقامتگاه را تحت تأثیر بگذارند (سرچ و فیلتر
+  دست‌نخورده می‌مانند).
+
+  مدل نیمه‌روزی (ورود ۱۴:۰۰ / خروج ۱۲:۰۰):
+    - روزِ ورودِ یک رزرو → نیمه‌ی بعدازظهر اشغال ⇒ هاشور نیمه‌ی **چپ**.
+    - روزِ خروجِ یک رزرو → نیمه‌ی صبح اشغال ⇒ هاشور نیمه‌ی **راست**.
+  (تقویم راست‌به‌چپ است و «چپ» سمتِ انتهای روز است.)
+
+  ⚠️ روزهای نیمه‌آزاد قابل کلیک می‌مانند؛ فقط `full` غیرفعال است.
+*/
+
+/* کامل — هاشور سراسر سلول */
+:global(.horizon-range-picker.horizon-range-picker--priced)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day)
+  > span[data-occupied="full"] {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--color-danger) 40%, transparent) 0 2px,
+    transparent 2px 5px
+  );
+  cursor: not-allowed;
+}
+
+/* روزِ ورودِ یک رزرو — هاشور نیمه‌ی چپ (بعدازظهر اشغال، صبح آزاد) */
+:global(.horizon-range-picker.horizon-range-picker--priced)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day)
+  > span[data-occupied="afternoon"] {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--color-danger) 32%, transparent) 0 2px,
+    transparent 2px 5px
+  );
+  background-size: 50% 100%;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+/* روزِ خروجِ یک رزرو — هاشور نیمه‌ی راست (صبح اشغال، بعدازظهر آزاد) */
+:global(.horizon-range-picker.horizon-range-picker--priced)
+  :global(.horizon-date-picker)
+  :global(.rmdp-day)
+  > span[data-occupied="morning"] {
+  background-image: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--color-danger) 32%, transparent) 0 2px,
+    transparent 2px 5px
+  );
+  background-size: 50% 100%;
+  background-position: right center;
+  background-repeat: no-repeat;
+}

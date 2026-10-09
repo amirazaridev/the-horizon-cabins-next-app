@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, type ComponentType } from "react";
+import { useCallback, useMemo, type ComponentType, type ReactNode } from "react";
 import { Calendar as RangeCalendar } from "react-multi-date-picker";
 import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
@@ -61,6 +61,15 @@ export type CalendarDayPrice = {
   discounted: boolean;
 };
 
+/**
+ * وضعیت اشغال یک روز — به دو نیمه تقسیم می‌شود.
+ *
+ * ⚠️ مدل نیمه‌روزی: ورود از ساعت ۱۴ و خروج تا ساعت ۱۲ است. پس روزِ **ورود**
+ * یک رزرو فقط نیمه‌ی بعدازظهرش اشغال است و روزِ **خروج** فقط نیمه‌ی صبحش؛
+ * بقیه‌ی روز آزاد است و می‌تواند سرِ یک رزرو جدید باشد.
+ */
+export type DayOccupancy = "none" | "morning" | "afternoon" | "full";
+
 type Props = {
   value: DateRange;
   /** با هر انتخاب (نصفِ بازه یا کامل) صدا زده می‌شود */
@@ -94,6 +103,14 @@ type Props = {
    * داخلشان می‌نشیند). تقویم‌های بدون قیمت هیچ تغییری نمی‌بینند.
    */
   dayPrice?: (date: Date) => CalendarDayPrice | null;
+  /**
+   * وضعیت اشغال هر روز — برای نشان دادن **هاشور کامل** (روز کاملاً اشغال) یا
+   * **هاشور نصفه** (روزِ ورود/خروجِ یک رزرو که نیمه‌اش آزاد است).
+   *
+   * ⚠️ فقط روزهای `full` غیرفعال می‌شوند؛ روزهای نیمه‌آزاد (`morning` /
+   * `afternoon`) قابل کلیک می‌مانند تا بتوانند یک سرِ بازه‌ی جدید باشند.
+   */
+  dayOccupancy?: (date: Date) => DayOccupancy;
   className?: string;
 };
 
@@ -146,6 +163,28 @@ function toJsDate(value: unknown): Date | null {
   return date instanceof Date && !Number.isNaN(date.getTime()) ? date : null;
 }
 
+/**
+ * محتوای سلول قیمت‌دار: شماره‌ی روز + نرخ شب (و نرخ پایه‌ی خط‌خورده اگر
+ * تخفیف داشته باشد).
+ *
+ * ⚠️ عمداً از `<b>` و `<s>` استفاده می‌کنیم، نه `<span>`: کتابخانه قاعده‌ی
+ * `.rmdp-day span { position:absolute; inset:3px }` را تزریق می‌کند و هر span
+ * تودرتویی را روی هم می‌اندازد. این عناصر تحت تأثیر آن سلکتور نیستند و
+ * به‌شکل flex-item داخل span بیرونی (که `display:flex; flex-direction:column`
+ * دارد) زیر هم می‌نشینند.
+ */
+function pricedDayContent(dayNumber: number, price: CalendarDayPrice): ReactNode {
+  return (
+    <>
+      <b className="hz-day-num">{dayNumber.toLocaleString("fa-IR")}</b>
+      {price.discounted && (
+        <s className="hz-day-base">{formatCompactPrice(price.basePrice)}</s>
+      )}
+      <b className="hz-day-final">{formatCompactPrice(price.finalPrice)}</b>
+    </>
+  );
+}
+
 /** یک تاریخ را به متن جلالی تبدیل می‌کند؛ null یعنی جای‌خالی */
 export function formatJalaliDate(
   date: Date | null,
@@ -172,6 +211,7 @@ export default function RangeDatePicker({
   disabledDates,
   dayTitle,
   dayPrice,
+  dayOccupancy,
   className = "",
 }: Props) {
   const today = useMemo(() => {
@@ -212,16 +252,44 @@ export default function RangeDatePicker({
    * رندر می‌شود، پس محتوای سلول قابل‌کنترل است.
    */
   const hasCustomDays =
-    disabledSet.size > 0 || Boolean(dayTitle) || Boolean(dayPrice);
+    disabledSet.size > 0 ||
+    Boolean(dayTitle) ||
+    Boolean(dayPrice) ||
+    Boolean(dayOccupancy);
 
   const mapDays = useCallback(
     ({ date }: { date: DateObject }): Record<string, unknown> => {
       const jsDate = date.toDate();
+      const occupancy = dayOccupancy?.(jsDate) ?? null;
       const isBooked = disabledSet.has(startOfDay(jsDate));
       const price = dayPrice?.(jsDate) ?? null;
       const title = dayTitle?.(jsDate) ?? null;
 
       const props: Record<string, unknown> = {};
+
+      //* کاملاً اشغال — هاشور کامل و غیرفعال.
+      if (occupancy === "full") {
+        props.disabled = true;
+        props["data-occupied"] = "full";
+        props.title = "این روز کاملاً رزرو شده است";
+        return props;
+      }
+
+      //* روزِ ورودِ یک رزرو (نیمه‌ی بعدازظهر اشغال) — هاشور نیمه‌ی چپ.
+      //* نیمه‌ی صبحش آزاد است، پس می‌تواند «تاریخ خروج» رزرو جدید باشد.
+      if (occupancy === "afternoon") {
+        props["data-occupied"] = "afternoon";
+        props.title = "نیمه‌ی صبح آزاد است — می‌تواند تاریخ خروج شما باشد";
+        return props;
+      }
+
+      //* روزِ خروجِ یک رزرو (نیمه‌ی صبح اشغال) — هاشور نیمه‌ی راست.
+      //* نیمه‌ی بعدازظهرش آزاد است، پس می‌تواند «تاریخ ورود» رزرو جدید باشد.
+      if (occupancy === "morning") {
+        props["data-occupied"] = "morning";
+        props.title = "نیمه‌ی بعدازظهر آزاد است — می‌تواند تاریخ ورود شما باشد";
+        return props;
+      }
 
       if (isBooked) {
         props.disabled = true;
@@ -236,19 +304,7 @@ export default function RangeDatePicker({
         // می‌کند و هر span تودرتویی را روی هم می‌اندازد. این عناصر تحت تأثیر
         // آن سلکتور نیستند و به‌شکل flex-item داخل span بیرونی (که
         // `display:flex; flex-direction:column` دارد) زیر هم می‌نشینند.
-        props.children = (
-          <>
-            <b className="hz-day-num">{date.day.toLocaleString("fa-IR")}</b>
-            {price.discounted && (
-              <s className="hz-day-base">
-                {formatCompactPrice(price.basePrice)}
-              </s>
-            )}
-            <b className="hz-day-final">
-              {formatCompactPrice(price.finalPrice)}
-            </b>
-          </>
-        );
+        props.children = pricedDayContent(date.day, price);
         // داخل سلول قیمت خلاصه است؛ عدد کامل به‌عنوان راهنما می‌آید.
         props.title = `${formatCurrency(price.finalPrice)} تومان`;
         return props;
@@ -258,7 +314,7 @@ export default function RangeDatePicker({
 
       return props;
     },
-    [disabledSet, dayTitle, dayPrice],
+    [disabledSet, dayTitle, dayPrice, dayOccupancy],
   );
 
   const selected = useMemo(() => {

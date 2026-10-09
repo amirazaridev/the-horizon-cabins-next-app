@@ -19,7 +19,7 @@ import styles from "./CabinDatePicker.module.css";
  * ⚠️ اینجا سه چیز از داده‌ی سرور به تقویم تزریق می‌شود:
  *   ۱) `minDate`/`maxDate` — افق رزرو از تنظیمات بک‌اند؛ روزهای بعد از سقف
  *      غیرفعال می‌شوند.
- *   ۲) `disabledDates` — روزهایی که قبلاً رزرو شده‌اند.
+ *   ۲) `dayOccupancy` — وضعیت اشغال هر روز (هاشور کامل/نصفه).
  *   ۳) `dayPrice` — نرخ شب هر روز؛ با دادنش تقویم وارد حالت «دارای نرخ»
  *      می‌شود و زیر شماره‌ی روز، قیمت (و برای روزهای دارای تخفیف، نرخ پایه‌ی
  *      خط‌خورده + نرخ نهایی) نمایش داده می‌شود.
@@ -35,7 +35,7 @@ export default function CabinDatePicker(): ReactNode {
     nights,
     isComplete,
     priceForDate,
-    disabledDates,
+    dayOccupancy,
     minDate,
     maxDate,
     settings,
@@ -92,8 +92,8 @@ export default function CabinDatePicker(): ReactNode {
           onChange={setRange}
           minDate={minDate}
           maxDate={maxDate}
-          disabledDates={disabledDates}
           dayPrice={dayPrice}
+          dayOccupancy={dayOccupancy}
           showClear
           onClear={clearRange}
           clearLabel="حذف تاریخ"
@@ -101,10 +101,12 @@ export default function CabinDatePicker(): ReactNode {
       </div>
 
       <p className="border-foreground/5 text-text-gray border-t px-5 py-3 text-xs leading-relaxed sm:px-6">
-        روزهای پیش از امروز و روزهای رزرو‌شده قابل انتخاب نیستند و رزرو تا
-        حداکثر {toFaNumber(settings.maxAdvanceBookingDays)} روز آینده ممکن است.
-        با انتخاب تاریخ ورود، تقویم منتظر تاریخ خروج می‌ماند و بعد از آن مبلغ کل
-        در کنار همین تقویم و در خلاصه‌ی رزرو محاسبه می‌شود.
+        روزهای هاشورخورده‌ی کامل رزرو شده‌اند. روزهای هاشور نصفه، روزِ ورود یا
+        خروج یک رزرو هستند (ورود ۱۴:۰۰ و خروج ۱۲:۰۰): نیمه‌ی آزادشان را
+        می‌توانید به‌عنوان یک سرِ رزرو خودتان انتخاب کنید — روزِ خروجِ رزروهای
+        دیگر می‌تواند تاریخ ورود شما و روزِ ورودشان می‌تواند تاریخ خروج شما
+        باشد. رزرو تا حداکثر {toFaNumber(settings.maxAdvanceBookingDays)} روز
+        آینده ممکن است.
       </p>
     </div>
   );

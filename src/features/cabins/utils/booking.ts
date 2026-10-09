@@ -1,4 +1,4 @@
-import type { DateRange } from "@/components/ui/RangeDatePicker";
+import type { DateRange, DayOccupancy } from "@/components/ui/RangeDatePicker";
 import type {
   BookedRange,
   CabinCalendarDay,
@@ -88,6 +88,71 @@ export function expandBookedRanges(ranges: readonly BookedRange[]): string[] {
   }
 
   return keys;
+}
+
+/* ======================= اشغال نیمه‌روزی (۱۲:۰۰ / ۱۴:۰۰) ======================= */
+
+/**
+ * وضعیت اشغال نیمه‌های هر روز — از بازه‌های رزروشده ساخته می‌شود.
+ *
+ * ⚠️ مدل نیمه‌روزی: ورود از ساعت **۱۴:۰۰** و خروج تا ساعت **۱۲:۰۰** است. پس
+ * یک رزرو `[A, B)` این‌طور اشغال می‌کند:
+ *   - روز A (ورود): فقط **بعدازظهر** ⇒ نیمه‌ی صبحش آزاد است و می‌تواند
+ *     «تاریخ خروج» یک رزرو جدید باشد.
+ *   - روزهای میانی (A+1 … B-1): تمام روز.
+ *   - روز B (خروج): فقط **صبح** ⇒ نیمه‌ی بعدازظهرش آزاد است و می‌تواند
+ *     «تاریخ ورود» یک رزرو جدید باشد.
+ *
+ * ⚠️ اگر دو رزرو پشت‌سرهم باشند (خروج یکی روی ورود دیگری)، روزِ مرز از هر دو
+ * طرف اشغال می‌شود و طبیعتاً «کامل» حساب می‌شود.
+ */
+export type OccupancyMaps = {
+  /** روزهایی که نیمه‌ی صبحشان (تا ۱۲:۰۰) اشغال است. */
+  morning: ReadonlySet<string>;
+  /** روزهایی که نیمه‌ی بعدازظهرشان (از ۱۴:۰۰) اشغال است. */
+  afternoon: ReadonlySet<string>;
+};
+
+export function buildOccupancyMaps(
+  ranges: readonly BookedRange[],
+): OccupancyMaps {
+  const morning = new Set<string>();
+  const afternoon = new Set<string>();
+
+  for (const range of ranges) {
+    const start = parseDateParam(range.startDate);
+    const end = parseDateParam(range.endDate);
+    if (!start || !end || end.getTime() <= start.getTime()) continue;
+
+    //* روز ورود — نیمه‌ی بعدازظهر اشغال (ساعت ورود ۱۴:۰۰).
+    afternoon.add(toDateKey(start));
+
+    //* روزهای میانی — تمام روز مهمان حاضر است.
+    let cursor = addOneDay(start);
+    while (cursor.getTime() < end.getTime()) {
+      const key = toDateKey(cursor);
+      morning.add(key);
+      afternoon.add(key);
+      cursor = addOneDay(cursor);
+    }
+
+    //* روز خروج — نیمه‌ی صبح اشغال (ساعت خروج ۱۲:۰۰).
+    morning.add(toDateKey(end));
+  }
+
+  return { morning, afternoon };
+}
+
+/** وضعیت اشغال یک روز مشخص: آزاد / نیمه‌صبح / نیمه‌بعدازظهر / کامل. */
+export function occupancyOf(maps: OccupancyMaps, date: Date): DayOccupancy {
+  const key = toDateKey(date);
+  const isMorning = maps.morning.has(key);
+  const isAfternoon = maps.afternoon.has(key);
+
+  if (isMorning && isAfternoon) return "full";
+  if (isMorning) return "morning";
+  if (isAfternoon) return "afternoon";
+  return "none";
 }
 
 /* ================================ قیمت اقامت ================================ */

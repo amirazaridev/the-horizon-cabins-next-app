@@ -4,6 +4,7 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import RangeDatePicker, {
   type CalendarDayPrice,
   type DateRange,
+  type DayOccupancy,
 } from "@/components/ui/RangeDatePicker";
 import { RANGE_PICKER_NARROW_QUERY } from "./range-picker-breakpoint";
 
@@ -33,6 +34,11 @@ type Props = {
   /** نرخ شب هر روز — با دادنش، قیمت داخل سلول‌های تقویم نمایش داده می‌شود. */
   dayPrice?: (date: Date) => CalendarDayPrice | null;
   /**
+   * وضعیت اشغال هر روز — هاشور کامل (کاملاً رزرو) یا نصفه (روز ورود/خروجِ
+   * یک رزرو). روزهای نیمه‌آزاد قابل کلیک می‌مانند.
+   */
+  dayOccupancy?: (date: Date) => DayOccupancy;
+  /**
    * کلاس تکمیلی روی ریشه — برای رزرو ارتفاع تقویم در مصرف‌کننده‌هایی که
    * بعد از hydration جهش چیدمان می‌گیرند (مثل صفحه‌ی جزئیات اقامتگاه).
    */
@@ -55,6 +61,7 @@ export default function DateRangePanel({
   maxDate,
   disabledDates,
   dayPrice,
+  dayOccupancy,
   className = "",
 }: Props) {
   /*
@@ -79,6 +86,7 @@ export default function DateRangePanel({
         maxDate={maxDate}
         disabledDates={disabledDates}
         dayPrice={dayPrice}
+        dayOccupancy={dayOccupancy}
       />
 
       {showClear && (

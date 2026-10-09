@@ -11,7 +11,7 @@ import {
 } from "react";
 import toast from "react-hot-toast";
 
-import type { DateRange } from "@/components/ui/RangeDatePicker";
+import type { DateRange, DayOccupancy } from "@/components/ui/RangeDatePicker";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
 import type { PublicSettings } from "@/features/settings/types/public-settings.types";
 import { smoothScrollToId } from "@/libs/utils/scroll";
@@ -23,6 +23,7 @@ import type {
 } from "../../types/cabin-booking.types";
 import { parseDateParam } from "../../utils/cabin-date";
 import {
+  buildOccupancyMaps,
   buildPriceMap,
   cheapestNight,
   countNights,
@@ -30,6 +31,7 @@ import {
   expandBookedRanges,
   isCompleteRange,
   isRangeAvailable,
+  occupancyOf,
   priceStay,
   toDateKey,
   type StayPrice,
@@ -55,7 +57,7 @@ export type BookingContextValue = {
   /** قیمت یک روز مشخص — برای رندر داخل سلول‌های تقویم */
   priceForDate: (date: Date) => CabinCalendarDay | null;
   /** روزهای اشغال‌شده — به تقویم داده می‌شود تا غیرفعال شوند */
-  disabledDates: Date[];
+  dayOccupancy: (date: Date) => DayOccupancy;
   /** اولین روز قابل‌انتخاب (امروز به وقت مقصد) */
   minDate: Date;
   /** آخرین روز قابل‌انتخاب (سقف افق رزرو) */
@@ -218,9 +220,21 @@ export default function BookingProvider({
     [minDate, settings.maxAdvanceBookingDays],
   );
 
-  const disabledDates = useMemo(
-    () => [...bookedSet].map(parseDateParam).filter((d): d is Date => d !== null),
-    [bookedSet],
+  /**
+   * وضعیت اشغال نیمه‌های هر روز (ورود ۱۴:۰۰ / خروج ۱۲:۰۰).
+   *
+   * ⚠️ `bookedSet` (شب‌های اشغال) برای اعتبارسنجی «آیا بازه آزاد است» می‌ماند،
+   * ولی برای **نمایش** از نقشه‌ی نیمه‌روزی استفاده می‌کنیم تا روزِ ورود/خروجِ
+   * یک رزرو هاشور نصفه بگیرد و همچنان قابل انتخاب بماند.
+   */
+  const occupancyMaps = useMemo(
+    () => buildOccupancyMaps(bookedRanges),
+    [bookedRanges],
+  );
+
+  const dayOccupancy = useCallback(
+    (date: Date): DayOccupancy => occupancyOf(occupancyMaps, date),
+    [occupancyMaps],
   );
 
   /**
@@ -232,6 +246,18 @@ export default function BookingProvider({
 
   const setRange = useCallback(
     (next: DateRange) => {
+      //* روزِ ورود باید نیمه‌ی بعدازظهرش آزاد باشد. روزِ شروعِ یک رزرو دیگر
+      //* فقط به‌عنوان «تاریخ خروج» معنا دارد (نیمه‌ی صبحش آزاد است) و نمی‌تواند
+      //* تاریخ ورود باشد، چون ساعت ورود ۱۴:۰۰ است.
+      if (next.from && occupancyMaps.afternoon.has(toDateKey(next.from))) {
+        toast.error(
+          "این روز به‌عنوان تاریخ ورود در دسترس نیست؛ می‌توانید آن را به‌عنوان تاریخ خروج انتخاب کنید.",
+        );
+        completedRangeRef.current = null;
+        persist(EMPTY_DATE_RANGE, guests);
+        return;
+      }
+
       if (!next.from || !next.to) {
         completedRangeRef.current = null;
         persist(next, guests);
@@ -279,6 +305,7 @@ export default function BookingProvider({
     [
       bookedSet,
       guests,
+      occupancyMaps,
       persist,
       settings.minBookingLength,
       settings.maxBookingLength,
@@ -335,7 +362,7 @@ export default function BookingProvider({
       price,
       startingNight,
       priceForDate,
-      disabledDates,
+      dayOccupancy,
       minDate,
       maxDate,
       setRange,
@@ -360,7 +387,7 @@ export default function BookingProvider({
       price,
       startingNight,
       priceForDate,
-      disabledDates,
+      dayOccupancy,
       minDate,
       maxDate,
       setRange,
