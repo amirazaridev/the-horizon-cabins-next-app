@@ -5,7 +5,6 @@ import { startOfDay } from "date-fns";
 
 import RangeGauge, { type GaugeRange } from "@/components/ui/RangeGauge";
 import {
-  clampToToday,
   formatDateKey,
   formatJalaliYear,
   getYearGaugeDomain,
@@ -54,13 +53,12 @@ export default function YearRangeSlider({
 
   function handleCommit({ start, end }: GaugeRange): void {
     const range = yearRangeAtIndices(domain.start, start, end);
-    const safeTo = clampToToday(range.to, today);
 
     if (
       formatDateKey(range.from) !== formatDateKey(from) ||
-      formatDateKey(safeTo) !== formatDateKey(to)
+      formatDateKey(range.to) !== formatDateKey(to)
     ) {
-      onChange(range.from, safeTo);
+      onChange(range.from, range.to);
     }
   }
 

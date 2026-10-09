@@ -1,8 +1,15 @@
 "use client";
 
 import type { TransitionStartFunction } from "react";
-import { useEffect, useState } from "react";
-import { CalendarDays, MapPin, RotateCcw, Tag } from "lucide-react";
+import {
+  Building2,
+  CalendarDays,
+  MapPin,
+  RotateCcw,
+  Scale,
+  Tag,
+  Wallet,
+} from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import FilterCard, {
@@ -14,13 +21,20 @@ import MultiOptionList, {
 import CityPanel, {
   type CityPanelOption,
 } from "@/components/ui/Filter/panels/CityPanel";
+import SingleOptionPanel from "@/components/ui/Filter/panels/SingleOptionPanel";
 import DateFilterPanel from "./DateFilterPanel";
 import {
+  PARAM_CABIN,
   PARAM_CITY,
+  PARAM_COMPARE,
+  PARAM_PAYMENT,
   PARAM_STATUS,
+  parseCompareParam,
   parseMultiParam,
+  parseNumberListParam,
   serializeMultiParam,
-} from "../../hooks/useDashboardFilters";
+  serializeNumberListParam,
+} from "../../constants/dashboard-params";
 import {
   PARAM_DATE_TAB,
   PARAM_RANGE,
@@ -31,55 +45,86 @@ import {
   type DateFilterTab,
   type DateFilterValue,
 } from "../../lib/date-range";
-import type { City } from "@/features/cabins/types/city.types";
+import {
+  BOOKING_STATUS_LABELS,
+  COMPARE_MODE_LABELS,
+  PAYMENT_STATUS_LABELS,
+  type BookingStatus,
+  type CompareMode,
+  type PaymentStatus,
+} from "../../types/dashboard.types";
+import type {
+  DashboardCabin,
+  DashboardCity,
+} from "../../types/dashboard.types";
 
-const STATUS_OPTIONS: MultiOptionListOption[] = [
-  { value: "confirmed", label: "تایید شده" },
-  { value: "checked-out", label: "خروج کرده" },
-  { value: "unconfirmed", label: "در انتظار" },
-];
+/* ==========================================================================
+   گزینه‌های فیلتر — همه از enumهای دامنه ساخته می‌شوند (تک‌منبع)
+   ========================================================================== */
 
-function statusLabels(values: string[]): string | undefined {
+const STATUS_OPTIONS: MultiOptionListOption[] = (
+  Object.keys(BOOKING_STATUS_LABELS) as BookingStatus[]
+).map((value) => ({ value, label: BOOKING_STATUS_LABELS[value] }));
+
+const PAYMENT_OPTIONS: MultiOptionListOption[] = (
+  Object.keys(PAYMENT_STATUS_LABELS) as PaymentStatus[]
+).map((value) => ({ value, label: PAYMENT_STATUS_LABELS[value] }));
+
+const COMPARE_OPTIONS = (
+  Object.keys(COMPARE_MODE_LABELS) as CompareMode[]
+).map((value) => ({ value, label: COMPARE_MODE_LABELS[value] }));
+
+/** برچسبِ خوانا برای یک آرایه‌ی enum بر اساس نگاشت فارسی. */
+function enumLabels(
+  values: readonly string[],
+  options: readonly MultiOptionListOption[],
+): string | undefined {
   if (values.length === 0) return undefined;
   return values
-    .map((v) => STATUS_OPTIONS.find((o) => o.value === v)?.label ?? v)
+    .map((v) => options.find((o) => o.value === v)?.label ?? v)
     .join("، ");
 }
 
 interface FilterBarProps {
   startTransition: TransitionStartFunction;
-  cities: City[];
+  /** شهرها — از repository می‌آید، نه mock مستقیم */
+  cities: DashboardCity[];
+  /** اقامتگاه‌ها — برای فیلتر اقامتگاه */
+  cabins: DashboardCabin[];
 }
 
-export default function FilterBar({ startTransition, cities }: FilterBarProps) {
+/**
+ * نوار فیلتر داشبورد.
+ *
+ * ⭐ همه‌ی حالت در **URL** است؛ این کامپوننت هیچ draft محلی ندارد و مقدار
+ * هر فیلتر را مستقیم از `searchParams` می‌خواند. این کار:
+ * - باگ «گم‌شدن کلیک پشت‌سرهم» را حذف می‌کند (قبلاً draft در effect همگام
+ *   می‌شد و خطای `set-state-in-effect` می‌داد)،
+ * - لینک را قابل اشتراک نگه می‌دارد،
+ * - back/forward مرورگر را درست می‌کند.
+ */
+export default function FilterBar({
+  startTransition,
+  cities,
+  cabins,
+}: FilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  /* ---------------- خواندن مقادیر فعلی از URL ---------------- */
+
   const dateRange = resolveDashboardDateRange(searchParams);
-  const cityParam = searchParams.get(PARAM_CITY);
-  const statusParam = searchParams.get(PARAM_STATUS);
   const dateTabParam = searchParams.get(PARAM_DATE_TAB);
   const dateTab: DateFilterTab = isDateFilterTab(dateTabParam)
     ? dateTabParam
     : "year";
 
-  // پیش‌نگهداری محلی برای انتخاب‌های چندگانه تا UI فوراً و بدون منتظر ماندنِ
-  // navigation پاسخ دهد و کلیک‌های پشت‌سرهم از بین نروند.
-  const [cityDraft, setCityDraft] = useState<string[]>(() =>
-    parseMultiParam(cityParam),
-  );
-  const [statusDraft, setStatusDraft] = useState<string[]>(() =>
-    parseMultiParam(statusParam),
-  );
-
-  useEffect(() => {
-    setCityDraft(parseMultiParam(cityParam));
-  }, [cityParam]);
-
-  useEffect(() => {
-    setStatusDraft(parseMultiParam(statusParam));
-  }, [statusParam]);
+  const cityIds = parseNumberListParam(searchParams.get(PARAM_CITY));
+  const cabinIds = parseNumberListParam(searchParams.get(PARAM_CABIN));
+  const statuses = parseMultiParam(searchParams.get(PARAM_STATUS));
+  const paymentStatuses = parseMultiParam(searchParams.get(PARAM_PAYMENT));
+  const compare = parseCompareParam(searchParams.get(PARAM_COMPARE));
 
   const dateValue: DateFilterValue = {
     from: formatDateKey(dateRange.from),
@@ -87,15 +132,24 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
     tab: dateTab,
   };
 
-  const cityOptions: CityPanelOption[] = cities.map((c) => ({
-    value: c.name,
-    label: c.name,
+  /* ---------------- ساخت گزینه‌های پنل ---------------- */
+
+  const cityOptions: CityPanelOption[] = cities.map((city) => ({
+    value: String(city.id),
+    label: city.name,
   }));
+
+  const cabinOptions: CityPanelOption[] = cabins.map((cabin) => ({
+    value: String(cabin.id),
+    label: cabin.name,
+  }));
+
+  /* ---------------- نوشتن در URL ---------------- */
 
   function updateParams(updates: Record<string, string | null>): void {
     const params = new URLSearchParams(searchParams);
     Object.entries(updates).forEach(([key, value]) => {
-      if (value === null) params.delete(key);
+      if (value === null || value === "") params.delete(key);
       else params.set(key, value);
     });
     startTransition(() => {
@@ -116,22 +170,43 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
     }
 
     if (id === "city") {
-      const next = (value as string[]) ?? [];
-      setCityDraft(next);
       updateParams({
-        [PARAM_CITY]: serializeMultiParam(next),
+        [PARAM_CITY]: serializeNumberListParam((value as number[]) ?? []),
+      });
+      return;
+    }
+
+    if (id === "cabin") {
+      updateParams({
+        [PARAM_CABIN]: serializeNumberListParam((value as number[]) ?? []),
       });
       return;
     }
 
     if (id === "status") {
-      const next = (value as string[]) ?? [];
-      setStatusDraft(next);
       updateParams({
-        [PARAM_STATUS]: serializeMultiParam(next),
+        [PARAM_STATUS]: serializeMultiParam((value as string[]) ?? []),
+      });
+      return;
+    }
+
+    if (id === "paymentStatus") {
+      updateParams({
+        [PARAM_PAYMENT]: serializeMultiParam((value as string[]) ?? []),
+      });
+      return;
+    }
+
+    if (id === "compare") {
+      const next = (value as string | null) ?? null;
+      // `prev-period` پیش‌فرض است ⇒ از URL حذف می‌شود تا لینک تمیز بماند
+      updateParams({
+        [PARAM_COMPARE]: next === "prev-period" ? null : next,
       });
     }
   }
+
+  /* ---------------- تعریف آیتم‌های فیلتر ---------------- */
 
   const items: FilterCardItem[] = [
     {
@@ -158,9 +233,11 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
       label: "شهر",
       icon: <MapPin className="size-4" />,
       formatLabel: (value) => {
-        const list = (value as string[]) ?? [];
+        const list = (value as number[]) ?? [];
         if (list.length === 0) return undefined;
-        if (list.length === 1) return list[0];
+        if (list.length === 1) {
+          return cities.find((c) => c.id === list[0])?.name ?? "۱ شهر";
+        }
         return `${list.length} شهر`;
       },
       panel: {
@@ -170,9 +247,38 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
         render: ({ value, setValue }) => (
           <CityPanel
             multiple
+            searchable
             cities={cityOptions}
-            value={(value as string[]) ?? []}
-            onChange={(next) => setValue(next)}
+            value={((value as number[]) ?? []).map(String)}
+            onChange={(next) => setValue(next.map(Number))}
+          />
+        ),
+      },
+    },
+    {
+      id: "cabin",
+      label: "اقامتگاه",
+      icon: <Building2 className="size-4" />,
+      formatLabel: (value) => {
+        const list = (value as number[]) ?? [];
+        if (list.length === 0) return undefined;
+        if (list.length === 1) {
+          return cabins.find((c) => c.id === list[0])?.name ?? "۱ اقامتگاه";
+        }
+        return `${list.length} اقامتگاه`;
+      },
+      panel: {
+        title: "انتخاب اقامتگاه",
+        size: "md",
+        closeOnSelect: false,
+        render: ({ value, setValue }) => (
+          <CityPanel
+            multiple
+            searchable
+            defaultIcon={<Building2 className="text-primary-400 size-4 shrink-0" />}
+            cities={cabinOptions}
+            value={((value as number[]) ?? []).map(String)}
+            onChange={(next) => setValue(next.map(Number))}
           />
         ),
       },
@@ -181,7 +287,8 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
       id: "status",
       label: "وضعیت",
       icon: <Tag className="size-4" />,
-      formatLabel: (value) => statusLabels((value as string[]) ?? []),
+      formatLabel: (value) =>
+        enumLabels((value as string[]) ?? [], STATUS_OPTIONS),
       panel: {
         title: "وضعیت رزرو",
         size: "md",
@@ -195,6 +302,44 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
         ),
       },
     },
+    {
+      id: "paymentStatus",
+      label: "وضعیت پرداخت",
+      icon: <Wallet className="size-4" />,
+      formatLabel: (value) =>
+        enumLabels((value as string[]) ?? [], PAYMENT_OPTIONS),
+      panel: {
+        title: "وضعیت پرداخت",
+        size: "md",
+        closeOnSelect: false,
+        render: ({ value, setValue }) => (
+          <MultiOptionList
+            options={PAYMENT_OPTIONS}
+            value={(value as string[]) ?? []}
+            onChange={(next) => setValue(next)}
+          />
+        ),
+      },
+    },
+    {
+      id: "compare",
+      label: "مقایسه",
+      icon: <Scale className="size-4" />,
+      formatLabel: (value) =>
+        value ? COMPARE_MODE_LABELS[value as CompareMode] : undefined,
+      panel: {
+        title: "مبناى مقایسه",
+        size: "md",
+        closeOnSelect: true,
+        render: ({ value, setValue }) => (
+          <SingleOptionPanel
+            options={COMPARE_OPTIONS}
+            value={(value as string | null) ?? null}
+            onChange={(next) => setValue(next)}
+          />
+        ),
+      },
+    },
   ];
 
   return (
@@ -203,8 +348,11 @@ export default function FilterBar({ startTransition, cities }: FilterBarProps) {
         items={items}
         value={{
           date: dateValue,
-          city: cityDraft,
-          status: statusDraft,
+          city: cityIds,
+          cabin: cabinIds,
+          status: statuses,
+          paymentStatus: paymentStatuses,
+          compare,
         }}
         onValueChange={handleValueChange}
         onClearFilters={() =>

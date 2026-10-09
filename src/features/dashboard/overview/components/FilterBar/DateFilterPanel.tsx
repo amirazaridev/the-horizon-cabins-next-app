@@ -60,8 +60,8 @@ export default function DateFilterPanel({
     });
   }
 
-  function handleQuickPreset(days: number): void {
-    const range = getPresetDateRangeFromDays(days);
+  function handleQuickPreset(days: number, forward = false): void {
+    const range = getPresetDateRangeFromDays(days, undefined, forward);
     // اعمال خودکار با دقت روز + بستن پنل (onApply در FilterBar پنل را می‌بندد)
     onApply({
       from: formatDateKey(range.from),
@@ -78,12 +78,12 @@ export default function DateFilterPanel({
           <Zap className="size-3.5" />
           دسترسی سریع
         </p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
           {QUICK_RANGE_PRESETS.map((preset) => (
             <button
               key={preset.value}
               type="button"
-              onClick={() => handleQuickPreset(preset.days)}
+              onClick={() => handleQuickPreset(preset.days, preset.forward)}
               className="border-border bg-surface text-text hover:border-primary-400 hover:bg-primary-400/10 hover:text-text rounded-xl border px-2 py-2 text-xs font-medium transition-colors active:scale-95"
             >
               {preset.label}

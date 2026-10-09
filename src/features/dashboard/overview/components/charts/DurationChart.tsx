@@ -1,170 +1,159 @@
 "use client";
+
+import { useMemo } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useTheme } from "@/contexts/ThemeContext";
+
 import CardDashContainer from "@/components/ui/CardDashContainer";
-
-interface DurationDatum {
-  duration: string;
-  value: number;
-  color: string;
-}
-
-interface Stay {
-  numNights: number;
-}
+import { WidgetEmpty } from "../WidgetStates";
+import { durationDistribution } from "../../lib/metrics/analytics";
+import { formatNights, formatPercentValue } from "../../lib/metrics/format";
+import type { DateRange } from "../../lib/metrics/range";
+import {
+  CHART_TOOLTIP_STYLE,
+  DURATION_COLORS_DARK,
+  DURATION_COLORS_LIGHT,
+} from "../../config/chart-theme";
+import type { DashboardBooking } from "../../types/dashboard.types";
 
 interface DurationChartProps {
-  confirmedStays?: Stay[];
+  bookings: DashboardBooking[];
+  range: DateRange;
 }
 
-const startDataLight: DurationDatum[] = [
-  { duration: "۱ شب", value: 0, color: "#ef4444" },
-  { duration: "۲ شب", value: 0, color: "#f97316" },
-  { duration: "۳ شب", value: 0, color: "#eab308" },
-  { duration: "۴ تا ۵ شب", value: 0, color: "#84cc16" },
-  { duration: "۶ تا ۷ شب", value: 0, color: "#22c55e" },
-  { duration: "۸ تا ۱۴ شب", value: 0, color: "#14b8a6" },
-  { duration: "۱۵ تا ۲۱ شب", value: 0, color: "#3b82f6" },
-  { duration: "۲۱+ شب", value: 0, color: "#a855f7" },
-];
-
-const startDataDark: DurationDatum[] = [
-  { duration: "۱ شب", value: 0, color: "#b91c1c" },
-  { duration: "۲ شب", value: 0, color: "#c2410c" },
-  { duration: "۳ شب", value: 0, color: "#a16207" },
-  { duration: "۴ تا ۵ شب", value: 0, color: "#4d7c0f" },
-  { duration: "۶ تا ۷ شب", value: 0, color: "#15803d" },
-  { duration: "۸ تا ۱۴ شب", value: 0, color: "#0f766e" },
-  { duration: "۱۵ تا ۲۱ شب", value: 0, color: "#1d4ed8" },
-  { duration: "۲۱+ شب", value: 0, color: "#7e22ce" },
-];
-
-function incArrayValue(arr: DurationDatum[], field: string): DurationDatum[] {
-  return arr.map((obj) =>
-    obj.duration === field ? { ...obj, value: obj.value + 1 } : obj,
-  );
-}
-
-function prepareData(
-  startData: DurationDatum[],
-  stays: Stay[],
-): DurationDatum[] {
-  const data = stays
-    .reduce((arr, cur) => {
-      const num = cur.numNights;
-      if (num === 1) return incArrayValue(arr, "۱ شب");
-      if (num === 2) return incArrayValue(arr, "۲ شب");
-      if (num === 3) return incArrayValue(arr, "۳ شب");
-      if ([4, 5].includes(num)) return incArrayValue(arr, "۴ تا ۵ شب");
-      if ([6, 7].includes(num)) return incArrayValue(arr, "۶ تا ۷ شب");
-      if (num >= 8 && num <= 14) return incArrayValue(arr, "۸ تا ۱۴ شب");
-      if (num >= 15 && num <= 21) return incArrayValue(arr, "۱۵ تا ۲۱ شب");
-      if (num > 21) return incArrayValue(arr, "۲۱+ شب");
-      return arr;
-    }, startData)
-    .filter((obj) => obj.value > 0);
-
-  return data;
-}
-
-function DurationChart({ confirmedStays = [] }: DurationChartProps) {
+/**
+ * خلاصه‌ی توزیع مدت اقامت.
+ *
+ * ⭐ باکت‌ها **تک‌منبع**اند: از `durationDistribution()` می‌آیند، نه
+ * منطق تکراری داخل کامپوننت. پس برچسب‌ها و مرزهای سطل‌ها همه‌جا یکی است.
+ */
+export default function DurationChart({ bookings, range }: DurationChartProps) {
   const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const isDark = theme === "dark";
 
-  const data = prepareData(
-    isDarkMode ? startDataDark : startDataLight,
-    confirmedStays,
+  const palette = isDark ? DURATION_COLORS_DARK : DURATION_COLORS_LIGHT;
+
+  const buckets = useMemo(
+    () => durationDistribution(bookings, range),
+    [bookings, range],
   );
 
-  const total = confirmedStays.length || 1;
+  const data = useMemo(
+    () =>
+      buckets
+        .map((bucket, index) => ({
+          duration: bucket.label,
+          value: bucket.count,
+          percent: bucket.share === null ? 0 : Math.round(bucket.share * 100),
+          color: palette[index % palette.length],
+        }))
+        .filter((item) => item.value > 0),
+    [buckets, palette],
+  );
 
-  const translatedData = data.map((item) => ({
-    ...item,
-    percent: `${Math.round((item.value / total) * 100)}`,
-  }));
+  const totalStays = useMemo(
+    () => buckets.reduce((sum, bucket) => sum + bucket.count, 0),
+    [buckets],
+  );
 
-  const averageNights = confirmedStays.length
-    ? confirmedStays.reduce((sum, s) => sum + s.numNights, 0) /
-      confirmedStays.length
-    : 0;
-
-  const formattedAverage = averageNights.toLocaleString("fa-IR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  const averageNights = useMemo(
+    () =>
+      totalStays === 0
+        ? 0
+        : buckets.reduce((sum, bucket) => {
+            // نقطه‌ی میانی هر سطل به‌عنوان نماینده (مثل قبل)
+            const mid =
+              bucket.max === null ? bucket.min : (bucket.min + bucket.max) / 2;
+            return sum + mid * bucket.count;
+          }, 0) / totalStays,
+    [buckets, totalStays],
+  );
 
   return (
-    <CardDashContainer className="flex max-h-110 w-full flex-col gap-y-4 p-5">
-      {/* Header */}
+    <CardDashContainer className="flex w-full flex-col gap-y-4 p-5">
       <div className="font-semibold">
-        <h3>خلاصه مدت اقامت</h3>
+        <h3 className="text-text">خلاصه مدت اقامت</h3>
       </div>
 
-      <div className="relative">
-        <ResponsiveContainer width="100%" height={220}>
-          <PieChart>
-            <Pie
-              data={translatedData}
-              nameKey="duration"
-              dataKey="value"
-              cx="50%"
-              cy="50%"
-              innerRadius={78}
-              outerRadius={100}
-              startAngle={90}
-              endAngle={-270}
-              paddingAngle={4}
-              cornerRadius={8}
-              stroke="none"
-            >
-              {translatedData.map((el) => (
-                <Cell fill={el.color} key={el.duration} />
-              ))}
-            </Pie>
-            <Tooltip
-              wrapperStyle={{ zIndex: 50 }}
-              formatter={(value, name, props) => [
-                `${props.payload.percent}%`,
-                name,
-              ]}
-              contentStyle={{
-                borderRadius: 8,
-                border: "1px solid var(--color-background-2)",
-                background: "var(--color-background)",
-              }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+      <p className="sr-only">
+        {data.length === 0
+          ? "اقامتی برای بازهٔ انتخابی ثبت نشده است."
+          : `میانگین مدت اقامت ${formatNights(averageNights, 1)} است. توزیع: ${data
+              .map((item) => `${item.duration} ${formatPercentValue(item.percent)}`)
+              .join("، ")}.`}
+      </p>
 
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-text text-2xl font-bold">
-            {formattedAverage}
-          </span>
-          <span className="text-text-muted text-xs">میانگین شب</span>
-        </div>
-      </div>
+      {data.length === 0 ? (
+        <WidgetEmpty
+          label="اقامتی برای بازهٔ انتخابی ثبت نشده"
+          description="با تغییر بازه یا فیلترها، توزیع مدت اقامت نمایش داده می‌شود."
+          className="h-[280px]"
+        />
+      ) : (
+        <>
+          <div className="relative" dir="ltr" aria-hidden="true">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie
+                  data={data}
+                  nameKey="duration"
+                  dataKey="value"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={78}
+                  outerRadius={100}
+                  startAngle={90}
+                  endAngle={-270}
+                  paddingAngle={4}
+                  cornerRadius={8}
+                  stroke="none"
+                >
+                  {data.map((item) => (
+                    <Cell fill={item.color} key={item.duration} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  wrapperStyle={{ zIndex: 50 }}
+                  contentStyle={CHART_TOOLTIP_STYLE}
+                  formatter={(value, name, props) => [
+                    `${props.payload.percent.toLocaleString(
+                      "fa-IR",
+                    )}٪ (${Number(value).toLocaleString("fa-IR")})`,
+                    name,
+                  ]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
 
-      <div className="flex flex-col gap-y-3">
-        {translatedData.map((item) => (
-          <div
-            key={item.duration}
-            className="flex items-center justify-between"
-          >
-            <div className="flex items-center gap-2">
-              <span
-                className="size-2.5 shrink-0 rounded-full"
-                style={{ backgroundColor: item.color }}
-              />
-              <span className="text-text text-sm">{item.duration}</span>
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-text text-2xl font-bold tabular-nums">
+                {formatNights(averageNights, 1)}
+              </span>
+              <span className="text-text-gray text-xs">میانگین اقامت</span>
             </div>
-            <span className="text-text text-sm font-semibold">
-              {item.percent}%
-            </span>
           </div>
-        ))}
-      </div>
+
+          <div className="flex flex-col gap-y-3">
+            {data.map((item) => (
+              <div
+                key={item.duration}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span className="text-text text-sm">{item.duration}</span>
+                </div>
+                <span className="text-text text-sm font-semibold tabular-nums">
+                  {formatPercentValue(item.percent)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </CardDashContainer>
   );
 }
-
-export default DurationChart;

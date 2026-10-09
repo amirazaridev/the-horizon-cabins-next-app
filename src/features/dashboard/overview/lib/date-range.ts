@@ -20,7 +20,7 @@ import {
 } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
 
-import { PARAM_FROM, PARAM_TO } from "../data/mock-data";
+import { PARAM_FROM, PARAM_TO } from "../constants/dashboard-params";
 
 export const PARAM_RANGE = "range";
 export const PARAM_DATE_TAB = "dateTab";
@@ -88,6 +88,14 @@ export function formatJalaliFull(date: Date): string {
   return formatJalali(date, "d MMMM yyyy", { locale: faIR });
 }
 
+/**
+ * ساعت و دقیقه با اعداد فارسی — برای نشانگر «آخرین به‌روزرسانی».
+ * ⚠️ ساعت ۲۴ساعته است تا در RTL با «ق.ظ/ب.ظ» قاطی نشود.
+ */
+export function formatJalaliTime(date: Date): string {
+  return formatJalali(date, "HH:mm", { locale: faIR });
+}
+
 export function formatJalaliMonthYear(date: Date): string {
   return formatJalali(date, "MMMM yyyy", { locale: faIR });
 }
@@ -98,6 +106,24 @@ export function formatJalaliMonthShort(date: Date): string {
 
 export function formatJalaliYear(date: Date): string {
   return formatJalali(date, "yyyy", { locale: faIR });
+}
+
+/**
+ * برچسب باکت سری‌های زمانی — بسته به سطح تجمیع.
+ *
+ * - `daily`   → «۱۲ مهر» (روز + ماه)
+ * - `weekly`  → «۱۲ مهر» (ابتدای هفته)
+ * - `monthly` → «مهر ۱۴۰۵» (ماه + سال)
+ *
+ * ⚠️ ورودی `date` همان `date` هر `RevenuePoint`/`OccupancyAdrPoint` است
+ * (ابتدای باکت) — پس هیچ تبدیل اضافه‌ای لازم نیست.
+ */
+export function formatBucketLabel(
+  date: Date,
+  granularity: "daily" | "weekly" | "monthly",
+): string {
+  if (granularity === "monthly") return formatJalaliMonthYear(date);
+  return formatJalaliDayMonth(date);
 }
 
 export function getJalaliYear(date: Date): number {
@@ -168,6 +194,15 @@ function findMatchingPreset(
   return null;
 }
 
+/**
+ * بازه‌ی تاریخ داشبورد را از URL می‌خواند.
+ *
+ * ⭐ از فاز دوم، **بازه می‌تواند به آینده کشیده شود** (برای ویجت‌های
+ * Forward/Pace و سناریوهای «رزروهای پیش‌رو»). بنابراین دیگر به «امروز»
+ * کلمپ نمی‌شود؛ فقط ترتیب `from <= to` تضمین می‌شود.
+ *
+ * اگر پارامترها نامعتبر باشند، به preset پیش‌فرض (`last-30-days`) برمی‌گردد.
+ */
 export function resolveDashboardDateRange(
   searchParams: Pick<URLSearchParams, "get">,
 ): ResolvedDateRange {
@@ -177,15 +212,11 @@ export function resolveDashboardDateRange(
   const toParam = parseDateParam(searchParams.get(PARAM_TO));
 
   if (fromParam && toParam && fromParam <= toParam) {
-    // امنیت: اگر تاریخ آینده در URL باشد، به امروز clamp شود
-    const clampedFrom = clampToToday(fromParam, today);
-    const clampedTo = clampToToday(toParam, today);
-    const safeFrom = clampedFrom <= clampedTo ? clampedFrom : clampedTo;
-    const matchingPreset = findMatchingPreset(safeFrom, clampedTo, today);
+    const matchingPreset = findMatchingPreset(fromParam, toParam, today);
 
     return {
-      from: safeFrom,
-      to: clampedTo,
+      from: fromParam,
+      to: toParam,
       preset: rangeParam === "custom" ? "custom" : (matchingPreset ?? "custom"),
     };
   }
@@ -282,23 +313,38 @@ export interface DateFilterValue {
    ================================================================== */
 
 export type QuickRangePreset =
-  "last-7" | "last-month" | "last-6months" | "last-year";
+  | "last-7"
+  | "last-month"
+  | "last-6months"
+  | "last-year"
+  | "next-30";
 
 export const QUICK_RANGE_PRESETS: readonly {
   value: QuickRangePreset;
   label: string;
   days: number;
+  /** اگر true باشد، بازه از امروز به سمت آینده ساخته می‌شود */
+  forward?: boolean;
 }[] = [
   { value: "last-7", label: "۷ روز اخیر", days: 7 },
   { value: "last-month", label: "۱ ماه اخیر", days: 30 },
   { value: "last-6months", label: "۶ ماه اخیر", days: 180 },
   { value: "last-year", label: "۱ سال اخیر", days: 365 },
+  { value: "next-30", label: "۳۰ روز آینده", days: 30, forward: true },
 ];
 
 export function getPresetDateRangeFromDays(
   days: number,
   today: Date = getToday(),
+  forward = false,
 ): DateRange {
+  if (forward) {
+    return {
+      from: today,
+      to: addDays(today, days - 1),
+    };
+  }
+
   return {
     from: subDays(today, days - 1),
     to: today,
@@ -306,10 +352,16 @@ export function getPresetDateRangeFromDays(
 }
 
 /* ==================================================================
-   محدود کردن تاریخ‌ها به امروز (غیرفعال کردن آینده)
+   محدود کردن تاریخ‌ها به امروز
    ================================================================== */
 
-/** اگر تاریخ بعد از امروز باشد، امروز را برمی‌گرداند (امروز آزاد است) */
+/**
+ * اگر تاریخ بعد از امروز باشد، امروز را برمی‌گرداند.
+ *
+ * ⚠️ از فاز دوم، داشبورد **بازه را به آینده باز می‌گذارد**، پس این تابع
+ * دیگر در مسیر فیلتر تاریخ استفاده نمی‌شود. فقط برای سازگاری با کدهای
+ * قدیمی نگه داشته شده (مثل presetهای سالانه).
+ */
 export function clampToToday(date: Date, today: Date = getToday()): Date {
   const d = toDateOnly(date);
   const t = toDateOnly(today);
@@ -338,6 +390,8 @@ export interface IndexDomain {
 
 const MONTH_WINDOW = 12;
 const YEAR_WINDOW = 5;
+/** تعداد سال‌های آینده‌ی قابل‌نمایش در گژی سال (فضای کشیدن به جلو) */
+const FUTURE_YEAR_MARGIN = 1;
 
 export function getMonthGaugeDomain(
   today: Date,
@@ -354,6 +408,13 @@ export function getMonthGaugeDomain(
   return { start, count };
 }
 
+/**
+ * دامنه‌ی گژی سال.
+ *
+ * ⭐ از فاز دوم یک سال **بعد از** پایان انتخاب‌شده هم به دامنه اضافه می‌شود
+ * (`FUTURE_YEAR_MARGIN`) تا دستگیره‌ی پایان فضای کشیده‌شدن به آینده داشته
+ * باشد و کاربر برای انتخاب سال پیش‌رو گیر نکند.
+ */
 export function getYearGaugeDomain(
   today: Date,
   selectedFrom: Date,
@@ -364,7 +425,8 @@ export function getYearGaugeDomain(
   const start = fromYear < defaultStart ? fromYear : defaultStart;
 
   const endRef = selectedTo > today ? selectedTo : today;
-  const count = differenceInCalendarYears(startOfYear(endRef), start) + 1;
+  const endYear = startOfYear(addYears(endRef, FUTURE_YEAR_MARGIN));
+  const count = differenceInCalendarYears(endYear, start) + 1;
 
   return { start, count };
 }

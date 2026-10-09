@@ -8,7 +8,6 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import { startOfDay } from "date-fns";
 
 import {
-  clampToToday,
   formatDateKey,
   formatJalaliDayMonth,
   formatJalaliFull,
@@ -40,31 +39,29 @@ function toJsDate(value: unknown): Date | null {
   return date instanceof Date && !Number.isNaN(date.getTime()) ? date : null;
 }
 
+/**
+ * انتخاب بازه‌ی «روز» برای فیلتر داشبورد.
+ *
+ * ⭐ از فاز دوم **آینده هم قابل انتخاب است** (بدون سقف بالا)، چون داشبورد
+ * علاوه بر گذشته، رزروهای پیش‌رو و Pace را هم نشان می‌دهد. فقط این قید
+ * می‌ماند که «پایان» نباید قبل از «شروع» بیفتد.
+ */
 export default function DayRangePicker({
   from,
   to,
   onChange,
 }: DayRangePickerProps) {
-  const today = useMemo(() => startOfDay(new Date()), []);
-
-  // هر دو تقویم: آینده disable، امروز آزاد
-  const maxDate = useMemo(() => toDateObject(today), [today]);
-
   const fromValue = useMemo(() => toDateObject(from), [from]);
   const toValue = useMemo(() => toDateObject(to), [to]);
 
-  // شروع حداکثر تا پایان (و امروز)، پایان حداقل از شروع
-  const fromMax = useMemo(
-    () => toDateObject(clampToToday(to, today)),
-    [to, today],
-  );
+  // پایان هیچ‌وقت قبل از شروع نمی‌نشیند
   const toMin = useMemo(() => toDateObject(from), [from]);
 
   function handleStartChange(next: SingleValue): void {
     const picked = toJsDate(next);
     if (!picked) return;
 
-    const normalized = startOfDay(clampToToday(picked, today));
+    const normalized = startOfDay(picked);
     // اگر شروع بعد از پایان شد، پایان را هم جلو ببر
     const safeTo = normalized > to ? normalized : to;
 
@@ -80,7 +77,7 @@ export default function DayRangePicker({
     const picked = toJsDate(next);
     if (!picked) return;
 
-    const normalized = startOfDay(clampToToday(picked, today));
+    const normalized = startOfDay(picked);
     // پایان نباید قبل از شروع باشد
     const safeEnd = normalized < from ? from : normalized;
 
@@ -117,7 +114,6 @@ export default function DayRangePicker({
             onChange={handleStartChange}
             calendar={persian}
             locale={persian_fa}
-            maxDate={fromMax}
             format="YYYY/MM/DD"
             calendarPosition="bottom-center"
             className="horizon-date-picker"
@@ -136,7 +132,6 @@ export default function DayRangePicker({
             calendar={persian}
             locale={persian_fa}
             minDate={toMin}
-            maxDate={maxDate}
             format="YYYY/MM/DD"
             calendarPosition="bottom-center"
             className="horizon-date-picker"
@@ -147,8 +142,8 @@ export default function DayRangePicker({
       </div>
 
       <p className="text-text-gray mt-3 text-xs leading-6">
-        تاریخ‌های بعد از امروز قابل انتخاب نیستند. تاریخ پایان نمی‌تواند قبل از
-        تاریخ شروع باشد.
+        می‌توانید بازه را به آینده هم بکشید (برای دیدن رزروهای پیش‌رو). فقط
+        تاریخ پایان نمی‌تواند قبل از تاریخ شروع باشد.
       </p>
     </div>
   );

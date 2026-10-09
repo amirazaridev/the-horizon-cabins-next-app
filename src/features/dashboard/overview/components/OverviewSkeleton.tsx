@@ -71,9 +71,9 @@ export default function OverviewSkeleton(): ReactNode {
         </div>
       </div>
 
-      {/* کارت‌های آماری */}
+      {/* کارت‌های KPI — ۸ کارت */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => (
+        {Array.from({ length: 8 }).map((_, index) => (
           <Card key={index} className="relative overflow-hidden">
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-1 flex-col gap-1.5">
@@ -83,6 +83,7 @@ export default function OverviewSkeleton(): ReactNode {
               </div>
               <Skeleton className="size-11.5 shrink-0 rounded-xl" />
             </div>
+            <Skeleton className="mt-4 h-1.5 w-full rounded-full" />
           </Card>
         ))}
       </div>

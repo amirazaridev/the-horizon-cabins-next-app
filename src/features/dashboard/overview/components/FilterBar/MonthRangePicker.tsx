@@ -5,7 +5,6 @@ import DatePicker from "react-multi-date-picker";
 import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
-import { startOfDay } from "date-fns";
 import {
   addMonths,
   endOfMonth,
@@ -14,11 +13,9 @@ import {
 } from "date-fns-jalali";
 
 import {
-  clampToToday,
   formatDateKey,
   formatJalaliMonthYear,
   formatJalaliYear,
-  getJalaliYear,
 } from "../../lib/date-range";
 
 /**
@@ -58,46 +55,30 @@ function toJsDate(value: unknown): Date | null {
 /**
  * انتخاب بازهٔ ماه با دو فیلد مستقل: «ماه شروع» و «ماه پایان».
  *
- * هر فیلد یک `DatePicker` است — دقیقاً همان کامپوننتی که تب «روز» استفاده
- * می‌کند — تا پاپ‌آوری باز شود که خودِ کتابخانه مدیریتش می‌کند:
- * موقعیت‌دهی هوشمند (بالا/پایین نسبت به فضا)، فلش، و بستن با کلیک بیرون
- * یا اسکرول. تفاوت تنها در این است که هر تقویم تک‌ماه است
- * (`numberOfMonths={1}` + `onlyMonthPicker`) و روی سالِ خودش قفل می‌شود.
- *
- * مقدار نهایی موقع «اعمال» روی URL می‌نشیند.
+ * ⭐ از فاز دوم ماه‌های آینده هم قابل انتخاب‌اند (بدون سقفِ «ماه جاری»)،
+ * تا بازه بتواند تا آینده کشیده شود. تنها قید باقی‌مانده ترتیب منطقی
+ * (شروع ≤ پایان) است.
  */
 export default function MonthRangePicker({
   from,
   to,
   onChange,
 }: MonthRangePickerProps) {
-  const today = useMemo(() => startOfDay(new Date()), []);
-  const currentMonth = useMemo(() => startOfMonth(today), [today]);
-
-  const fromYear = getJalaliYear(from);
-  const toYear = getJalaliYear(to);
-
   /* ---------------- سر شروع ---------------- */
 
   const fromValue = useMemo(() => toDateObject(startOfMonth(from)), [from]);
   const fromWindow = useMemo(() => toDateObject(startOfYear(from)), [from]);
 
   /**
-   * سقفِ تقویم شروع:
-   * - اگر سال شروع همان سال جاری باشد => تا ماه جاری
-   * - وگرنه => تا آخرِ همان سال
-   * و در هر دو حالت هیچ‌وقت بعد از ماه پایان نرود، چون بازه نباید برعکس شود.
+   * سقفِ تقویم شروع = آخرین ماه سالِ شروع، ولی هرگز بعد از ماه پایان
+   * (بازه نباید برعکس شود).
    */
   const fromMax = useMemo(() => {
-    const yearCap =
-      fromYear === getJalaliYear(today)
-        ? currentMonth
-        : startOfMonth(addMonths(startOfYear(from), 11));
-
+    const yearEnd = startOfMonth(addMonths(startOfYear(from), 11));
     const rangeCap = startOfMonth(to);
 
-    return toDateObject(endOfMonth(rangeCap < yearCap ? rangeCap : yearCap));
-  }, [fromYear, today, currentMonth, from, to]);
+    return toDateObject(endOfMonth(rangeCap < yearEnd ? rangeCap : yearEnd));
+  }, [from, to]);
 
   function handleFromChange(value: DatePickerValue): void {
     const next = toJsDate(Array.isArray(value) ? value[0] : value);
@@ -105,8 +86,8 @@ export default function MonthRangePicker({
 
     const normalizedFrom = startOfMonth(next);
 
-    // سقف: از ماه پایان و از ماه جاری جلوتر نرو
-    if (normalizedFrom > startOfMonth(to) || normalizedFrom > currentMonth) {
+    // سقف: از ماه پایان جلوتر نرو
+    if (normalizedFrom > startOfMonth(to)) {
       return;
     }
 
@@ -120,25 +101,17 @@ export default function MonthRangePicker({
   const toValue = useMemo(() => toDateObject(startOfMonth(to)), [to]);
   const toWindow = useMemo(() => toDateObject(startOfYear(to)), [to]);
 
-  /**
-   * سقفِ تقویم پایان:
-   * - اگر سال پایان همان سال جاری باشد => تا ماه جاری
-   * - وگرنه => تا آخرِ همان سال
-   */
-  const toMax = useMemo(() => {
-    const yearCap =
-      toYear === getJalaliYear(today)
-        ? currentMonth
-        : startOfMonth(addMonths(startOfYear(to), 11));
-
-    return toDateObject(endOfMonth(yearCap));
-  }, [toYear, today, currentMonth, to]);
+  /** سقفِ تقویم پایان = آخرین ماه سالِ پایان. */
+  const toMax = useMemo(
+    () => toDateObject(endOfMonth(startOfMonth(addMonths(startOfYear(to), 11)))),
+    [to],
+  );
 
   function handleToChange(value: DatePickerValue): void {
     const next = toJsDate(Array.isArray(value) ? value[0] : value);
     if (!next) return;
 
-    const normalizedTo = clampToToday(endOfMonth(next), today);
+    const normalizedTo = endOfMonth(next);
 
     // کف: از ماه شروع عقب‌تر نرو
     if (normalizedTo < startOfMonth(from)) return;
@@ -222,8 +195,8 @@ export default function MonthRangePicker({
       </div>
 
       <p className="text-text-gray mt-3 text-xs leading-6">
-        ماه شروع و ماه پایان را جداگانه انتخاب کنید. ماه‌های بعد از ماه جاری
-        قابل انتخاب نیستند و ماه پایان نمی‌تواند قبل از ماه شروع باشد.
+        ماه شروع و ماه پایان را جداگانه انتخاب کنید. ماه پایان نمی‌تواند قبل
+        از ماه شروع باشد.
       </p>
     </div>
   );
