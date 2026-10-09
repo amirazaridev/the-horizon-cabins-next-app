@@ -157,5 +157,18 @@ export function createApiGuestBookingsRepository(): GuestBookingsRepository {
       const json = await readJson<ApiSingleResponse>(res);
       return json?.data?.booking ?? null;
     },
+
+    async pay(id: number): Promise<GuestBooking | null> {
+      // بک‌اند فقط رزرو `pending` با مهلتِ نگذشته را تأیید می‌کند؛ 409 ⇒
+      // null یعنی «قابل پرداخت نبود» (قبلاً پرداخت‌شده یا منقضی).
+      const res = await authFetch(`bookings/${id}/pay`, {
+        method: "POST",
+        cache: "no-store",
+      });
+      if (!res.ok) return null;
+
+      const json = await readJson<ApiSingleResponse>(res);
+      return json?.data?.booking ?? null;
+    },
   };
 }

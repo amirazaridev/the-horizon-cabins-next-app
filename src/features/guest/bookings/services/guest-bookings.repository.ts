@@ -37,6 +37,16 @@ export interface GuestBookingsRepository {
    * «در انتظار پرداخت» نبود (مثلاً مهلتش منقضی شده باشد).
    */
   cancel(id: number): Promise<GuestBooking | null>;
+  /**
+   * پرداخت (تأیید) یک رزرو «در انتظار پرداخت».
+   *
+   * ⚠️ این متد درگاه واقعی نیست: بک‌اند درگاه را شبیه‌سازی می‌کند
+   * (`simulatePaymentGateway`) و رزرو را `confirmed` می‌کند.
+   *
+   * @returns رزرو به‌روزشده، یا `null` اگر پرداخت ممکن نبود (رزرو دیگر
+   * `pending` نیست یا مهلت پرداختش گذشته است).
+   */
+  pay(id: number): Promise<GuestBooking | null>;
 }
 
 let repository: GuestBookingsRepository | null = null;
