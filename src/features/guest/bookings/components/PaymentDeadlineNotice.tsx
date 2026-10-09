@@ -1,13 +1,11 @@
-"use client";
-
 import { Clock, Hourglass, TriangleAlert } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
-import { formatCountdown } from "@/features/guest/shared/lib/format";
+import { formatJalaliDateTime } from "@/features/guest/shared/lib/format";
+import { isPaymentExpired } from "../lib/payment-deadline";
 import {
   PAYMENT_EXPIRED_LABEL,
   PAYMENT_EXPIRY_WARNING,
-  PAYMENT_URGENT_MS,
 } from "../constants/payment";
 
 type Props = {
@@ -18,63 +16,46 @@ type Props = {
 };
 
 /**
- * هشدار مهلت پرداخت + شمارش معکوس زنده.
+ * هشدار مهلت پرداخت + **زمان دقیق انقضا** (بدون شمارش معکوس).
  *
- * ⚠️ چرا کلاینتی؟ زمان باقی‌مانده در لحظه‌ی رندر سرور و کلاینت یکسان نیست
- * و رندر مستقیم آن هیدریشن mismatch می‌دهد. پس مقدار اولیه `null` است و
- * شمارش فقط بعد از mount (در `useEffect`) شروع می‌شود؛ تا آن لحظه
- * `--:--` نمایش داده می‌شود که هم جای ثابت دارد و هم پرش چیدمان نمی‌دهد.
+ * ⚠️ چرا شمارش معکوس حذف شد؟ لغو خودکار را کرون بک‌اند انجام می‌دهد
+ * (`jobs/booking-expiration.job.ts`) و دیتابیس منبع حقیقت است. پس UI فقط
+ * «زمان مهلت» را نشان می‌دهد و رزروِ لغوشده در بازدید/رفرش بعدی در تب
+ * «لغوشده‌ها» ظاهر می‌شود.
  *
- * ⚠️ وضعیت «فوری» (زیر ۵ دقیقه) و «منقضی» رنگ قرمز می‌گیرند تا کاربر
- * بدون خواندن متن هم متوجه فوریت شود.
+ * ⚠️ چرا Server Component (بدون `"use client"`)؟ وضعیت «گذشته/نگذشته» به
+ * زمان وابسته است؛ اگر آن را در کلاینت با تایمر محاسبه کنیم، بین HTML سرور
+ * و هیدریشن اختلاف می‌افتد. اینجا محاسبه **یک‌بار روی سرور** انجام می‌شود و
+ * نتیجه پایدار است (هیچ پرش یا mismatch نداریم).
  */
 export default function PaymentDeadlineNotice({
   deadline,
   variant = "card",
 }: Props): ReactNode {
-  const [remaining, setRemaining] = useState<number | null>(null);
-
-  useEffect(() => {
-    const target = new Date(deadline).getTime();
-
-    const tick = () => setRemaining(target - Date.now());
-    tick();
-
-    const timer = window.setInterval(tick, 1000);
-    return () => window.clearInterval(timer);
-  }, [deadline]);
-
-  const isExpired = remaining !== null && remaining <= 0;
-  const isUrgent = remaining !== null && !isExpired && remaining <= PAYMENT_URGENT_MS;
-  const isAlarming = isExpired || isUrgent;
-
+  const isExpired = isPaymentExpired(deadline);
   const isPage = variant === "page";
 
-  const containerClass = isAlarming
+  const containerClass = isExpired
     ? "border-danger/35 bg-danger/10 text-danger-strong dark:text-red-300"
     : "border-primary-400/30 bg-primary-400/10 text-primary-600 dark:text-primary-300";
 
-  const chipClass = isAlarming
-    ? "border-danger/40 bg-danger/15"
-    : "border-primary-400/40 bg-primary-400/15";
-
-  const NoticeIcon = isAlarming ? TriangleAlert : Hourglass;
+  const NoticeIcon = isExpired ? TriangleAlert : Hourglass;
 
   return (
     <div
-      className={`flex flex-wrap items-start gap-3 rounded-2xl border ${containerClass} ${
+      className={`flex items-start gap-3 rounded-2xl border ${containerClass} ${
         isPage ? "px-5 py-4" : "px-4 py-3.5"
       }`}
     >
       <NoticeIcon className="mt-0.5 size-4 shrink-0" />
 
-      {/* ⚠️ نقش هشدار روی متنِ ثابت است، نه روی کل ردیف: اگر شمارش معکوس
-          داخل ناحیه‌ی live باشد، صفحه‌خوان هر ثانیه یک اعلان جدید می‌خواند. */}
+      {/* ⚠️ نقش هشدار روی متنِ ثابت است، نه روی زمان: زمان یک مقدار ثابت
+          است و اعلام دوباره‌ی آن به صفحه‌خوان لازم نیست. */}
       <div
         className={`min-w-0 flex-1 space-y-1 leading-relaxed ${
           isPage ? "text-sm" : "text-xs"
         }`}
-        role={isAlarming ? "alert" : undefined}
+        role={isExpired ? "alert" : undefined}
       >
         <p className="font-semibold">
           {isExpired
@@ -82,16 +63,12 @@ export default function PaymentDeadlineNotice({
             : "برای نهایی‌شدن رزرو، پرداخت را کامل کنید."}
         </p>
         <p className="opacity-90">{PAYMENT_EXPIRY_WARNING}</p>
+        <p className="flex items-center gap-1.5 font-bold">
+          <Clock className="size-3.5 shrink-0" />
+          <span>مهلت پرداخت:</span>
+          <span className="tabular-nums">{formatJalaliDateTime(deadline)}</span>
+        </p>
       </div>
-
-      {/* شمارش معکوس تا لغو خودکار */}
-      <span
-        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold tabular-nums ${chipClass}`}
-        aria-label="زمان باقی‌مانده تا لغو خودکار"
-      >
-        <Clock className="size-3.5" />
-        {remaining === null ? "--:--" : formatCountdown(remaining)}
-      </span>
     </div>
   );
 }
