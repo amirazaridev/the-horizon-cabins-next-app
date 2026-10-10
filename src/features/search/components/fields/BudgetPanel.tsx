@@ -2,6 +2,7 @@
 
 import PriceRangePanel from "@/components/ui/Filter/panels/PriceRangePanel";
 import type { BudgetRange } from "../../types/search.types";
+import { budgetBoundsFor, budgetModeFor } from "../../utils/budget";
 
 type Props = {
   /** بازه‌ی اعمال‌شده‌ی فعلی (null یعنی بدون محدودیت) */
@@ -19,14 +20,21 @@ type Props = {
    * یک جستجوی واقعی بسازد و بخش پیش‌نمایش باز شود.
    */
   commitFullRange?: boolean;
+  /**
+   * تعداد شب بازه‌ی انتخاب‌شده.
+   *
+   * صفر یعنی «بدون تاریخ» → بودجه‌ی **هر شب** (سقف ۳۰ میلیون).
+   * بزرگ‌تر از صفر یعنی «با تاریخ» → بودجه‌ی **کل سفر** و سقف اسلایدر
+   * ۳۰ میلیون × تعداد شب.
+   */
+  nights?: number;
 };
 
 /**
- * آداپتور «بازه‌ی بودجه‌ی هر شب» برای سرچ اصلی.
+ * آداپتور «بازه‌ی بودجه» برای سرچ اصلی.
  *
- * همان `PriceRangePanel` مشترک را رندر می‌کند؛ تفاوتش فقط متن راهنما و
- * برچسب دکمه‌هاست. این‌طور اسلایدر قیمت `/cabins` و اسلایدر بودجه‌ی سرچ
- * یک پیاده‌سازی واحد دارند و از هم واگرا نمی‌شوند.
+ * همان `PriceRangePanel` مشترک را رندر می‌کند؛ تفاوتش متن راهنما، برچسب
+ * دکمه‌ها و **محدوده‌ی اسلایدر** است که با حالت (هر شب / کل سفر) عوض می‌شود.
  */
 export default function BudgetPanel({
   value,
@@ -34,7 +42,11 @@ export default function BudgetPanel({
   onDone,
   onApply,
   commitFullRange,
+  nights = 0,
 }: Props) {
+  const mode = budgetModeFor(nights);
+  const bounds = budgetBoundsFor(nights);
+
   return (
     <PriceRangePanel
       value={value}
@@ -42,7 +54,13 @@ export default function BudgetPanel({
       onDone={onDone}
       onApply={onApply}
       commitFullRange={commitFullRange}
-      hint="بازه‌ی بودجه‌ای که برای هر شب اقامت در نظر دارید. قیمت‌ها به تومان و شبانه است."
+      min={bounds.min}
+      max={bounds.max}
+      hint={
+        mode === "total"
+          ? `بودجه‌ی کل سفر برای ${nights.toLocaleString("fa-IR")} شب اقامت. مبلغ به تومان است.`
+          : "بازه‌ی بودجه‌ای که برای هر شب اقامت در نظر دارید. قیمت‌ها به تومان و شبانه است."
+      }
       clearLabel="حذف بودجه"
     />
   );

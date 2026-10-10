@@ -26,9 +26,13 @@ import FieldContent from "./fields/FieldContent";
 import GuestsPanel from "./fields/GuestsPanel";
 import SearchAction from "./fields/SearchAction";
 import DestinationPanel from "./destination/DestinationPanel";
+import { todayInTehran } from "@/libs/utils/tehran-date";
+import { FALLBACK_PUBLIC_SETTINGS } from "@/features/settings/types/public-settings.types";
+import { nightsBetween } from "../utils/budget";
 import { hasAnySearchFilter } from "../utils/search-params";
 import { scheduleScrollToSearchPreview } from "../utils/scroll-to-preview";
 import {
+  budgetFieldLabel,
   buildSearchSummary,
   destinationLabel,
   formatBudgetRangeLabel,
@@ -55,6 +59,14 @@ type Props = {
   controller: SearchController;
   variant?: SearchVariant;
   className?: string;
+  /**
+   * افق رزرو (تعداد روز از امروز) از `GET /settings/public`.
+   *
+   * سقف تقویم را می‌سازد تا کاربر نتواند تاریخی فراتر از آنچه بک‌اند
+   * می‌پذیرد انتخاب کند. مقدار واقعی همیشه از سرور می‌آید؛ اینجا فقط به
+   * پیش‌فرض امن (`FALLBACK_PUBLIC_SETTINGS`) تکیه می‌کنیم.
+   */
+  bookingWindowDays?: number;
 };
 
 /**
@@ -73,12 +85,21 @@ export default function Search({
   controller,
   variant = "hero",
   className = "",
+  bookingWindowDays = FALLBACK_PUBLIC_SETTINGS.maxAdvanceBookingDays,
 }: Props) {
   const { draft, applied, setField, apply, reset, resetDraft, isPending } =
     controller;
 
   const isHero = variant === "hero";
   const divider = isHero ? "md:border-white/10" : "md:border-foreground/10";
+
+  /**
+   * تعداد شب بازه‌ی در حال ویرایش.
+   *
+   * مبناست برای «حالت بودجه» (هر شب / کل سفر)، برچسب‌های آن و سقف اسلایدر؛
+   * صفر یعنی بازه ناقص یا خالی → بودجه‌ی هر شب.
+   */
+  const draftNights = nightsBetween(draft.checkIn, draft.checkOut);
 
   /** جستجوی خالی هم معتبر است: یعنی «همه‌ی اقامتگاه‌ها» */
   const hasDraftFilters = hasAnySearchFilter(draft);
@@ -167,9 +188,20 @@ export default function Search({
           to: (getValue("checkOut") as Date | null) ?? null,
         };
 
+        /*
+         * کمینه‌ی تقویم = «امروز» به وقت تهران، نه ساعت مرورگر.
+         * بک‌اند تاریخ گذشته (به وقت تهران) را با ۴۰۰ رد می‌کند؛ اگر
+         * مرورگر عقب‌تر از تهران باشد، انتخاب «امروزِ لوکال» خطا می‌داد.
+         */
+        const today = todayInTehran();
+        const maxDate = new Date(today);
+        maxDate.setDate(maxDate.getDate() + bookingWindowDays);
+
         return (
           <DateRangePanel
             value={range}
+            minDate={today}
+            maxDate={maxDate}
             onChange={(next) => {
               setFieldValue("checkIn", next.from);
               setFieldValue("checkOut", next.to);
@@ -294,22 +326,26 @@ export default function Search({
     },
     {
       id: "budget",
-      label: "بازه‌ی بودجه",
+      //* برچسب/عنوان بسته به وجود تاریخ عوض می‌شود: «هر شب» یا «کل سفر».
+      label: budgetFieldLabel(draftNights),
       variant: "field",
       formatLabel: (value) =>
-        formatBudgetRangeLabel(value as BudgetRange | null),
+        formatBudgetRangeLabel(value as BudgetRange | null, draftNights),
       className: `md:rounded-none md:border-s ${divider}`,
       renderTrigger: ({ value }) => (
         <FieldContent
           icon={<Wallet className="size-4" />}
-          label="بودجه‌ی هر شب"
-          value={formatBudgetRangeLabelCompact(value as BudgetRange | null)}
+          label={budgetFieldLabel(draftNights)}
+          value={formatBudgetRangeLabelCompact(
+            value as BudgetRange | null,
+            draftNights,
+          )}
           placeholder="بازه‌ی بودجه"
           caret
         />
       ),
       panel: {
-        title: "بازه‌ی بودجه‌ی هر شب",
+        title: budgetFieldLabel(draftNights),
         size: "md",
         placement: "end",
         /*
@@ -330,6 +366,7 @@ export default function Search({
             onDone={close}
             onApply={(next) => handleApply({ budget: next })}
             commitFullRange={isHero}
+            nights={draftNights}
           />
         ),
       },
