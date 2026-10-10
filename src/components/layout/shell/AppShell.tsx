@@ -9,6 +9,8 @@ import type { ShellNavItem } from "./shell-nav";
 
 type Props = {
   items: readonly ShellNavItem[];
+  /** آیتم‌های کاربردی پایین سایدبار (مثل «تنظیمات») — بالای دکمه‌ی خروج. */
+  footerItems?: readonly ShellNavItem[];
   /** محتوای برند سایدبار (معمولاً یک `<Link>`). */
   brand: ReactNode;
   /** محتوای اختیاری بالای دکمه‌ی خروج در سایدبار. */
@@ -31,6 +33,7 @@ type Props = {
  */
 export default function AppShell({
   items,
+  footerItems,
   brand,
   profile,
   header,
@@ -53,6 +56,7 @@ export default function AppShell({
         <div className="absolute w-93 lg:static">
           <Sidebar
             items={items}
+            footerItems={footerItems}
             brand={brand}
             profile={profile}
             pathname={pathname}

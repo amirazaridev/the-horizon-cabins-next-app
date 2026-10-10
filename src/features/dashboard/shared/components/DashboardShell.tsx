@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 
 import AppShell from "@/components/layout/shell/AppShell";
 import type { UserRole } from "@/features/auth/constants/auth-cookie";
-import { visibleSidebarItems } from "../constants/sidebar-items";
+import { visibleSidebarItems, visibleSidebarUtilityItems } from "../constants/sidebar-items";
 import Header from "./Header";
 
 type Props = {
@@ -32,6 +32,7 @@ export default function DashboardShell({
   return (
     <AppShell
       items={visibleSidebarItems(role)}
+      footerItems={visibleSidebarUtilityItems(role)}
       brand={
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="bg-primary-400 flex size-8 items-center justify-center rounded-lg">

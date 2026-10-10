@@ -6,10 +6,15 @@ import { useTransition, type ReactNode } from "react";
 
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { logoutAction } from "@/features/auth/actions/auth.actions";
-import { findActiveNavItem, type ShellNavItem } from "./shell-nav";
+import { findActiveNavItem, groupNavItems, type ShellNavItem } from "./shell-nav";
 
 type Props = {
   items: readonly ShellNavItem[];
+  /**
+   * آیتم‌های کاربردی پایین سایدبار (مثل «تنظیمات») — بالای دکمه‌ی خروج
+   * رندر می‌شوند تا از ناوبری اصلی جدا باشند.
+   */
+  footerItems?: readonly ShellNavItem[];
   /** مسیر جاری — از `usePathname` در `AppShell` تزریق می‌شود. */
   pathname: string;
   /** وضعیت بازبودن در موبایل (drawer). */
@@ -24,14 +29,15 @@ type Props = {
 /**
  * سایدبار عمومی پوسته — مشترک بین پنل مدیریت و ناحیه‌ی مهمان.
  *
- * چیدمان (بالا به پایین): برند ← ناوبری ← [موبایل: تم] ← محتوای اختیاری
- * (پروفایل) ← دکمه‌ی خروج.
+ * چیدمان (بالا به پایین): برند ← ناوبری **دسته‌بندی‌شده** ← [موبایل: تم]
+ * ← محتوای اختیاری (پروفایل) ← آیتم‌های کاربردی (تنظیمات) ← دکمه‌ی خروج.
  *
- * ⚠️ این کامپوننت از پنل مدیریت استخراج شد تا «ناحیه‌ی مهمان» هم همان
- * رفتار/ظاهر را بگیرد و دو نسخه‌ی موازی از سایدبار نداشته باشیم.
+ * ⚠️ اگر هیچ آیتمی `group` نداشته باشد، ناوبری مثل قبل تخت رندر می‌شود؛ پس
+ * ناحیه‌ی مهمان بدون تغییر باقی می‌ماند.
  */
 export default function Sidebar({
   items,
+  footerItems,
   pathname,
   open,
   onClose,
@@ -39,7 +45,45 @@ export default function Sidebar({
   profile,
 }: Props): ReactNode {
   const [isPending, startTransition] = useTransition();
-  const activeItem = findActiveNavItem(items, pathname);
+  /**
+   * ⚠️ آیتم فعال باید از **اجتماع** ناوبری اصلی و آیتم‌های کاربردی محاسبه شود؛
+   * وگرنه آیتم‌هایی مثل «تنظیمات» که در `footerItems` هستند هرگز فعال نمی‌شوند.
+   */
+  const activeItem = findActiveNavItem([...items, ...(footerItems ?? [])], pathname);
+  const sections = groupNavItems(items);
+
+  const renderItem = (item: ShellNavItem): ReactNode => {
+    const isActive = activeItem?.href === item.href;
+    const Icon = item.icon;
+
+    return (
+      <li key={item.href}>
+        <Link
+          href={item.href}
+          onClick={onClose}
+          aria-current={isActive ? "page" : undefined}
+          className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200 ${
+            isActive
+              ? "bg-primary-400/10 text-primary-600 dark:text-primary-400 font-semibold"
+              : "text-text-gray hover:bg-foreground/5 hover:text-text font-medium"
+          }`}
+        >
+          <span
+            aria-hidden="true"
+            className={`bg-primary-400 absolute inset-y-1.5 start-0 w-1 rounded-full transition-opacity duration-200 ${
+              isActive ? "opacity-100" : "opacity-0"
+            }`}
+          />
+          <Icon
+            className={`size-5 shrink-0 transition-colors ${
+              isActive ? "text-primary-500 dark:text-primary-400" : "group-hover:text-text"
+            }`}
+          />
+          <span className="truncate">{item.name}</span>
+        </Link>
+      </li>
+    );
+  };
 
   return (
     <aside
@@ -48,7 +92,7 @@ export default function Sidebar({
         open ? "translate-x-0" : "translate-x-full lg:translate-x-0"
       }`}
     >
-      <div className="border-border flex h-16 shrink-0 items-center justify-between border-b px-4 ">
+      <div className="border-border flex h-16 shrink-0 items-center justify-between border-b px-4">
         {brand}
         <button
           type="button"
@@ -60,34 +104,19 @@ export default function Sidebar({
         </button>
       </div>
 
-      <nav
-        className="flex-1 space-y-1 overflow-y-auto px-3 py-4"
-        role="navigation"
-      >
-        {items.map((item) => {
-          const isActive = activeItem?.href === item.href;
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              aria-current={isActive ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? "bg-primary-400/10 text-primary-600 dark:text-primary-400"
-                  : "text-text-gray hover:bg-foreground/5 hover:text-text"
-              }`}
-            >
-              <item.icon
-                className={`size-5 shrink-0 ${
-                  isActive ? "text-primary-500 dark:text-primary-400" : ""
-                }`}
-              />
-              {item.name}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto px-3 py-4" role="navigation">
+        <div className="flex flex-col gap-5">
+          {sections.map((section, index) => (
+            <div key={section.title ?? `section-${index}`}>
+              {section.title && (
+                <p className="text-text-gray/70 px-3 pb-2 text-[11px] font-bold tracking-wide">
+                  {section.title}
+                </p>
+              )}
+              <ul className="flex flex-col gap-1">{section.items.map(renderItem)}</ul>
+            </div>
+          ))}
+        </div>
       </nav>
 
       <div className="mb-2 flex items-center justify-between px-6 lg:hidden">
@@ -97,6 +126,10 @@ export default function Sidebar({
 
       <div className="border-border border-t p-3">
         {profile && <div className="mb-2">{profile}</div>}
+
+        {footerItems && footerItems.length > 0 && (
+          <ul className="mb-1.5 flex flex-col gap-1">{footerItems.map(renderItem)}</ul>
+        )}
 
         {/* خروج واقعی — از طریق Server Action که کوکی نشست را پاک می‌کند. */}
         <button
