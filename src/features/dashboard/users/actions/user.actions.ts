@@ -9,11 +9,21 @@ import type { UserActionFeedback } from "../types/user.types";
 /**
  * Server Actionهای عملیات مدیریتی کاربران.
  *
- * - فعال/غیرفعال‌کردن حساب → `PATCH /user/:id/status` (admin|owner).
- * - تغییر نقش → `PATCH /user/:id/role` (فقط owner؛ بک‌اند ۴۰۳ می‌دهد).
+ * - فعال/غیرفعال‌کردن حساب → `PATCH /user/:id/status` (admin|owner؛ admin فقط مهمان).
+ * - تغییر نقش → `PATCH /user/:id/role` (فقط owner).
+ * - حذف حساب → `DELETE /user/:id` (فقط owner).
  *
- * هر دو از `authFetch` استفاده می‌کنند تا توکن از کوکی سرور فوروارد شود.
+ * همه از `authFetch` استفاده می‌کنند تا توکن از کوکی سرور فوروارد شود؛
+ * گاردهای سیاست نهایی سمت بک‌اند اعمال می‌شوند و اینجا فقط پیام مناسب
+ * به کاربر نشان داده می‌شود.
  */
+
+/** مسیرهایی که لیست کاربران را نشان می‌دهند و بعد از هر عملیات تازه می‌شوند. */
+const USER_LIST_PATHS = ["/dashboard/users", "/dashboard/admins"] as const;
+
+function revalidateUserLists(): void {
+  for (const path of USER_LIST_PATHS) revalidatePath(path);
+}
 
 async function patchUser(
   userId: number,
@@ -33,7 +43,7 @@ async function patchUser(
       return { success: false, message: messages.failure };
     }
 
-    revalidatePath("/dashboard/users");
+    revalidateUserLists();
     return { success: true, message: messages.success };
   } catch {
     return { success: false, message: "ارتباط با سرور برقرار نشد." };
@@ -62,4 +72,29 @@ export async function setUserRoleAction(
     success: "نقش کاربر با موفقیت تغییر کرد.",
     failure: "تغییر نقش ناموفق بود؛ ممکن است دسترسی کافی نداشته باشید.",
   });
+}
+
+/** حذف کامل حساب کاربر (فقط مالک). */
+export async function deleteUserAction(userId: number): Promise<UserActionFeedback> {
+  try {
+    const res = await authFetch(`user/${userId}`, {
+      method: "DELETE",
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message:
+          res.status === 409
+            ? "این کاربر رزرو یا قاعده‌ی قیمت دارد و حذف نمی‌شود؛ به‌جای حذف، حساب را غیرفعال کنید."
+            : "حذف کاربر ناموفق بود.",
+      };
+    }
+
+    revalidateUserLists();
+    return { success: true, message: "کاربر حذف شد." };
+  } catch {
+    return { success: false, message: "ارتباط با سرور برقرار نشد." };
+  }
 }

@@ -6,6 +6,7 @@ import { CheckCircle2, TriangleAlert, Users as UsersIcon, X } from "lucide-react
 import CardDashContainer from "@/components/ui/CardDashContainer";
 import Table, { type TableColumn } from "@/components/ui/Table";
 import { formatJalaliFull } from "@/libs/utils/jalali";
+import type { UserRole } from "@/features/auth/constants/auth-cookie";
 import type { AdminUser, UserActionFeedback } from "../types/user.types";
 import UserDetailsModal from "./UserDetailsModal";
 import UserRoleBadge from "./UserRoleBadge";
@@ -14,12 +15,21 @@ import UserStatusBadge from "./UserStatusBadge";
 
 interface UsersTableProps {
   users: AdminUser[];
-  /** فقط مالک می‌تواند نقش را تغییر دهد. */
-  canManageRoles: boolean;
+  /** نقش کاربر جاری — مبنای اختیارات هر ردیف. */
+  actorRole: UserRole;
+  /** متن حالت خالی — بین صفحه‌ی کاربران و مدیران متفاوت است. */
+  emptyMessage?: string;
 }
 
-/** جدول کاربران — ستون آخر منوی عملیات است. */
-export default function UsersTable({ users, canManageRoles }: UsersTableProps): ReactNode {
+/**
+ * جدول کاربران — مشترک بین صفحه‌ی «افراد و مهمانان» و «مدیران».
+ * ستون آخر منوی عملیات است (آیتم‌هایش با سیاست نقش فیلتر می‌شوند).
+ */
+export default function UsersTable({
+  users,
+  actorRole,
+  emptyMessage = "کاربری با این فیلترها پیدا نشد.",
+}: UsersTableProps): ReactNode {
   const [detailsUser, setDetailsUser] = useState<AdminUser | null>(null);
   const [feedback, setFeedback] = useState<UserActionFeedback | null>(null);
 
@@ -79,7 +89,7 @@ export default function UsersTable({ users, canManageRoles }: UsersTableProps): 
       render: (user) => (
         <UserRowMenu
           user={user}
-          canManageRoles={canManageRoles}
+          actorRole={actorRole}
           onShowDetails={setDetailsUser}
           onFeedback={setFeedback}
         />
@@ -98,7 +108,7 @@ export default function UsersTable({ users, canManageRoles }: UsersTableProps): 
         rows={users}
         rowKey={(user) => user.id}
         caption="فهرست کاربران"
-        emptyState={<EmptyState />}
+        emptyState={<EmptyState message={emptyMessage} />}
       />
 
       <UserDetailsModal
@@ -152,11 +162,11 @@ function FeedbackBanner({
   );
 }
 
-function EmptyState(): ReactNode {
+function EmptyState({ message }: { message: string }): ReactNode {
   return (
     <div className="text-text-gray flex flex-col items-center justify-center gap-3 py-12 text-center">
       <UsersIcon className="size-9" strokeWidth={1.5} />
-      <span className="text-sm">کاربری با این فیلترها پیدا نشد.</span>
+      <span className="text-sm">{message}</span>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import type { UserRole } from "@/features/auth/constants/auth-cookie";
+
 /** پارامترهای URL صفحه (هم‌شکل `searchParams` نکست). */
 export type UsersSearchParams = Record<string, string | string[] | undefined>;
 
@@ -9,11 +11,9 @@ export type UserActiveFilter = "active" | "inactive";
 
 export const USER_ACTIVE_VALUES: readonly UserActiveFilter[] = ["active", "inactive"];
 
-/** فیلترهای نرمال‌شده‌ی صفحه‌ی کاربران (منبع حقیقت: URL). */
+/** فیلترهای نرمال‌شده‌ی لیست کاربران (منبع حقیقت: URL). */
 export interface UsersFilters {
   active: UserActiveFilter | null;
-  /** جستجوی ایمیل/نام/تلفن. */
-  query: string;
   page: number;
 }
 
@@ -36,29 +36,31 @@ export function parseUsersFilters(params: UsersSearchParams): UsersFilters {
 
   return {
     active,
-    query: one(params.q).trim(),
     page: parsePositiveInt(one(params.page)) ?? 1,
   };
 }
 
 /** آیا فیلتری (غیر از صفحه‌بندی) فعال است؟ */
 export function hasActiveUsersFilters(filters: UsersFilters): boolean {
-  return filters.active !== null || filters.query !== "";
+  return filters.active !== null;
 }
 
 /**
  * ساخت کوئری API از فیلترها.
  *
- * ⚠️ `q` فقط با حداقل ۲ کاراکتر فرستاده می‌شود (قرارداد اعتبارسنجی بک‌اند)
- * تا درخواست بی‌دلیل ۴۰۰ نگیرد.
+ * `roles` دامنه‌ی لیست را تعیین می‌کند: صفحه‌ی «افراد و مهمانان» مقدار
+ * `["guest"]` و صفحه‌ی «مدیران» مقدار `["admin","owner"]` می‌فرستد.
  */
-export function toUsersApiQuery(filters: UsersFilters): string {
+export function toUsersApiQuery(
+  filters: UsersFilters,
+  roles: readonly UserRole[],
+): string {
   const params = new URLSearchParams();
   params.set("page", String(filters.page));
   params.set("limit", String(USERS_PAGE_SIZE));
 
+  if (roles.length > 0) params.set("roles", roles.join(","));
   if (filters.active) params.set("active", String(filters.active === "active"));
-  if (filters.query.length >= 2) params.set("q", filters.query);
 
   return params.toString();
 }

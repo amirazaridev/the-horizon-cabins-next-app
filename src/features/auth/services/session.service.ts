@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 
 import {
@@ -49,8 +50,12 @@ type ApiMeResponse = {
  * ⚠️ نکته‌ی مهم: در بک‌اند برای نقش `guest` عمداً فیلد `role` حذف می‌شود
  * (خروجی `getUserProfile`). پس اینجا اگر `role` نبود، آن را «guest»
  * در نظر می‌گیریم تا رفتار تشخیص نقش درست بماند.
+ *
+ * ⚠️ با `cache()` پوشانده شده تا در یک درخواست، تماس‌های مکرر (مثلاً layout
+ * و page هر دو `requireDashboardAccess` را صدا می‌زنند) فقط **یک** fetch به
+ * `/user/me` بزنند.
  */
-export async function getCurrentUser(): Promise<CurrentUser | null> {
+export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
   if (!token) return null;
@@ -76,7 +81,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     // خطای شبکه/در دسترس نبودن بک‌اند → کاربر ناشناس در نظر گرفته می‌شود.
     return null;
   }
-}
+});
 
 /** نقش کاربر جاری (یا `null` اگر وارد نشده باشد). */
 export async function getCurrentRole(): Promise<UserRole | null> {
