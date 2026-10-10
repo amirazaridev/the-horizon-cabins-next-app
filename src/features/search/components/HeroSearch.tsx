@@ -11,6 +11,8 @@ type Props = {
   cities: City[];
   /** مناطق واقعی از API */
   regions: Region[];
+  /** افق رزرو (روز) از تنظیمات عمومی — سقف تقویم جستجو */
+  bookingWindowDays?: number;
 };
 
 /**
@@ -22,7 +24,11 @@ type Props = {
  * همچنین «آخرین جستجو» را در حافظه ذخیره می‌کند و چیپ آن را زیر نوار
  * جستجو نشان می‌دهد.
  */
-export default function HeroSearch({ cities, regions }: Props) {
+export default function HeroSearch({
+  cities,
+  regions,
+  bookingWindowDays,
+}: Props) {
   const controller = useLandingSearchController();
 
   usePersistLastSearch(controller.applied);
@@ -35,6 +41,7 @@ export default function HeroSearch({ cities, regions }: Props) {
         regions={regions}
         controller={controller}
         variant="hero"
+        bookingWindowDays={bookingWindowDays}
       />
     </div>
   );

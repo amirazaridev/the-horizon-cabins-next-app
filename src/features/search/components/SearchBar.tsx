@@ -13,6 +13,8 @@ type Props = {
   regions: Region[];
   /** searchParams خام سرور — منبع حقیقت این صفحه */
   searchParams: RawSearchParams;
+  /** افق رزرو (روز) از تنظیمات عمومی — سقف تقویم جستجو */
+  bookingWindowDays?: number;
 };
 
 /**
@@ -22,7 +24,12 @@ type Props = {
  * ویوپورت را اشغال نکند. در موبایل همین کامپوننت خودش خلاصه‌ی جستجو +
  * دکمه‌ی «تغییر جستجو» را به‌صورت باتم‌شیت نشان می‌دهد.
  */
-export default function SearchBar({ cities, regions, searchParams }: Props) {
+export default function SearchBar({
+  cities,
+  regions,
+  searchParams,
+  bookingWindowDays,
+}: Props) {
   const controller = useUrlSearchController(searchParams);
 
   // جستجوی این صفحه هم به‌عنوان «آخرین جستجو» ذخیره می‌شود
@@ -36,6 +43,7 @@ export default function SearchBar({ cities, regions, searchParams }: Props) {
           regions={regions}
           controller={controller}
           variant="results"
+          bookingWindowDays={bookingWindowDays}
         />
       </div>
     </div>

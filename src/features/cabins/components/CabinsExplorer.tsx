@@ -19,6 +19,8 @@ type Props = {
   resultCount: number;
   /** searchParams خام سرور — برای نوار جستجوی بالای صفحه */
   searchParams: RawSearchParams;
+  /** افق رزرو (روز) از تنظیمات عمومی — سقف تقویم جستجو */
+  bookingWindowDays?: number;
   children: ReactNode;
 };
 
@@ -28,6 +30,7 @@ export default function CabinsExplorer({
   amenities,
   resultCount,
   searchParams,
+  bookingWindowDays,
   children,
 }: Props) {
   const [mapVisible, setMapVisible] = useState(true);
@@ -38,7 +41,12 @@ export default function CabinsExplorer({
         نوار جستجو در جریان عادی صفحه است (sticky نیست) تا با FilterBar
         چسبان رقابت نکند و ویوپورت را اشغال نکند.
       */}
-      <SearchBar cities={cities} regions={regions} searchParams={searchParams} />
+      <SearchBar
+        cities={cities}
+        regions={regions}
+        searchParams={searchParams}
+        bookingWindowDays={bookingWindowDays}
+      />
 
       <CabinsFilterBar
         amenities={amenities}
