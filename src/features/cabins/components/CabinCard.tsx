@@ -114,7 +114,9 @@ function LandingCard({
   const { name, bedrooms, areaSqm, images, city, regularPrice, discount } =
     cabin;
   const image = imageOverride ?? images?.[0];
-  const hasDiscount = discount > 0;
+  //* با تاریخ، کارت «جمع کل بازه» را نشان می‌دهد و تخفیف شبانه بی‌معناست.
+  const stay = cabin.pricing?.mode === "stay" ? cabin.pricing : null;
+  const hasDiscount = discount > 0 && !stay;
   const finalPrice = hasDiscount ? regularPrice - discount : regularPrice;
 
   return (
@@ -158,15 +160,29 @@ function LandingCard({
         </div>
         {showPrice && (
           <div className="mt-auto flex items-baseline gap-1.5 pt-1.5">
-            {hasDiscount && (
-              <span className="text-text-gray/60 text-[11px] line-through">
-                {formatCurrency(regularPrice)}
-              </span>
+            {stay ? (
+              /* با تاریخ: جمع کل بازه + تعداد شب (خروجی مستقیم API) */
+              <>
+                <span className="text-primary-500 text-sm font-extrabold tabular-nums">
+                  {formatCurrency(stay.totalPrice)}
+                </span>
+                <span className="text-text-gray text-[10px]">
+                  تومان / {stay.nights.toLocaleString("fa-IR")} شب
+                </span>
+              </>
+            ) : (
+              <>
+                {hasDiscount && (
+                  <span className="text-text-gray/60 text-[11px] line-through">
+                    {formatCurrency(regularPrice)}
+                  </span>
+                )}
+                <span className="text-primary-500 text-sm font-extrabold tabular-nums">
+                  {formatCurrency(finalPrice)}
+                </span>
+                <span className="text-text-gray text-[10px]">تومان/شب</span>
+              </>
             )}
-            <span className="text-primary-500 text-sm font-extrabold tabular-nums">
-              {formatCurrency(finalPrice)}
-            </span>
-            <span className="text-text-gray text-[10px]">تومان/شب</span>
           </div>
         )}
       </div>
@@ -197,7 +213,9 @@ function DefaultCard({
   } = cabin;
 
   const image = imageOverride ?? images?.[0];
-  const hasDiscount = discount > 0;
+  //* با تاریخ، کارت «جمع کل بازه» را نشان می‌دهد و تخفیف شبانه بی‌معناست.
+  const stay = cabin.pricing?.mode === "stay" ? cabin.pricing : null;
+  const hasDiscount = discount > 0 && !stay;
   const finalPrice = hasDiscount ? regularPrice - discount : regularPrice;
   const discountPercent = hasDiscount
     ? Math.round((discount / regularPrice) * 100)
@@ -282,19 +300,34 @@ function DefaultCard({
 
         {/* قیمت + دکمه */}
         <div className="border-border mt-auto flex items-center justify-between gap-2 border-t pt-3">
-          <div className="flex flex-col">
-            {hasDiscount && (
-              <span className="text-text-gray/70 text-[11px] line-through">
-                {formatCurrency(regularPrice)}
+          {stay ? (
+            /* با تاریخ: جمع کل بازه + تعداد شب (خروجی مستقیم API) */
+            <div className="flex flex-col">
+              <span className="text-text-gray text-[11px]">
+                {stay.nights.toLocaleString("fa-IR")} شب اقامت
               </span>
-            )}
-            <span className="text-text text-sm font-extrabold tabular-nums sm:text-base">
-              {formatCurrency(finalPrice)}
-              <span className="text-text-gray mr-1 text-[10px] font-normal">
-                تومان/شب
+              <span className="text-text text-sm font-extrabold tabular-nums sm:text-base">
+                {formatCurrency(stay.totalPrice)}
+                <span className="text-text-gray mr-1 text-[10px] font-normal">
+                  تومان
+                </span>
               </span>
-            </span>
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              {hasDiscount && (
+                <span className="text-text-gray/70 text-[11px] line-through">
+                  {formatCurrency(regularPrice)}
+                </span>
+              )}
+              <span className="text-text text-sm font-extrabold tabular-nums sm:text-base">
+                {formatCurrency(finalPrice)}
+                <span className="text-text-gray mr-1 text-[10px] font-normal">
+                  تومان/شب
+                </span>
+              </span>
+            </div>
+          )}
 
           {children || (
             <span className="bg-foreground/5 text-text group-hover:bg-primary-400 flex size-9 shrink-0 items-center justify-center rounded-full transition-all duration-300 group-hover:text-black">
