@@ -1,10 +1,62 @@
 import { CalendarRange, CircleDollarSign, Tags, type LucideIcon } from "lucide-react";
 
 import { formatCurrency } from "@/libs/utils/format";
-import type { AppSettings, SettingKey } from "../types/settings.types";
+import type {
+  AppSettings,
+  EditableSettingKey,
+  SettingKey,
+} from "../types/settings.types";
 
 /** واحد نمایش مقدار تنظیمات. */
-type SettingUnit = "nights" | "guests" | "days" | "minutes" | "percent" | "toman" | "count";
+export type SettingUnit =
+  | "nights"
+  | "guests"
+  | "days"
+  | "minutes"
+  | "percent"
+  | "toman"
+  | "count";
+
+/** بیشترین مقدار قابل‌ذخیره در یک ستون int4 پستگرس. */
+export const INT4_MAX = 2_147_483_647;
+
+/**
+ * کران مجاز هر فیلد — **آینه‌ی `BOUNDS` در `setting.validation.ts` بک‌اند**.
+ *
+ * ⚠️ هر تغییری در بک‌اند باید اینجا هم اعمال شود؛ این مقادیر هم برای
+ * اعتبارسنجی سمت کلاینت و هم برای راهنمای «بازه‌ی مجاز» زیر هر فیلد
+ * استفاده می‌شوند. اعتبارسنجی نهایی همیشه سمت سرور است.
+ */
+export const SETTING_BOUNDS: Record<EditableSettingKey, { min: number; max: number }> = {
+  minBookingLength: { min: 1, max: 365 },
+  maxBookingLength: { min: 1, max: 365 },
+  maxGuests: { min: 1, max: 100 },
+  maxAdvanceBookingDays: { min: 1, max: 365 },
+  maxPendingBookingsPerGuest: { min: 0, max: 100 },
+  paymentDeadlineMinutes: { min: 1, max: 10_080 },
+  maxDiscountsPerNight: { min: 0, max: 10 },
+  maxSurchargesPerNight: { min: 0, max: 10 },
+  maxTotalDiscountPercent: { min: 0, max: 100 },
+  maxTotalSurchargePercent: { min: 0, max: 1000 },
+  maxNightlyPrice: { min: 1, max: INT4_MAX },
+  minRegularPrice: { min: 1, max: INT4_MAX },
+  maxRegularPrice: { min: 1, max: INT4_MAX },
+  startingPriceWindowDays: { min: 1, max: 365 },
+  priceRuleMaxFutureDays: { min: 1, max: 3650 },
+};
+
+/** بیشترین `regularPrice` مجاز — آینه‌ی `deriveMaxRegularPrice` بک‌اند. */
+export function deriveMaxRegularPrice(
+  maxNightlyPrice: number,
+  surchargePercent: number,
+): number {
+  return Math.floor((maxNightlyPrice * 100) / (100 + surchargePercent));
+}
+
+/** آیا این کلید قابل ویرایش است؟ */
+export function isEditableSetting(key: SettingKey): key is EditableSettingKey {
+  return key in SETTING_BOUNDS;
+}
 
 interface SettingField {
   key: SettingKey;
@@ -68,7 +120,18 @@ export const SETTING_GROUPS: readonly SettingGroup[] = [
   },
 ];
 
-/** قالب‌بندی مقدار تنظیمات برای نمایش. */
+/** برچسب کوتاه واحد — برای `suffix` فیلدهای فرم. */
+export const SETTING_UNIT_SUFFIX: Record<SettingUnit, string> = {
+  nights: "شب",
+  guests: "نفر",
+  days: "روز",
+  minutes: "دقیقه",
+  percent: "٪",
+  toman: "تومان",
+  count: "عدد",
+};
+
+/** قالب‌بندی مقدار تنظیمات برای نمایش (فقط‌خواندنی). */
 export function formatSettingValue(value: number, unit: SettingUnit): string {
   const formatted = value.toLocaleString("fa-IR");
 
@@ -90,5 +153,5 @@ export function formatSettingValue(value: number, unit: SettingUnit): string {
   }
 }
 
-export type { SettingUnit };
+export type { SettingField };
 export type SettingsSnapshot = AppSettings;
