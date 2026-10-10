@@ -203,12 +203,15 @@ interface ButtonProps {
   onClick?: () => void;
   icon?: ReactNode;
   danger?: boolean;
+  /** غیرفعال‌کردن آیتم — مثلاً وقتی گذار وضعیت مجاز نیست. */
+  disabled?: boolean;
 }
 
-function Button({ children, onClick, icon, danger }: ButtonProps) {
+function Button({ children, onClick, icon, danger, disabled = false }: ButtonProps) {
   const { close } = useMenuContext();
 
   function handleClick() {
+    if (disabled) return;
     onClick?.();
     close();
   }
@@ -218,8 +221,11 @@ function Button({ children, onClick, icon, danger }: ButtonProps) {
       <button
         type="button"
         role="menuitem"
+        disabled={disabled}
         onClick={handleClick}
-        className={`group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-150 ${
+        className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-150 ${
+          disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"
+        } ${
           danger
             ? "text-danger hover:bg-danger/10"
             : "text-text hover:bg-primary-400/10"
