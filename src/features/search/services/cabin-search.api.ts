@@ -5,7 +5,7 @@
  * خورده و `API_URL` هم یک متغیر محیطی سروری است. مصرف‌کننده‌ی این فایل فقط
  * Route Handler است:
  *
- *     GET /api/search/cabins?city=1&guests=4&price=1000000-8000000&limit=6
+ *     GET /api/search/cabins?city=1&guests=4&checkIn=2026-10-15&checkOut=2026-10-18
  *     → src/app/api/search/cabins/route.ts → searchCabinsFromApi()
  *
  * کلاینت هرگز این فایل را import نمی‌کند؛ از `cabin-search.repository.ts`
@@ -15,13 +15,14 @@
  *   destination.type === "city"   → city=<id>
  *   destination.type === "region" → regionId=<id>   (اسلاگ به شناسه‌ی عددی ترجمه می‌شود)
  *   guests                        → guests
- *   budget                        → price=<min>-<max>
+ *   checkIn / checkOut            → startDate / endDate   (میلادی `yyyy-MM-dd`)
+ *   budget (بدون تاریخ)           → price=<min>-<max>      (بودجه‌ی هر شب)
+ *   budget (با تاریخ)             → totalPrice=<min>-<max> (بودجه‌ی کل سفر)
  *   limit                         → limit            (تعداد کارت پیش‌نمایش)
  *
- * ⚠️ محدودیت شناخته‌شده: بک‌اند پارامتر تاریخ (`checkIn`/`checkOut`) ندارد.
- * ارسال آن‌ها نتیجه را تغییر نمی‌دهد، پس عمداً فرستاده نمی‌شوند و تاریخ‌ها
- * فقط در UI و خلاصه‌ی جستجو می‌مانند. وقتی بک‌اند تقویم/موجودی گرفت، فقط
- * همین‌جا دو خط اضافه می‌شود و بقیه‌ی زنجیره دست نمی‌خورد.
+ * ⭐ وقتی تاریخ می‌فرستیم، بک‌اند علاوه بر فیلترها فقط ویلاهای **آزاد** در آن
+ * بازه را برمی‌گرداند و `pricing.mode === "stay"` (شامل `totalPrice` = جمع
+ * قیمت شب‌های اقامت) را کنار هر ویلا می‌گذارد.
  */
 
 import "server-only";
@@ -45,7 +46,14 @@ import {
 export async function searchCabinsFromApi(
   query: CabinSearchQuery,
 ): Promise<CabinSearchResult> {
-  const { destination, guests, budget, limit } = query;
+  const { destination, guests, budget, limit, checkIn, checkOut } = query;
+
+  /*
+   * «دارای اقامت» یعنی **هر دو** تاریخ موجود باشند. بک‌اند فقط یکی از دو
+   * تاریخ را با ۴۰۰ رد می‌کند، پس با بازه‌ی ناقص هیچ تاریخی نمی‌فرستیم و
+   * بودجه هم در حالت «هر شب» می‌ماند (تصمیم پروژه).
+   */
+  const hasStay = checkIn !== null && checkOut !== null;
 
   const { cabins, meta } = await queryCabins({
     city: destination?.type === "city" ? destination.id : undefined,
@@ -54,7 +62,13 @@ export async function searchCabinsFromApi(
         ? regionIdFromSlug(destination.id)
         : undefined,
     guests: guests ?? undefined,
-    price: budget ? formatPriceRange(budget.min, budget.max) : undefined,
+    startDate: hasStay ? checkIn : undefined,
+    endDate: hasStay ? checkOut : undefined,
+    //* بودجه با تاریخ یعنی «کل سفر»؛ بدون تاریخ یعنی «هر شب».
+    price:
+      budget && !hasStay ? formatPriceRange(budget.min, budget.max) : undefined,
+    totalPrice:
+      budget && hasStay ? formatPriceRange(budget.min, budget.max) : undefined,
     limit: limit ?? SEARCH_PREVIEW_LIMIT,
     page: 1,
   });

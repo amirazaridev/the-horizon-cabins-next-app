@@ -24,6 +24,9 @@ function buildQueryString({
   guests,
   limit,
   price,
+  totalPrice,
+  startDate,
+  endDate,
   regionId,
 }: CabinsQueryParams): string {
   const searchParams = new URLSearchParams();
@@ -35,6 +38,11 @@ function buildQueryString({
   if (bedrooms) searchParams.set("bedrooms", String(bedrooms));
   if (amenities) searchParams.set("amenities", amenities);
   if (price) searchParams.set("price", price);
+  //* بودجه‌ی «کل سفر» — فقط همراه با تاریخ معتبر است (اعتبارسنجی بک‌اند).
+  if (totalPrice) searchParams.set("totalPrice", totalPrice);
+  //* تاریخ‌ها همیشه با هم می‌روند؛ بک‌اند فقط یکی را رد می‌کند.
+  if (startDate) searchParams.set("startDate", startDate);
+  if (endDate) searchParams.set("endDate", endDate);
   if (city) searchParams.set("city", String(city));
   // نام پارامتر بک‌اند `regionId` است (عددی) — نه `region`
   if (regionId) searchParams.set("regionId", String(regionId));
@@ -43,14 +51,27 @@ function buildQueryString({
   return query ? `?${query}` : "";
 }
 
+/**
+ * آیا این درخواست به «موجودی/قیمت زنده» وابسته است؟
+ *
+ * کوئری‌های تاریخ‌دار (و بودجه‌ی کل) نباید کش شوند: نتیجه‌ی موجودی و
+ * قیمت هر لحظه ممکن است عوض شود و `revalidate: 300` یعنی تا ۵ دقیقه
+ * ویلاهای اشغال‌شده/آزادشده را اشتباه نشان دهیم.
+ */
+function needsFreshData(params?: CabinsQueryParams): boolean {
+  return Boolean(params?.startDate || params?.endDate || params?.totalPrice);
+}
+
 export async function queryCabins(
   params?: CabinsQueryParams,
 ): Promise<PaginatedCabins> {
   const queryString = buildQueryString(params ?? {});
-  const res = await apiFetch(`cabins${queryString}`, {
-    cache: "force-cache",
-    next: { revalidate: 300, tags: ["cabins-data"] },
-  });
+  const res = await apiFetch(
+    `cabins${queryString}`,
+    needsFreshData(params)
+      ? { cache: "no-store" }
+      : { cache: "force-cache", next: { revalidate: 300, tags: ["cabins-data"] } },
+  );
 
   const json: ApiPaginatedResponse<"cabins", CabinDto> = await res.json();
 
