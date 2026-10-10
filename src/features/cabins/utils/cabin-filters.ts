@@ -17,8 +17,14 @@ export type CabinFilters = {
   guests?: number;
   bedrooms?: number;
   amenities?: string[];
-  /** بازه‌ی بودجه‌ی سرچ (`lo-hi`) که مستقیماً به API پاس داده می‌شود */
+  /** بازه‌ی بودجه‌ی **هر شب** (`lo-hi`) — بدون تاریخ. */
   price?: [number, number];
+  /** بازه‌ی بودجه‌ی **کل سفر** (`lo-hi`) — فقط همراه با تاریخ معتبر است. */
+  totalPrice?: [number, number];
+  /** تاریخ ورود (میلادی `yyyy-MM-dd`) — همراه با `checkOut` می‌آید. */
+  checkIn?: string;
+  /** تاریخ خروج (میلادی `yyyy-MM-dd`). */
+  checkOut?: string;
   cityId?: number;
   category?: string;
   /** منطقه‌ی انتخاب‌شده در سرچ (`north` و …) */
@@ -26,6 +32,9 @@ export type CabinFilters = {
 };
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
+
+/** `yyyy-MM-dd` معتبر — هر چیز دیگری نادیده گرفته می‌شود */
+const DATE_PARAM_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export function parseCabinFilters(sp: RawSearchParams): CabinFilters {
   const one = (v: string | string[] | undefined) =>
@@ -40,11 +49,17 @@ export function parseCabinFilters(sp: RawSearchParams): CabinFilters {
   const category = one(sp.category);
   const regionRaw = one(sp.region);
 
+  const dateParam = (v: string | undefined) =>
+    v && DATE_PARAM_RE.test(v) ? v : undefined;
+
   return {
     guests: safeParseNumber(one(sp.guests), 1, 30),
     bedrooms: safeParseNumber(one(sp.bedrooms), 1, 20),
     amenities: amenities?.length ? amenities : undefined,
     price: parsePriceRange(one(sp.price)),
+    totalPrice: parsePriceRange(one(sp.totalPrice)),
+    checkIn: dateParam(one(sp.checkIn)),
+    checkOut: dateParam(one(sp.checkOut)),
     category,
     cityId: safeParseNumber(one(sp.city), 1, Number.MAX_SAFE_INTEGER),
     region: regionRaw && /^[a-z]+$/.test(regionRaw) ? regionRaw : undefined,
