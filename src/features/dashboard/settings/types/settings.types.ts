@@ -31,3 +31,16 @@ export interface AppSettings {
 
 /** کلیدهای قابل‌نمایش در صفحه‌ی تنظیمات. */
 export type SettingKey = keyof AppSettings;
+
+/**
+ * کلیدهای **قابل ویرایش** — مقادیر مشتق‌شده (`priceCalendarHorizonDays` و
+ * `bookedDatesMaxRangeDays`) در دیتابیس ذخیره نمی‌شوند و از سقف‌های دیگر
+ * محاسبه می‌شوند، پس قابل ویرایش نیستند.
+ */
+export type EditableSettingKey = Exclude<
+  SettingKey,
+  "priceCalendarHorizonDays" | "bookedDatesMaxRangeDays"
+>;
+
+/** مقادیر قابل ارسال به `PATCH /settings`. */
+export type SettingsColumns = Pick<AppSettings, EditableSettingKey>;

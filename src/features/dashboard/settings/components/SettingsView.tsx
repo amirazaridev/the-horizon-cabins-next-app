@@ -18,7 +18,7 @@ export default function SettingsView({ settings }: { settings: AppSettings }): R
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
         <span>
           این صفحه مقادیر <b className="text-text">مؤثر فعلی</b> سامانه را نشان می‌دهد.
-          ویرایش تنظیمات در فاز بعد اضافه می‌شود و فقط برای مالک مجاز خواهد بود.
+          ویرایش تنظیمات فقط برای <b className="text-text">مالک</b> مجاز است.
         </span>
       </div>
 
