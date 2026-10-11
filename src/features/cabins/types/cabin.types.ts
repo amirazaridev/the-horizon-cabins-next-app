@@ -23,7 +23,6 @@ export type Cabin = {
   name: string;
   maxCapacity: number;
   regularPrice: number;
-  discount: number;
   description: string;
   amenities: string[];
   bedrooms: number;
@@ -54,6 +53,41 @@ export type CabinDto = Omit<Cabin, "createdAt" | "updatedAt"> & {
   updatedAt: string;
 };
 
+/** DTO خام یک پیشنهاد «تخفیف لحظه‌آخری» — همان شکل پاسخ API. */
+export type LastMinuteCabinDto = CabinDto & {
+  finalPrice: number;
+  originalPrice: number;
+  discountPercent: number;
+  expiresAt: string;
+};
+
+/** پیشنهاد «تخفیف لحظه‌آخری» پس از map (تاریخ‌ها Date شده‌اند). */
+export type LastMinuteCabin = Cabin & {
+  /** قیمت نهایی شب تخفیف‌خورده (پس از تخفیف). */
+  finalPrice: number;
+  /** قیمت پیش از تخفیف (خط‌خورده). */
+  originalPrice: number;
+  /** درصد تخفیف اعمال‌شده. */
+  discountPercent: number;
+  /** لحظه‌ی انقضای تخفیف (ISO) — مبنای تایمر. */
+  expiresAt: string;
+};
+
+
+/**
+ * مقادیر مجاز مرتب‌سازی لیست کابین‌ها — هم‌خوان با `CabinSort` بک‌اند.
+ *
+ *  - `price_asc` / `price_desc` → بر پایه‌ی قیمت مؤثر (پس از تخفیف/افزایش).
+ *  - `newest`                   → جدیدترین اقامتگاه ثبت‌شده.
+ *  - `most_booked`              → بیشترین تعداد رزرو.
+ *  - `rating_desc`              → بیشترین امتیاز.
+ */
+export type CabinSort =
+  | "price_asc"
+  | "price_desc"
+  | "newest"
+  | "most_booked"
+  | "rating_desc";
 
 export interface CabinsQueryParams {
   page?: number;
@@ -82,4 +116,6 @@ export interface CabinsQueryParams {
    * شناسه‌ی عددی ترجمه می‌شود.
    */
   regionId?: number;
+  /** مرتب‌سازی لیست (پیش‌فرض بک‌اند: `id ASC`). */
+  sort?: CabinSort;
 }

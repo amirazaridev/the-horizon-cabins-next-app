@@ -1,23 +1,22 @@
 import { Wallet } from "lucide-react";
 import Container from "@/components/ui/Container";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
+import { resolveCabinPrice } from "@/features/cabins/utils/cabin-price";
 import OfferCard from "./OfferCard";
 import SectionHeading from "./SectionHeading";
 import Carousel from "@/components/ui/Carousel";
 
 export type BudgetStaysProps = {
+  /**
+   * اقامتگاه‌های اقتصادی — از قبل **مرتب‌شده بر اساس ارزان‌ترین قیمت مؤثر
+   * (`?sort=price_asc`) و محدودشده** توسط API می‌آید؛ پس اینجا سورت کلاینتی
+   * انجام نمی‌شود.
+   */
   cabins: Cabin[];
-  limit?: number;
 };
 
-export default function BudgetStays({ cabins, limit = 3 }: BudgetStaysProps) {
-  const priceOf = (cabin: Cabin) =>
-    Math.max(0, cabin.regularPrice - cabin.discount);
-  const budgetCabins = [...cabins]
-    .sort((a, b) => priceOf(a) - priceOf(b))
-    .slice(0, Math.max(0, limit));
-
-  if (!budgetCabins.length) return null;
+export default function BudgetStays({ cabins }: BudgetStaysProps) {
+  if (!cabins.length) return null;
 
   return (
     <section
@@ -42,14 +41,18 @@ export default function BudgetStays({ cabins, limit = 3 }: BudgetStaysProps) {
           </p>
         </div>
         <Carousel>
-          {budgetCabins.map((cabin) => (
-            <OfferCard
-              key={cabin.id}
-              cabin={cabin}
-              price={priceOf(cabin)}
-              badge="خوش‌قیمت"
-            />
-          ))}
+          {cabins.map((cabin) => {
+            const { finalPrice, originalPrice } = resolveCabinPrice(cabin);
+            return (
+              <OfferCard
+                key={cabin.id}
+                cabin={cabin}
+                price={finalPrice}
+                originalPrice={originalPrice}
+                badge="خوش‌قیمت"
+              />
+            );
+          })}
         </Carousel>
       </Container>
     </section>

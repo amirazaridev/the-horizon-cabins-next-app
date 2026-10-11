@@ -2,7 +2,9 @@ export * from "./getCities";
 export * from "./getRegions";
 export * from "./getAmenities";
 export * from "./getCabins";
-export type { CabinsQueryParams } from "../types/cabin.types";
+export * from "./getLastMinuteCabins";
+export type { CabinsQueryParams, CabinSort, LastMinuteCabin } from "../types/cabin.types";
+export type { PopularCity } from "../types/city.types";
 // PaginatedCabins از طریق export * ./getCabins صادر می‌شود
 export * from "./getCabin";
 export * from "./getCategories";

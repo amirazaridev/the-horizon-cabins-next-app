@@ -1,6 +1,6 @@
 import { apiFetch } from "@/libs/api/apiFetch";
 import { ApiResponse } from "@/types/api-response";
-import { City } from "../types/city.types";
+import { City, PopularCity } from "../types/city.types";
 
 /**
  * لیست همه‌ی شهرها همراه با اطلاعات منطقه‌ی هر شهر.
@@ -34,4 +34,25 @@ export async function getCities(): Promise<City[]> {
 export async function getCityById(cityId: number): Promise<City | undefined> {
   const cities = await getCities();
   return cities.find((city) => city.id === cityId);
+}
+
+/**
+ * شهرهای پرطرفدار (سکشن «مقاصد محبوب» لندینگ) — مرتب بر اساس بیشترین تعداد رزرو.
+ *
+ * `limit` از سمت Next قابل تنظیم است (پیش‌فرض ۸). کش عمومی با تگ
+ * `locations-data` تا یک لیست پرتکرار در هر درخواست از API خوانده نشود.
+ */
+export async function getPopularCities(limit = 8): Promise<PopularCity[]> {
+  const res = await apiFetch(`locations/cities/popular?limit=${limit}`, {
+    cache: "force-cache",
+    next: { revalidate: 300, tags: ["locations-data"] },
+  });
+
+  const json: ApiResponse<"cities", PopularCity[]> = await res.json();
+
+  if (json.status !== "success") {
+    throw new Error(json.message ?? "Failed to fetch popular cities");
+  }
+
+  return json.data.cities ?? [];
 }

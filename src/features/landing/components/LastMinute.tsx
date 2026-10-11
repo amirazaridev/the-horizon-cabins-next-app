@@ -1,27 +1,23 @@
 import { Zap } from "lucide-react";
 import Container from "@/components/ui/Container";
-import type { Cabin } from "@/features/cabins/types/cabin.types";
+import type { LastMinuteCabin } from "@/features/cabins/types/cabin.types";
+import { revalidateLastMinute } from "../actions/last-minute.actions";
 import Countdown from "./Countdown";
 import OfferCard from "./OfferCard";
 import Carousel from "@/components/ui/Carousel";
 
-export type LastMinuteOffer = {
-  cabin: Cabin;
-  price: number;
-};
-
 export type LastMinuteProps = {
-  offers: LastMinuteOffer[];
-  expiresAt?: string;
-  demoDurationSeconds?: number;
+  /** پیشنهادهای تخفیف لحظه‌آخری — از `GET /cabins/last-minute`. */
+  cabins: LastMinuteCabin[];
 };
 
-export default function LastMinute({
-  offers,
-  expiresAt,
-  demoDurationSeconds = 7200,
-}: LastMinuteProps) {
-  if (!offers.length) return null;
+export default function LastMinute({ cabins }: LastMinuteProps) {
+  if (!cabins.length) return null;
+
+  //* نزدیک‌ترین انقضا، مبنای تایمر کل سکشن است (ISOها با ترتیب زمانی برابرند).
+  const expiresAt = cabins
+    .map((cabin) => cabin.expiresAt)
+    .sort((a, b) => a.localeCompare(b))[0];
 
   return (
     <section
@@ -50,20 +46,18 @@ export default function LastMinute({
             </div>
             <div className="flex flex-col gap-2 self-start">
               <span className="text-text-gray text-xs">زمان باقی‌مانده</span>
-              <Countdown
-                expiresAt={expiresAt}
-                demoDurationSeconds={demoDurationSeconds}
-              />
+              {/* با پایان تایمر، داده‌ی سکشن باطل و از API تازه می‌شود. */}
+              <Countdown expiresAt={expiresAt} onExpire={revalidateLastMinute} />
             </div>
           </div>
           <div>
             <Carousel showDots>
-              {offers.map(({ cabin, price }) => (
+              {cabins.map((cabin) => (
                 <OfferCard
                   key={cabin.id}
                   cabin={cabin}
-                  price={price}
-                  originalPrice={cabin.regularPrice}
+                  price={cabin.finalPrice}
+                  originalPrice={cabin.originalPrice}
                   badge={"پیشنهاد ویژه"}
                 />
               ))}

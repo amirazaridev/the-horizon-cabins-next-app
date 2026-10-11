@@ -13,6 +13,7 @@ import { type ReactNode } from "react";
 import { format as formatJalali } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale";
 import { type Cabin } from "@/features/cabins/types/cabin.types";
+import { resolveCabinPrice } from "@/features/cabins/utils/cabin-price";
 import { formatCurrency } from "@/libs/utils/format";
 import FavoriteButton from "./FavoriteButton";
 
@@ -111,13 +112,12 @@ function LandingCard({
   animation = "hover",
   showPrice = false,
 }: CardVariantProps): ReactNode {
-  const { name, bedrooms, areaSqm, images, city, regularPrice, discount } =
-    cabin;
+  const { name, bedrooms, areaSqm, images, city } = cabin;
   const image = imageOverride ?? images?.[0];
   //* با تاریخ، کارت «جمع کل بازه» را نشان می‌دهد و تخفیف شبانه بی‌معناست.
   const stay = cabin.pricing?.mode === "stay" ? cabin.pricing : null;
-  const hasDiscount = discount > 0 && !stay;
-  const finalPrice = hasDiscount ? regularPrice - discount : regularPrice;
+  //* قیمت مؤثر از `pricing` استخراج می‌شود (فیلد `discount` در API وجود ندارد).
+  const { originalPrice, finalPrice, hasDiscount } = resolveCabinPrice(cabin);
 
   return (
     <div
@@ -174,7 +174,7 @@ function LandingCard({
               <>
                 {hasDiscount && (
                   <span className="text-text-gray/60 text-[11px] line-through">
-                    {formatCurrency(regularPrice)}
+                    {formatCurrency(originalPrice)}
                   </span>
                 )}
                 <span className="text-primary-500 text-sm font-extrabold tabular-nums">
@@ -201,8 +201,6 @@ function DefaultCard({
 }: CardVariantProps): ReactNode {
   const {
     name,
-    regularPrice,
-    discount,
     maxCapacity,
     amenities,
     bedrooms,
@@ -215,11 +213,9 @@ function DefaultCard({
   const image = imageOverride ?? images?.[0];
   //* با تاریخ، کارت «جمع کل بازه» را نشان می‌دهد و تخفیف شبانه بی‌معناست.
   const stay = cabin.pricing?.mode === "stay" ? cabin.pricing : null;
-  const hasDiscount = discount > 0 && !stay;
-  const finalPrice = hasDiscount ? regularPrice - discount : regularPrice;
-  const discountPercent = hasDiscount
-    ? Math.round((discount / regularPrice) * 100)
-    : 0;
+  //* قیمت مؤثر از `pricing` استخراج می‌شود (فیلد `discount` در API وجود ندارد).
+  const { originalPrice, finalPrice, hasDiscount, discountPercent } =
+    resolveCabinPrice(cabin);
   const visibleAmenities = amenities.slice(0, maxAmenities);
   const remainingAmenitiesCount = amenities.length - visibleAmenities.length;
 
@@ -317,7 +313,7 @@ function DefaultCard({
             <div className="flex flex-col">
               {hasDiscount && (
                 <span className="text-text-gray/70 text-[11px] line-through">
-                  {formatCurrency(regularPrice)}
+                  {formatCurrency(originalPrice)}
                 </span>
               )}
               <span className="text-text text-sm font-extrabold tabular-nums sm:text-base">
@@ -352,8 +348,6 @@ function DashboardCard({
   const {
     id,
     name,
-    regularPrice,
-    discount,
     maxCapacity,
     amenities,
     bedrooms,
@@ -365,10 +359,9 @@ function DashboardCard({
   } = cabin;
 
   const image = imageOverride ?? images?.[0];
-  const hasDiscount = discount > 0;
-  const discountPercent = hasDiscount
-    ? Math.round((discount / regularPrice) * 100)
-    : 0;
+  //* قیمت مؤثر از `pricing` استخراج می‌شود (فیلد `discount` در API وجود ندارد).
+  const { originalPrice, finalPrice, hasDiscount, discountPercent } =
+    resolveCabinPrice(cabin);
   const visibleAmenities = amenities.slice(0, maxAmenities);
   const remainingAmenitiesCount = amenities.length - visibleAmenities.length;
 
@@ -464,20 +457,18 @@ function DashboardCard({
         </div>
         {/* قیمت‌نامه */}
         <div className="bg-background-2 flex flex-col gap-1.5 rounded-xl p-3.5 text-sm">
-          <PriceRow label="قیمت اصلی" value={formatCurrency(regularPrice)} />
+          <PriceRow label="قیمت اصلی" value={formatCurrency(originalPrice)} />
           {hasDiscount && (
             <PriceRow
               label={`تخفیف (${discountPercent}٪)`}
-              value={formatCurrency(discount)}
+              value={formatCurrency(originalPrice - finalPrice)}
               tone="danger"
             />
           )}
           <div className="border-border border-t pt-1.5" />
           <PriceRow
             label="قیمت نهایی / شب"
-            value={formatCurrency(
-              hasDiscount ? regularPrice - discount : regularPrice,
-            )}
+            value={formatCurrency(finalPrice)}
             bold
           />
         </div>
@@ -487,12 +478,9 @@ function DashboardCard({
 }
 
 function PriceBadge({ cabin }: { cabin: Cabin }): ReactNode {
-  const { regularPrice, discount } = cabin;
-  const hasDiscount = discount > 0;
-  const finalPrice = hasDiscount ? regularPrice - discount : regularPrice;
-  const discountPercent = hasDiscount
-    ? Math.round((discount / regularPrice) * 100)
-    : 0;
+  //* قیمت مؤثر از `pricing` استخراج می‌شود (فیلد `discount` در API وجود ندارد).
+  const { originalPrice, finalPrice, hasDiscount, discountPercent } =
+    resolveCabinPrice(cabin);
 
   return (
     <div className="absolute top-4 right-2 flex items-center justify-between gap-2 sm:right-4">
@@ -502,7 +490,7 @@ function PriceBadge({ cabin }: { cabin: Cabin }): ReactNode {
       {hasDiscount && (
         <>
           <span className="bg-surface/80 text-text/60 rounded-full px-4 py-1.5 text-xs font-medium line-through backdrop-blur-sm md:text-sm">
-            {formatCurrency(regularPrice)}
+            {formatCurrency(originalPrice)}
           </span>
           <span className="bg-danger-strong rounded-full px-3 py-1.5 text-[10px] font-bold text-white md:text-xs">
             {discountPercent}٪ تخفیف
