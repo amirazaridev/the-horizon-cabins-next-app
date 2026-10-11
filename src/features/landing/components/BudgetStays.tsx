@@ -2,8 +2,8 @@ import { Wallet } from "lucide-react";
 import Container from "@/components/ui/Container";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
 import { resolveCabinPrice } from "@/features/cabins/utils/cabin-price";
-import OfferCard from "./OfferCard";
-import SectionHeading from "./SectionHeading";
+import OfferCard from "@/features/landing/components/OfferCard";
+import SectionHeading from "@/features/landing/components/SectionHeading";
 import Carousel from "@/components/ui/Carousel";
 
 export type BudgetStaysProps = {
@@ -33,7 +33,10 @@ export default function BudgetStays({ cabins }: BudgetStaysProps) {
           }
           href="/cabins"
         />
-        <div className="hz-reveal border-secondary-400/25 bg-surface mb-7 flex items-start gap-3 rounded-2xl border p-4">
+        <div
+          data-animate="reveal"
+          className="border-secondary-400/25 bg-surface mb-7 flex items-start gap-3 rounded-2xl border p-4"
+        >
           <Wallet size={20} className="text-secondary-500 mt-1 shrink-0" />
           <p className="text-text-gray text-sm leading-7">
             گزینه‌های خوش‌قیمت برای سفر بعدی شما؛ مرتب‌شده بر اساس قیمت هر شب پس

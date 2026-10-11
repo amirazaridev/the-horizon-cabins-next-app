@@ -11,9 +11,9 @@ import type { NavbarUser } from "@/components/ui/Navbar/types";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { usePathname } from "next/navigation";
 import {
-  isLandingReady,
-  subscribeLandingReady,
-} from "@/libs/utils/landing-ready";
+  isAppReady,
+  subscribeAppReady,
+} from "@/libs/utils/app-ready";
 import Container from "../Container";
 
 /**
@@ -72,7 +72,7 @@ export default function Navbar({ user = null }: Props) {
     if (!nav || !isLandingPage) return;
 
     // اگر مراسم ورود قبلاً پخش شده، دوباره انیمیشن نمی‌زنیم
-    if (isLandingReady()) return;
+    if (isAppReady()) return;
 
     let timeline: gsap.core.Timeline | null = null;
 
@@ -87,7 +87,7 @@ export default function Navbar({ user = null }: Props) {
       });
     };
 
-    const unsubscribe = subscribeLandingReady(play);
+    const unsubscribe = subscribeAppReady(play);
 
     return () => {
       unsubscribe();

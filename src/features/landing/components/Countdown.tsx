@@ -2,31 +2,35 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import {
+  isValidDeadline,
+  secondsUntil,
+  splitSeconds,
+} from "@/features/landing/utils/countdown";
+
 export type CountdownProps = {
+  /**
+   * مهلت انقضا (ISO).
+   *
+   * ⚠️ اگر ندهید (یا تاریخ نامعتبر باشد) **هیچ تایمری رندر نمی‌شود**.
+   * پیش از این یک `demoDurationSeconds = 7200` پیش‌فرض وجود داشت که در
+   * نبودِ `expiresAt` یک شمارش **ساختگی ۲ ساعته** نشان می‌داد؛ حالا حذف
+   * شده تا رفتار پروداکشن صادق باشد.
+   */
   expiresAt?: string;
-  demoDurationSeconds?: number;
-  /** وقتی شمارش به صفر رسید، **یکبار** صدا زده می‌شود (مثلاً برای revalidate). */
+  /** وقتی شمارش به صفر رسید، **یک‌بار** صدا زده می‌شود (مثلاً برای revalidate). */
   onExpire?: () => void;
 };
 
-export default function Countdown({
-  expiresAt,
-  demoDurationSeconds = 7200,
-  onExpire,
-}: CountdownProps) {
+export default function Countdown({ expiresAt, onExpire }: CountdownProps) {
   const [remaining, setRemaining] = useState<number | null>(null);
   const firedRef = useRef(false);
 
   useEffect(() => {
     firedRef.current = false;
 
-    const deadline = expiresAt
-      ? Date.parse(expiresAt)
-      : Date.now() + Math.max(0, demoDurationSeconds) * 1000;
     const update = () => {
-      const next = Number.isFinite(deadline)
-        ? Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
-        : 0;
+      const next = secondsUntil(expiresAt);
       setRemaining(next);
 
       if (next === 0 && !firedRef.current) {
@@ -34,6 +38,11 @@ export default function Countdown({
         onExpire?.();
       }
     };
+
+    /*
+     * اولین تیک با `setTimeout(0)` و نه مستقیم: `setState` در بدنه‌ی
+     * `useEffect` خطای lint `react-hooks/set-state-in-effect` می‌دهد.
+     */
     const initialTick = window.setTimeout(update, 0);
     const interval = window.setInterval(update, 1000);
 
@@ -41,7 +50,10 @@ export default function Countdown({
       window.clearTimeout(initialTick);
       window.clearInterval(interval);
     };
-  }, [expiresAt, demoDurationSeconds, onExpire]);
+  }, [expiresAt, onExpire]);
+
+  // بدون مهلت معتبر، تایمری وجود ندارد (نه عدد ساختگی، نه `--`)
+  if (!isValidDeadline(expiresAt)) return null;
 
   if (remaining === 0) {
     return (
@@ -49,16 +61,12 @@ export default function Countdown({
     );
   }
 
-  const units = [
-    {
-      label: "ساعت",
-      value: remaining === null ? null : Math.floor(remaining / 3600),
-    },
-    {
-      label: "دقیقه",
-      value: remaining === null ? null : Math.floor((remaining % 3600) / 60),
-    },
-    { label: "ثانیه", value: remaining === null ? null : remaining % 60 },
+  const units = remaining === null ? null : splitSeconds(remaining);
+
+  const cells = [
+    { label: "ساعت", value: units?.hours },
+    { label: "دقیقه", value: units?.minutes },
+    { label: "ثانیه", value: units?.seconds },
   ];
 
   return (
@@ -69,13 +77,13 @@ export default function Countdown({
       dir="ltr"
       className="flex shrink-0 gap-2"
     >
-      {units.map(({ label, value }) => (
+      {cells.map(({ label, value }) => (
         <div
           key={label}
           className="border-primary-400/20 bg-background/70 min-w-16 rounded-2xl border px-3 py-3 text-center"
         >
           <span className="text-primary-400 block text-2xl font-bold tabular-nums">
-            {value === null
+            {value === undefined
               ? "--"
               : value.toLocaleString("fa-IR", {
                   minimumIntegerDigits: 2,

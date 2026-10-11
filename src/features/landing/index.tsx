@@ -1,12 +1,11 @@
-import ExperienceBanner from "./components/ExperienceBanner";
-import Experiences from "./components/Experiences";
-import Hero from "./components/Hero";
-import LastMinute from "./components/LastMinute";
-import BudgetStays from "./components/BudgetStays";
-import Stays from "./components/Stays";
-import Testimonials from "./components/Testimonials";
-import Destinations from "./components/Destinations";
-import Categories from "./components/Categories";
+import ExperienceBanner from "@/features/landing/components/ExperienceBanner";
+import Hero from "@/features/landing/components/Hero";
+import LastMinute from "@/features/landing/components/LastMinute";
+import BudgetStays from "@/features/landing/components/BudgetStays";
+import Stays from "@/features/landing/components/Stays";
+import Testimonials from "@/features/landing/components/Testimonials";
+import Destinations from "@/features/landing/components/Destinations";
+import Categories from "@/features/landing/components/Categories";
 import LandingAnimationProvider from "@/features/landing/components/LandingAnimationProvider";
 import { SearchPreview } from "@/features/search";
 import {
@@ -15,14 +14,7 @@ import {
   queryCabins,
 } from "@/features/cabins/api";
 
-/**
- * صفحه‌ی لندینگ — همه‌ی سکشن‌ها از API تغذیه می‌شوند (بدون داده‌ی hard-coded).
- *
- *  - مقاصد محبوب   → `GET /locations/cities/popular` (بیشترین رزرو، limit=۸)
- *  - منتخب         → `GET /cabins?sort=most_booked&limit=۶`
- *  - لحظه‌آخری     → `GET /cabins/last-minute` (تخفیف‌های امروز/فردا، limit=۵)
- *  - اقتصادی       → `GET /cabins?sort=price_asc&limit=۳`
- */
+
 export default async function Landing() {
   const [popularCities, featuredCabins, lastMinuteCabins, budgetCabins] =
     await Promise.all([
@@ -42,7 +34,6 @@ export default async function Landing() {
       <LastMinute cabins={lastMinuteCabins} />
       <BudgetStays cabins={budgetCabins} />
       <ExperienceBanner />
-      <Experiences />
       <Testimonials />
     </LandingAnimationProvider>
   );

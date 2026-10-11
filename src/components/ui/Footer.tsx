@@ -2,8 +2,17 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import Container from "@/components/ui/Container";
 import Logo from "@/components/ui/Logo";
+import CopyrightText from "@/components/ui/CopyrightText";
+import {
+  FOOTER_CONTACT,
+  FOOTER_QUICK_LINKS,
+  FOOTER_SOCIALS,
+  FOOTER_SUPPORT_LINKS,
+  type FooterLink,
+} from "@/constants/footer";
 
-export default function HorizonFooter() {
+
+export default function Footer() {
   return (
     <footer className="bg-background-2 text-text-gray border-border border-t px-4 py-10 shadow-lg md:px-6 md:py-12">
       <Container>
@@ -17,60 +26,80 @@ export default function HorizonFooter() {
               یک تجربه ماندگار تبدیل کنید.
             </p>
           </div>
+
+          <FooterColumn title="دسترسی سریع" links={FOOTER_QUICK_LINKS} />
+
           <div>
-            <div className="text-text mb-4 text-sm font-bold">دسترسی سریع</div>
+            <FooterColumnTitle>پشتیبانی</FooterColumnTitle>
             <div className="grid gap-3 text-xs">
-              <Link href="#destinations">مقاصد</Link>
-              <Link href="#stays">اقامتگاه‌ها</Link>
-              <Link href="#experiences">تجربه‌ها</Link>
-              <Link href="/cabins">رزرو</Link>
-            </div>
-          </div>
-          <div>
-            <div className="text-text mb-4 text-sm font-bold">پشتیبانی</div>
-            <div className="grid gap-3 text-xs">
-              <Link href="/cabins">قوانین و شرایط</Link>
-              <Link href="/cabins">سوالات متداول</Link>
+              {FOOTER_SUPPORT_LINKS.map((link) => (
+                <Link key={link.label} href={link.href}>
+                  {link.label}
+                </Link>
+              ))}
               <a
-                href="mailto:info@thehorizon.com"
+                href={`mailto:${FOOTER_CONTACT.email}`}
                 className="flex items-center gap-2"
               >
                 <Mail size={13} />
-                info@thehorizon.com
+                {FOOTER_CONTACT.email}
               </a>
             </div>
           </div>
+
           <div>
-            <div className="text-text mb-4 text-sm font-bold">
-              ما را دنبال کنید
-            </div>
+            <FooterColumnTitle>ما را دنبال کنید</FooterColumnTitle>
             <div className="mt-6 flex gap-4">
-              {["facebook", "instagram", "twitter", "youtube"].map((social) => (
+              {FOOTER_SOCIALS.map(({ label, href, path }) => (
                 <a
-                  key={social}
-                  href="#"
-                  className="hover:bg-primary-400 bg-foreground/5 text-text/50 hover:text-background flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300"
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className="hover:bg-primary-400 bg-foreground/5 text-text/50 hover:text-background flex size-10 items-center justify-center rounded-full transition-all duration-300"
                 >
-                  <span className="sr-only">{social}</span>
                   <svg
-                    className="h-5 w-5"
-                    fill="currentColor"
+                    className="size-5"
                     viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
                   >
-                    <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12c0-5.523-4.477-10-10-10z" />
+                    <path d={path} />
                   </svg>
                 </a>
               ))}
             </div>
-            <div className="border-border bg-border/50 mt-5 h-9 rounded-full border px-3 text-[10px] leading-9">
-              ایمیل خود را وارد کنید برای خبرهای جدید
-            </div>
           </div>
         </div>
-        <div className="border-border/7 mt-10 flex flex-col items-center justify-center gap-3 border-t pt-5 text-[10px] sm:flex-row">
-          <span>© ۲۰۰۵ هورایزن. تمامی حقوق محفوظ است.</span>
+
+        <div className="border-border/7 mt-10 flex flex-col items-center justify-center gap-3 border-t pt-5 sm:flex-row">
+          <CopyrightText className="text-[10px]" />
         </div>
       </Container>
     </footer>
+  );
+}
+
+function FooterColumnTitle({ children }: { children: string }) {
+  return <div className="text-text mb-4 text-sm font-bold">{children}</div>;
+}
+
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: FooterLink[];
+}) {
+  return (
+    <div>
+      <FooterColumnTitle>{title}</FooterColumnTitle>
+      <div className="grid gap-3 text-xs">
+        {links.map((link) => (
+          <Link key={link.label} href={link.href}>
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

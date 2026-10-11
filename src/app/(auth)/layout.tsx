@@ -34,7 +34,7 @@ export default async function AuthLayout({
 
         <main className="w-full">{children}</main>
 
-        <CopyrightText />
+        <CopyrightText className="z-10 mt-6 text-xs" />
       </div>
     </div>
   );

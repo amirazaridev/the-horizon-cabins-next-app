@@ -1,44 +1,46 @@
 import Image from "next/image";
-import { ShieldCheck, Sparkles, Star } from "lucide-react";
 import Container from "@/components/ui/Container";
-import { HORIZON_IMAGES } from "@/features/landing/constants/horizon-home";
+import { HORIZON_IMAGES } from "@/features/landing/constants";
+import { EXPERIENCE_BANNER_ITEMS } from "@/features/landing/constants/experience-banner";
 
-const items = [
-  {
-    icon: ShieldCheck,
-    title: "رزرو مطمئن",
-    desc: "پرداخت امن و پشتیبانی واقعی",
-    tone: "secondary" as const,
-  },
-  {
-    icon: Star,
-    title: "اقامتگاه‌های منتخب",
-    desc: "کیفیت بررسی‌شده و مطمئن",
-    tone: "primary" as const,
-  },
-  {
-    icon: Sparkles,
-    title: "تجربه‌های متفاوت",
-    desc: "هر مقصد، یک خاطره تازه",
-    tone: "primary" as const,
-  },
-];
-
+/**
+ * بنر «چرا هورایزن؟».
+ *
+ * ⚠️ اصلاح ساختاری: `<section>` اکنون `relative` است. کارت بنر
+ * `absolute inset-x-0` است و قبلاً هیچ والدِ positioned نداشت؛ یعنی
+ * موقعیتش به initial containing block (viewport) گره می‌خورد. با
+ * `relative` روی سکشن، موقعیت‌یابی صریح و پایدار شد (چون سکشن تمام‌عرض
+ * است، خروجی بصری تغییر نمی‌کند).
+ *
+ * ⚠️ ارتفاع‌های `h-150` / `sm:h-80` / `lg:h-50` یک انتخاب طراحیِ عمدی
+ * هستند (بنر روی موبایل بلندتر است) و دست‌نخورده ماندند.
+ *
+ * ⚠️ داده‌ی سه کارت از `EXPERIENCE_BANNER_ITEMS` می‌آید؛ قبلاً همین لیست
+ * دو بار وجود داشت (یک‌بار در constants که بی‌استفاده بود، یک‌بار hardcode
+ * همین‌جا).
+ */
 export default function ExperienceBanner() {
   return (
     <section
       id="experiences"
-      className="bg-background-2 h-150 px-4 pb-20 sm:h-80 md:px-6 lg:h-50"
+      className="bg-background-2 relative h-150 px-4 pb-20 sm:h-80 md:px-6 lg:h-50"
     >
       <Container>
-        <div className="hz-reveal absolute inset-x-0 overflow-hidden rounded-3xl border border-white/10">
+        <div
+          data-animate="reveal"
+          className="absolute inset-x-0 overflow-hidden rounded-3xl border border-white/10"
+        >
           <Image
             src={HORIZON_IMAGES.landscape}
             alt="تجربه هورایزن"
             fill
+            sizes="100vw"
             className="object-cover"
           />
-          <div className="from-overlay/95 via-overlay/80 to-overlay/25 absolute inset-0 bg-linear-to-l" />
+          <div
+            aria-hidden="true"
+            className="from-overlay/95 via-overlay/80 to-overlay/25 absolute inset-0 bg-linear-to-l"
+          />
           <div className="relative grid gap-8 px-6 py-8 md:grid-cols-[1.05fr_1fr] md:px-10 md:py-10 lg:px-14">
             <div className="max-w-lg">
               <div className="text-primary-400 mb-2 text-[11px] font-semibold">
@@ -53,21 +55,20 @@ export default function ExperienceBanner() {
               </p>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 md:items-end">
-              {items.map(({ icon: Icon, title, desc, tone }) => (
-                <div
-                  key={title}
-                  className="rounded-2xl border border-white/10 bg-black/20 p-4 backdrop-blur-md"
-                >
-                  <Icon
-                    className={`mb-3 ${tone === "secondary" ? "text-secondary-400" : "text-primary-400"}`}
-                    size={20}
-                  />
-                  <div className="text-sm font-bold text-white">{title}</div>
-                  <div className="mt-1 text-[10px] leading-5 text-white/45">
-                    {desc}
+              {EXPERIENCE_BANNER_ITEMS.map(
+                ({ icon: Icon, title, desc, iconClassName }) => (
+                  <div
+                    key={title}
+                    className="rounded-2xl border border-white/10 bg-black/20 p-4 backdrop-blur-md"
+                  >
+                    <Icon className={`mb-3 ${iconClassName}`} size={20} />
+                    <div className="text-sm font-bold text-white">{title}</div>
+                    <div className="mt-1 text-[10px] leading-5 text-white/45">
+                      {desc}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
         </div>

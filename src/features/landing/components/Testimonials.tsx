@@ -1,8 +1,22 @@
 import Image from "next/image";
 import { Star } from "lucide-react";
 import Container from "@/components/ui/Container";
-import { TESTIMONIALS_HOME } from "@/features/landing/constants/horizon-home";
-import SectionHeading from "./SectionHeading";
+import { TESTIMONIALS_HOME } from "@/features/landing/constants";
+import SectionHeading from "@/features/landing/components/SectionHeading";
+
+/**
+ * نمایش امتیاز با اعداد فارسی و یک رقم اعشار — «۵٫۰».
+ *
+ * ⚠️ پیش از این `rating` یک **رشته‌ی فارسی** («۵.۰») در ثابت‌ها بود؛ حالا
+ * عدد است و اینجا قالب‌بندی می‌شود. توجه: جداکننده‌ی اعشار حالا «٫»
+ * (فارسی) است، نه «.» لاتین.
+ */
+function formatRating(rating: number): string {
+  return rating.toLocaleString("fa-IR", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+}
 
 export default function Testimonials() {
   return (
@@ -16,7 +30,8 @@ export default function Testimonials() {
           {TESTIMONIALS_HOME.map((item) => (
             <article
               key={item.name}
-              className="hz-reveal border-border bg-surface rounded-2xl border p-5"
+              data-animate="reveal"
+              className="border-border bg-surface rounded-2xl border p-5"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -25,6 +40,8 @@ export default function Testimonials() {
                       src={item.image}
                       alt={item.name}
                       fill
+                      /* آواتار دایره‌ای با اندازه‌ی ثابت `size-11` (۴۴px). */
+                      sizes="44px"
                       className="object-cover"
                     />
                   </div>
@@ -39,7 +56,7 @@ export default function Testimonials() {
                 </div>
                 <div className="text-primary-400 flex items-center gap-1">
                   <Star size={13} fill="currentColor" />
-                  <span className="text-[10px]">{item.rating}</span>
+                  <span className="text-[10px]">{formatRating(item.rating)}</span>
                 </div>
               </div>
               <p className="text-text-gray mt-5 text-xs leading-7">
