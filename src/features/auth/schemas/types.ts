@@ -1,13 +1,13 @@
-import { z } from "zod";
+import { type z } from "zod";
 
 import {
-  forgotPasswordSchema,
-  loginSchema,
+  type forgotPasswordSchema,
+  type loginSchema,
 } from "./login";
 import {
-  registerPasswordSchema,
-  registerStepOneSchema,
-  registerVerificationSchema,
+  type registerPasswordSchema,
+  type registerStepOneSchema,
+  type registerVerificationSchema,
 } from "./register";
 
 /**

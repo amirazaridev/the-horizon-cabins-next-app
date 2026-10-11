@@ -1,6 +1,6 @@
 import { apiFetch } from "@/libs/api/apiFetch";
-import { ApiResponse } from "@/types/api-response";
-import { Cabin, CabinDto } from "../types/cabin.types";
+import { type ApiResponse } from "@/types/api-response";
+import { type Cabin, type CabinDto } from "../types/cabin.types";
 import { mapCabin } from "../utils/mapCabin";
 
 export async function getCabin(id: number): Promise<Cabin> {

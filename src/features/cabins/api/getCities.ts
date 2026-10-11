@@ -1,6 +1,6 @@
 import { apiFetch } from "@/libs/api/apiFetch";
-import { ApiResponse } from "@/types/api-response";
-import { City, PopularCity } from "../types/city.types";
+import { type ApiResponse } from "@/types/api-response";
+import { type City, type PopularCity } from "../types/city.types";
 
 /**
  * لیست همه‌ی شهرها همراه با اطلاعات منطقه‌ی هر شهر.
