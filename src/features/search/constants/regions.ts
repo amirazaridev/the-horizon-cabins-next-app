@@ -1,19 +1,10 @@
-import type { Region, RegionId } from "../types/search.types";
+import type { Region, RegionId } from "@/features/search/types/search.types";
 import type { Region as ApiRegion } from "@/features/cabins/types/city.types";
 
-/**
- * لایه‌ی نمایش مناطق.
- *
- * ⚠️ منبع حقیقتِ «لیست مناطق» و «دسته‌بندی شهرها» بک‌اند است
- * (`GET /locations/regions` + `city.regionId`). این فایل فقط چیزهایی را
- * نگه می‌دارد که بک‌اند ندارد:
- *
- *   1) متن `hint` فارسی برای هر منطقه (بک‌اند فیلد توصیفی ندارد)
- *   2) نام منطقه به‌عنوان fallback برای متن‌هایی که فقط اسلاگ در دست دارند
- *      (مثل پارس URL یا چیپ «آخرین جستجو» که لیست مناطق را همراه ندارد)
- */
+//* لایه‌ی نمایش مناطق. منبع حقیقتِ «لیست مناطق» و «دسته‌بندی شهرها» بک‌اند است؛
+//* این فایل فقط دو چیز را نگه می‌دارد که بک‌اند ندارد: متن `hint` فارسی و نام منطقه به‌عنوان fallback.
 
-/** توضیح کوتاه هر منطقه — فقط نمایشی */
+//* توضیح کوتاه هر منطقه — فقط نمایشی
 export const REGION_HINTS: Record<RegionId, string> = {
   north: "جنگل، دریا و کوهستان",
   northeast: "خراسان و کویر شمالی",
@@ -25,13 +16,7 @@ export const REGION_HINTS: Record<RegionId, string> = {
   southeast: "کرمان، بم و سواحل مکران",
 };
 
-/**
- * نام مناطق بر پایه‌ی اسلاگ.
- *
- * این نقشه فقط «fallback» است تا هر جا لیست API در دست نبود، بتوانیم
- * متن خوانا بسازیم. مقادیرش باید با `prisma/seeds/data/region.ts` هم‌خوان
- * بمانند.
- */
+//* نام مناطق بر پایه‌ی اسلاگ — fallback برای جایی که لیست API در دست نیست (پارس URL، چیپ «آخرین جستجو»). باید با seed بک‌اند هم‌خوان بماند.
 export const REGION_NAMES: Record<RegionId, string> = {
   north: "شمال",
   northeast: "شمال شرقی",
@@ -43,13 +28,7 @@ export const REGION_NAMES: Record<RegionId, string> = {
   southeast: "جنوب شرقی",
 };
 
-/**
- * شناسه‌ی عددی مناطق — آینه‌ی `prisma/seeds/data/region.ts` در بک‌اند.
- *
- * بک‌اند شناسه‌ها را «صریح» seed می‌کند («Ids are explicit so the city seed
- * can reference them deterministically»)، پس این نگاشت پایدار است و برای
- * ترجمه‌ی اسلاگِ داخل URL به پارامتر `regionId` استفاده می‌شود.
- */
+//* شناسه‌ی عددی مناطق — آینه‌ی seed بک‌اند. بک‌اند شناسه‌ها را صریح seed می‌کند، پس این نگاشت پایدار است.
 export const REGION_IDS: Record<RegionId, number> = {
   north: 1,
   northeast: 2,
@@ -66,7 +45,7 @@ export function isRegionId(value: string | null | undefined): value is RegionId 
   return Object.prototype.hasOwnProperty.call(REGION_NAMES, value);
 }
 
-/** نام منطقه از اسلاگ؛ اگر ناشناخته باشد خودِ اسلاگ برگردانده می‌شود */
+//* نام منطقه از اسلاگ؛ اگر ناشناخته باشد خودِ اسلاگ برمی‌گردد
 export function regionName(slug: string): string {
   return isRegionId(slug) ? REGION_NAMES[slug] : slug;
 }
@@ -75,40 +54,28 @@ export function regionHint(slug: string): string | undefined {
   return isRegionId(slug) ? REGION_HINTS[slug] : undefined;
 }
 
-/** شناسه‌ی عددی منطقه از اسلاگ — برای پارامتر `regionId` بک‌اند */
+//* شناسه‌ی عددی منطقه از اسلاگ — برای پارامتر `regionId` بک‌اند
 export function regionIdFromSlug(
   slug: string | null | undefined,
 ): number | undefined {
   return slug && isRegionId(slug) ? REGION_IDS[slug] : undefined;
 }
 
-/** اسلاگ منطقه از شناسه‌ی عددی — برای گروه‌بندی شهرها */
+//* اسلاگ منطقه از شناسه‌ی عددی — برای گروه‌بندی شهرها
 export function regionSlugFromId(id: number): RegionId | undefined {
   return (Object.keys(REGION_IDS) as RegionId[]).find(
     (slug) => REGION_IDS[slug] === id,
   );
 }
 
-
-/**
- * برچسب «همه شهرهای …» برای یک منطقه.
- * مثال: «شمال» → «همه شهرهای شمال»
- */
+//* برچسب «همه شهرهای …» — مثال: «شمال» ⇒ «همه شهرهای شمال»
 export function regionAllCitiesLabel(regionName: string): string {
   return `همه شهرهای ${regionName.replace(" ایران", "").trim()}`;
 }
 
-/* ------------------------------------------------------------------ */
-/* نگاشت API ↔ دامنه‌ی جستجو                                            */
-/* ------------------------------------------------------------------ */
+//* نگاشت API ↔ دامنه‌ی جستجو
 
-/**
- * تبدیل مناطق بک‌اند به مدل نمایشی جستجو.
- *
- * ترتیب ورودی حفظ می‌شود؛ بک‌اند از قبل با `displayOrder` مرتب برمی‌گرداند.
- * منطقه‌ای که اسلاگش برای فرانت‌اند ناشناخته باشد حذف می‌شود تا UI با
- * شناسه‌ی نامعتبر رندر نشود.
- */
+//* مناطق بک‌اند ⇒ مدل نمایشی جستجو. ترتیب ورودی حفظ می‌شود و منطقه‌ی با اسلاگ ناشناخته حذف می‌شود تا UI با شناسه‌ی نامعتبر رندر نشود.
 export function toSearchRegions(apiRegions: ApiRegion[]): Region[] {
   return apiRegions
     .filter((region): region is ApiRegion & { slug: RegionId } =>

@@ -1,20 +1,21 @@
-/**
- * سرویس مقصد — تنها نقطه‌ی دسترسی UI به داده‌ی مقصد.
- *
- * لیست شهرها و مناطق از API می‌آید (`getCities` / `getRegions`) و این لایه
- * فقط منطق جستجو/گروه‌بندی را روی آن‌ها اجرا می‌کند. هیچ داده‌ی ماکی
- * (مثل نگاشت دستی «نام شهر → منطقه») در فرانت‌اند باقی نمانده است.
- */
-
 import type { City } from "@/features/cabins/types/city.types";
 import {
   REGION_IDS,
   regionAllCitiesLabel,
   regionHint as regionHintOf,
   regionName,
-} from "../constants/regions";
-import { groupCitiesByRegion, type CityGroup } from "../utils/city-groups";
-import type { Destination, Region, RegionId } from "../types/search.types";
+} from "@/features/search/constants/regions";
+import type {
+  Destination,
+  Region,
+  RegionId,
+} from "@/features/search/types/search.types";
+import {
+  groupCitiesByRegion,
+  type CityGroup,
+} from "@/features/search/utils/city-groups";
+
+//* سرویس مقصد — تنها نقطه‌ی دسترسی UI به داده‌ی مقصد. لیست شهرها/مناطق از API می‌آید و این لایه فقط منطق جستجو/گروه‌بندی را اجرا می‌کند؛ هیچ داده‌ی ماکی (مثل نگاشت دستی «نام شهر → منطقه») باقی نمانده.
 
 export type DestinationSearchResult = {
   regions: Region[];
@@ -22,17 +23,13 @@ export type DestinationSearchResult = {
   others: City[];
 };
 
-/** شناسه‌ی عددی منطقه از اسلاگ */
+//* شناسه‌ی عددی منطقه از اسلاگ
 function regionNumericId(regionId: RegionId): number {
   return REGION_IDS[regionId];
 }
 
-/**
- * فیلتر کردن مناطق و شهرها بر اساس عبارت جستجو.
- *
- * بدون عبارت: همه‌ی مناطق (به ترتیب `displayOrder` بک‌اند) با شهرهایشان.
- * با عبارت: منطقه‌هایی که نامشان شامل عبارت است + شهرهای منطبق.
- */
+//* بدون عبارت: همه‌ی مناطق (به ترتیب `displayOrder` بک‌اند) با شهرهایشان.
+//* با عبارت: منطقه‌هایی که نامشان شامل عبارت است + شهرهای منطبق.
 export function searchDestinations(
   cities: City[],
   regions: Region[],
@@ -69,12 +66,12 @@ export function searchDestinations(
   return { regions: matchedRegions, groups, others };
 }
 
-/** ساخت مقصد «منطقه» از اسلاگ */
+//* ساخت مقصد «منطقه» از اسلاگ
 export function regionDestination(regionId: RegionId): Destination | null {
   return { type: "region", id: regionId, name: regionName(regionId) };
 }
 
-/** برچسب کمکی هر منطقه برای نمایش تعداد شهر */
+//* برچسب کمکی هر منطقه برای نمایش تعداد شهر
 export function regionHint(regionId: RegionId, regions: Region[]): string {
   const region = regions.find((item) => item.id === regionId);
   const allLabel = regionAllCitiesLabel(region?.name ?? regionName(regionId));
@@ -85,12 +82,12 @@ export function regionHint(regionId: RegionId, regions: Region[]): string {
     : allLabel;
 }
 
-/** توضیح کوتاه منطقه (فقط نمایشی — از نگاشت ثابت فرانت‌اند) */
+//* توضیح کوتاه منطقه (فقط نمایشی — از نگاشت ثابت فرانت‌اند)
 export function regionSubtitle(regionId: RegionId): string | undefined {
   return regionHintOf(regionId);
 }
 
-/** پیدا کردن شهر متناظر با یک مقصد شهر در لیست شهرهای API */
+//* پیدا کردن شهر متناظر با یک مقصد شهر در لیست شهرهای API
 export function findCity(
   cities: City[],
   destination: Destination | null,

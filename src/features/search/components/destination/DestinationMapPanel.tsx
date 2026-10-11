@@ -4,8 +4,8 @@ import { MapPin } from "lucide-react";
 
 import CabinsMapPanel from "@/features/cabins/components/CabinsMapPanel";
 import type { City } from "@/features/cabins/types/city.types";
-import type { Destination } from "../../types/search.types";
-import { regionAllCitiesLabel } from "../../constants/regions";
+import { regionAllCitiesLabel } from "@/features/search/constants/regions";
+import type { Destination } from "@/features/search/types/search.types";
 
 type Props = {
   cities: City[];
@@ -13,7 +13,7 @@ type Props = {
   className?: string;
 };
 
-/** جایگاه‌های ثابت پین‌ها — تا رندر دوباره پین‌ها نپرند */
+//* جای‌گاه‌های ثابت پین‌ها — تا رندر دوباره پین‌ها نپرند
 const PIN_SLOTS = [
   { top: "24%", right: "20%" },
   { top: "38%", right: "58%" },
@@ -25,13 +25,8 @@ const PIN_SLOTS = [
   { top: "18%", right: "44%" },
 ];
 
-/**
- * پنل نقشه‌ی مقصد — «جای‌گاه» نقشه، نه نقشه‌ی واقعی.
- *
- * هیچ کتابخانه‌ی نقشه‌ای نصب نشده و هیچ tile واقعی لود نمی‌شود.
- * قاب و اسلاتِ نقشه از `CabinsMapPanel` موجود پروژه استفاده می‌کند تا
- * بعداً فقط یک provider واقعی روی همین `slotId` سوار شود.
- */
+//* پنل نقشه‌ی مقصد — «جای‌گاه» نقشه، نه نقشه‌ی واقعی. هیچ کتابخانه‌ی نقشه‌ای نصب نشده و هیچ tile واقعی لود نمی‌شود.
+//* قاب و اسلاتِ نقشه از `CabinsMapPanel` موجود پروژه استفاده می‌کند تا بعداً فقط یک provider واقعی روی همین `slotId` سوار شود.
 export default function DestinationMapPanel({
   cities,
   destination,
@@ -52,18 +47,18 @@ export default function DestinationMapPanel({
     >
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--color-border-strong)_1px,transparent_1px)] bg-[size:22px_22px]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--color-border-strong)_1px,transparent_1px)] bg-size-[22px_22px]"
       >
         {/* مسیرهای تزئینی */}
-        <span className="bg-foreground/5 absolute top-[22%] -right-10 left-0 h-9 rotate-[-8deg] rounded-full" />
-        <span className="bg-foreground/5 absolute top-[58%] -right-10 left-0 h-7 rotate-[6deg] rounded-full" />
-        <span className="bg-foreground/5 absolute top-0 bottom-0 left-[32%] w-7 rotate-[12deg] rounded-full" />
+        <span className="bg-foreground/5 absolute top-[22%] -right-10 left-0 h-9 -rotate-8 rounded-full" />
+        <span className="bg-foreground/5 absolute top-[58%] -right-10 left-0 h-7 rotate-6 rounded-full" />
+        <span className="bg-foreground/5 absolute top-0 bottom-0 left-[32%] w-7 rotate-12 rounded-full" />
 
         {pins.map((city, index) => (
           <span
             key={city.id}
             style={PIN_SLOTS[index]}
-            className="absolute grid size-6 -translate-y-1/2 place-items-center rounded-full bg-primary-400 text-black shadow-md ring-2 ring-white/70"
+            className="bg-primary-400 absolute grid size-6 -translate-y-1/2 place-items-center rounded-full text-black shadow-md ring-2 ring-white/70"
           >
             <MapPin className="size-3.5" />
           </span>
@@ -78,7 +73,7 @@ export default function DestinationMapPanel({
         </span>
 
         {caption && (
-          <span className="bg-primary-400 text-black rounded-xl px-3 py-1.5 text-xs font-bold shadow-sm">
+          <span className="bg-primary-400 rounded-xl px-3 py-1.5 text-xs font-bold text-black shadow-sm">
             {caption}
           </span>
         )}
@@ -90,10 +85,6 @@ export default function DestinationMapPanel({
             <MapPin className="text-primary-400 size-5" />
           </span>
           <p className="text-text text-sm font-bold">نقشه‌ی تعاملی به‌زودی</p>
-          <p className="text-text-gray text-xs leading-5">
-            این پنل جای‌گاه نقشه است؛ انتخاب مقصد فعلاً از مسیر «جستجو» انجام
-            می‌شود.
-          </p>
         </div>
       </div>
     </CabinsMapPanel>

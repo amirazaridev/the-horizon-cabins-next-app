@@ -1,35 +1,27 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeft, X } from "lucide-react";
-
-import CabinCard from "@/features/cabins/components/CabinCard";
-import Carousel from "@/components/ui/Carousel";
 import Container from "@/components/ui/Container";
-import { useSearchPreview } from "../../hooks/useSearchPreview";
-import { useSearchPreviewAnimation } from "../../hooks/useSearchPreviewAnimation";
-import { useSearchStore } from "../../store/search.store";
+import PreviewCta from "@/features/search/components/preview/PreviewCta";
+import PreviewGrid from "@/features/search/components/preview/PreviewGrid";
+import PreviewHeader from "@/features/search/components/preview/PreviewHeader";
+import {
+  PreviewEmpty,
+  PreviewError,
+  PreviewSkeleton,
+} from "@/features/search/components/preview/PreviewStates";
+import { useSearchPreview } from "@/features/search/hooks/useSearchPreview";
+import { useSearchPreviewAnimation } from "@/features/search/hooks/useSearchPreviewAnimation";
+import { useSearchStore } from "@/features/search/store/search.store";
+import { SEARCH_PREVIEW_ID } from "@/features/search/utils/scroll-to-preview";
 import {
   hasAnySearchFilter,
   searchFiltersToHref,
   searchFiltersToQueryString,
-} from "../../utils/search-params";
-import {
-  buildPreviewCtaLabel,
-  buildPreviewHeading,
-} from "../../utils/search-summary";
-import { SEARCH_PREVIEW_ID } from "../../utils/scroll-to-preview";
-import { PreviewEmpty, PreviewError, PreviewSkeleton } from "./PreviewStates";
+} from "@/features/search/utils/search-params";
+import { buildPreviewHeading } from "@/features/search/utils/search-summary";
 
-/**
- * بخش «پیش‌نمایش جستجو» در لندینگ.
- *
- * رفتار:
- *  - در حالت اولیه کاملاً بسته است (ارتفاع صفر، بدون فضای خالی).
- *  - فقط به مقدار «اعمال‌شده» واکنش نشان می‌دهد، نه به draft.
- *  - با GSAP سبک باز/بسته می‌شود (بدون پرش layout).
- *  - حداکثر ۶ کارت نشان می‌دهد و بقیه از CTA به `/cabins` می‌رود.
- */
+//* بخش «پیش‌نمایش جستجو» در لندینگ. رفتار: در حالت اولیه کاملاً بسته است (ارتفاع صفر، بدون فضای خالی)، فقط به مقدار «اعمال‌شده» واکنش نشان می‌دهد (نه draft)، با GSAP سبک باز/بسته می‌شود (بدون پرش layout) و حداکثر ۶ کارت نشان می‌دهد.
+//* این کامپوننت فقط «ارکستراسیون» است؛ اجزای نمایشی‌اش در `PreviewHeader` / `PreviewGrid` / `PreviewCta` و حالت‌ها در `PreviewStates` زندگی می‌کنند.
 export default function SearchPreview() {
   const applied = useSearchStore((state) => state.applied);
   const appliedToken = useSearchStore((state) => state.appliedToken);
@@ -43,25 +35,12 @@ export default function SearchPreview() {
 
   const hasFilters = hasAnySearchFilter(applied);
 
-  /*
-   * «باز بودن» **فقط** به «اعمال‌شدنِ جستجو» بستگی دارد — نه به وضعیت fetch.
-   *
-   * چرا این مهم است؟ اگر شرط `status !== "idle"` بماند، درست بعد از «اعمال»
-   * (و در اولین رندرِ بازگشت به صفحه) یک رندر با `open=false` داریم؛ آن رندر
-   * شاخه‌ی «بستنِ» انیمیشن را اجرا می‌کند و بعد شاخه‌ی «باز شدن» با آن
-   * می‌جنگد. بدتر از آن، اگر به هر دلیلی fetch اجرا نشود، سکشن برای همیشه
-   * بسته می‌ماند و زدن دکمه‌ی جستجو هم کمکی نمی‌کند (چون کلید کوئری تغییر
-   * نکرده و افکت دوباره اجرا نمی‌شود).
-   *
-   * `appliedToken > 0` یعنی «کاربر حداقل یک‌بار جستجو را اعمال کرده» — حتی
-   * بدون هیچ فیلتری. این حالت یعنی «همه‌ی اقامتگاه‌ها» (همان چیزی که برچسب
-   * دکمه‌ی موبایل وعده می‌دهد) و با `reset` توکن صفر می‌شود و سکشن می‌بندد.
-   *
-   * با این تعریف، `open` تابعیِ قطعی از state است و هرگز گیر نمی‌کند.
-   */
+  //* «باز بودن» **فقط** به «اعمال‌شدنِ جستجو» بستگی دارد، نه به وضعیت fetch.
+  //* اگر شرط `status !== "idle"` بود، رندرِ اولِ بعد از اعمال `open=false` می‌داد و شاخه‌ی «بستن» با «باز شدن» می‌جنگید؛ بدتر آنکه با اجرا نشدن fetch، سکشن برای همیشه بسته می‌ماند.
+  //* `appliedToken > 0` یعنی «کاربر حداقل یک‌بار جستجو را اعمال کرده» — حتی بدون فیلتر (یعنی «همه‌ی اقامتگاه‌ها»)؛ `reset` توکن را صفر و سکشن را می‌بندد. پس `open` تابعیِ قطعی از state است و هرگز گیر نمی‌کند.
   const open = hasFilters || appliedToken > 0;
 
-  /** در همان رندرِ اولِ بعد از اعمال هم اسکلتی نشان بده (هم ارتفاع می‌دهد هم بازخورد) */
+  //* در همان رندرِ اولِ بعد از اعمال هم اسکلتی نشان بده (هم ارتفاع می‌دهد هم بازخورد)
   const showSkeleton = open && (status === "idle" || status === "loading");
 
   const revision = `${searchFiltersToQueryString(applied)}::${status}::${cabins.length}`;
@@ -85,31 +64,7 @@ export default function SearchPreview() {
           className="h-0 overflow-hidden opacity-0"
         >
           <div ref={contentRef} className="pt-10 pb-2 md:pt-12">
-            <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <div className="text-text-gray mb-2 flex items-center gap-3 text-xs font-semibold">
-                  <span className="bg-primary-400 h-px w-8" />
-                  نتیجه‌ی جستجوی شما
-                </div>
-                <h2 className="text-text text-xl font-extrabold tracking-tight sm:text-2xl md:text-[30px]">
-                  {title}
-                </h2>
-                {subtitle && (
-                  <p className="text-text-gray mt-2 text-xs leading-6 sm:text-sm">
-                    {subtitle}
-                  </p>
-                )}
-              </div>
-
-              <button
-                type="button"
-                onClick={reset}
-                className="text-text-gray hover:text-danger hover:bg-danger/10 flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold transition-colors"
-              >
-                <X className="size-4" />
-                حذف جستجو
-              </button>
-            </header>
+            <PreviewHeader title={title} subtitle={subtitle} onReset={reset} />
 
             {showSkeleton && <PreviewSkeleton />}
 
@@ -119,50 +74,8 @@ export default function SearchPreview() {
 
             {status === "success" && (
               <>
-                {/* دسکتاپ: گرید */}
-                <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-                  {cabins.map((cabin) => (
-                    <div key={cabin.id} data-preview-card>
-                      <CabinCard
-                        cabin={cabin}
-                        variant="landing"
-                        showPrice
-                        className="h-full"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* موبایل: کاروسل افقی (همان Carousel موجود پروژه) */}
-                <div className="sm:hidden">
-                  <Carousel
-                    slideClassName="flex-[0_0_78%]"
-                    showArrows={false}
-                  >
-                    {cabins.map((cabin) => (
-                      <CabinCard
-                        key={cabin.id}
-                        cabin={cabin}
-                        variant="landing"
-                        showPrice
-                        className="h-full"
-                      />
-                    ))}
-                  </Carousel>
-                </div>
-
-                <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
-                  <span className="text-text-gray text-xs">
-                    {total.toLocaleString("fa-IR")} اقامتگاه پیدا شد
-                  </span>
-                  <Link
-                    href={href}
-                    className="bg-primary-400 hover:bg-primary-500 flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-black transition-colors"
-                  >
-                    {buildPreviewCtaLabel(total)}
-                    <ArrowLeft className="size-4" />
-                  </Link>
-                </div>
+                <PreviewGrid cabins={cabins} />
+                <PreviewCta total={total} href={href} />
               </>
             )}
           </div>

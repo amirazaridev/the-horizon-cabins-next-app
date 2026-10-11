@@ -5,21 +5,15 @@ import { Loader2, SearchIcon } from "lucide-react";
 type Props = {
   label: string;
   disabled?: boolean;
-  /** در حال اعمال جستجو (ناوبری/درخواست) */
+  //* در حال اعمال جستجو (ناوبری/درخواست)
   pending?: boolean;
   disabledHint?: string;
   onClick: () => void;
   className?: string;
 };
 
-/**
- * دکمه‌ی نهایی سرچ (دسکتاپ).
- * قبلاً یک `Link` بود؛ حالا اکشن است چون «اعمال» در لندینگ باعث ناوبری
- * نمی‌شود و فقط پیش‌نمایش را فعال می‌کند.
- *
- * در حالت pending محتوا `invisible` می‌شود و spinner روی همان مرکز
- * می‌نشیند تا **عرض دکمه تغییر نکند** (جلوگیری از پرش چیدمان).
- */
+//* دکمه‌ی نهایی سرچ (دسکتاپ). قبلاً یک `Link` بود؛ حالا اکشن است چون «اعمال» در لندینگ باعث ناوبری نمی‌شود و فقط پیش‌نمایش را فعال می‌کند.
+//* در حالت pending محتوا `invisible` می‌شود و spinner روی همان مرکز می‌نشیند تا **عرض دکمه تغییر نکند** (جلوگیری از پرش چیدمان).
 export default function SearchAction({
   label,
   disabled = false,

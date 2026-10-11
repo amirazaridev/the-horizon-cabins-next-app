@@ -1,29 +1,21 @@
 "use client";
 
 import type { City } from "@/features/cabins/types/city.types";
-import { useLandingSearchController } from "../hooks/useLandingSearchController";
-import { usePersistLastSearch } from "../hooks/useLastSearch";
-import type { Region } from "../types/search.types";
-import LastSearchChip from "./LastSearchChip";
-import Search from "./Search";
+import LastSearchChip from "@/features/search/components/LastSearchChip";
+import Search from "@/features/search/components/Search";
+import { useLandingSearchController } from "@/features/search/hooks/useLandingSearchController";
+import { usePersistLastSearch } from "@/features/search/hooks/useLastSearch";
+import type { Region } from "@/features/search/types/search.types";
 
 type Props = {
   cities: City[];
-  /** مناطق واقعی از API */
+  //* مناطق واقعی از API
   regions: Region[];
-  /** افق رزرو (روز) از تنظیمات عمومی — سقف تقویم جستجو */
+  //* افق رزرو (روز) از تنظیمات عمومی — سقف تقویم جستجو
   bookingWindowDays?: number;
 };
 
-/**
- * سرچ هیرو لندینگ.
- *
- * این لایه‌ی نازک لازم است چون `Hero` یک Server Component است و
- * نمی‌تواند مستقیماً به استور کلاینت (Zustand) وصل شود.
- *
- * همچنین «آخرین جستجو» را در حافظه ذخیره می‌کند و چیپ آن را زیر نوار
- * جستجو نشان می‌دهد.
- */
+//* سرچ هیرو لندینگ. این لایه‌ی نازک لازم است چون `Hero` یک Server Component است و نمی‌تواند مستقیم به استور کلاینت وصل شود؛ ضمناً «آخرین جستجو» را ذخیره می‌کند و چیپ آن را نشان می‌دهد.
 export default function HeroSearch({
   cities,
   regions,

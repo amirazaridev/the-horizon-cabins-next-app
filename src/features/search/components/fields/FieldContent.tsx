@@ -9,7 +9,7 @@ type Props = {
   caret?: boolean;
 };
 
-/** محتوای مشترک یک فیلد سرچ (آیکون + عنوان + مقدار + فلش) */
+//* محتوای مشترک یک فیلد سرچ (آیکون + عنوان + مقدار + فلش)
 export default function FieldContent({
   icon,
   label,

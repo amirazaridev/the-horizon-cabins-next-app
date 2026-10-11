@@ -1,8 +1,10 @@
+//* نمایه‌ی سرویس‌های فیچر جستجو.
+
 export {
   CABIN_SEARCH_ENDPOINT,
   cabinSearchRepository,
   type CabinSearchRepository,
-} from "./cabin-search.repository";
+} from "@/features/search/services/cabin-search.repository";
 
 export {
   findCity,
@@ -11,4 +13,4 @@ export {
   regionSubtitle,
   searchDestinations,
   type DestinationSearchResult,
-} from "./destination.service";
+} from "@/features/search/services/destination.service";

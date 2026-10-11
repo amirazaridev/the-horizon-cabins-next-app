@@ -8,21 +8,14 @@ import {
   getServerLastSearchQuery,
   saveLastSearchQuery,
   subscribeLastSearch,
-} from "../services/recent-search.storage";
-import type { SearchFilters } from "../types/search.types";
+} from "@/features/search/services/recent-search.storage";
+import type { SearchFilters } from "@/features/search/types/search.types";
 import {
   parseSearchFilters,
   searchFiltersToQueryString,
-} from "../utils/search-params";
+} from "@/features/search/utils/search-params";
 
-/**
- * ذخیره‌ی خودکار آخرین جستجوی اعمال‌شده.
- *
- * این افکت فقط یک «سیستم خارجی» (localStorage) را به‌روز می‌کند و هیچ
- * setState‌ای ندارد؛ پس نه رندر آبشاری می‌سازد و نه با StrictMode تعارض دارد.
- * چون کلید ذخیره‌سازی یک رشته‌ی پایدار است، وابستگی افکت دقیقاً معادل
- * «تغییر واقعی فیلترها» است و نوشتن تکراری رخ نمی‌دهد.
- */
+//* ذخیره‌ی خودکار آخرین جستجوی اعمال‌شده. این افکت فقط یک «سیستم خارجی» (localStorage) را به‌روز می‌کند و هیچ setState ندارد؛ پس نه رندر آبشاری می‌سازد و نه با StrictMode تعارض دارد.
 export function usePersistLastSearch(filters: SearchFilters): void {
   const query = searchFiltersToQueryString(filters);
 
@@ -33,20 +26,13 @@ export function usePersistLastSearch(filters: SearchFilters): void {
 }
 
 export type LastSearchState = {
-  /** آخرین جستجوی ذخیره‌شده (null یعنی چیزی ذخیره نشده) */
+  //* آخرین جستجوی ذخیره‌شده (null یعنی چیزی ذخیره نشده)
   lastSearch: SearchFilters | null;
-  /** حذف آخرین جستجو از حافظه */
+  //* حذف آخرین جستجو از حافظه
   dismiss: () => void;
 };
 
-/**
- * خواندن آخرین جستجو از حافظه.
- *
- * از `useSyncExternalStore` استفاده می‌کند (روش استاندارد React برای
- * استورهای خارجی): رندر سرور خالی است، بعد از hydration مقدار واقعی
- * می‌آید، و هر تغییر حافظه (ذخیره/حذف در همین تب یا تب دیگر) باعث
- * به‌روزرسانی خودکار می‌شود.
- */
+//* خواندن آخرین جستجو از حافظه با `useSyncExternalStore` (روش استاندارد استور خارجی): رندر سرور خالی است، بعد از hydration مقدار واقعی می‌آید، و هر تغییر حافظه (همین تب یا تب دیگر) خودکار به‌روز می‌شود.
 export function useLastSearch(): LastSearchState {
   const query = useSyncExternalStore(
     subscribeLastSearch,

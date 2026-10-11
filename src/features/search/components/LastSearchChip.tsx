@@ -3,23 +3,17 @@
 import { History, X } from "lucide-react";
 
 import type { City } from "@/features/cabins/types/city.types";
-import { useLastSearch } from "../hooks/useLastSearch";
-import type { SearchController } from "../types/search.types";
-import { hasAnySearchFilter } from "../utils/search-params";
-import { buildSearchSummary } from "../utils/search-summary";
+import { useLastSearch } from "@/features/search/hooks/useLastSearch";
+import type { SearchController } from "@/features/search/types/search.types";
+import { hasAnySearchFilter } from "@/features/search/utils/search-params";
+import { buildSearchSummary } from "@/features/search/utils/search-summary";
 
 type Props = {
   cities: City[];
   controller: SearchController;
 };
 
-/**
- * چیپ «آخرین جستجو» زیر نوار جستجوی هیرو.
- *
- * فقط زمانی دیده می‌شود که جستجوی فعالی وجود نداشته باشد (بعد از ریلود
- * صفحه یا بعد از «حذف جستجو»). با کلیک روی آن، همان فیلترهای قبلی دوباره
- * اعمال می‌شوند و پیش‌نمایش باز می‌شود.
- */
+//* چیپ «آخرین جستجو» زیر نوار جستجوی هیرو. فقط وقتی جستجوی فعالی وجود ندارد دیده می‌شود (بعد از ریلود یا «حذف جستجو»)؛ با کلیک، همان فیلترهای قبلی دوباره اعمال و پیش‌نمایش باز می‌شود.
 export default function LastSearchChip({ cities, controller }: Props) {
   const { applied, setFilters, apply } = controller;
   const { lastSearch, dismiss } = useLastSearch();
