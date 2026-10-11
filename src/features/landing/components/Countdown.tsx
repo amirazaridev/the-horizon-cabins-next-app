@@ -1,28 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type CountdownProps = {
   expiresAt?: string;
   demoDurationSeconds?: number;
+  /** وقتی شمارش به صفر رسید، **یکبار** صدا زده می‌شود (مثلاً برای revalidate). */
+  onExpire?: () => void;
 };
 
 export default function Countdown({
   expiresAt,
   demoDurationSeconds = 7200,
+  onExpire,
 }: CountdownProps) {
   const [remaining, setRemaining] = useState<number | null>(null);
+  const firedRef = useRef(false);
 
   useEffect(() => {
+    firedRef.current = false;
+
     const deadline = expiresAt
       ? Date.parse(expiresAt)
       : Date.now() + Math.max(0, demoDurationSeconds) * 1000;
     const update = () => {
-      setRemaining(
-        Number.isFinite(deadline)
-          ? Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
-          : 0,
-      );
+      const next = Number.isFinite(deadline)
+        ? Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
+        : 0;
+      setRemaining(next);
+
+      if (next === 0 && !firedRef.current) {
+        firedRef.current = true;
+        onExpire?.();
+      }
     };
     const initialTick = window.setTimeout(update, 0);
     const interval = window.setInterval(update, 1000);
@@ -31,7 +41,7 @@ export default function Countdown({
       window.clearTimeout(initialTick);
       window.clearInterval(interval);
     };
-  }, [expiresAt, demoDurationSeconds]);
+  }, [expiresAt, demoDurationSeconds, onExpire]);
 
   if (remaining === 0) {
     return (

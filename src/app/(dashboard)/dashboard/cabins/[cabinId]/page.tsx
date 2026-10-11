@@ -7,6 +7,7 @@ import { faIR } from "date-fns-jalali/locale";
 import type { ReactNode } from "react";
 
 import { getCabin } from "@/features/cabins/api";
+import { resolveCabinPrice } from "@/features/cabins/utils/cabin-price";
 import CabinGallery from "@/features/cabins/components/CabinDetail/CabinGallery";
 import SpecsGrid from "@/features/cabins/components/CabinDetail/SpecsGrid";
 import CabinDescription from "@/features/cabins/components/CabinDetail/CabinDescription";
@@ -33,10 +34,9 @@ export default async function DashboardCabinDetailPage({
 
   if (!cabin) notFound();
 
-  const hasDiscount = cabin.discount > 0;
-  const finalPrice = hasDiscount
-    ? cabin.regularPrice - cabin.discount
-    : cabin.regularPrice;
+  //* ⚠️ فیلد `discount` در API وجود ندارد؛ اندپوینت جزئیات هم `pricing` نمی‌دهد،
+  //* پس قیمت مؤثر = قیمت پایه. (نمایش تخفیف داشبورد در فاز بعدی اصلاح می‌شود.)
+  const { originalPrice, finalPrice, hasDiscount } = resolveCabinPrice(cabin);
   const createdAt = formatJalali(new Date(cabin.createdAt), "d MMMM yyyy", {
     locale: faIR,
   });
@@ -71,7 +71,7 @@ export default async function DashboardCabinDetailPage({
             </span>
             {hasDiscount && (
               <span className="text-text/50 text-sm line-through">
-                {formatCurrency(cabin.regularPrice)}
+                {formatCurrency(originalPrice)}
               </span>
             )}
           </BadgeTitle>
@@ -93,12 +93,12 @@ export default async function DashboardCabinDetailPage({
           <div className="flex flex-col gap-2.5 text-sm">
             <InfoRow
               label="قیمت اصلی / شب"
-              value={`${formatCurrency(cabin.regularPrice)} تومان`}
+              value={`${formatCurrency(originalPrice)} تومان`}
             />
             {hasDiscount && (
               <InfoRow
                 label="تخفیف"
-                value={`${formatCurrency(cabin.discount)} تومان`}
+                value={`${formatCurrency(originalPrice - finalPrice)} تومان`}
                 tone="danger"
               />
             )}

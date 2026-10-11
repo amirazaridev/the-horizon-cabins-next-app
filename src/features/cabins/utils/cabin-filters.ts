@@ -66,13 +66,6 @@ export function parseCabinFilters(sp: RawSearchParams): CabinFilters {
   };
 }
 
-export function finalNightPrice(cabin: {
-  regularPrice: number;
-  discount: number;
-}): number {
-  return cabin.regularPrice - cabin.discount;
-}
-
 /**
  * قالب فشرده‌ی قیمت — پیاده‌سازی به `@/libs/utils/format` منتقل شد تا
  * کامپوننت‌های مشترک `components/ui` هم بتوانند بدون وابستگی به فیچر

@@ -28,6 +28,7 @@ function buildQueryString({
   startDate,
   endDate,
   regionId,
+  sort,
 }: CabinsQueryParams): string {
   const searchParams = new URLSearchParams();
 
@@ -46,6 +47,7 @@ function buildQueryString({
   if (city) searchParams.set("city", String(city));
   // نام پارامتر بک‌اند `regionId` است (عددی) — نه `region`
   if (regionId) searchParams.set("regionId", String(regionId));
+  if (sort) searchParams.set("sort", sort);
 
   const query = searchParams.toString();
   return query ? `?${query}` : "";

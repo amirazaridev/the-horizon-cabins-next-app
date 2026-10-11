@@ -41,7 +41,9 @@ function getDefaultValues(cabin?: Cabin): CabinFormValues {
     name: cabin?.name ?? "",
     maxCapacity: cabin?.maxCapacity ?? 1,
     regularPrice: cabin?.regularPrice ?? 0,
-    discount: cabin?.discount ?? 0,
+    //* ⚠️ بک‌اند فیلد `discount` ندارد؛ این ورودی فرم فعلاً همیشه صفر است
+    //* (پاک‌سازی کامل فرم داشبورد در فاز بعدی انجام می‌شود).
+    discount: 0,
     description: cabin?.description ?? "",
     bedrooms: cabin?.bedrooms ?? 0,
     bathrooms: cabin?.bathrooms ?? 0,
