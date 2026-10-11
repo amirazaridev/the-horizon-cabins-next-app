@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { Suspense } from "react";
 
 import CabinList from "@/features/cabins/components/CabinList";
@@ -14,8 +14,12 @@ import {
 import { parseCabinFilters } from "@/features/cabins/utils/cabin-filters";
 import { isValidStayRange } from "@/features/cabins/utils/cabin-date";
 import { getPublicSettings } from "@/features/settings/api/getPublicSettings";
-import { regionIdFromSlug, toSearchRegions } from "@/features/search/constants/regions";
-import { parseLimitParam, parsePageParam } from "@/libs/utils/pagination";
+import {
+  regionIdFromSlug,
+  toSearchRegions,
+} from "@/features/search/constants/regions";
+import { parseLimitParam, parsePageParam } from "@/libs/utils/url-params";
+import { CABINS_LIMIT_BOUNDS } from "@/constants/cabins";
 
 export const metadata: Metadata = {
   title: "اقامتگاه‌ها",
@@ -34,14 +38,8 @@ export default async function CabinsPage({
   const filters = parseCabinFilters(sp);
 
   const page = parsePageParam(sp);
-  const limit = parseLimitParam(sp.limit);
+  const limit = parseLimitParam(sp.limit, CABINS_LIMIT_BOUNDS);
 
-  /*
-   * تنظیمات عمومی لازم است تا بازه‌ی تاریخ را **قبل از ارسال** اعتبارسنجی
-   * کنیم: بک‌اند هر بازه‌ی خارج از افق یا طول مجاز را با ۴۰۰ رد می‌کند و آن
-   * استثنا صفحه را می‌ترکاند. پس با بازه‌ی ناقص/نامعتبر هیچ تاریخی
-   * نمی‌فرستیم و بودجه هم در حالت «هر شب» می‌ماند (تصمیم پروژه).
-   */
   const settings = await getPublicSettings();
   const hasStay = isValidStayRange(filters.checkIn, filters.checkOut, settings);
 
@@ -65,7 +63,7 @@ export default async function CabinsPage({
       startDate: hasStay ? filters.checkIn : undefined,
       endDate: hasStay ? filters.checkOut : undefined,
       city: filters.cityId,
-      // بک‌اند پارامتر عددی `regionId` را می‌پذیرد، نه اسلاگِ `region`
+      //* بک‌اند پارامتر عددی `regionId` را می‌پذیرد، نه اسلاگِ `region`
       regionId: regionIdFromSlug(filters.region),
     }),
     getCities(),

@@ -1,7 +1,7 @@
 import CabinCard from "@/features/cabins/components/CabinCard";
 import CabinNotFound from "./CabinNotFound";
 import { Pagination } from "@/components/ui/Pagination";
-import type { SearchParamsInput } from "@/libs/utils/pagination";
+import type { SearchParamsInput } from "@/libs/utils/url-params";
 import type { Cabin } from "../types/cabin.types";
 import type { PaginationMeta } from "@/types/api-response";
 

@@ -1,6 +1,7 @@
 import type { CabinsQueryParams, Cabin } from "@/features/cabins/types/cabin.types";
 import { parseCabinFilters } from "@/features/cabins/utils/cabin-filters";
-import { parseLimitParam, parsePageParam } from "@/libs/utils/pagination";
+import { parseLimitParam, parsePageParam } from "@/libs/utils/url-params";
+import { CABINS_LIMIT_BOUNDS } from "@/constants/cabins";
 
 export type CabinsSearchParams = Record<string, string | string[] | undefined>;
 
@@ -64,7 +65,7 @@ export function buildCabinsQuery(
 
   return {
     page: parsePageParam(params),
-    limit: parseLimitParam(params.limit),
+    limit: parseLimitParam(params.limit, CABINS_LIMIT_BOUNDS),
     category: filters.category,
     guests: filters.guests,
     bedrooms: filters.bedrooms,

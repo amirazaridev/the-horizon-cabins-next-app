@@ -9,20 +9,12 @@ import GuestPageHeader from "@/features/guest/shared/components/GuestPageHeader"
 import { GUEST_BOOKINGS_PAGE_SIZE } from "@/features/guest/bookings/config/bookings.config";
 import { parseBookingTab } from "@/features/guest/bookings/constants/booking-status";
 import { getGuestBookingsRepository } from "@/features/guest/bookings/services/guest-bookings.repository";
-import { parsePageParam } from "@/libs/utils/pagination";
+import { parsePageParam } from "@/libs/utils/url-params";
 
 export const metadata: Metadata = { title: "رزروهای من" };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-/**
- * صفحه‌ی «رزروهای من» — یک Server Component.
- *
- * ⚠️ URL تنها منبع حقیقت است: تب از `status` و صفحه از `page` خوانده
- * می‌شود، پس هر ترکیب قابل‌اشتراک/بوکمارک است و دکمه‌ی back مرورگر درست
- * کار می‌کند. داده از `GuestBookingsRepository` می‌آید که پیاده‌سازی‌اش
- * روی بک‌اند واقعی است (`GET /bookings`، خودکار محدود به رزروهای همین کاربر).
- */
 export default async function GuestBookingsPage({
   searchParams,
 }: {
