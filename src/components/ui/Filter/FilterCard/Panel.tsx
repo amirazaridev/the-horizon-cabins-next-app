@@ -1,6 +1,4 @@
-/* ==================================================================
-   PANEL — پنل پاپاوِر دسکتاپ
-   ================================================================== */
+// ?  PANEL — پنل پاپاوِر دسکتاپ
 
 "use client";
 
@@ -14,9 +12,9 @@ import {
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import {
-  FilterPanelConfig,
-  FilterPanelSize,
-  FilterCardPlacement,
+  type FilterPanelConfig,
+  type FilterPanelSize,
+  type FilterCardPlacement,
 } from "./types";
 
 const PANEL_SIZE: Record<FilterPanelSize, string> = {
@@ -44,7 +42,7 @@ type PanelProps = PanelSharedProps & {
   id: string;
   panel: FilterPanelConfig;
   isOpen: boolean;
-  /** شناسه‌ی دیالوگ (برای aria-controls تریگر) */
+  //* شناسه‌ی دیالوگ (برای aria-controls تریگر)
   domId?: string;
 };
 
@@ -187,10 +185,6 @@ function PanelPopover({
 
   const value = getValue(id);
 
-  /**
-   * اعمال مقدار؛ اگر closeOnSelect یا advanceTo داشته باشد پنل بسته می‌شود
-   * و در حالت advanceTo، پنل مقصد بعد از یک فریم باز می‌شود.
-   */
   const commit = (next: unknown) => {
     setValue(id, next, closeOnSelect || advanceTo !== undefined);
     if (advanceTo) {
@@ -218,7 +212,7 @@ function PanelPopover({
       role="dialog"
       tabIndex={-1}
       aria-label={title ?? id}
-      className={`bg-surface border-border dark:border-border-strong fixed z-[60] flex max-h-[min(440px,62dvh)] flex-col rounded-3xl border shadow-2xl transition-[opacity,transform] duration-200 ease-out outline-none ${PANEL_SIZE[size]} ${
+      className={`bg-surface border-border dark:border-border-strong fixed z-60 flex max-h-[min(440px,62dvh)] flex-col rounded-3xl border shadow-2xl transition-[opacity,transform] duration-200 ease-out outline-none ${PANEL_SIZE[size]} ${
         visible
           ? "translate-y-0 scale-100 opacity-100"
           : "translate-y-1.5 scale-[0.98] opacity-0"

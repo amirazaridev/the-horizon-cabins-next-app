@@ -1,13 +1,11 @@
-/* ==================================================================
-   TRIGGER — دکمه‌ی فعال‌سازی پنل
-   ================================================================== */
+//? TRIGGER — دکمه‌ی فعال‌سازی پنل
 
 "use client";
 
 import { useCallback, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { FOCUS_RING } from "../focus-ring";
-import { FilterCardItem, FilterTriggerVariant } from "./types";
+import { type FilterCardItem, type FilterTriggerVariant } from "./types";
 import { isFilterValueActive } from "./value";
 
 export const TRIGGER_VARIANTS: Record<
@@ -36,7 +34,7 @@ export const TRIGGER_VARIANTS: Record<
   },
 };
 
-/** کلاس‌های دکمه‌ی اکشنِ بدون پنل (فقط موبایل) */
+//* کلاس‌های دکمه‌ی اکشنِ بدون پنل (فقط موبایل)
 export const ACTION_BUTTON_CLASS =
   "flex items-center gap-1.5 rounded-full border border-foreground/10 bg-surface px-4 py-2.5 text-sm font-medium whitespace-nowrap text-text-gray transition-all duration-200 hover:border-foreground/20 hover:text-text active:scale-95 disabled:pointer-events-none disabled:opacity-50";
 
@@ -46,9 +44,9 @@ type Props = {
   isOpen: boolean;
   toggle: (id: string) => void;
   close: () => void;
-  /** ثبت/آزادسازی المان تریگر تا openById بدون querySelector روی کل document کار کند */
+  //* ثبت/آزادسازی المان تریگر تا openById بدون querySelector روی کل document کار کند
   register: (id: string, el: HTMLButtonElement | null) => void;
-  /** شناسه‌ی دیالوگ برای aria-controls */
+  //* شناسه‌ی دیالوگ برای aria-controls
   panelId?: string;
 };
 

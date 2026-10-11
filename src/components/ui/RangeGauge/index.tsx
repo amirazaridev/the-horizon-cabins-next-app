@@ -9,77 +9,41 @@ import {
   type PointerEvent,
 } from "react";
 
-export interface GaugeRange {
-  start: number;
-  end: number;
-}
+import GaugeHandle from "./GaugeHandle";
+import GaugeNumberInput from "./GaugeNumberInput";
+import GaugeTicks from "./GaugeTicks";
+import {
+  clamp,
+  formatNumber,
+  normalizeRange,
+  parseDigits,
+  valueFromClientX,
+} from "./geometry";
+import type { DragHandle, GaugeRange, RangeGaugeProps } from "./types";
 
-export interface GaugeTick {
-  key: string;
-  label: string;
-  position: number;
-}
+export type {
+  CommitMode,
+  DragHandle,
+  GaugeRange,
+  GaugeTick,
+  RangeGaugeApi,
+  RangeGaugeProps,
+} from "./types";
 
-type CommitMode = "change" | "apply";
-
-/** دستگیرهٔ در حال کشیدن: start = مقدار کمینه، end = مقدار بیشینه */
-type DragHandle = "start" | "end";
-
-interface RangeGaugeProps {
-  /** حد پائین بازه (مقدار واقعی، نه آفست) */
-  minValue: number;
-  /** حد بالای بازه (مقدار واقعی، نه آفست) */
-  maxValue: number;
-  /** مقدار انتخاب‌شدهٔ فعلی؛ اگر ندهید، محدودهٔ کامل در نظر گرفته می‌شود */
-  value?: GaugeRange | null;
-  /** گام حرکت اسلایدر و دکمه‌های جهت‌دار */
-  step?: number;
-  /** فاصلهٔ حداقل بین دو دستگیره (پیش‌فرض: یک step) */
-  minGap?: number;
-  formatValue: (value: number) => string;
-  startAriaLabel: string;
-  endAriaLabel: string;
-  /**
-   * خروجی گرفتن از بازهٔ انتخاب‌شده:
-   * - `change` => با هر رها کردن موس / تغییر دستگیره (رفتار زندهٔ قبلی)
-   * - `apply`  => فقط وقتی مصرف‌کننده `submit()` را صدا بزند یا روی دکمهٔ اعمال بزند
-   */
-  onCommit: (range: GaugeRange) => void;
-  /** `change` (پیش‌فرض) یا `apply` */
-  commitOn?: CommitMode;
-  /** برای `commitOn="apply"` — تابع submit را به مصرف‌کننده می‌دهد */
-  onReady?: (api: RangeGaugeApi) => void;
-  ticks?: GaugeTick[];
-  showInputs?: boolean;
-}
-
-export interface RangeGaugeApi {
-  /** مقادیر تأییدشدهٔ فعلی (برای دکمهٔ «اعمال») */
-  getRange: () => GaugeRange;
-  /** اعمال بازهٔ فعلی روی onCommit */
-  submit: () => void;
-  /** برگرداندن اسلایدر به محدودهٔ کامل */
-  reset: () => void;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-function formatNumber(value: number): string {
-  return value.toLocaleString("en-US");
-}
-
-/** عدد لاتین یا فارسی/عربی را به number تبدیل می‌کند */
-function parseDigits(raw: string): number {
-  const normalized = raw
-    .replace(/[\u06F0-\u06F9]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
-    .replace(/[^\d]/g, "");
-
-  return normalized === "" ? Number.NaN : Number(normalized);
-}
-
+/**
+ * اسلایدر دو-دستگیره‌ای بازه (قیمت، سال، …).
+ *
+ * ⚠️ تفکیک‌های انجام‌شده (پیش‌تر همه در یک فایل ۵۱۲ خطی بودند):
+ *  - ریاضیات خالص (`clamp`, `parseDigits`, `normalizeRange`,
+ *    `valueFromClientX`) ⇒ `geometry.ts`
+ *  - دستگیره‌ها (دو نمونه‌ی عیناً یکسان) ⇒ `GaugeHandle.tsx`
+ *  - ورودی‌های عددی (دو نمونه‌ی یکسان) ⇒ `GaugeNumberInput.tsx`
+ *  - تیک‌ها ⇒ `GaugeTicks.tsx`
+ *  - تایپ‌ها ⇒ `types.ts`
+ *
+ * ⚠️ `committedRef` حذف شد: در نسخه‌ی قبلی چند جا **نوشته** می‌شد ولی
+ * هیچ‌جا **خوانده** نمی‌شد (state مرده).
+ */
 export default function RangeGauge({
   minValue,
   maxValue,
@@ -108,39 +72,28 @@ export default function RangeGauge({
   const [endInput, setEndInput] = useState(formatNumber(initial.end));
 
   const rangeRef = useRef<GaugeRange>(initial);
-  const activeHandleRef = useRef<"start" | "end" | null>(null);
+  const activeHandleRef = useRef<DragHandle | null>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // مقادیر تأییدشدهٔ فعلی (mirror در ref، بدون نیاز به re-render)
-  const committedRef = useRef<GaugeRange>(initial);
 
   const syncInputs = (next: GaugeRange) => {
     setStartInput(formatNumber(next.start));
     setEndInput(formatNumber(next.end));
   };
 
-  /** مرتب‌سازی + کلمپ یک بازه؛ با `sort` ترتیب دستگیره‌ها هم اصلاح می‌شود */
-  function normalize(next: GaugeRange, sort = false): GaugeRange {
-    let { start, end } = next;
-
-    if (sort && start > end) [start, end] = [end, start];
-
-    start = clamp(start, minValue, maxValue);
-    end = clamp(end, minValue, maxValue);
-
-    return {
-      start: Math.min(start, end - gap),
-      end: Math.max(end, start + gap),
-    };
-  }
-
   /** فقط state داخلی را عوض می‌کند (بدون onCommit) */
   function setRangeState(next: GaugeRange, sort = false): GaugeRange {
-    const normalized = normalize(next, sort);
+    const normalized = normalizeRange(next, {
+      min: minValue,
+      max: maxValue,
+      gap,
+      sort,
+    });
+
     rangeRef.current = normalized;
     setRange(normalized);
     syncInputs(normalized);
+
     return normalized;
   }
 
@@ -152,36 +105,23 @@ export default function RangeGauge({
   }, [onCommit]);
 
   function commitRange(): void {
-    committedRef.current = { ...rangeRef.current };
     onCommitRef.current({ ...rangeRef.current });
   }
 
   /** حرکت یک دستگیره به مقدار جدید (فقط state؛ commit جای دیگر) */
-  function moveHandle(handle: "start" | "end", nextValue: number): void {
+  function moveHandle(handle: DragHandle, nextValue: number): void {
     setRangeState({
       start: handle === "start" ? nextValue : rangeRef.current.start,
       end: handle === "end" ? nextValue : rangeRef.current.end,
     });
   }
 
-  function getValueFromClientX(clientX: number): number {
-    const track = trackRef.current;
-    if (!track || span === 0) return minValue;
-
-    const rect = track.getBoundingClientRect();
-
-    // صفحه RTL: مبدأ از سمت راست است، پس جهت را برمی‌گردانیم
-    const isRtl = getComputedStyle(track).direction === "rtl";
-    const offset = isRtl ? rect.right - clientX : clientX - rect.left;
-    const ratio = offset / rect.width;
-
-    const rawValue = minValue + ratio * span;
-
-    // اسنپ نسبت به minValue، نه نسبت به صفر — وگرنه وقتی minValue
-    // مضرب step نباشد مقدار از خودِ minValue بیرون میزند.
-    const snapped = minValue + Math.round((rawValue - minValue) / step) * step;
-
-    return clamp(snapped, minValue, maxValue);
+  function readValueFromClientX(clientX: number): number {
+    return valueFromClientX(clientX, trackRef.current, {
+      min: minValue,
+      max: maxValue,
+      step,
+    });
   }
 
   /**
@@ -191,9 +131,7 @@ export default function RangeGauge({
    * دستگیره است و در RTL (که start سمت راست است) ممکن است نقطهٔ محاسبه‌شده
    * به دستگیرهٔ مقابل نزدیک‌تر باشد و اشتباهاً همان را بکشد.
    */
-  function getClickedHandle(
-    target: EventTarget | null,
-  ): DragHandle | undefined {
+  function getClickedHandle(target: EventTarget | null): DragHandle | undefined {
     const el = (target as HTMLElement | null)?.closest<HTMLElement>(
       "[data-gauge-handle]",
     );
@@ -206,15 +144,15 @@ export default function RangeGauge({
     if (event.button !== 0 || !trackRef.current) return;
 
     const clicked = getClickedHandle(event.target);
-    const nextValue = getValueFromClientX(event.clientX);
+    const nextValue = readValueFromClientX(event.clientX);
 
     let handle: DragHandle;
 
     if (clicked) {
-      // کلیک روی خود دستگیره => همان قفل میشود و مقدارش جابهجا نمیشود
+      // کلیک روی خود دستگیره => همان قفل می‌شود و مقدارش جابه‌جا نمی‌شود
       handle = clicked;
     } else {
-      // کلیک روی ترک => نزدیکترین دستگیره و پرش به نقطهٔ کلیک
+      // کلیک روی ترک => نزدیک‌ترین دستگیره و پرش به نقطهٔ کلیک
       const distanceToStart = Math.abs(nextValue - rangeRef.current.start);
       const distanceToEnd = Math.abs(nextValue - rangeRef.current.end);
       handle = distanceToStart <= distanceToEnd ? "start" : "end";
@@ -230,7 +168,7 @@ export default function RangeGauge({
     const handle = activeHandleRef.current;
     if (!handle) return;
 
-    moveHandle(handle, getValueFromClientX(event.clientX));
+    moveHandle(handle, readValueFromClientX(event.clientX));
   }
 
   function handlePointerUp(event: PointerEvent<HTMLDivElement>): void {
@@ -267,7 +205,7 @@ export default function RangeGauge({
   }
 
   function handleHandleKeyDown(
-    handle: "start" | "end",
+    handle: DragHandle,
     event: KeyboardEvent<HTMLDivElement>,
   ): void {
     let nextValue: number | null = null;
@@ -290,7 +228,7 @@ export default function RangeGauge({
   }
 
   function handleInputChange(
-    handle: "start" | "end",
+    handle: DragHandle,
     event: ChangeEvent<HTMLInputElement>,
   ): void {
     const raw = event.target.value;
@@ -304,7 +242,7 @@ export default function RangeGauge({
     moveHandle(handle, clamp(numeric, minValue, maxValue));
   }
 
-  function handleInputCommit(handle: "start" | "end"): void {
+  function handleInputCommit(handle: DragHandle): void {
     const raw = handle === "start" ? startInput : endInput;
     const numeric = parseDigits(raw);
 
@@ -322,13 +260,12 @@ export default function RangeGauge({
     );
 
     if (commitOn === "change") {
-      committedRef.current = { ...next };
       onCommitRef.current({ ...next });
     }
   }
 
   function handleInputKeyDown(
-    handle: "start" | "end",
+    handle: DragHandle,
     event: KeyboardEvent<HTMLInputElement>,
   ): void {
     if (event.key !== "Enter") return;
@@ -353,7 +290,6 @@ export default function RangeGauge({
     onReadyRef.current?.({
       getRange: () => ({ ...rangeRef.current }),
       submit: () => {
-        committedRef.current = { ...rangeRef.current };
         onCommitRef.current({ ...rangeRef.current });
       },
       reset: () => {
@@ -363,7 +299,6 @@ export default function RangeGauge({
         setRange(full);
         setStartInput(formatNumber(full.start));
         setEndInput(formatNumber(full.end));
-        committedRef.current = { ...full };
       },
     });
   }, []);
@@ -376,8 +311,7 @@ export default function RangeGauge({
   /**
    * ترک `dir="rtl"` است، پس مبدأ بصری سمت راست است.
    * موقعیت عناصر باید با `right` تنظیم شود تا مقدار min روی لبهٔ راست و
-   * مقدار max روی لبهٔ چپ بنشیند — هم‌راستا با `getValueFromClientX`.
-   * (اگر `left` استفاده شود، هر دو به‌صورت آینه‌ای جابه‌جا می‌شوند.)
+   * مقدار max روی لبهٔ چپ بنشیند — هم‌راستا با `valueFromClientX`.
    */
   const startOffset = { right: `${startPercent}%` } as const;
   const endOffset = { right: `${endPercent}%` } as const;
@@ -397,37 +331,25 @@ export default function RangeGauge({
     >
       {showInputs && (
         <div dir="rtl" className="mb-5 flex items-center gap-3">
-          <label className="flex flex-1 items-center gap-2">
-            <span className="text-text-gray text-xs">از</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              dir="ltr"
-              aria-label={startAriaLabel}
-              value={startInput}
-              onChange={(e) => handleInputChange("start", e)}
-              onBlur={() => handleInputCommit("start")}
-              onKeyDown={(e) => handleInputKeyDown("start", e)}
-              className="border-border bg-background focus:border-primary-400 w-full rounded-xl border px-3 py-2 text-center text-sm font-semibold focus:outline-none"
-            />
-          </label>
+          <GaugeNumberInput
+            label="از"
+            ariaLabel={startAriaLabel}
+            value={startInput}
+            onChange={(e) => handleInputChange("start", e)}
+            onBlur={() => handleInputCommit("start")}
+            onKeyDown={(e) => handleInputKeyDown("start", e)}
+          />
 
           <span className="bg-border h-px w-4 shrink-0" />
 
-          <label className="flex flex-1 items-center gap-2">
-            <span className="text-text-gray text-xs">تا</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              dir="ltr"
-              aria-label={endAriaLabel}
-              value={endInput}
-              onChange={(e) => handleInputChange("end", e)}
-              onBlur={() => handleInputCommit("end")}
-              onKeyDown={(e) => handleInputKeyDown("end", e)}
-              className="border-border bg-background focus:border-primary-400 w-full rounded-xl border px-3 py-2 text-center text-sm font-semibold focus:outline-none"
-            />
-          </label>
+          <GaugeNumberInput
+            label="تا"
+            ariaLabel={endAriaLabel}
+            value={endInput}
+            onChange={(e) => handleInputChange("end", e)}
+            onBlur={() => handleInputCommit("end")}
+            onKeyDown={(e) => handleInputKeyDown("end", e)}
+          />
         </div>
       )}
 
@@ -448,59 +370,30 @@ export default function RangeGauge({
           />
         </div>
 
-        <div
-          role="slider"
-          tabIndex={0}
-          data-gauge-handle="start"
-          aria-label={startAriaLabel}
-          aria-valuemin={minValue}
-          aria-valuemax={maxValue}
-          aria-valuenow={range.start}
-          aria-valuetext={formatValue(range.start)}
+        <GaugeHandle
+          handle="start"
+          value={range.start}
+          offset={startOffset}
+          min={minValue}
+          max={maxValue}
+          ariaLabel={startAriaLabel}
+          formatValue={formatValue}
           onKeyDown={(event) => handleHandleKeyDown("start", event)}
-          className="border-primary-500 bg-surface focus:ring-primary-400/30 absolute top-1/2 z-20 size-5 -translate-y-1/2 translate-x-1/2 rounded-full border-2 shadow-md transition-shadow focus:ring-4 focus:outline-none"
-          style={startOffset}
-        >
-          <span className="bg-primary-400 absolute top-1/2 left-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full" />
-        </div>
+        />
 
-        <div
-          role="slider"
-          tabIndex={0}
-          data-gauge-handle="end"
-          aria-label={endAriaLabel}
-          aria-valuemin={minValue}
-          aria-valuemax={maxValue}
-          aria-valuenow={range.end}
-          aria-valuetext={formatValue(range.end)}
+        <GaugeHandle
+          handle="end"
+          value={range.end}
+          offset={endOffset}
+          min={minValue}
+          max={maxValue}
+          ariaLabel={endAriaLabel}
+          formatValue={formatValue}
           onKeyDown={(event) => handleHandleKeyDown("end", event)}
-          className="border-primary-500 bg-surface focus:ring-primary-400/30 absolute top-1/2 z-30 size-5 -translate-y-1/2 translate-x-1/2 rounded-full border-2 shadow-md transition-shadow focus:ring-4 focus:outline-none"
-          style={endOffset}
-        >
-          <span className="bg-primary-400 absolute top-1/2 left-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full" />
-        </div>
+        />
       </div>
 
-      {ticks && ticks.length > 0 && span > 0 && (
-        <div dir="rtl" className="relative mt-2 h-7">
-          {ticks.map((tick) => {
-            // همان مبدأ ترک (سمت راست) برای هم‌راستا شدن تیک با اسلایدر
-            const percent = (tick.position / span) * 100;
-            return (
-              <div
-                key={tick.key}
-                className="absolute top-0 translate-x-1/2"
-                style={{ right: `${percent}%` }}
-              >
-                <span className="bg-border-strong block h-1.5 w-px" />
-                <span className="text-text-gray mt-1.5 block text-xs whitespace-nowrap">
-                  {tick.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {ticks && <GaugeTicks ticks={ticks} span={span} />}
 
       {!isFullRange && commitOn === "apply" && (
         <p className="text-text-gray mt-3 text-center text-xs">
