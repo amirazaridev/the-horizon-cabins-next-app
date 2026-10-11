@@ -1,8 +1,8 @@
+import type { Cabin } from "@/features/cabins/types/cabin.types";
 import Container from "@/components/ui/Container";
-import SectionHeading from "./SectionHeading";
-import { Cabin } from "@/features/cabins/types/cabin.types";
-import CabinCard from "@/features/cabins/components/CabinCard";
 import Carousel from "@/components/ui/Carousel";
+import CabinCard from "@/features/cabins/components/CabinCard";
+import SectionHeading from "@/features/landing/components/SectionHeading";
 
 export default function Stays({ cabins }: { cabins: Cabin[] }) {
   return (
@@ -19,14 +19,19 @@ export default function Stays({ cabins }: { cabins: Cabin[] }) {
         />
         <Carousel>
           {cabins.map((cabin) => (
-            <CabinCard
-              cabin={cabin}
-              key={cabin.id}
-              showPrice
-              variant="landing"
-              animation="hover"
-              className="hz-stay-card transition-[border-color,box-shadow]!"
-            />
+            /* ⚠️ قلاب انیمیشن روی یک پوششِ بیرونی می‌نشیند، نه روی خود
+               `CabinCard`؛ چون `CabinCardProps` یک تایپ بسته است و
+               `data-animate` را به DOM نمی‌رساند (بی‌صدا دور می‌افتاد و
+               انیمیشن ورود کارت‌ها هرگز اجرا نمی‌شد). */
+            <div key={cabin.id} data-animate="stay-card" className="h-full">
+              <CabinCard
+                cabin={cabin}
+                showPrice
+                variant="landing"
+                animation="hover"
+                className="transition-[border-color,box-shadow]!"
+              />
+            </div>
           ))}
         </Carousel>
       </Container>

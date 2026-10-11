@@ -11,13 +11,11 @@ export default async function MainLayout({
 }) {
   const user = await getCurrentUser();
 
-  // admin/owner جایی در سایت عمومی ندارند؛ مستقیم به پنل می‌روند.
+  //* Redirect admin/owner
   if (user && canAccessDashboard(user.role)) {
     redirect("/dashboard");
   }
 
-  // فقط کاربران عادی (مهمان) به نوار بالا تزریق می‌شوند تا حالت پروفایل
-  // جای دکمه‌ی «ورود | ثبت‌نام» را بگیرد.
   return (
     <Layout user={user ? { email: user.email, role: user.role } : null}>
       {children}
