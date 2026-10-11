@@ -80,7 +80,7 @@ export default function CabinDetail({
       calendarDays={booking.calendarDays}
       bookedRanges={booking.bookedRanges}
     >
-      <Container variant="cabin-detail">
+      <Container size="wide">
         <section id={SECTION_IDS.gallery} className="hz-scroll-mt">
           <CabinGallery images={cabin.images ?? []} altBase={cabin.name}>
             <GalleryHeader cabin={cabin} cityName={cityName} />
@@ -90,7 +90,7 @@ export default function CabinDetail({
 
       <StickyTabs />
 
-      <Container variant="cabin-detail">
+      <Container size="wide">
         <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-start lg:gap-8">
           <div className="space-y-10">
             <CabinDescription cabin={cabin} />

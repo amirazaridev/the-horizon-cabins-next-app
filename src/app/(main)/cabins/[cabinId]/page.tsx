@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
-import Navigate from "@/components/ui/Navigate";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import CabinDetail from "@/features/cabins/components/CabinDetail";
 import {
   getBookedDates,
@@ -51,12 +51,13 @@ export default async function CabinPage({ params }: Props): Promise<ReactNode> {
 
   return (
     <section className="bg-background-2 min-h-screen pt-10 pb-28 sm:pt-14 lg:pb-14">
-      <Container variant="cabin-detail">
-        <Navigate
-          paths={[
-            { id: 1, title: "خانه", href: "/" },
-            { id: 2, title: "کابین‌ها", href: "/cabins" },
-            { id: 3, title: cabin.name, isSpan: true },
+      <Container size="wide">
+        <Breadcrumb
+          className="mb-6"
+          items={[
+            { label: "خانه", href: "/" },
+            { label: "کابین‌ها", href: "/cabins" },
+            { label: cabin.name },
           ]}
         />
       </Container>
