@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 
 import Eyebrow from "@/components/ui/Eyebrow";
+import { SEARCH_CLEAR_LABEL } from "@/features/search/constants/search-mobile-texts";
 
 type Props = {
   title: string;
@@ -33,7 +34,7 @@ export default function PreviewHeader({ title, subtitle, onReset }: Props) {
         className="text-text-gray hover:text-danger hover:bg-danger/10 flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold transition-colors"
       >
         <X className="size-4" />
-        حذف جستجو
+        {SEARCH_CLEAR_LABEL}
       </button>
     </header>
   );

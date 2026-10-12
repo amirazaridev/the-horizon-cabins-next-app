@@ -5,8 +5,12 @@ import {
   BUDGET_MAX,
   BUDGET_MIN,
   BUDGET_STEP,
+  MS_PER_DAY,
 } from "@/features/search/constants/search-limits";
-import type { BudgetRange } from "@/features/search/types/search.types";
+import type {
+  BudgetRange,
+  SearchFilters,
+} from "@/features/search/types/search.types";
 
 export type BudgetMode = "perNight" | "total";
 
@@ -18,7 +22,7 @@ export function nightsBetween(
   if (!checkIn || !checkOut) return 0;
   const ms = checkOut.getTime() - checkIn.getTime();
   if (ms <= 0) return 0;
-  return Math.round(ms / 86_400_000);
+  return Math.round(ms / MS_PER_DAY);
 }
 
 //* حالت بودجه بر اساس تعداد شب
@@ -75,5 +79,33 @@ export function rescaleBudgetBetween(
   return {
     min: Math.min(scaledMin, scaledMax),
     max: Math.max(scaledMin, scaledMax),
+  };
+}
+
+/**
+ * زمانی که یکی از تاریخ‌ها عوض می‌شود، budget تازه را نسبت به تعداد شب
+ * جدید مقیاس می‌دهد و کل فیلترها را برمی‌گرداند.
+ *
+ * منطق مشترک هر دو کنترلر (URL و استور) اینجا متمرکز است تا هنگام تغییر
+ * تاریخ، قصد «هر شب» حفظ شود.
+ *
+ * @param prev فیلترهای قبلی
+ * @param key کلید تاریخِ عوض‌شده (`checkIn` یا `checkOut`)
+ * @param value مقدار تاریخ تازه
+ */
+export function rescaleBudgetOnDateChange(
+  prev: SearchFilters,
+  key: "checkIn" | "checkOut",
+  value: Date | null,
+): SearchFilters {
+  const next = { ...prev, [key]: value };
+
+  return {
+    ...next,
+    budget: rescaleBudgetBetween(
+      nightsBetween(prev.checkIn, prev.checkOut),
+      nightsBetween(next.checkIn, next.checkOut),
+      prev.budget,
+    ),
   };
 }

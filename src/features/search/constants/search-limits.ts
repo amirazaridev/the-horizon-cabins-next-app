@@ -12,3 +12,6 @@ export const BUDGET_STEP = 100_000;
 
 //* حداکثر تعداد کارت در پیش‌نمایش جستجو
 export const SEARCH_PREVIEW_LIMIT = 6;
+
+//* تعداد میلی‌ثانیه در یک شبانه‌روز — برای تبدیل فاصله‌ی دو تاریخ به «تعداد شب».
+export const MS_PER_DAY = 86_400_000;

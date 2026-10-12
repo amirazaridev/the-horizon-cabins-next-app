@@ -14,7 +14,6 @@ type SearchStoreState = {
   appliedToken: number;
 
   setDestination: (destination: SearchFilters["destination"]) => void;
-  setDates: (checkIn: Date | null, checkOut: Date | null) => void;
   setGuests: (guests: number | null) => void;
   setBudget: (budget: SearchFilters["budget"]) => void;
 
@@ -38,9 +37,6 @@ export const useSearchStore = create<SearchStoreState>((set) => ({
 
   setDestination: (destination) =>
     set((state) => ({ draft: { ...state.draft, destination } })),
-
-  setDates: (checkIn, checkOut) =>
-    set((state) => ({ draft: { ...state.draft, checkIn, checkOut } })),
 
   setGuests: (guests) =>
     set((state) => ({ draft: { ...state.draft, guests } })),
