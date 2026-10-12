@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useRef } from "react";
 
-/** شکل خام searchParams در Server Componentهای Next */
+//* شکل خام searchParams در Server Componentهای Next
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 export function toURLSearchParams(sp: RawSearchParams): URLSearchParams {
@@ -42,7 +42,7 @@ export function useUrlQuery(searchParams: RawSearchParams) {
     const fromProps = toURLSearchParams(searchParams).toString();
     const pending = pendingRef.current;
 
-    // سرور بهروز شده (یا هنوز چیزی push نکردهایم) => props معتبر است
+    //* سرور بهروز شده (یا هنوز چیزی push نکردهایم) => props معتبر است
     if (pending === null || pending === fromProps) {
       pendingRef.current = null;
       return new URLSearchParams(fromProps);

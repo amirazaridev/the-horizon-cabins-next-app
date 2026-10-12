@@ -17,13 +17,7 @@ export const metadata = { title: "مدیریت رزروها" };
 
 type SearchParams = Promise<BookingsSearchParams>;
 
-/**
- * صفحه‌ی «رزروها» داشبورد.
- *
- * ⚠️ فیلترها در URL می‌نشینند و سمت **سرور** به `GET /bookings` بک‌اند
- * (با `authFetch`) پاس می‌شوند؛ نتیجه به جدول کلاینت‌محور داده می‌شود.
- * صفحه‌بندی هم URL-محور است (مثل صفحه‌ی سوییت‌ها).
- */
+//* صفحه‌ی «رزروها» داشبورد.
 export default async function BookingsPage({
   searchParams,
 }: {

@@ -1,34 +1,14 @@
 import type { LucideIcon } from "lucide-react";
 
-/**
- * آیتم ناوبری پوسته (سایدبار/هدر).
- *
- * ⚠️ `icon` یک کامپوننت است، پس این آیتم‌ها هرگز نباید از Server Component
- * به Client Component پاس داده شوند (توابع قابل‌سریال‌سازی نیستند)؛ تعریف
- * هر فهرست باید در ماژولی باشد که خودِ کامپوننت کلاینتی import می‌کند.
- */
+
 export type ShellNavItem = {
   name: string;
   href: string;
   icon: LucideIcon;
-  /**
-   * عنوان دسته.
-   *
-   * آیتم‌های هم‌گروه زیر یک سرصفحه‌ی مشترک می‌آیند و **ترتیب دسته‌ها همان
-   * ترتیب اولین ظهور در آرایه است**. اگر هیچ آیتمی `group` نداشته باشد،
-   * ناوبری مثل قبل تخت (بدون سرصفحه) رندر می‌شود.
-   */
   group?: string;
 };
 
-/**
- * آیتم فعال برای یک مسیر مشخص.
- *
- * ⚠️ قاعده: «طولانی‌ترین پیشوند برنده است». با تطبیق ساده‌ی prefix، آیتم
- * ریشه (مثل `/dashboard`) روی همه‌ی زیرصفحه‌ها فعال می‌ماند و هم‌زمان با
- * آیتم دقیق هم روشن می‌شد؛ با این قاعده روی `/dashboard/cabins/add` فقط
- * «سوییت ها» فعال می‌شود.
- */
+
 export function findActiveNavItem<T extends ShellNavItem>(
   items: readonly T[],
   pathname: string,
@@ -47,12 +27,7 @@ export interface ShellNavSection<T extends ShellNavItem> {
   items: T[];
 }
 
-/**
- * گروه‌بندی آیتم‌ها بر اساس `group` — ترتیب دسته‌ها = ترتیب اولین ظهور.
- *
- * ⚠️ آرایه‌ی ورودی دست‌نخورده می‌ماند (بدون تغییر ترتیب)، پس هم‌زمان با
- * `findActiveNavItem` روی همان آرایه کار می‌کند.
- */
+
 export function groupNavItems<T extends ShellNavItem>(
   items: readonly T[],
 ): ShellNavSection<T>[] {

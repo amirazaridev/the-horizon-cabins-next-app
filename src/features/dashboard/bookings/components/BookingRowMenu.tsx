@@ -20,17 +20,7 @@ interface BookingRowMenuProps {
   onFeedback: (feedback: BookingActionFeedback) => void;
 }
 
-/**
- * منوی ردیف رزرو — «جزییات رزرو»، «تحویل یا تخلیه»، «کنسل کردن رزرو».
- *
- * گذارهای مجاز از قواعد بک‌اند پیروی می‌کنند:
- * - `confirmed → checkedIn` (تحویل)
- * - `checkedIn → checkedOut` (تخلیه)
- * - `pending | confirmed → cancelled` (کنسل)
- *
- * آیتم‌های غیرمجاز برای وضعیت فعلی **غیرفعال** می‌شوند (نه پنهان) تا کاربر
- * بفهمد عملیات وجود دارد ولی در این وضعیت مجاز نیست.
- */
+//* گزینه های هر ردیف رزرو مثل checkedIn & checkOut & جزییات رزرو در (Modal)
 export default function BookingRowMenu({
   booking,
   onShowDetails,

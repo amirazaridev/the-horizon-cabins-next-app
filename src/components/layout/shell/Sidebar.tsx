@@ -6,7 +6,11 @@ import { useTransition, type ReactNode } from "react";
 
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { logoutAction } from "@/features/auth/actions/auth.actions";
-import { findActiveNavItem, groupNavItems, type ShellNavItem } from "./shell-nav";
+import {
+  findActiveNavItem,
+  groupNavItems,
+  type ShellNavItem,
+} from "./shell-nav";
 
 type Props = {
   items: readonly ShellNavItem[];
@@ -20,21 +24,12 @@ type Props = {
   /** وضعیت بازبودن در موبایل (drawer). */
   open: boolean;
   onClose: () => void;
-  /** محتوای برند — معمولاً یک `<Link>` به خانه‌ی همان ناحیه. */
   brand: ReactNode;
   /** محتوای اختیاری بالای دکمه‌ی خروج (مثلاً اطلاعات اکانت). */
   profile?: ReactNode;
 };
 
-/**
- * سایدبار عمومی پوسته — مشترک بین پنل مدیریت و ناحیه‌ی مهمان.
- *
- * چیدمان (بالا به پایین): برند ← ناوبری **دسته‌بندی‌شده** ← [موبایل: تم]
- * ← محتوای اختیاری (پروفایل) ← آیتم‌های کاربردی (تنظیمات) ← دکمه‌ی خروج.
- *
- * ⚠️ اگر هیچ آیتمی `group` نداشته باشد، ناوبری مثل قبل تخت رندر می‌شود؛ پس
- * ناحیه‌ی مهمان بدون تغییر باقی می‌ماند.
- */
+//* سایدبار عمومی پوسته — مشترک بین پنل مدیریت و ناحیه‌ی مهمان.
 export default function Sidebar({
   items,
   footerItems,
@@ -45,11 +40,11 @@ export default function Sidebar({
   profile,
 }: Props): ReactNode {
   const [isPending, startTransition] = useTransition();
-  /**
-   * ⚠️ آیتم فعال باید از **اجتماع** ناوبری اصلی و آیتم‌های کاربردی محاسبه شود؛
-   * وگرنه آیتم‌هایی مثل «تنظیمات» که در `footerItems` هستند هرگز فعال نمی‌شوند.
-   */
-  const activeItem = findActiveNavItem([...items, ...(footerItems ?? [])], pathname);
+
+  const activeItem = findActiveNavItem(
+    [...items, ...(footerItems ?? [])],
+    pathname,
+  );
   const sections = groupNavItems(items);
 
   const renderItem = (item: ShellNavItem): ReactNode => {
@@ -70,13 +65,15 @@ export default function Sidebar({
         >
           <span
             aria-hidden="true"
-            className={`bg-primary-400 absolute inset-y-1.5 start-0 w-1 rounded-full transition-opacity duration-200 ${
+            className={`bg-primary-400 absolute inset-y-1.5 inset-s-0 w-1 rounded-full transition-opacity duration-200 ${
               isActive ? "opacity-100" : "opacity-0"
             }`}
           />
           <Icon
             className={`size-5 shrink-0 transition-colors ${
-              isActive ? "text-primary-500 dark:text-primary-400" : "group-hover:text-text"
+              isActive
+                ? "text-primary-500 dark:text-primary-400"
+                : "group-hover:text-text"
             }`}
           />
           <span className="truncate">{item.name}</span>
@@ -113,7 +110,9 @@ export default function Sidebar({
                   {section.title}
                 </p>
               )}
-              <ul className="flex flex-col gap-1">{section.items.map(renderItem)}</ul>
+              <ul className="flex flex-col gap-1">
+                {section.items.map(renderItem)}
+              </ul>
             </div>
           ))}
         </div>
@@ -128,7 +127,9 @@ export default function Sidebar({
         {profile && <div className="mb-2">{profile}</div>}
 
         {footerItems && footerItems.length > 0 && (
-          <ul className="mb-1.5 flex flex-col gap-1">{footerItems.map(renderItem)}</ul>
+          <ul className="mb-1.5 flex flex-col gap-1">
+            {footerItems.map(renderItem)}
+          </ul>
         )}
 
         {/* خروج واقعی — از طریق Server Action که کوکی نشست را پاک می‌کند. */}

@@ -17,16 +17,10 @@ export const metadata = { title: "مدیریت مدیران" };
 
 type SearchParams = Promise<UsersSearchParams>;
 
-/** دامنه‌ی این صفحه: مدیران و مالکان. */
+//* دامنه‌ی این صفحه: مدیران و مالکان.
 const LIST_ROLES: readonly UserRole[] = ["admin", "owner"];
 
-/**
- * صفحه‌ی «مدیران» داشبورد — **فقط مالک**.
- *
- * ⚠️ کنترل دسترسی دو لایه است: آیتم سایدبار برای admin نمایش داده نمی‌شود و
- * اگر کسی مستقیم به مسیر بیاید، `notFound()` می‌گیرد (۴۰۴) — نه ریدایرکت،
- * چون وجود این صفحه نباید برای admin لو برود.
- */
+//* صفحه‌ی «مدیران» داشبورد — **فقط مالک**.
 export default async function AdminsPage({
   searchParams,
 }: {

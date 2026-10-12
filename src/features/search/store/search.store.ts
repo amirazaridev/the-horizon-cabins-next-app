@@ -5,10 +5,7 @@ import { create } from "zustand";
 import { EMPTY_SEARCH_FILTERS } from "@/features/search/constants/search-defaults";
 import type { SearchFilters } from "@/features/search/types/search.types";
 
-//* استور گلوبال «جستجوی هسته» — فقط پنج مقدار: destination / checkIn / checkOut / guests / budget.
-//* فیلترهای پیشرفته‌ی /cabins (اتاق خواب، امکانات، صفحه) در URL همان صفحه‌اند، نه اینجا.
-//* دو نسخه نگه داشته می‌شود: draft (در حال ویرایش، بدون fetch) و applied (تأییدشده، مبنای پیش‌نمایش).
-//* بدون persistence؛ عمرش تا زنده‌بودن تب است و «آخرین جستجو» فیچر جداگانه‌ای است.
+
 
 type SearchStoreState = {
   draft: SearchFilters;

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { authFetch } from "@/libs/api/authFetch";
+import { fetchFilterOptions } from "../../shared/api/filter-options.api";
 import type {
   DashboardCabin,
   DashboardCity,
@@ -13,37 +13,25 @@ import type { DashboardFilterOptions } from "../data/dashboard.repository";
  * صفحه‌ی `dashboard/page.tsx` (Server Component) این تابع را صدا می‌زند تا
  * dropdown شهر/اقامتگاه مستقل از بازه‌ی تاریخ آماده باشد.
  *
+ * ⭐ واکشی خام شهر/اقامتگاه در `../../shared/api/filter-options.api` است
+ * (مشترک با سرویس صفحه‌ی رزروها)؛ این‌جا فقط نگاشت به شکل دامنه‌ی داشبورد.
+ *
  * ⚠️ `GET /cabins` فیلد `cityId` را حذف می‌کند (فقط `city` را می‌دهد)، پس
  * این‌جا `cityId` را از `city.id` بازمی‌سازیم تا شکل `DashboardCabin` کامل
  * شود.
  */
+
+/** اقامتگاه همان‌طور که از `GET /cabins` می‌آید — بدون `cityId`. */
+type CabinFromApi = Omit<DashboardCabin, "cityId">;
+
 export async function fetchDashboardFilterOptions(): Promise<DashboardFilterOptions> {
-  const [citiesRes, cabinsRes] = await Promise.all([
-    authFetch("locations/cities", {
-      cache: "force-cache",
-      next: { revalidate: 300, tags: ["cities-data"] },
-    }),
-    authFetch("cabins?limit=100", {
-      cache: "force-cache",
-      next: { revalidate: 300, tags: ["cabins-data"] },
-    }),
-  ]);
-
-  if (!citiesRes.ok || !cabinsRes.ok) {
-    throw new Error("دریافت گزینه‌های فیلتر داشبورد ناموفق بود.");
-  }
-
-  const citiesJson = (await citiesRes.json()) as {
-    data?: { cities?: DashboardCity[] };
-  };
-  const cabinsJson = (await cabinsRes.json()) as {
-    data?: { cabins?: (DashboardCabin & { city?: { id: number } })[] };
-  };
-
-  const cabins = cabinsJson.data?.cabins ?? [];
+  const { cities, cabins } = await fetchFilterOptions<
+    DashboardCity,
+    CabinFromApi
+  >();
 
   return {
-    cities: citiesJson.data?.cities ?? [],
+    cities,
     cabins: cabins.map((cabin) => ({
       ...cabin,
       cityId: cabin.city?.id ?? 0,
