@@ -5,8 +5,12 @@ import { ArrowDownLeft, ArrowUpRight, Info, Minus } from "lucide-react";
 
 import Skeleton from "@/components/ui/Skeleton";
 import CardDashContainer from "@/components/ui/CardDashContainer";
-import { KPI_TONE_CLASSES, type KpiCardDef } from "../../config/kpi-cards.config";
-import { type KpiKey, meetsTarget, targetProgress } from "../../config/targets";
+import {
+  KPI_TONE_CLASSES,
+  type KpiCardDef,
+  type KpiPolarity,
+} from "../../config/kpi-cards.config";
+import { meetsTarget, targetProgress } from "../../config/targets";
 import { formatDelta } from "../../lib/metrics/format";
 
 /* ==========================================================================
@@ -122,7 +126,7 @@ export default function KpiCard({
     );
   }
 
-  const deltaDirection = deltaDirectionOf(def.key, delta);
+  const deltaDirection = deltaDirectionOf(def.polarity, delta);
 
   return (
     <CardDashContainer
@@ -245,29 +249,23 @@ function DeltaLine({
 }
 
 /**
- * جهت خروجی Δ:
- * - برای شاخصی که «بالاتر بهتر» است ⇒ افزایش = خوب
- * - برای شاخصی که «پایین‌تر بهتر» است (نرخ لغو/مطالبات) ⇒ کاهش = خوب
- * - شاخص‌های بدون جهت مشخص (نرخ لغو دو طرفه معنا ندارد) ⇒ neutral
+ * جهت خروجی Δ بر اساس **جهت مطلوب** شاخص (از پیکربندی کارت):
+ * - `higher-is-better` ⇒ افزایش = خوب
+ * - `lower-is-better` ⇒ کاهش = خوب
+ * - `neutral` (یا Δ صفر/نامعلوم) ⇒ خنثی
  */
 function deltaDirectionOf(
-  key: KpiKey,
+  polarity: KpiPolarity,
   delta: number | null,
 ): "good" | "bad" | "neutral" {
   if (delta === null || delta === 0) return "neutral";
+  if (polarity === "neutral") return "neutral";
 
-  const lowerIsBetter: KpiKey[] = ["cancellationRate"];
-  const higherIsBetter: KpiKey[] = [
-    "totalRevenue",
-    "bookingCount",
-    "occupancy",
-    "adr",
-    "averageStay",
-  ];
+  const rising = delta > 0;
+  const isGood =
+    polarity === "higher-is-better" ? rising : !rising;
 
-  if (lowerIsBetter.includes(key)) return delta < 0 ? "good" : "bad";
-  if (higherIsBetter.includes(key)) return delta > 0 ? "good" : "bad";
-  return "neutral";
+  return isGood ? "good" : "bad";
 }
 
 /** آیکون اطالعات با tooltip ساده (title) — سبک و بومی مرورگر. */

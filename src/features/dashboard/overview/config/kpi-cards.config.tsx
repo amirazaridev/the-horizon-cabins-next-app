@@ -34,6 +34,14 @@ import {
 /** رنگ‌بندی کارت — کلاس‌های تِیل‌ویند (روشن/تیره). */
 export type KpiTone = "amber" | "indigo" | "emerald" | "sky" | "violet" | "rose";
 
+/**
+ * جهت مطلوب شاخص — تعیین‌کننده‌ی رنگ Δ نسبت به دوره‌ی مقایسه.
+ * - `higher-is-better`: افزایش خوب است (درآمد، رزرو، اشغال، ADR، اقامت)
+ * - `lower-is-better`: کاهش خوب است (نرخ لغو)
+ * - `neutral`: بی‌جهت (رنگ خنثی)
+ */
+export type KpiPolarity = "higher-is-better" | "lower-is-better" | "neutral";
+
 export const KPI_TONE_CLASSES: Record<
   KpiTone,
   { tile: string; glow: string; bar: string; spark: string }
@@ -85,6 +93,11 @@ export interface KpiCardDef {
   hint: string;
   icon: ReactNode;
   tone: KpiTone;
+  /**
+   * جهت مطلوب شاخص — رنگ‌بندی Δ از همین مشتق می‌شود.
+   * (یافته‌ی قبلی: این منطق به‌صورت آرایه‌های hardcode در کامپوننت بود.)
+   */
+  polarity: KpiPolarity;
   /** استخراج مقدار عددی از snapshot */
   value: (kpi: KpiSnapshot) => number | null;
   /**
@@ -120,6 +133,7 @@ export const KPI_CARDS: readonly KpiCardDef[] = [
     hint: "مجموع درآمد شب‌به‌شب رزروهای فروخته‌شده در بازه (توزیع prorated).",
     icon: <CircleDollarSign className="size-5.5" />,
     tone: "emerald",
+    polarity: "higher-is-better",
     value: (kpi) => kpi.totalRevenue,
     target: KPI_TARGETS.totalRevenue.value,
     formatTarget: (value) => `${formatTomanShort(value)} تومان`,
@@ -136,6 +150,7 @@ export const KPI_CARDS: readonly KpiCardDef[] = [
     hint: "تعداد رزروهای فروخته‌شده‌ای که حداقل یک شبشان داخل بازه می‌افتد.",
     icon: <CalendarCheck2 className="size-5.5" />,
     tone: "indigo",
+    polarity: "higher-is-better",
     value: (kpi) => kpi.bookingCount,
     target: KPI_TARGETS.bookingCount.value,
     format: (value) => formatCount(value as number | null),
@@ -148,6 +163,7 @@ export const KPI_CARDS: readonly KpiCardDef[] = [
     hint: "شب‌های فروخته‌شده ÷ شب‌های قابل‌فروش (تعداد اقامتگاه × روزهای بازه).",
     icon: <Gauge className="size-5.5" />,
     tone: "sky",
+    polarity: "higher-is-better",
     value: (kpi) => kpi.occupancy,
     target: KPI_TARGETS.occupancy.value,
     formatTarget: (value) => formatPercent(value),
@@ -159,6 +175,7 @@ export const KPI_CARDS: readonly KpiCardDef[] = [
     hint: "میانگین درآمد هر شب فروخته‌شده = درآمد ÷ شب‌های فروخته‌شده.",
     icon: <TrendingUp className="size-5.5" />,
     tone: "violet",
+    polarity: "higher-is-better",
     value: (kpi) => kpi.adr,
     target: KPI_TARGETS.adr.value,
     formatTarget: (value) => `${formatTomanShort(Math.round(value))} تومان`,
@@ -173,6 +190,7 @@ export const KPI_CARDS: readonly KpiCardDef[] = [
     hint: "رزروهای لغوشده ÷ کل رزروهای ثبت‌شده در بازه (مبنای createdAt).",
     icon: <Percent className="size-5.5" />,
     tone: "rose",
+    polarity: "lower-is-better",
     value: (kpi) => kpi.cancellationRate,
     target: KPI_TARGETS.cancellationRate.value,
     formatTarget: (value) => formatPercent(value, 1),
@@ -184,6 +202,7 @@ export const KPI_CARDS: readonly KpiCardDef[] = [
     hint: "میانگین شب‌های رزروهای فروخته‌شده در بازه.",
     icon: <BedDouble className="size-5.5" />,
     tone: "indigo",
+    polarity: "higher-is-better",
     value: (kpi) => kpi.averageStay,
     target: KPI_TARGETS.averageStay.value,
     formatTarget: (value) => formatNights(value),
