@@ -6,7 +6,7 @@ import {
   MOBILE_SEARCH_CHANGE_LABEL,
   MOBILE_SEARCH_RESULTS_LABEL,
   MOBILE_SEARCH_TITLE,
-} from "@/features/search/utils/search-summary";
+} from "@/features/search/constants/search-mobile-texts";
 
 type Props = {
   isHero: boolean;

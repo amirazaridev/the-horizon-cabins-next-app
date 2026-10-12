@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState, useTransition, type ReactNode } from "react";
-import { CheckCircle2, Info, RotateCcw, Save, TriangleAlert, X } from "lucide-react";
+import { Info, RotateCcw, Save } from "lucide-react";
 
 import Button from "@/components/ui/Button";
 import CardDashContainer from "@/components/ui/CardDashContainer";
 import Input from "@/components/ui/Input";
+import FeedbackBanner from "../../shared/components/FeedbackBanner";
 import { updateSettingsAction } from "../actions/settings.actions";
 import {
   formatSettingValue,
@@ -183,42 +184,6 @@ function ReadOnlyField({ label, value }: { label: string; value: string }): Reac
       <span className="text-text text-sm font-semibold tabular-nums" title="مقدار مشتق‌شده — قابل ویرایش نیست">
         {value}
       </span>
-    </div>
-  );
-}
-
-function FeedbackBanner({
-  feedback,
-  onDismiss,
-}: {
-  feedback: { success: boolean; message: string };
-  onDismiss: () => void;
-}): ReactNode {
-  return (
-    <div
-      role="status"
-      className={`flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-sm ${
-        feedback.success
-          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-          : "border-danger/40 bg-danger/10 text-danger"
-      }`}
-    >
-      <span className="flex items-center gap-2">
-        {feedback.success ? (
-          <CheckCircle2 className="size-4 shrink-0" />
-        ) : (
-          <TriangleAlert className="size-4 shrink-0" />
-        )}
-        {feedback.message}
-      </span>
-      <button
-        type="button"
-        onClick={onDismiss}
-        aria-label="بستن پیام"
-        className="cursor-pointer opacity-70 transition-opacity hover:opacity-100"
-      >
-        <X className="size-4" />
-      </button>
     </div>
   );
 }

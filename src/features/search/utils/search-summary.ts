@@ -14,8 +14,6 @@ import {
 
 //* ساخت برچسب‌ها و خلاصه‌های فارسیِ جستجو. همه‌ی متن‌های نمایشی اینجا متمرکز است تا نه در URL برود و نه در کامپوننت‌ها تکرار شود (جداسازی نمایش از داده).
 
-export { nightsBetween };
-
 const fa = (value: number) => value.toLocaleString("fa-IR");
 
 //* دو سر بازه‌ی بودجه، فقط اگر واقعاً محدودکننده باشند؛ بازه‌ی کامل یعنی «بدون محدودیت».
@@ -146,20 +144,6 @@ export function buildSearchSummaryParts({
 export function buildSearchSummary(input: SearchSummaryInput): string {
   return buildSearchSummaryParts(input).join("  ·  ");
 }
-
-//* متن‌های ثابت تریگر موبایل
-
-//* عنوان پرسشیِ خط اول تریگر موبایل در لندینگ
-export const MOBILE_SEARCH_TITLE = "مقصد، بودجه و تاریخ سفرت رو بگو";
-
-//* وقتی هنوز هیچ فیلتری انتخاب نشده، به‌جای لیست خالیِ فیلترها نشان داده می‌شود
-export const MOBILE_SEARCH_EMPTY_HINT = "برای شروع، فیلترهات رو انتخاب کن";
-
-//* در `/cabins` برچسب ثابت بالای خلاصه
-export const MOBILE_SEARCH_RESULTS_LABEL = "جستجوی شما";
-
-//* متن دکمه‌ی تغییر جستجو در `/cabins`
-export const MOBILE_SEARCH_CHANGE_LABEL = "تغییر جستجو";
 
 //* عنوان پویا برای بخش پیش‌نمایش
 export function buildPreviewHeading({

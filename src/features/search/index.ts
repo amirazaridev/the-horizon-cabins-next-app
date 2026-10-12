@@ -59,6 +59,7 @@ export {
   budgetModeFor,
   nightsBetween,
   rescaleBudgetBetween,
+  rescaleBudgetOnDateChange,
   type BudgetMode,
 } from "@/features/search/utils/budget";
 
@@ -111,3 +112,12 @@ export {
 } from "@/features/search/constants/search-limits";
 
 export { EMPTY_SEARCH_FILTERS } from "@/features/search/constants/search-defaults";
+
+export {
+  MOBILE_SEARCH_CHANGE_LABEL,
+  MOBILE_SEARCH_EMPTY_HINT,
+  MOBILE_SEARCH_HERO_TITLE,
+  MOBILE_SEARCH_RESULTS_LABEL,
+  MOBILE_SEARCH_TITLE,
+  SEARCH_CLEAR_LABEL,
+} from "@/features/search/constants/search-mobile-texts";

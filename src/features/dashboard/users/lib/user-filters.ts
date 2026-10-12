@@ -1,4 +1,8 @@
 import type { UserRole } from "@/features/auth/constants/auth-cookie";
+import {
+  firstParam,
+  parsePositiveInt,
+} from "@/libs/utils/url-params";
 
 /** پارامترهای URL صفحه (هم‌شکل `searchParams` نکست). */
 export type UsersSearchParams = Record<string, string | string[] | undefined>;
@@ -17,14 +21,9 @@ export interface UsersFilters {
   page: number;
 }
 
+/** خواندن یک پارامتر به‌صورت رشته — مقدار غایب/آرایه‌ای نرمال می‌شود. */
 function one(value: string | string[] | undefined): string {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
-
-function parsePositiveInt(raw: string): number | null {
-  const value = Number(raw);
-  return Number.isInteger(value) && value > 0 ? value : null;
+  return firstParam(value) ?? "";
 }
 
 /** خواندن فیلترها از URL — مقادیر نامعتبر بی‌اثر می‌شوند. */

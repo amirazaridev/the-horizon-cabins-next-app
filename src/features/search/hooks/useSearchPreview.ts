@@ -27,9 +27,7 @@ export type SearchPreviewState = {
   retry: () => void;
 };
 
-//* پیش‌نمایش نتایج بر اساس مقدار «اعمال‌شده» (هرگز draft). کشیدن اسلایدر بودجه هیچ درخواستی نمی‌سازد و هر تغییر مقدار، درخواست قبلی را بی‌اثر می‌کند (ضد race).
-//* ⚠️ هیچ گارد ref برای «تکراری‌بودن درخواست» نداریم: وابستگی افکت (`key`) خودش دقیقاً معادل تغییر واقعی فیلترهاست. با گارد ref در StrictMode (اجرای دوباره‌ی افکت) بار دوم زودهنگام return می‌شد و وضعیت برای همیشه روی «loading» گیر می‌کرد.
-//* `token` = نسلِ جستجو (`appliedToken` استور)؛ با هر «اعمال» عوض می‌شود تا زدن دوباره‌ی دکمه‌ی جستجو با همان فیلترها هم یک پرس‌وجوی تازه بسازد.
+
 export function useSearchPreview(
   filters: SearchFilters,
   limit: number = SEARCH_PREVIEW_LIMIT,
@@ -51,7 +49,6 @@ export function useSearchPreview(
   useEffect(() => {
     const current = filtersRef.current;
 
-    //* «جستجوی خالی» هم معتبر است: یعنی «همه‌ی اقامتگاه‌ها». فقط وقتی idle می‌مانیم که نه فیلتری باشد و نه هرگز «اعمال»ی انجام شده باشد (`token === 0`)؛ `reset` هم توکن را صفر می‌کند و سکشن را می‌بندد.
     if (!hasAnySearchFilter(current) && token === 0) {
       setStatus("idle");
       setCabins([]);

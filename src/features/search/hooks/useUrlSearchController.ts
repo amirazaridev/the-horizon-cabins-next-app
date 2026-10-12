@@ -17,8 +17,7 @@ import type {
   SearchFilters,
 } from "@/features/search/types/search.types";
 import {
-  nightsBetween,
-  rescaleBudgetBetween,
+  rescaleBudgetOnDateChange,
 } from "@/features/search/utils/budget";
 import {
   SEARCH_PARAM_KEYS,
@@ -68,19 +67,17 @@ export function useUrlSearchController(
   const setField = useCallback(
     <K extends keyof SearchFilters>(key: K, value: SearchFilters[K]) => {
       setDraft((prev) => {
-        const next = { ...prev, [key]: value };
-
         //* بودجه یک مقدار با دو معناست (هر شب / کل سفر)؛ با تغییر تاریخ باید مقیاس بگیرد تا قصد «هر شب» حفظ شود.
-        //* چون به‌روزرسانی تابعی است، `prev` همیشه تازه است و دو فراخوانی پشت‌سرهمِ پنل تقویم (checkIn و بعد checkOut) درست روی هم می‌نشینند.
+        //* منطق مشترک در `rescaleBudgetOnDateChange` است تا با کنترلر لندینگ تکرار نشود. چون به‌روزرسانی تابعی است، `prev` همیشه تازه است و دو فراخوانی پشت‌سرهمِ پنل تقویم (checkIn و بعد checkOut) درست روی هم می‌نشینند.
         if (key === "checkIn" || key === "checkOut") {
-          next.budget = rescaleBudgetBetween(
-            nightsBetween(prev.checkIn, prev.checkOut),
-            nightsBetween(next.checkIn, next.checkOut),
-            prev.budget,
+          return rescaleBudgetOnDateChange(
+            prev,
+            key,
+            value as Date | null,
           );
         }
 
-        return next;
+        return { ...prev, [key]: value };
       });
     },
     [],

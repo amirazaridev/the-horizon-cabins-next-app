@@ -9,8 +9,8 @@ export {
 export {
   findCity,
   regionDestination,
-  regionHint,
-  regionSubtitle,
+  regionCitiesLabel,
+  regionShortHint,
   searchDestinations,
   type DestinationSearchResult,
 } from "@/features/search/services/destination.service";

@@ -12,18 +12,10 @@ import Header from "./Header";
 type Props = {
   /** نقش کاربر — از Server Component والد تزریق می‌شود. */
   role: UserRole;
-  /** شناسه‌ی کاربر — برای نمایش/اکشن‌های وابسته به کاربر. */
   userId: number;
   children: ReactNode;
 };
 
-/**
- * پوسته‌ی پنل مدیریت — سایدبار آیتم‌های مخصوص نقش + هدر داشبورد.
- *
- * ⚠️ کلاینتی است چون فهرست آیتم‌ها `icon` (کامپوننت) دارد و توابع از
- * Server Component قابل‌سریال‌سازی نیستند؛ پس آیتم‌ها همین‌جا از ماژول
- * خوانده می‌شوند و فقط `role`/`userId` از سرور می‌آید.
- */
 export default function DashboardShell({
   role,
   userId,

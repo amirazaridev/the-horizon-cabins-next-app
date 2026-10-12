@@ -72,7 +72,7 @@ export function regionDestination(regionId: RegionId): Destination | null {
 }
 
 //* برچسب کمکی هر منطقه برای نمایش تعداد شهر
-export function regionHint(regionId: RegionId, regions: Region[]): string {
+export function regionCitiesLabel(regionId: RegionId, regions: Region[]): string {
   const region = regions.find((item) => item.id === regionId);
   const allLabel = regionAllCitiesLabel(region?.name ?? regionName(regionId));
   const count = region?.citiesCount ?? 0;
@@ -83,7 +83,7 @@ export function regionHint(regionId: RegionId, regions: Region[]): string {
 }
 
 //* توضیح کوتاه منطقه (فقط نمایشی — از نگاشت ثابت فرانت‌اند)
-export function regionSubtitle(regionId: RegionId): string | undefined {
+export function regionShortHint(regionId: RegionId): string | undefined {
   return regionHintOf(regionId);
 }
 

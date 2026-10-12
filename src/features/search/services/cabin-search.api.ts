@@ -1,6 +1,3 @@
-//* آداپتور API واقعی جستجو — فقط سمت سرور (`apiFetch` با `server-only` و `API_URL` سروری است). مصرف‌کننده‌اش تنها Route Handler است.
-//* نگاشت فیلتر ⇒ پارامتر: city→`city` · region→`regionId` (اسلاگ به عدد) · guests→`guests` · تاریخ‌ها→`startDate`/`endDate` (میلادی) · بودجه‌ی بدون تاریخ→`price` · بودجه‌ی با تاریخ→`totalPrice`.
-//* ⭐ با ارسال تاریخ، بک‌اند فقط ویلاهای آزاد همان بازه را برمی‌گرداند و `pricing.mode === "stay"` را کنار هر ویلا می‌گذارد.
 
 import "server-only";
 

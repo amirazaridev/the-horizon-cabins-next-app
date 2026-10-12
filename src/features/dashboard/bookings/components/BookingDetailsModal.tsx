@@ -8,6 +8,7 @@ import { formatCurrency } from "@/libs/utils/format";
 import { formatJalaliFull, formatJalaliTime } from "@/libs/utils/jalali";
 import { CANCELLATION_REASON_LABELS } from "@/features/guest/bookings/constants/booking-status";
 import type { GuestBooking } from "@/features/guest/bookings/types/guest-booking.types";
+import DetailRow from "../../shared/components/DetailRow";
 import BookingStatusBadge from "./BookingStatusBadge";
 
 interface BookingDetailsModalProps {
@@ -16,7 +17,7 @@ interface BookingDetailsModalProps {
   onClose: () => void;
 }
 
-/** مودال «جزییات رزرو» — خلاصه‌ی کامل یک رزرو بدون ترک صفحه. */
+//* مودال «جزییات رزرو» — خلاصه‌ی کامل یک رزرو بدون ترک صفحه
 export default function BookingDetailsModal({
   booking,
   isOpen,
@@ -152,25 +153,5 @@ export default function BookingDetailsModal({
         )}
       </div>
     </Modal>
-  );
-}
-
-function DetailRow({
-  icon,
-  label,
-  children,
-}: {
-  icon?: ReactNode;
-  label: string;
-  children: ReactNode;
-}): ReactNode {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <dt className="text-text-gray flex items-center gap-1.5 text-xs">
-        {icon}
-        {label}
-      </dt>
-      <dd className="text-text truncate text-sm font-semibold">{children}</dd>
-    </div>
   );
 }

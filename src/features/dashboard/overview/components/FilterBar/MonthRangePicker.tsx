@@ -25,6 +25,7 @@ import {
  * باندل بیاید و با داشبورد کد-اسپلیت شود.
  */
 // import "./MonthRangePicker.module.css";
+import { toDateObject, toJsDate } from "./date-picker-helpers";
 import { DATE_PICKER_INPUT_CLASS } from "./date-picker-input-class";
 
 interface MonthRangePickerProps {
@@ -34,23 +35,6 @@ interface MonthRangePickerProps {
 }
 
 type DatePickerValue = DateObject | DateObject[] | null;
-
-function toDateObject(date: Date): DateObject {
-  return new DateObject({
-    date,
-    calendar: persian,
-    locale: persian_fa,
-  });
-}
-
-function toJsDate(value: unknown): Date | null {
-  if (!value || typeof value !== "object" || !("toDate" in value)) {
-    return null;
-  }
-
-  const date = (value as { toDate: () => Date }).toDate();
-  return date instanceof Date && !Number.isNaN(date.getTime()) ? date : null;
-}
 
 /**
  * انتخاب بازهٔ ماه با دو فیلد مستقل: «ماه شروع» و «ماه پایان».

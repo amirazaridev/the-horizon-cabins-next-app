@@ -94,7 +94,7 @@ export type SearchController = {
   apply: (patch?: Partial<SearchFilters>) => void;
   //* پاک‌کردن کامل: draft + applied + URL
   reset: () => void;
-  //* فقط draft را خالی می‌کند تا نتایجِ پشت شیت موبایل وسط کار عوض نشود.
+  //* فقط draft را خالی می‌کند
   resetDraft: () => void;
   //* فقط کنترلر URL مقدار می‌دهد (کنترلر لندینگ ناوبری ندارد).
   isPending?: boolean;

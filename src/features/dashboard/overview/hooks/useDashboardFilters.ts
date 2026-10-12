@@ -17,6 +17,7 @@ import {
   parseNumberListParam,
 } from "../constants/dashboard-params";
 import { resolveDashboardDateRange } from "../lib/date-range";
+import { MS_PER_DAY } from "../lib/metrics/range";
 import {
   getDashboardRepository,
   type DashboardSnapshot,
@@ -29,8 +30,6 @@ import type {
 /* ==========================================================================
    بازگرداندن مقادیر خام URL → فیلترهای تایپ‌شده
    ========================================================================== */
-
-const MS_PER_DAY = 86_400_000;
 
 /**
  * فیلترهای داشبورد را از URL می‌سازد.

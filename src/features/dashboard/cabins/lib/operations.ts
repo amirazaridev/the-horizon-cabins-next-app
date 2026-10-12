@@ -1,6 +1,10 @@
 import type { CabinsQueryParams, Cabin } from "@/features/cabins/types/cabin.types";
 import { parseCabinFilters } from "@/features/cabins/utils/cabin-filters";
-import { parseLimitParam, parsePageParam } from "@/libs/utils/url-params";
+import {
+  firstParam,
+  parseLimitParam,
+  parsePageParam,
+} from "@/libs/utils/url-params";
 import { CABINS_LIMIT_BOUNDS } from "@/constants/cabins";
 
 export type CabinsSearchParams = Record<string, string | string[] | undefined>;
@@ -29,22 +33,16 @@ export type CabinSortValue = (typeof DASHBOARD_SORT_OPTIONS)[number]["value"];
 
 const faCollator = new Intl.Collator("fa");
 
-function one(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value;
-}
-
 /** مقدار تکررشده یک پارامتر کوئری را بهصورت رشته برمیگرداند */
 export function getParam(params: CabinsSearchParams, key: string): string {
-  const value = params[key];
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
+  return firstParam(params[key]) ?? "";
 }
 
 /** مقدار sortBy فقط در صورتی پذیرفته میشود که یکی از گزینههای معتبر باشد */
 export function parseSortParam(
   params: CabinsSearchParams,
 ): CabinSortValue | undefined {
-  const raw = one(params.sortBy);
+  const raw = firstParam(params.sortBy);
   if (!raw) return undefined;
 
   return DASHBOARD_SORT_OPTIONS.some((option) => option.value === raw)

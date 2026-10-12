@@ -1,6 +1,6 @@
 "use server";
 
-import { authFetch } from "@/libs/api/authFetch";
+import { requestBookingStatusTransition } from "../../shared/api/bookings.api";
 import type { DashboardBookingJson } from "../data/dashboard.hydrate";
 
 /**
@@ -12,6 +12,9 @@ import type { DashboardBookingJson } from "../data/dashboard.hydrate";
  *
  * ⚠️ خروجی، **JSON خام** رزرو است (تاریخ‌ها رشته) تا سمت کلاینت با همان
  * `hydrateBooking` بازسازی شود — یک قرارداد یکسان با مسیر snapshot.
+ *
+ * ⭐ تماس HTTP خام در `../../shared/api/bookings.api` است (مشترک با
+ * اکشن‌های رزروِ bookings)؛ این‌جا فقط استخراج رزرو از پاسخ.
  */
 
 type BookingStatusTransition = "checkedIn" | "checkedOut";
@@ -21,16 +24,10 @@ async function transitionBookingStatus(
   bookingId: number,
   status: BookingStatusTransition,
 ): Promise<DashboardBookingJson | null> {
-  const res = await authFetch(`bookings/${bookingId}/status`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status }),
-    cache: "no-store",
-  });
+  const result = await requestBookingStatusTransition(bookingId, status);
+  if (!result.ok) return null;
 
-  if (!res.ok) return null;
-
-  const json = (await res.json()) as {
+  const json = result.data as {
     data?: { booking?: DashboardBookingJson };
   };
   return json.data?.booking ?? null;

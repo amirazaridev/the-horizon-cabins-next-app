@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { CalendarDays, CheckCircle2, TriangleAlert, X } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 
 import CardDashContainer from "@/components/ui/CardDashContainer";
 import Table, { type TableColumn } from "@/components/ui/Table";
 import { formatCurrency } from "@/libs/utils/format";
 import { formatJalaliFull } from "@/libs/utils/jalali";
 import type { GuestBooking } from "@/features/guest/bookings/types/guest-booking.types";
+import FeedbackBanner from "../../shared/components/FeedbackBanner";
 import BookingDetailsModal from "./BookingDetailsModal";
 import BookingRowMenu, { type BookingActionFeedback } from "./BookingRowMenu";
 import BookingStatusBadge from "./BookingStatusBadge";
@@ -16,7 +17,7 @@ interface BookingsTableProps {
   bookings: GuestBooking[];
 }
 
-/** جدول رزروها — ستون آخر منوی عملیات است. */
+//* جدول رزروها — ستون آخر منوی عملیات است.
 export default function BookingsTable({ bookings }: BookingsTableProps): ReactNode {
   const [detailsBooking, setDetailsBooking] = useState<GuestBooking | null>(null);
   const [feedback, setFeedback] = useState<BookingActionFeedback | null>(null);
@@ -119,47 +120,6 @@ export default function BookingsTable({ bookings }: BookingsTableProps): ReactNo
   );
 }
 
-/* ==========================================================================
-   کمکی‌ها
-   ========================================================================== */
-
-function FeedbackBanner({
-  feedback,
-  onDismiss,
-}: {
-  feedback: BookingActionFeedback;
-  onDismiss: () => void;
-}): ReactNode {
-  const isSuccess = feedback.success;
-
-  return (
-    <div
-      role="status"
-      className={`flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-sm ${
-        isSuccess
-          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-          : "border-danger/40 bg-danger/10 text-danger"
-      }`}
-    >
-      <span className="flex items-center gap-2">
-        {isSuccess ? (
-          <CheckCircle2 className="size-4 shrink-0" />
-        ) : (
-          <TriangleAlert className="size-4 shrink-0" />
-        )}
-        {feedback.message}
-      </span>
-      <button
-        type="button"
-        onClick={onDismiss}
-        aria-label="بستن پیام"
-        className="cursor-pointer opacity-70 transition-opacity hover:opacity-100"
-      >
-        <X className="size-4" />
-      </button>
-    </div>
-  );
-}
 
 function EmptyState(): ReactNode {
   return (

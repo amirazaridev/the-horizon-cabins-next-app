@@ -38,12 +38,10 @@ function emit(): void {
   for (const listener of listeners) listener();
 }
 
-//* قرارداد استور خارجی
 
 export function subscribeLastSearch(listener: () => void): () => void {
   listeners.add(listener);
 
-  //* هم‌گام‌سازی بین تب‌ها
   const onStorage = (event: StorageEvent) => {
     if (event.key !== null && event.key !== STORAGE_KEY) return;
     cachedQuery = undefined;

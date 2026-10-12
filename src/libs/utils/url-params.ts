@@ -25,6 +25,27 @@ export type LimitBounds = {
 };
 
 /**
+ * اولین مقدار یک پارامتر URL را برمی‌گرداند (پارامترهای تکراری آرایه‌اند).
+ * اگر پارامتر غایب باشد `undefined` برمی‌گردد — برخلاف نسخه‌ی `?? ""` که
+ * بعضی فیلترها لازم دارند و باید خودشان انجام دهند.
+ */
+export function firstParam(
+  value: string | string[] | undefined,
+): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+/**
+ * یک رشته را به عدد صحیح مثبت تبدیل می‌کند؛ در غیر این صورت `null`.
+ * برای پارامترهای شناسه‌ای (cabin، city، page) که مقدار نامعتبر باید
+ * بی‌اثر شود، نه اینکه صفر/NaN به منطق نشت کند.
+ */
+export function parsePositiveInt(raw: string): number | null {
+  const value = Number(raw);
+  return Number.isInteger(value) && value > 0 ? value : null;
+}
+
+/**
  * `limit` را با اعتبارسنجی از searchParams می‌خواند و همیشه یک عدد صحیح
  * در بازه‌ی `[1, bounds.max]` برمی‌گرداند (ورودی خراب/غایب => `fallback`).
  */

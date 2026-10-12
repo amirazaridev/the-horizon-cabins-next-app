@@ -9,12 +9,7 @@ type Props = {
   className?: string;
 };
 
-/**
- * دکمه‌ی بازکردن سایدبار در موبایل — برای استفاده در هدرِ پوسته.
- *
- * ⚠️ از context پوسته می‌خواند تا هر هدری (داشبورد/مهمان) بدون پراپ‌درمانی
- * همان رفتار را داشته باشد.
- */
+//* دکمه‌ی بازکردن سایدبار در موبایل — برای استفاده در هدرِ پوسته.
 export default function ShellMenuButton({ className = "" }: Props): ReactNode {
   const { openSidebar } = useShellSidebar();
 

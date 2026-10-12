@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["192.168.1.121", "192.168.8.120","172.18.180.149"],
+  allowedDevOrigins: [
+    "192.168.1.121",
+    "192.168.8.120",
+    "172.18.180.149",
+    "192.168.0.155",
+  ],
   images: {
     remotePatterns: [
       {
@@ -14,7 +19,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "10mb", 
+      bodySizeLimit: "10mb",
     },
   },
   /**

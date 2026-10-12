@@ -6,7 +6,6 @@ import FilterCard, {
   type FilterCardValues,
 } from "@/components/ui/Filter/FilterCard";
 import { FOCUS_RING } from "@/components/ui/Filter/focus-ring";
-import { formatJalaliDate } from "@/components/ui/RangeDatePicker";
 import type { City } from "@/features/cabins/types/city.types";
 import SearchMobileTrigger from "@/features/search/components/SearchMobileTrigger";
 import SearchAction from "@/features/search/components/fields/SearchAction";
@@ -23,8 +22,14 @@ import { hasAnySearchFilter } from "@/features/search/utils/search-params";
 import { scheduleScrollToSearchPreview } from "@/features/search/utils/scroll-to-preview";
 import {
   buildSearchSummary,
-  MOBILE_SEARCH_EMPTY_HINT,
+  formatDateRangeSummary,
 } from "@/features/search/utils/search-summary";
+import {
+  MOBILE_SEARCH_EMPTY_HINT,
+  MOBILE_SEARCH_HERO_TITLE,
+  MOBILE_SEARCH_RESULTS_LABEL,
+  SEARCH_CLEAR_LABEL,
+} from "@/features/search/constants/search-mobile-texts";
 import { FALLBACK_PUBLIC_SETTINGS } from "@/features/settings/types/public-settings.types";
 
 //* کلاس‌های چیدمان — فقط در همین فایل استفاده می‌شوند، پس محلی‌اند (نه در `constants`).
@@ -88,12 +93,7 @@ export default function Search({
   const hasDraftFilters = hasAnySearchFilter(draft);
   const hasApplied = hasAnySearchFilter(applied);
 
-  const mobileDateSummary = (() => {
-    const from = formatJalaliDate(draft.checkIn);
-    const to = formatJalaliDate(draft.checkOut);
-    if (from && to) return `${from} تا ${to}`;
-    return from ?? to ?? null;
-  })();
+  const mobileDateSummary = formatDateRangeSummary(draft.checkIn, draft.checkOut) ?? null;
 
   //* خلاصه‌ی یک‌خطی زیر عنوان تریگر موبایل — ترتیب قطعات: مقصد · تاریخ · مهمان · بودجه.
   //* هر قطعه فقط با مقدار واقعی می‌آید؛ بازه‌ی بودجه‌ی کامل «بدون محدودیت» است و عمداً نمایش داده نمی‌شود تا کاربر بازه‌ی پیش‌فرض را «فیلتر» نپندارد.
@@ -174,7 +174,7 @@ export default function Search({
         //* داخل شیت موبایل فقط draft پاک می‌شود تا نتایجِ پشت شیت نپرد
         onClearFilters={resetDraft}
         placement="center"
-        mobileTitle={isHero ? "جستجوی اقامتگاه" : "جستجوی شما"}
+        mobileTitle={isHero ? MOBILE_SEARCH_HERO_TITLE : MOBILE_SEARCH_RESULTS_LABEL}
         mobileApplyLabel={mobileApplyLabel}
         onMobileApply={() => handleApply()}
         mobileApplyPending={isPending}
@@ -198,7 +198,7 @@ export default function Search({
             className={`text-text-gray hover:text-danger hover:bg-danger/10 flex h-12 shrink-0 items-center gap-1.5 rounded-xl px-3 text-xs font-bold whitespace-nowrap transition-colors ${FOCUS_RING}`}
           >
             <X className="size-4" />
-            حذف جستجو
+            {SEARCH_CLEAR_LABEL}
           </button>
         )}
 

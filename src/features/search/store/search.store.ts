@@ -5,10 +5,7 @@ import { create } from "zustand";
 import { EMPTY_SEARCH_FILTERS } from "@/features/search/constants/search-defaults";
 import type { SearchFilters } from "@/features/search/types/search.types";
 
-//* استور گلوبال «جستجوی هسته» — فقط پنج مقدار: destination / checkIn / checkOut / guests / budget.
-//* فیلترهای پیشرفته‌ی /cabins (اتاق خواب، امکانات، صفحه) در URL همان صفحه‌اند، نه اینجا.
-//* دو نسخه نگه داشته می‌شود: draft (در حال ویرایش، بدون fetch) و applied (تأییدشده، مبنای پیش‌نمایش).
-//* بدون persistence؛ عمرش تا زنده‌بودن تب است و «آخرین جستجو» فیچر جداگانه‌ای است.
+
 
 type SearchStoreState = {
   draft: SearchFilters;
@@ -17,7 +14,6 @@ type SearchStoreState = {
   appliedToken: number;
 
   setDestination: (destination: SearchFilters["destination"]) => void;
-  setDates: (checkIn: Date | null, checkOut: Date | null) => void;
   setGuests: (guests: number | null) => void;
   setBudget: (budget: SearchFilters["budget"]) => void;
 
@@ -41,9 +37,6 @@ export const useSearchStore = create<SearchStoreState>((set) => ({
 
   setDestination: (destination) =>
     set((state) => ({ draft: { ...state.draft, destination } })),
-
-  setDates: (checkIn, checkOut) =>
-    set((state) => ({ draft: { ...state.draft, checkIn, checkOut } })),
 
   setGuests: (guests) =>
     set((state) => ({ draft: { ...state.draft, guests } })),
