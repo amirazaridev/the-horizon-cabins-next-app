@@ -2,16 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 
-import { authFetch } from "@/libs/api/authFetch";
+import { requestBookingStatusTransition } from "../../shared/api/bookings.api";
 
-/**
- * Server Actionهای عملیات رزرو در پنل مدیریت.
- *
- * همه از `PATCH /bookings/:id/status` بک‌اند عبور می‌کنند (محدود به
- * admin|owner). بک‌اند خودش گذارهای مجاز را اعتبارسنجی می‌کند:
- * `confirmed → checkedIn → checkedOut` و `pending|confirmed → cancelled`
- * (لغو توسط ادمین `cancellationReason = adminCancelled` می‌گیرد).
- */
+//* Server Actionهای عملیات رزرو در پنل مدیریت.
 
 export type BookingActionResult = {
   success: boolean;
@@ -26,14 +19,9 @@ async function transitionBooking(
   messages: { success: string; failure: string },
 ): Promise<BookingActionResult> {
   try {
-    const res = await authFetch(`bookings/${bookingId}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-      cache: "no-store",
-    });
+    const result = await requestBookingStatusTransition(bookingId, status);
 
-    if (!res.ok) {
+    if (!result.ok) {
       return { success: false, message: messages.failure };
     }
 
@@ -44,7 +32,7 @@ async function transitionBooking(
   }
 }
 
-/** تحویل اتاق — گذار `confirmed → checkedIn`. */
+//* تحویل اتاق — گذار `confirmed → checkedIn`
 export async function checkInBookingAction(
   bookingId: number,
 ): Promise<BookingActionResult> {
@@ -55,7 +43,7 @@ export async function checkInBookingAction(
   });
 }
 
-/** تخلیه اتاق — گذار `checkedIn → checkedOut`. */
+//* تخلیه اتاق — گذار `checkedIn → checkedOut`
 export async function checkOutBookingAction(
   bookingId: number,
 ): Promise<BookingActionResult> {
@@ -65,7 +53,7 @@ export async function checkOutBookingAction(
   });
 }
 
-/** کنسل کردن رزرو — گذار `pending|confirmed → cancelled`. */
+//* کنسل کردن رزرو — گذار `pending|confirmed → cancelled`
 export async function cancelBookingAction(
   bookingId: number,
 ): Promise<BookingActionResult> {
