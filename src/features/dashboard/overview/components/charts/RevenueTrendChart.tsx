@@ -13,6 +13,7 @@ import {
 
 import CardDashContainer from "@/components/ui/CardDashContainer";
 import { WidgetEmpty } from "../WidgetStates";
+import LegendItem from "./_shared/LegendItem";
 import { formatBucketLabel } from "../../lib/date-range";
 import {
   pickGranularity,
@@ -241,34 +242,5 @@ export default function RevenueTrendChart({
         </>
       )}
     </CardDashContainer>
-  );
-}
-
-function LegendItem({
-  color,
-  label,
-  dashed,
-}: {
-  color: string;
-  label: string;
-  dashed?: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      {dashed ? (
-        <span
-          className="h-0.5 w-4 shrink-0 rounded-full"
-          style={{
-            backgroundImage: `repeating-linear-gradient(90deg, ${color} 0 5px, transparent 5px 9px)`,
-          }}
-        />
-      ) : (
-        <span
-          className="size-2.5 shrink-0 rounded-full"
-          style={{ backgroundColor: color }}
-        />
-      )}
-      <span className="text-text text-sm">{label}</span>
-    </div>
   );
 }
