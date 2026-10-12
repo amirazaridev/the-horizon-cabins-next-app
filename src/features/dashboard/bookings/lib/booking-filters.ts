@@ -1,4 +1,8 @@
 import type { GuestBookingStatus } from "@/features/guest/bookings/types/guest-booking.types";
+import {
+  firstParam,
+  parsePositiveInt,
+} from "@/libs/utils/url-params";
 
 /** پارامترهای URL صفحه (هم‌شکل `searchParams` نکست). */
 export type BookingsSearchParams = Record<string, string | string[] | undefined>;
@@ -30,14 +34,9 @@ export interface BookingsFilters {
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/** خواندن یک پارامتر به‌صورت رشته — مقدار غایب/آرایه‌ای نرمال می‌شود. */
 function one(value: string | string[] | undefined): string {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
-
-function parsePositiveInt(raw: string): number | null {
-  const value = Number(raw);
-  return Number.isInteger(value) && value > 0 ? value : null;
+  return firstParam(value) ?? "";
 }
 
 /** `status` می‌تواند CSV باشد (`confirmed,checkedIn`) یا تک‌مقداری. */
