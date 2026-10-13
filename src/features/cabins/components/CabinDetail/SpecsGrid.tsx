@@ -40,20 +40,13 @@ export default function SpecsGrid({ cabin }: Props): ReactNode {
     },
   ];
 
-  /**
-   * ⚠️ TODO(backend): «نوع اقامتگاه» (ویلا/کابین/اقامتگاه بومگردی) و
-   * «تعداد طبقه» در پاسخ اندپوینت کابین وجود ندارد. با اضافه‌شدن فیلد
-   * `category` یا `floors`، فقط یک آیتم به آرایه‌ی بالا اضافه می‌شود و
-   * گرید خودش ۵ ستونه می‌شود — هیچ کامپوننت دیگری تغییر نمی‌کند.
-   */
-
   return (
     <SectionShell
       id={SECTION_IDS.specs}
       title="خلاصه‌ی مشخصات"
       hint="نگاه سریع به ظرفیت و ابعاد این اقامتگاه"
     >
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 px-8">
         {specs.map((spec) => (
           <CardContainer
             key={spec.label}

@@ -87,12 +87,15 @@ export default function LandingCard({
                 </span>
               </>
             ) : (
+              /* بدون تاریخ: قیمت، «کمینه‌ی پنجره» است نه قیمت ثابت — پس با
+                 «از» می‌آید تا کاربر بفهمد ممکن است شب‌های دیگر گران‌تر باشد. */
               <>
                 {hasDiscount && (
                   <span className="text-text-gray/60 text-[11px] line-through">
                     {formatCurrency(basePrice)}
                   </span>
                 )}
+                <span className="text-text-gray text-[10px]">از</span>
                 <span className="text-primary-500 text-sm font-extrabold tabular-nums">
                   {formatCurrency(finalPrice)}
                 </span>

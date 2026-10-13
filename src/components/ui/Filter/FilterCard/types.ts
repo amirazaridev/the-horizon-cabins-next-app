@@ -58,12 +58,6 @@ export type FilterCardItem = {
   group?: string;
 };
 
-export type MobileTriggerRenderProps = {
-  activeCount: number;
-  getValue: (id: string) => unknown;
-  open: () => void;
-};
-
 export type FilterCardProps = {
   items: FilterCardItem[];
   value?: FilterCardValues;
@@ -73,18 +67,9 @@ export type FilterCardProps = {
   defaultOpenId?: string | null;
   className?: string;
   //* موبایل
-
-  mobileBreakpoint?: string;
   mobileTitle?: string;
   mobileTriggerLabel?: string;
-  renderMobileTrigger?:
-    React.ReactNode | ((ctx: MobileTriggerRenderProps) => React.ReactNode);
-  mobileTriggerClassName?: string;
   mobileApplyLabel?: string;
-  onMobileApply?: () => void;
-  mobileApplyDisabled?: boolean;
-  //* در حال اعمال — متن دکمه با spinner جایگزین می‌شود
-  mobileApplyPending?: boolean;
   resultCount?: number;
   onClearFilters?: () => void;
 };

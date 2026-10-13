@@ -16,11 +16,6 @@ export type LastMinuteProps = {
 export default function LastMinute({ cabins }: LastMinuteProps) {
   if (!cabins.length) return null;
 
-  /*
-   * نزدیک‌ترین انقضا، مبنای تایمر کل سکشن است.
-   * ⚠️ این منطق به `lib/last-minute.ts` منتقل شد (قبلاً داخل همین
-   * کامپوننت با `localeCompare` روی رشته‌ی ISO انجام می‌شد).
-   */
   const expiresAt = nearestExpiry(cabins);
 
   return (

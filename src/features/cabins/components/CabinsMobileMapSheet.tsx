@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, List, MapPin, X } from "lucide-react";
 import CabinsMapPanel from "./CabinsMapPanel";
 
-const PREVIEW_HEIGHT = 148;
+const PREVIEW_HEIGHT = 50;
 const OPEN_THRESHOLD = 72;
 const CLOSE_THRESHOLD = 96;
 const TRANSITION_MS = 260;
@@ -107,7 +107,7 @@ export default function CabinsMobileMapSheet({ resultCount }: Props) {
       >
         <span
           aria-hidden="true"
-          className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--color-border-strong)_1px,transparent_1px)] bg-[size:22px_22px]"
+          className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--color-border-strong)_1px,transparent_1px)] bg-size-[22px_22px]"
         />
         <span
           aria-hidden="true"

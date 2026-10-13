@@ -6,17 +6,27 @@ type Props = {
 };
 
 /**
- * پوسته‌ی مشترک همه‌ی بلوک‌های اسکلتون.
- *
- * ⚠️ گرادیان shimmer قبلاً شکسته بود (`rgb(255_255_255/0.08_45%` بدون
- * پرانتز بسته و بدون کاما) و افکت عملاً بی‌اثر می‌ماند؛ اکنون هر رنگ با
- * `)` بسته شده و بین‌شان کاما هست.
+ * Shimmer مشترک اسکلتون‌ها.
+ * رنگ درخشش از رنگ اصلی برند گرفته می‌شود و در هر دو تم
+ * روی سطح روشن یا تیره قابل مشاهده است.
  */
-const SHIMMER_BAR_CLASS =
-  "relative block overflow-hidden after:absolute after:inset-0 after:animate-shimmer after:bg-[linear-gradient(90deg,transparent_0%,rgb(255_255_255/0.08)_45%,rgb(255_255_255/0.16)_50%,rgb(255_255_255/0.08)_55%,transparent_100%)]";
+const SHIMMER_BAR_CLASS = [
+  "relative block isolate overflow-hidden",
+  "after:absolute after:inset-0 after:content-['']",
+  "after:animate-shimmer",
+  "after:bg-linear-to-r",
+  "after:from-transparent",
+  "after:via-primary-400/20",
+  "after:to-transparent",
+  "dark:after:via-primary-300/15",
+].join(" ");
 
-/** یک خط/بلوک اسکلتون با افکت shimmer. */
-function ShimmerBar({ className }: { className: string }): ReactNode {
+/** یک خط اسکلتون با درخشش ملایم. */
+function ShimmerBar({
+  className,
+}: {
+  className: string;
+}): ReactNode {
   return <span className={`${SHIMMER_BAR_CLASS} ${className}`} />;
 }
 
@@ -26,38 +36,73 @@ export default function LandingPreloader({
 }: Props): ReactNode {
   return (
     <div
-      className="bg-overlay animate-preloader-out data-[state=done]:animate-preloader-out-now pointer-events-none fixed inset-0 z-100 grid place-items-center p-4 opacity-100 data-[autohide=off]:animate-none in-data-[client-nav=1]:data-[autohide=on]:hidden motion-reduce:[animation-delay:0.04s]"
+      className={[
+        "pointer-events-none fixed inset-0 z-100",
+        "grid place-items-center p-4",
+        "bg-background text-text",
+        "animate-preloader-out",
+        "data-[state=done]:animate-preloader-out-now",
+        "data-[autohide=off]:animate-none",
+        "in-data-[client-nav=1]:data-[autohide=on]:hidden",
+        "motion-reduce:[animation-delay:0.04s]",
+      ].join(" ")}
       data-state={done ? "done" : "pending"}
       data-autohide={autoHide ? "on" : "off"}
       aria-hidden="true"
     >
       <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
         <div className="max-w-2xl">
-          {/* چشم‌انداز — همان رنگ و ریتم هیرو */}
-          <div className="text-primary-400 mb-4 flex items-center gap-3 text-[11px] font-semibold tracking-[0.22em]">
-            <span className="bg-primary-400/70 inline-block h-px w-8" />
-            HORIZON
+          {/* Brand */}
+          <div className="mb-5 flex items-center gap-3 text-[11px] font-bold tracking-[0.24em]">
+            <span className="h-px w-8 bg-primary-500 dark:bg-primary-400" />
+            <span className="text-primary-600 dark:text-primary-400">
+              HORIZON
+            </span>
           </div>
 
-          {/* عنوان */}
+          {/* Heading */}
           <div className="flex flex-col gap-3">
-            <ShimmerBar className="h-9 w-[min(100%,26rem)] rounded-lg bg-white/30 sm:h-12 lg:h-14" />
-            <ShimmerBar className="h-9 w-[min(100%,16rem)] rounded-lg bg-white/25 sm:h-12 lg:h-14" />
+            <ShimmerBar
+              className={[
+                "h-9 w-[min(100%,26rem)] rounded-lg",
+                "bg-background-2 sm:h-12 lg:h-14",
+              ].join(" ")}
+            />
+
+            <ShimmerBar
+              className={[
+                "h-9 w-[min(100%,16rem)] rounded-lg",
+                "bg-surface-raised sm:h-12 lg:h-14",
+              ].join(" ")}
+            />
           </div>
 
-          {/* متن کوتاه */}
-          <div className="mt-4 flex flex-col gap-2">
-            <ShimmerBar className="h-3 w-[min(100%,30rem)] rounded-full bg-white/15" />
-            <ShimmerBar className="h-3 w-[min(100%,20rem)] rounded-full bg-white/10" />
+          {/* Supporting text */}
+          <div className="mt-5 flex flex-col gap-3">
+            <ShimmerBar className="h-3 w-[min(100%,30rem)] rounded-full bg-border/80" />
+            <ShimmerBar className="h-3 w-[min(100%,20rem)] rounded-full bg-border/50" />
           </div>
 
-          {/* نوار جستجو — هم‌ارتفاع نوار واقعی */}
-          <ShimmerBar className="mt-7 h-16 w-full rounded-2xl border border-white/15 bg-white/10 md:h-19" />
+          {/* Search placeholder */}
+          <ShimmerBar
+            className={[
+              "mt-8 h-16 w-full rounded-2xl border",
+              "border-border bg-surface shadow-sm shadow-black/3",
+              "md:h-19",
+            ].join(" ")}
+          />
 
-          {/* نوار پیشرفت
-              ⚠️ کلاس قبلی `block-0.5` یک یوتیلیتی نامعتبر Tailwind بود و
-              نوار ارتفاع نمی‌گرفت ⇒ نامرئی می‌ماند. مقدار درست `h-0.5` است. */}
-          <div className="after:bg-primary-400 after:animate-preloader-slide relative mt-8 block h-0.5 w-full max-w-3xl overflow-hidden rounded-full bg-black/12 after:absolute after:inset-y-0 after:w-[38%] after:rounded-[inherit]" />
+          {/* Progress indicator */}
+          <div
+            className={[
+              "relative mt-8 block h-0.5 w-full max-w-3xl",
+              "overflow-hidden rounded-full bg-border/70",
+              "after:absolute after:inset-y-0 after:left-0",
+              "after:w-[38%] after:rounded-full",
+              "after:bg-primary-500 dark:after:bg-primary-400",
+              "after:animate-preloader-slide",
+            ].join(" ")}
+          />
         </div>
       </div>
     </div>

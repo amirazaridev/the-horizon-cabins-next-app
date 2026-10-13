@@ -71,7 +71,6 @@ export default function CabinDetail({
   cabin,
   cityName,
   booking,
-  isAuthenticated,
 }: Props): ReactNode {
   return (
     <BookingProvider

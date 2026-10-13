@@ -12,11 +12,12 @@ export type {
   PanelRenderProps,
   FilterPanelConfig,
   FilterCardItem,
-  MobileTriggerRenderProps,
   FilterCardProps,
 } from "./FilterCard";
+export { useFilterController } from "./useFilterController";
 export { default as Trigger } from "./FilterCard/Trigger";
 export { default as Panel } from "./FilterCard/Panel";
+export { default as MobileFilterBranch } from "./FilterCard/MobileFilterBranch";
 
 export { default as Accordion } from "../Accordion";
 export { default as FilterMobileSheet } from "./FilterMobileSheet";

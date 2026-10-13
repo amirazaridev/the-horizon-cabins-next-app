@@ -17,10 +17,26 @@ import { mapCabin } from "../utils/mapCabin";
  * دقیقاً تا «پایان فردا» تنظیم می‌کنیم تا با چرخش پنجره، داده‌ی تازه بیاید.
  * علاوه بر آن، تگ `last-minute-data` اجازه می‌دهد وقتی تایمر سمت کلاینت به
  * صفر رسید، داده فوراً باطل شود (Server Action `revalidateLastMinute`).
+ *
+ * ⚠️ سقفِ `LAST_MINUTE_MAX_CACHE_SECONDS` حیاتی است. اگر پاسخِ کش‌شده
+ * **خالی** باشد، `LastMinute` کل سکشن را `null` می‌کند و در نتیجه `Countdown`
+ * هم رندر نمی‌شود؛ پس `onExpire` → `updateTag` هرگز اجرا نمی‌شود و تگ
+ * باطل نمی‌شود. یعنی پاسخ خالی تا انقضای خودِ کش باقی می‌ماند (تا ~۴۸ ساعت).
+ * با این سقف، بدترین حالت ۵ دقیقه است (هم‌راستا با `revalidate: 300` در
+ * `queryCabins`).
  */
 
 /** آفست ثابت تهران (+۰۳:۳۰). ایران از ۲۰۲۲ ساعت تابستانی ندارد. */
 const TEHRAN_OFFSET_MS = 3.5 * 60 * 60 * 1000;
+
+/**
+ * سقف عمر کش این اندپوینت (ثانیه).
+ *
+ * داده‌ی این سکشن هر لحظه می‌تواند عوض شود (مالک یک تخفیف جدید ثبت کند) و
+ * مسیر ابطال تگ تنها وقتی فعال است که سکشن رندر شده باشد؛ پس عمر کش را
+ * کوتاه نگه می‌داریم تا یک پاسخ کهنه/خالی سریع خودش تازه شود.
+ */
+const LAST_MINUTE_MAX_CACHE_SECONDS = 300;
 
 /** ثانیه‌های باقی‌مانده تا پایان پنجره (شروع «پس‌فردا» به وقت تهران). */
 function secondsUntilWindowEnd(now: Date = new Date()): number {
@@ -52,7 +68,10 @@ export async function getLastMinuteCabins(limit = 5): Promise<LastMinuteCabin[]>
   const res = await apiFetch(`cabins/last-minute?limit=${limit}`, {
     cache: "force-cache",
     next: {
-      revalidate: secondsUntilWindowEnd(),
+      revalidate: Math.min(
+        secondsUntilWindowEnd(),
+        LAST_MINUTE_MAX_CACHE_SECONDS,
+      ),
       tags: ["last-minute-data"],
     },
   });

@@ -125,6 +125,8 @@ export default function DefaultCard({
               </span>
             </div>
           ) : (
+            /* بدون تاریخ: قیمت، «کمینه‌ی پنجره» است نه قیمت ثابت — پس با
+               «از» می‌آید تا کاربر بفهمد ممکن است شب‌های دیگر گران‌تر باشد. */
             <div className="flex flex-col">
               {hasDiscount && (
                 <span className="text-text-gray/70 text-[11px] line-through">
@@ -132,6 +134,9 @@ export default function DefaultCard({
                 </span>
               )}
               <span className="text-text text-sm font-extrabold tabular-nums sm:text-base">
+                <span className="text-text-gray text-[10px] font-normal">
+                  از&nbsp;
+                </span>
                 {formatCurrency(finalPrice)}
                 <span className="text-text-gray mr-1 text-[10px] font-normal">
                   تومان/شب

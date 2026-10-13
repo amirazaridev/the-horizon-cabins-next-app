@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import Container from "@/components/ui/Container";
-import Logo from "@/components/ui/Logo";
+import logo from "@/assets/images/logo-2.png";
 import CopyrightText from "@/components/ui/CopyrightText";
 import {
   FOOTER_CONTACT,
@@ -10,6 +10,7 @@ import {
   FOOTER_SUPPORT_LINKS,
   type FooterLink,
 } from "@/constants/footer";
+import Image from "next/image";
 
 
 export default function Footer() {
@@ -19,7 +20,7 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.3fr_1fr_1fr_1.1fr]">
           <div>
             <div className="text-text">
-              <Logo />
+              <Image src={logo} width={60} alt="logo"/>
             </div>
             <p className="mt-5 max-w-sm text-xs leading-7">
               اقامتگاه‌های خاص ایران را پیدا کنید و فاصله کوتاهی از شلوغی شهر به

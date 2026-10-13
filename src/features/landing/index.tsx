@@ -13,22 +13,28 @@ import {
   getPopularCities,
   queryCabins,
 } from "@/features/cabins/api";
-
+import { getCategories } from "@/features/cabins/api/getCategories";
 
 export default async function Landing() {
-  const [popularCities, featuredCabins, lastMinuteCabins, budgetCabins] =
-    await Promise.all([
-      getPopularCities(8),
-      queryCabins({ sort: "most_booked", limit: 6 }).then((res) => res.cabins),
-      getLastMinuteCabins(5),
-      queryCabins({ sort: "price_asc", limit: 3 }).then((res) => res.cabins),
-    ]);
+  const [
+    categories,
+    popularCities,
+    featuredCabins,
+    lastMinuteCabins,
+    budgetCabins,
+  ] = await Promise.all([
+    getCategories(),
+    getPopularCities(8),
+    queryCabins({ sort: "most_booked", limit: 6 }).then((res) => res.cabins),
+    getLastMinuteCabins(5),
+    queryCabins({ sort: "price_asc", limit: 3 }).then((res) => res.cabins),
+  ]);
 
   return (
     <LandingAnimationProvider>
       <Hero />
       <SearchPreview />
-      <Categories />
+      <Categories categories={categories} />
       <Destinations cities={popularCities} />
       <Stays cabins={featuredCabins} />
       <LastMinute cabins={lastMinuteCabins} />

@@ -50,7 +50,7 @@ export default async function CabinPage({ params }: Props): Promise<ReactNode> {
     ]);
 
   return (
-    <section className="bg-background-2 min-h-screen pt-10 pb-28 sm:pt-14 lg:pb-14">
+    <section className="bg-background-2 min-h-screen pt-4 pb-28 sm:pt-7 lg:pb-14">
       <Container size="wide">
         <Breadcrumb
           className="mb-6"

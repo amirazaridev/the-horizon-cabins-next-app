@@ -25,7 +25,7 @@ export default function SearchMobileTrigger({
 }: Props) {
   if (isHero) {
     return (
-      <span className="flex w-full min-w-80 items-center gap-3 py-2 ps-4.5 pe-2">
+      <span className="flex w-90 items-center gap-3 py-2 ps-4.5 pe-2">
         <span className="flex min-w-0 flex-1 flex-col gap-1 text-start">
           <span className="text-text truncate text-[15px] leading-6 font-extrabold">
             {MOBILE_SEARCH_TITLE}

@@ -156,7 +156,7 @@ export default function StickyTabs(): ReactNode {
   return (
     <div
       ref={wrapperRef}
-      className="border-foreground/10 bg-background-2/90 sticky top-[var(--hz-navbar-h)] z-30 border-b backdrop-blur-xl"
+      className="border-foreground/10 bg-background-2/90 sticky top-(--hz-navbar-h) z-30 border-b backdrop-blur-xl"
     >
       <Container size="wide">
         <nav

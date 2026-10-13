@@ -2,12 +2,10 @@
 
 import { X } from "lucide-react";
 
-import FilterCard, {
-  type FilterCardValues,
-} from "@/components/ui/Filter/FilterCard";
+import { type FilterCardValues } from "@/components/ui/Filter/FilterCard";
 import { FOCUS_RING } from "@/components/ui/Filter/focus-ring";
 import type { City } from "@/features/cabins/types/city.types";
-import SearchMobileTrigger from "@/features/search/components/SearchMobileTrigger";
+import SearchCard from "@/features/search/components/SearchCard";
 import SearchAction from "@/features/search/components/fields/SearchAction";
 import { buildSearchFieldItems } from "@/features/search/config/search-fields";
 import type {
@@ -39,24 +37,14 @@ import { FALLBACK_PUBLIC_SETTINGS } from "@/features/settings/types/public-setti
 type SearchVariant = "hero" | "results";
 
 const SEARCH_WRAPPER_CLASS: Record<SearchVariant, string> = {
-  hero: "text-text md:bg-background/60 mx-auto flex min-h-20 md:min-h-19 max-w-256 xl:max-w-264 flex-col gap-2 rounded-none border-0 bg-transparent p-2 shadow-none backdrop-blur-none md:flex-row md:items-center md:gap-0 md:rounded-2xl md:border md:border-white/15 md:p-2 md:shadow-2xl md:shadow-black/20 md:backdrop-blur-xl",
+  hero: "text-text lg:bg-background mx-auto flex h-17 max-w-full xl:max-w-264 flex-col gap-2 rounded-none border-0 bg-transparent p-2 shadow-none backdrop-blur-none lg:flex-row lg:items-center lg:gap-0 lg:rounded-2xl lg:border lg:border-white/15 lg:p-2 lg:shadow-lg",
   results:
-    "text-text border-foreground/10 bg-surface flex flex-col gap-2 rounded-2xl border p-2 shadow-sm md:flex-row md:items-center md:gap-0",
+    "text-text border-foreground/10 bg-surface flex flex-col gap-2 rounded-2xl border p-0.5 shadow-sm lg:flex-row lg:items-center lg:gap-0",
 };
 
 //* گرید پنج فیلد روی دسکتاپ. ⚠️ نسبت ستون‌ها به ترتیب فیلدها گره خورده است (مقصد / ورود / خروج / مهمان / بودجه).
 const SEARCH_FIELD_GRID_CLASS =
-  "text-text grid min-w-0 flex-1 grid-cols-1 gap-1 md:grid-cols-[1.35fr_1fr_1fr_0.9fr_1.15fr] md:gap-0";
-
-//* قاب تریگر موبایل (فقط ارتفاع/شکل — رنگ‌ها در `MOBILE_TRIGGER_TONE`)
-const MOBILE_TRIGGER_BASE =
-  "w-full min-h-16 rounded-full border shadow-lg backdrop-blur-md transition-all duration-200 active:scale-[0.99] md:shadow-xl";
-
-//* ته‌رنگ تریگر موبایل به‌تفکیک واریانت
-const MOBILE_TRIGGER_TONE: Record<SearchVariant, string> = {
-  hero: "border-white/15 bg-surface/85 shadow-black/15",
-  results: "border-foreground/10 bg-surface shadow-black/5",
-};
+  "text-text grid min-w-0 flex-1 grid-cols-1 gap-1 lg:grid-cols-[1.35fr_1fr_1fr_0.9fr_1.15fr] lg:gap-0";
 
 type Props = {
   cities: City[];
@@ -69,9 +57,7 @@ type Props = {
   bookingWindowDays?: number;
 };
 
-//* کامپوننت سرچ یکپارچه — یک منطق، دو نمای متفاوت (لندینگ و `/cabins`). تفاوتشان فقط در «کنترلر» (Zustand در برابر URL) و چیدمان/برچسب‌هاست.
-//* توجه: هیچ‌جای این کامپوننت fetch نمی‌زند؛ فقط draft را عوض می‌کند و `apply()` را صدا می‌زند.
-//* تفکیک‌های انجام‌شده: تعریف پنج فیلد ⇒ `config/search-fields.tsx` · تریگر موبایل ⇒ `SearchMobileTrigger`. کلاس‌های چیدمان عمداً همین‌جا مانده‌اند چون فقط این فایل مصرفشان می‌کند.
+
 export default function Search({
   cities,
   regions,
@@ -84,7 +70,7 @@ export default function Search({
     controller;
 
   const isHero = variant === "hero";
-  const divider = isHero ? "md:border-white/10" : "md:border-foreground/10";
+  const divider = isHero ? "lg:border-white/10" : "lg:border-foreground/10";
 
   //* تعداد شب بازه‌ی در حال ویرایش — مبنای «حالت بودجه» (هر شب / کل سفر)، برچسب‌هایش و سقف اسلایدر؛ صفر یعنی بازه ناقص یا خالی ⇒ بودجه‌ی هر شب.
   const draftNights = nightsBetween(draft.checkIn, draft.checkOut);
@@ -133,9 +119,7 @@ export default function Search({
     budget: draft.budget,
   };
 
-  //* اکشن «اعمال» — هم دسکتاپ و هم موبایل. بعد از اعمال با تأخیر کوتاه به بخش پیش‌نمایش اسکرول نرم می‌کنیم (در موبایل اول باید باتم‌شیت بسته و قفل اسکرول body آزاد شود)؛ اگر صفحه پیش‌نمایش نداشته باشد (مثل `/cabins`) بی‌اثر است.
-  //* `patch` برای «اعمال اتمیک» است (دکمه‌ی «اعمال» پنل بودجه).
-  //* ⚠️ همیشه با wrapper صدا زده می‌شود (`() => handleApply()`)، وگرنه رویداد کلیک به‌جای patch به `apply` می‌رود.
+
   const handleApply = (patch?: Partial<SearchFilters>) => {
     apply(patch);
     scheduleScrollToSearchPreview();
@@ -159,38 +143,29 @@ export default function Search({
       : "مشاهده‌ی همه‌ی اقامتگاه‌ها"
     : "مشاهده نتایج";
 
-  const tone = MOBILE_TRIGGER_TONE[isHero ? "hero" : "results"];
-
   return (
     <div
       className={`${SEARCH_WRAPPER_CLASS[isHero ? "hero" : "results"]} ${className}`}
       //* قلاب انیمیشن ورود لندینگ — فقط روی واریانت `hero` معنا دارد
       data-animate={isHero ? "search" : undefined}
     >
-      <FilterCard
+      <SearchCard
         items={items}
-        value={values}
+        values={values}
         onValueChange={handleValueChange}
         //* داخل شیت موبایل فقط draft پاک می‌شود تا نتایجِ پشت شیت نپرد
         onClearFilters={resetDraft}
-        placement="center"
+        onApply={() => handleApply()}
+        isPending={isPending}
+        isHero={isHero}
         mobileTitle={isHero ? MOBILE_SEARCH_HERO_TITLE : MOBILE_SEARCH_RESULTS_LABEL}
         mobileApplyLabel={mobileApplyLabel}
-        onMobileApply={() => handleApply()}
-        mobileApplyPending={isPending}
-        renderMobileTrigger={
-          <SearchMobileTrigger
-            isHero={isHero}
-            summaryRaw={mobileSummaryRaw}
-            summary={mobileSummary}
-          />
-        }
-        //* `min-h-16` ارتفاع تریگر را از همان اول رزرو می‌کند: نه در رندر سرور و نه هنگام تعویض فونت کوچک‌تر نمی‌شود (و چون یک خط ثابت دارد بزرگ‌تر هم نمی‌شود) ⇒ بدون CLS
-        mobileTriggerClassName={`${MOBILE_TRIGGER_BASE} ${FOCUS_RING} ${tone}`}
+        mobileSummaryRaw={mobileSummaryRaw}
+        mobileSummary={mobileSummary}
         className={SEARCH_FIELD_GRID_CLASS}
       />
 
-      <div className="hidden items-center gap-1 md:flex">
+      <div className="hidden items-center gap-1 lg:flex">
         {!isHero && hasApplied && (
           <button
             type="button"

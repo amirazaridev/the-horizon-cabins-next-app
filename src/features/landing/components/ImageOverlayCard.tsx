@@ -13,22 +13,12 @@ type Props = Omit<ComponentProps<typeof Link>, "className"> & {
   imageAlt: string;
   /** مقدار `sizes` برای تصویر `fill`. */
   sizes: string;
-  /** نسبت ابعاد ناحیه‌ی تصویر — کلاس کامل Tailwind (مثل `aspect-[1.35/1]`). */
   aspectClassName: string;
-  /** کلاس پوشش گرادیانی — بین سکشن‌ها متفاوت است. */
   gradientClassName: string;
-  /** محتوای روی تصویر (معمولاً `absolute inset-x-* bottom-*`). */
   children: ReactNode;
   className?: string;
 };
 
-/**
- * کارت تصویری با پوشش گرادیانی و محتوای روی تصویر.
- *
- * مشترک بین «مقاصد محبوب» و «تجربه‌های خاص» — پیش از این هر دو همین
- * اسکلت (`Image fill` + `sizes` + پوشش + بزرگ‌نمایی در hover + قاب
- * گرد) را جداگانه تکرار می‌کردند.
- */
 export default function ImageOverlayCard({
   image,
   imageAlt,

@@ -121,7 +121,7 @@ export default function CabinDetailSkeleton(): ReactNode {
       </Container>
 
       {/* ================= نوار تب چسبان (StickyTabs) ================= */}
-      <div className="border-foreground/10 bg-background-2/90 sticky top-[var(--hz-navbar-h)] z-30 border-b backdrop-blur-xl">
+      <div className="border-foreground/10 bg-background-2/90 sticky top-(--hz-navbar-h) z-30 border-b backdrop-blur-xl">
         <Container size="wide">
           <div className="flex gap-1.5 overflow-hidden py-2">
             {[72, 84, 76, 68, 88, 72, 76, 64].map((width, index) => (
@@ -293,7 +293,7 @@ export default function CabinDetailSkeleton(): ReactNode {
 
             {/* ---------- نقشه (MapSection) ---------- */}
             <SectionSkeleton titleWidth="w-44">
-              <Skeleton className="border-foreground/10 aspect-16/9 w-full rounded-3xl border border-dashed" />
+              <Skeleton className="border-foreground/10 aspect-video w-full rounded-3xl border border-dashed" />
             </SectionSkeleton>
 
             {/* ---------- نظرات (ReviewsSection) ---------- */}
