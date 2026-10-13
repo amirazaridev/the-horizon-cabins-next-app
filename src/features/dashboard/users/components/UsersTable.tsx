@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { CheckCircle2, TriangleAlert, Users as UsersIcon, X } from "lucide-react";
+import { Users as UsersIcon } from "lucide-react";
 
 import CardDashContainer from "@/components/ui/CardDashContainer";
 import Table, { type TableColumn } from "@/components/ui/Table";
 import { formatJalaliFull } from "@/libs/utils/jalali";
 import type { UserRole } from "@/features/auth/constants/auth-cookie";
 import type { AdminUser, UserActionFeedback } from "../types/user.types";
+import FeedbackBanner from "../../shared/components/FeedbackBanner";
 import UserDetailsModal from "./UserDetailsModal";
 import UserRoleBadge from "./UserRoleBadge";
 import UserRowMenu from "./UserRowMenu";
@@ -123,44 +124,6 @@ export default function UsersTable({
 /* ==========================================================================
    کمکی‌ها
    ========================================================================== */
-
-function FeedbackBanner({
-  feedback,
-  onDismiss,
-}: {
-  feedback: UserActionFeedback;
-  onDismiss: () => void;
-}): ReactNode {
-  const isSuccess = feedback.success;
-
-  return (
-    <div
-      role="status"
-      className={`flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-sm ${
-        isSuccess
-          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-          : "border-danger/40 bg-danger/10 text-danger"
-      }`}
-    >
-      <span className="flex items-center gap-2">
-        {isSuccess ? (
-          <CheckCircle2 className="size-4 shrink-0" />
-        ) : (
-          <TriangleAlert className="size-4 shrink-0" />
-        )}
-        {feedback.message}
-      </span>
-      <button
-        type="button"
-        onClick={onDismiss}
-        aria-label="بستن پیام"
-        className="cursor-pointer opacity-70 transition-opacity hover:opacity-100"
-      >
-        <X className="size-4" />
-      </button>
-    </div>
-  );
-}
 
 function EmptyState({ message }: { message: string }): ReactNode {
   return (

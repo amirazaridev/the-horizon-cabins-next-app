@@ -1,15 +1,9 @@
-/**
- * کدگذاری/کدگشایی «مقصد» به یک رشته‌ی واحد.
- *
- * چرا؟ چون `CityPanel` مشترک با `string | null` کار می‌کند و ما دو نوع
- * مقصد داریم (شهر / منطقه). پس با یک پیشوند ساده از هم جدا می‌شوند:
- *   city:12      → شهر با شناسه‌ی ۱۲
- *   region:north → همه‌ی شهرهای شمال
- */
-
 import type { City } from "@/features/cabins/types/city.types";
-import { isRegionId, regionName } from "../constants/regions";
-import type { Destination } from "../types/search.types";
+import { isRegionId, regionName } from "@/features/search/constants/regions";
+import type { Destination } from "@/features/search/types/search.types";
+
+//* کدگذاری «مقصد» به یک رشته‌ی واحد، چون `CityPanel` مشترک با `string | null` کار می‌کند و ما دو نوع مقصد داریم:
+//* `city:12` ⇒ شهر با شناسه‌ی ۱۲ · `region:north` ⇒ همه‌ی شهرهای شمال
 
 export const CITY_VALUE_PREFIX = "city:";
 export const REGION_VALUE_PREFIX = "region:";
@@ -41,7 +35,7 @@ export function decodeDestination(value: string | null): Destination | null {
   return null;
 }
 
-/** همان decode، ولی نام شهر را از لیست شهرهای API پر می‌کند */
+//* همان decode، ولی نام شهر را از لیست شهرهای API پر می‌کند
 export function decodeDestinationWithName(
   value: string | null,
   cities: City[] = [],

@@ -1,39 +1,21 @@
-/**
- * سریال‌سازی و پارس فیلترهای هسته‌ی جستجو ↔ URL.
- *
- * تنها منبع حقیقت برای نام پارامترها همین فایل است؛ هیچ کامپوننتی
- * نباید خودش query بسازد یا بخواند.
- *
- * قرارداد پارامترها:
- *   city       = شناسه‌ی عددی شهر           (مثل city=12)
- *   region     = شناسه‌ی معنایی منطقه        (مثل region=north)
- *   checkIn    = yyyy-MM-dd
- *   checkOut   = yyyy-MM-dd
- *   guests     = عدد صحیح
- *   price      = بازه‌ی بودجه‌ی هر شب       (مثل price=1000000-8000000)
- *   totalPrice = بازه‌ی بودجه‌ی کل سفر       (مثل totalPrice=15000000-30000000)
- *
- * ⭐ بودجه یک مقدار است با دو نام پارامتر، بسته به وجود تاریخ:
- *   - بدون تاریخ → `price`      (بودجه‌ی هر شب)
- *   - با تاریخ   → `totalPrice` (بودجه‌ی کل سفر)
- * این دو هرگز با هم نمی‌آیند. هر دو مستقیماً به پارامتر هم‌نام ای‌پی‌آی
- * نگاشت می‌شوند.
- */
-
 import {
   formatDateParam,
   parseDateParam,
 } from "@/features/cabins/utils/cabin-date";
 import { safeParseNumber } from "@/features/cabins/utils/safeParseNumber";
+import { isRegionId, regionName } from "@/features/search/constants/regions";
+import { EMPTY_SEARCH_FILTERS } from "@/features/search/constants/search-defaults";
+import type {
+  CabinSearchQuery,
+  Destination,
+  SearchFilters,
+} from "@/features/search/types/search.types";
+import { nightsBetween } from "@/features/search/utils/budget";
 import { formatPriceRange, parsePriceRange } from "@/libs/utils/price-range";
-import { isRegionId, regionName } from "../constants/regions";
-import {
-  EMPTY_SEARCH_FILTERS,
-  type CabinSearchQuery,
-  type Destination,
-  type SearchFilters,
-} from "../types/search.types";
-import { nightsBetween } from "./budget";
+
+//* سریال‌سازی و پارس فیلترهای هسته‌ی جستجو ↔ URL. تنها منبع حقیقت برای نام پارامترها همین فایل است؛ هیچ کامپوننتی نباید خودش query بسازد یا بخواند.
+//* قرارداد: `city=<id>` · `region=<slug>` · `checkIn`/`checkOut`=`yyyy-MM-dd` · `guests=<int>` · `price=lo-hi` · `totalPrice=lo-hi`
+//* ⭐ بودجه یک مقدار است با دو نام پارامتر: بدون تاریخ `price` (هر شب)، با تاریخ `totalPrice` (کل سفر). این دو هرگز با هم نمی‌آیند و هر دو مستقیم به پارامتر هم‌نام API نگاشت می‌شوند.
 
 export const SEARCH_PARAM_KEYS = [
   "city",
@@ -60,11 +42,9 @@ function readParam(input: ParseInput, key: string): string | null {
   return value ?? null;
 }
 
-/* ------------------------------------------------------------------ */
-/* فیلتر → URL                                                        */
-/* ------------------------------------------------------------------ */
+//* فیلتر ⇒ URL
 
-/** فقط مقادیر غیرخالی نوشته می‌شوند تا URL تمیز بماند */
+//* فقط مقادیر غیرخالی نوشته می‌شوند تا URL تمیز بماند
 export function serializeSearchFilters(
   filters: SearchFilters,
 ): Record<string, string> {
@@ -97,10 +77,7 @@ export function searchFiltersToQueryString(filters: SearchFilters): string {
   return new URLSearchParams(serializeSearchFilters(filters)).toString();
 }
 
-/**
- * نسخه‌ی مناسب «به‌روزرسانی URL»: کلیدهای خالی هم با `null` برمی‌گردند
- * تا مقدار قدیمی‌شان از URL پاک شود (وگرنه حذف بودجه در URL باقی می‌ماند).
- */
+//* نسخه‌ی مناسب «به‌روزرسانی URL»: کلیدهای خالی هم با `null` برمی‌گردند تا مقدار قدیمی‌شان از URL پاک شود (وگرنه حذف بودجه در URL باقی می‌ماند).
 export function serializeSearchFiltersForUpdate(
   filters: SearchFilters,
 ): Record<string, string | null> {
@@ -112,7 +89,7 @@ export function serializeSearchFiltersForUpdate(
   return updates;
 }
 
-/** لینک آماده برای ناوبری (پیش‌فرض: /cabins) */
+//* لینک آماده برای ناوبری (پیش‌فرض: `/cabins`)
 export function searchFiltersToHref(
   filters: SearchFilters,
   basePath = "/cabins",
@@ -121,11 +98,9 @@ export function searchFiltersToHref(
   return query ? `${basePath}?${query}` : basePath;
 }
 
-/* ------------------------------------------------------------------ */
-/* URL → فیلتر                                                        */
-/* ------------------------------------------------------------------ */
+//* URL ⇒ فیلتر
 
-/** پارس امن: هر مقدار نامعتبر نادیده گرفته می‌شود (URL دست‌کاری‌شده) */
+//* پارس امن: هر مقدار نامعتبر نادیده گرفته می‌شود (URL دست‌کاری‌شده)
 export function parseSearchFilters(input: ParseInput): SearchFilters {
   const cityRaw = readParam(input, "city");
   const regionRaw = readParam(input, "region");
@@ -169,9 +144,7 @@ export function parseSearchFilters(input: ParseInput): SearchFilters {
   };
 }
 
-/* ------------------------------------------------------------------ */
-/* کمکی‌ها                                                            */
-/* ------------------------------------------------------------------ */
+//* کمکی‌ها
 
 export function hasAnySearchFilter(filters: SearchFilters): boolean {
   return (
@@ -192,7 +165,7 @@ export function countActiveSearchFilters(filters: SearchFilters): number {
   return count;
 }
 
-/** تبدیل به قرارداد ورودی repository (تاریخ‌ها رشته‌ای می‌شوند) */
+//* تبدیل به قرارداد ورودی repository (تاریخ‌ها رشته‌ای می‌شوند)
 export function toCabinSearchQuery(
   filters: SearchFilters,
   limit?: number,

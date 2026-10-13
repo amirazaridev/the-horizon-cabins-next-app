@@ -1,87 +1,18 @@
 /**
- * lib/pagination.ts
+ * منطق خالص رندر بازه‌ی شماره‌صفحه.
  *
- * توابع خالص و بدون وابستگی به React — قابل استفاده هم در Server Component ها
- * و هم هر جای دیگه (بدون نیاز به 'use client').
+ * بدون وابستگی به React — قابل استفاده هم در Server Component ها و هم هر
+ * جای دیگر (بدون نیاز به `'use client'`).
+ *
+ * ⚠️ توابع مربوط به URL صفحه‌بندی (`parsePageParam`, `parseLimitParam`,
+ * `buildPageUrl`) به `url-params.ts` منتقل شدند.
+ *
+ * ⚠️ دو مورد حذف شد: (۱) بلوک کامنت‌شده‌ی `parsePaginationParams`،
+ * (۲) تایپ `PaginationMeta` که تکراری و بی‌استفاده بود — منبع رسمی آن
+ * `@/types/api-response` است.
  */
-
-import { DEFAULT_CABINS_LIMIT, MAX_CABINS_LIMIT } from "@/constants/cabins";
-
-export type PaginationMeta = {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  pageSize: number;
-};
-
-export type SearchParamsInput =
-  Record<string, string | string[] | undefined> | URLSearchParams | undefined;
 
 const DOTS = "dots" as const;
-
-export function parseLimitParam(spLimit: string | string[] | undefined) {
-  const rawLimit = Array.isArray(spLimit) ? spLimit[0] : spLimit;
-  const parsedLimit = Number(rawLimit);
-  const limit =
-    Number.isInteger(parsedLimit) && parsedLimit > 0
-      ? Math.min(parsedLimit, MAX_CABINS_LIMIT)
-      : DEFAULT_CABINS_LIMIT;
-  return limit;
-}
-
-// export function parsePaginationParams(searchParams){
-
-// }
-/**
- * یک صفحهٔ خاص را به query string فعلی اضافه می‌کند و بقیهٔ پارامترها
- * (سرچ، سورت، فیلتر و ...) را دست‌نخورده نگه می‌دارد.
- *
- * مثال: buildPageUrl('/admin/bookings', { status: 'confirmed' }, 3)
- *   => '/admin/bookings?status=confirmed&page=3'
- */
-export function buildPageUrl(
-  basePath: string,
-  searchParams: SearchParamsInput,
-  page: number,
-  pageParamName = "page",
-): string {
-  const params = new URLSearchParams();
-
-  if (searchParams instanceof URLSearchParams) {
-    searchParams.forEach((value, key) => {
-      if (key !== pageParamName) params.append(key, value);
-    });
-  } else if (searchParams) {
-    for (const [key, value] of Object.entries(searchParams)) {
-      if (value === undefined || key === pageParamName) continue;
-      if (Array.isArray(value)) {
-        value.forEach((v) => params.append(key, v));
-      } else {
-        params.set(key, value);
-      }
-    }
-  }
-
-  params.set(pageParamName, String(page));
-
-  return `${basePath}?${params.toString()}`;
-}
-
-/**
- * شمارهٔ صفحه را با اعتبارسنجی از searchParams می‌خواند — همیشه یک عدد
- * معتبر و حداقل ۱ برمی‌گرداند (ورودی خراب/منفی/غایب => صفحه ۱).
- */
-export function parsePageParam(
-  searchParams: Record<string, string | string[] | undefined> | undefined,
-  pageParamName = "page",
-): number {
-  const raw = searchParams?.[pageParamName];
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  const parsed = Number(value);
-
-  if (!value || Number.isNaN(parsed) || parsed < 1) return 1;
-  return Math.floor(parsed);
-}
 
 /**
  * لیست شماره‌صفحه‌ها برای رندر را می‌سازد، با «...» برای بازه‌های بلند.

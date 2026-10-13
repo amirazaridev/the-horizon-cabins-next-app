@@ -1,27 +1,23 @@
-/**
- * ساخت برچسب‌ها و خلاصه‌های فارسیِ جستجو.
- *
- * همه‌ی متن‌های نمایشی اینجا متمرکز است تا نه در URL برود و نه در
- * کامپوننت‌ها تکرار شود (جداسازی نمایش از داده).
- */
-
+import { formatJalaliDate } from "@/components/ui/RangeDatePicker";
 import type { City } from "@/features/cabins/types/city.types";
 import { formatPriceShort } from "@/features/cabins/utils/cabin-filters";
-import { formatJalaliDate } from "@/components/ui/RangeDatePicker";
-import { type BudgetRange, type Destination, type SearchFilters } from "../types/search.types";
-import { budgetBoundsFor, budgetModeFor, nightsBetween } from "./budget";
+import {
+  type BudgetRange,
+  type Destination,
+  type SearchFilters,
+} from "@/features/search/types/search.types";
+import {
+  budgetBoundsFor,
+  budgetModeFor,
+  nightsBetween,
+} from "@/features/search/utils/budget";
 
-export { nightsBetween };
+//* ساخت برچسب‌ها و خلاصه‌های فارسیِ جستجو. همه‌ی متن‌های نمایشی اینجا متمرکز است تا نه در URL برود و نه در کامپوننت‌ها تکرار شود (جداسازی نمایش از داده).
 
 const fa = (value: number) => value.toLocaleString("fa-IR");
 
-/**
- * دو سر بازه‌ی بودجه، فقط اگر واقعاً محدودکننده باشند.
- * بازه‌ی کامل (کمینه تا بیشینه) یعنی «بدون محدودیت».
- *
- * ⚠️ سقفِ «کامل» به تعداد شب وابسته است: بدون تاریخ ۳۰ میلیون و با تاریخ
- * ۳۰ میلیون × تعداد شب.
- */
+//* دو سر بازه‌ی بودجه، فقط اگر واقعاً محدودکننده باشند؛ بازه‌ی کامل یعنی «بدون محدودیت».
+//* ⚠️ سقفِ «کامل» به تعداد شب وابسته است: بدون تاریخ ۳۰ میلیون، با تاریخ ۳۰ میلیون × تعداد شب.
 function budgetEdges(
   range: BudgetRange | null,
   nights: number,
@@ -37,21 +33,20 @@ function budgetEdges(
   };
 }
 
-/** پسوند واحد بودجه: «/ شب» یا «برای کل سفر» */
+//* پسوند واحد بودجه: «/ شب» یا «برای کل سفر»
 function budgetUnitSuffix(nights: number): string {
   return budgetModeFor(nights) === "total" ? "برای کل سفر" : "/ شب";
 }
 
-/** برچسب فیلد بودجه (تریگر/پنل) — بسته به وجود تاریخ */
+//* برچسب فیلد بودجه (تریگر/پنل) — بسته به وجود تاریخ
 export function budgetFieldLabel(nights: number): string {
-  return budgetModeFor(nights) === "total" ? "بودجه‌ی کل سفر" : "بودجه‌ی هر شب";
+  return budgetModeFor(nights) === "total"
+    ? "بودجه‌ی کل سفر"
+    : "بودجه‌ی هر شب";
 }
 
-/**
- * «۲ تا ۸ میلیون تومان / شب» · «تا ۸ میلیون تومان / شب» · «از ۵ میلیون تومان / شب»
- * با تاریخ، پسوند «برای کل سفر» می‌شود.
- * بازه‌ی کامل یا `null` یعنی بدون محدودیت و `undefined` برمی‌گردد.
- */
+//* «۲ تا ۸ میلیون تومان / شب» · «تا ۸ …» · «از ۵ …»؛ با تاریخ پسوند «برای کل سفر» می‌شود.
+//* بازه‌ی کامل یا `null` یعنی بدون محدودیت ⇒ `undefined`.
 export function formatBudgetRangeLabel(
   range: BudgetRange | null,
   nights = 0,
@@ -64,7 +59,7 @@ export function formatBudgetRangeLabel(
   return undefined;
 }
 
-/** نسخه‌ی فشرده برای خلاصه‌های تک‌خطی: «۲ تا ۸ میلیون» */
+//* نسخه‌ی فشرده برای خلاصه‌های تک‌خطی: «۲ تا ۸ میلیون»
 export function formatBudgetRangeLabelCompact(
   range: BudgetRange | null,
   nights = 0,
@@ -76,7 +71,7 @@ export function formatBudgetRangeLabelCompact(
   return undefined;
 }
 
-/** متن داخل پنل بودجه؛ همیشه مقدار برمی‌گرداند */
+//* متن داخل پنل بودجه؛ همیشه مقدار برمی‌گرداند
 export function formatBudgetRangeValue(
   range: BudgetRange | null,
   nights = 0,
@@ -98,7 +93,7 @@ export function formatNightsLabel(
   return nights > 0 ? `${fa(nights)} شب` : undefined;
 }
 
-/** «۲۵ شهریور تا ۲۸ شهریور» یا تک‌تاریخ */
+//* «۲۵ شهریور تا ۲۸ شهریور» یا تک‌تاریخ
 export function formatDateRangeSummary(
   checkIn: Date | null,
   checkOut: Date | null,
@@ -109,7 +104,7 @@ export function formatDateRangeSummary(
   return from ?? to ?? undefined;
 }
 
-/** نام نمایشی مقصد؛ برای مقصد شهرِ پارس‌شده از URL، نام از لیست شهرها می‌آید */
+//* نام نمایشی مقصد؛ برای مقصد شهرِ پارس‌شده از URL، نام از لیست شهرها می‌آید
 export function destinationLabel(
   destination: Destination | null,
   cities: City[] = [],
@@ -123,14 +118,11 @@ export function destinationLabel(
 export type SearchSummaryInput = {
   filters: SearchFilters;
   cities?: City[];
-  /**
-   * نسخه‌ی فشرده برای خلاصه‌های تک‌خطی (مثل تریگر موبایل).
-   * بودجه به‌جای «تا ۸ میلیون تومان / شب» می‌شود «تا ۸ میلیون».
-   */
+  //* نسخه‌ی فشرده برای خلاصه‌های تک‌خطی (مثل تریگر موبایل): بودجه بدون «تومان / شب».
   compact?: boolean;
 };
 
-/** قطعات خلاصه: مقصد · تاریخ · مهمان · بودجه */
+//* قطعات خلاصه: مقصد · تاریخ · مهمان · بودجه
 export function buildSearchSummaryParts({
   filters,
   cities = [],
@@ -148,28 +140,12 @@ export function buildSearchSummaryParts({
   ].filter((part): part is string => Boolean(part));
 }
 
-/** «رامسر · ۴ مهمان · ۲۵ شهریور تا ۲۸ شهریور · تا ۸ میلیون تومان / شب» */
+//* «رامسر · ۴ مهمان · ۲۵ شهریور تا ۲۸ شهریور · تا ۸ میلیون تومان / شب»
 export function buildSearchSummary(input: SearchSummaryInput): string {
   return buildSearchSummaryParts(input).join("  ·  ");
 }
 
-/* ------------------------------------------------------------------ */
-/* متن‌های ثابت تریگر موبایل                                           */
-/* ------------------------------------------------------------------ */
-
-/** عنوان پرسشیِ خط اول تریگر موبایل در لندینگ */
-export const MOBILE_SEARCH_TITLE = "مقصد، بودجه و تاریخ سفرت رو بگو";
-
-/** وقتی هنوز هیچ فیلتری انتخاب نشده، به‌جای لیست خالیِ فیلترها نشان داده می‌شود */
-export const MOBILE_SEARCH_EMPTY_HINT = "برای شروع، فیلترهات رو انتخاب کن";
-
-/** در `/cabins` برچسب ثابت بالای خلاصه */
-export const MOBILE_SEARCH_RESULTS_LABEL = "جستجوی شما";
-
-/** متن دکمه‌ی تغییر جستجو در `/cabins` */
-export const MOBILE_SEARCH_CHANGE_LABEL = "تغییر جستجو";
-
-/** عنوان پویا برای بخش پیش‌نمایش */
+//* عنوان پویا برای بخش پیش‌نمایش
 export function buildPreviewHeading({
   filters,
   cities = [],
@@ -193,7 +169,7 @@ export function buildPreviewHeading({
   };
 }
 
-/** متن دکمه‌ی نهایی پیش‌نمایش */
+//* متن دکمه‌ی نهایی پیش‌نمایش
 export function buildPreviewCtaLabel(total: number): string {
   return `مشاهده همه ${fa(total)} اقامتگاه`;
 }

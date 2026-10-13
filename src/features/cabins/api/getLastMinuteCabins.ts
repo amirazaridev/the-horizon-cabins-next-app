@@ -1,9 +1,9 @@
 import { apiFetch } from "@/libs/api/apiFetch";
-import { ApiResponse } from "@/types/api-response";
+import { type ApiResponse } from "@/types/api-response";
 import { HORIZON_TIMEZONE } from "@/libs/utils/tehran-date";
 import {
-  LastMinuteCabin,
-  LastMinuteCabinDto,
+  type LastMinuteCabin,
+  type LastMinuteCabinDto,
 } from "../types/cabin.types";
 import { mapCabin } from "../utils/mapCabin";
 

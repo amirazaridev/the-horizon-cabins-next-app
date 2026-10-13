@@ -83,6 +83,9 @@ export default function CabinGallery({
                   src={image}
                   alt={`${altBase} - تصویر ${i + 1}`}
                   fill
+                  /* هر اسلاید ۱۰۰٪ عرض کاروسل است؛ کاروسل داخل Container
+                     با `max-w-[86rem]` (۱۳۷۶px) قرار دارد. */
+                  sizes="(min-width: 1376px) 1376px, 100vw"
                   preload={i == 0}
                   // placeholder="blur"
                 />

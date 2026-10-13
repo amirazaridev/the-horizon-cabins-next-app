@@ -1,6 +1,6 @@
 import { apiFetch } from "@/libs/api/apiFetch";
-import { ApiPaginatedResponse, PaginationMeta } from "@/types/api-response";
-import { Cabin, CabinDto, CabinsQueryParams } from "../types/cabin.types";
+import { type ApiPaginatedResponse, type PaginationMeta } from "@/types/api-response";
+import { type Cabin, type CabinDto, type CabinsQueryParams } from "../types/cabin.types";
 import { mapCabin } from "../utils/mapCabin";
 
 

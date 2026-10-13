@@ -48,9 +48,9 @@ export type FilterCardItem = {
   renderTrigger?:
     React.ReactNode | ((ctx: TriggerRenderProps) => React.ReactNode);
   panel?: FilterPanelConfig;
-  /** در موبایل (تریگر + آکاردئون شیت) نمایش داده نشود — مثلاً تاریخ خروج */
+  //* در موبایل (تریگر + آکاردئون شیت) نمایش داده نشود — مثلاً تاریخ خروج
   hideOnMobile?: boolean;
-  /**
+  /*
    * گروه‌بندی برای شمارش فیلترهای فعال.
    * آیتم‌های هم‌گروه (مثل تاریخ ورود و خروج) در badge فقط **یک‌بار**
    * شمرده می‌شوند، حتی اگر هر دو پر باشند.
@@ -72,14 +72,8 @@ export type FilterCardProps = {
   placement?: FilterCardPlacement;
   defaultOpenId?: string | null;
   className?: string;
-  /* ---------- موبایل ---------- */
-  /**
-   * @deprecated دیگر استفاده نمی‌شود.
-   *
-   * شاخه‌ی موبایل/دسکتاپ حالا با **CSS** انتخاب می‌شود (`md:hidden` در برابر
-   * `hidden md:contents`)، نه با یک media query در JS. تصمیمِ JS باعث می‌شد
-   * HTML سرور همیشه شاخه‌ی دسکتاپ باشد و روی موبایل بعد از hydration بپرد.
-   */
+  //* موبایل
+
   mobileBreakpoint?: string;
   mobileTitle?: string;
   mobileTriggerLabel?: string;
@@ -89,7 +83,7 @@ export type FilterCardProps = {
   mobileApplyLabel?: string;
   onMobileApply?: () => void;
   mobileApplyDisabled?: boolean;
-  /** در حال اعمال — متن دکمه با spinner جایگزین می‌شود */
+  //* در حال اعمال — متن دکمه با spinner جایگزین می‌شود
   mobileApplyPending?: boolean;
   resultCount?: number;
   onClearFilters?: () => void;

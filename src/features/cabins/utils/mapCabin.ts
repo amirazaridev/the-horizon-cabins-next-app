@@ -1,4 +1,4 @@
-import { Cabin, CabinDto } from "../types/cabin.types";
+import { type Cabin, type CabinDto } from "../types/cabin.types";
 
 export function mapCabin(dto: CabinDto): Cabin {
   return {

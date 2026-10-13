@@ -7,43 +7,30 @@ import CityPanel, {
   type CityPanelGroup,
 } from "@/components/ui/Filter/panels/CityPanel";
 import type { City } from "@/features/cabins/types/city.types";
-import { regionAllCitiesLabel } from "../../constants/regions";
-import { searchDestinations } from "../../services/destination.service";
-import type { Destination, Region } from "../../types/search.types";
+import DestinationMapPanel from "@/features/search/components/destination/DestinationMapPanel";
+import { regionAllCitiesLabel } from "@/features/search/constants/regions";
+import { searchDestinations } from "@/features/search/services/destination.service";
+import type { Destination, Region } from "@/features/search/types/search.types";
 import {
   CITY_VALUE_PREFIX,
   REGION_VALUE_PREFIX,
   decodeDestinationWithName,
   encodeDestination,
-} from "../../utils/destination-value";
-import DestinationMapPanel from "./DestinationMapPanel";
+} from "@/features/search/utils/destination-value";
 
 type View = "list" | "map";
 
 type Props = {
   cities: City[];
-  /** مناطق واقعی از API (`getRegions`) — منبع حقیقت دسته‌بندی شهرها */
+  //* مناطق واقعی از API (`getRegions`) — منبع حقیقت دسته‌بندی شهرها
   regions: Region[];
   value: Destination | null;
   onChange: (destination: Destination | null) => void;
 };
 
-/**
- * انتخاب مقصد سرچ اصلی — غنی‌تر از فیلتر شهرِ `/cabins`.
- *
- * دو مسیر کشف مقصد:
- *   A) جستجو/لیست  → لیست مناطق و شهرها + جستجوی متنی
- *   B) نقشه         → جای‌گاه نقشه (بدون کتابخانه‌ی نقشه)
- *
- * انتخاب هر منطقه یعنی «همه شهرهای آن منطقه» و به‌صورت معنایی ذخیره می‌شود
- * (region=north)، نه به‌صورت فهرست ده‌ها cityId.
- *
- * گروه‌بندی شهرها بر اساس `city.regionId` انجام می‌شود؛ نام شهر هیچ نقشی
- * در تشخیص منطقه ندارد.
- *
- * رندر لیست به `CityPanel` مشترک سپرده شده تا با فیلتر شهرِ `/cabins`
- * دو پیاده‌سازی موازی نداشته باشیم.
- */
+//* انتخاب مقصد سرچ اصلی — غنی‌تر از فیلتر شهرِ `/cabins`. دو مسیر کشف مقصد: (الف) جستجو/لیست (ب) نقشه.
+//* انتخاب هر منطقه یعنی «همه شهرهای آن منطقه» و به‌صورت معنایی ذخیره می‌شود (`region=north`)، نه فهرست ده‌ها `cityId`.
+//* گروه‌بندی شهرها بر اساس `city.regionId` است و نام شهر هیچ نقشی در تشخیص منطقه ندارد. رندر لیست به `CityPanel` مشترک سپرده شده تا دو پیاده‌سازی موازی نداشته باشیم.
 export default function DestinationPanel({
   cities,
   regions,

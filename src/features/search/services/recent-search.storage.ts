@@ -1,19 +1,6 @@
-/**
- * ذخیره‌ی «آخرین جستجو» در localStorage.
- *
- * ⚠️ عمداً روی خودِ استور Zustand `persist()` نگذاشته‌ایم؛ استور باید
- * فقط «تداوم ناوبری در حافظه» بماند. این ماژول یک اسنپ‌شاتِ مستقل و
- * نسخه‌دار از آخرین جستجو نگه می‌دارد.
- *
- * چرا «query string» ذخیره می‌شود و نه شیء فیلتر؟
- *  - همان قرارداد URL است، پس با `parseSearchFilters` خوانده می‌شود و
- *    منطق سریال‌سازی دوباره نوشته نمی‌شود.
- *  - فشرده، قابل‌خواندن و مقاوم در برابر تغییر شکل مدل است.
- *
- * این ماژول به‌صورت یک «استور خارجی» رفتار می‌کند (subscribe/getSnapshot)
- * تا کامپوننت‌ها بتوانند با `useSyncExternalStore` آن را بخوانند — بدون
- * effect و بدون setState درون effect.
- */
+//* ذخیره‌ی «آخرین جستجو» در localStorage — عمداً روی خودِ استور Zustand `persist()` نگذاشته‌ایم تا استور فقط «تداوم ناوبری در حافظه» بماند.
+//* چرا query string ذخیره می‌شود و نه شیء فیلتر؟ چون همان قرارداد URL است (با `parseSearchFilters` خوانده می‌شود) و فشرده و مقاوم در برابر تغییر شکل مدل است.
+//* این ماژول مثل یک «استور خارجی» رفتار می‌کند (subscribe/getSnapshot) تا با `useSyncExternalStore` خوانده شود — بدون effect و بدون setState درون effect.
 
 const STORAGE_KEY = "horizon:last-search";
 const STORAGE_VERSION = 1;
@@ -26,11 +13,7 @@ type StoredLastSearch = {
 
 const listeners = new Set<() => void>();
 
-/**
- * کشِ آخرین مقدار خوانده‌شده.
- * `undefined` یعنی «هنوز خوانده نشده»، `null` یعنی «خوانده شد و خالی بود».
- * بدون این کش، `getSnapshot` در هر رندر `JSON.parse` می‌زد.
- */
+//* کشِ آخرین مقدار خوانده‌شده. `undefined` = «هنوز خوانده نشده»، `null` = «خوانده شد و خالی بود». بدون این کش، `getSnapshot` در هر رندر `JSON.parse` می‌زد.
 let cachedQuery: string | null | undefined;
 
 function readFromStorage(): string | null {
@@ -55,14 +38,10 @@ function emit(): void {
   for (const listener of listeners) listener();
 }
 
-/* ------------------------------------------------------------------ */
-/* قرارداد استور خارجی                                                */
-/* ------------------------------------------------------------------ */
 
 export function subscribeLastSearch(listener: () => void): () => void {
   listeners.add(listener);
 
-  /** هم‌گام‌سازی بین تب‌ها */
   const onStorage = (event: StorageEvent) => {
     if (event.key !== null && event.key !== STORAGE_KEY) return;
     cachedQuery = undefined;
@@ -81,22 +60,20 @@ export function subscribeLastSearch(listener: () => void): () => void {
   };
 }
 
-/** snapshot سمت کلاینت — باید ارزان و پایدار باشد */
+//* snapshot سمت کلاینت — باید ارزان و پایدار باشد
 export function getLastSearchQuery(): string | null {
   if (cachedQuery === undefined) cachedQuery = readFromStorage();
   return cachedQuery;
 }
 
-/** snapshot سمت سرور — همیشه خالی تا رندر سرور و کلاینت یکسان بماند */
+//* snapshot سمت سرور — همیشه خالی تا رندر سرور و کلاینت یکسان بماند
 export function getServerLastSearchQuery(): string | null {
   return null;
 }
 
-/* ------------------------------------------------------------------ */
-/* نوشتن                                                              */
-/* ------------------------------------------------------------------ */
+//* نوشتن
 
-/** ذخیره‌ی آخرین جستجو؛ مقدار خالی یا تکراری نادیده گرفته می‌شود */
+//* ذخیره‌ی آخرین جستجو؛ مقدار خالی یا تکراری نادیده گرفته می‌شود
 export function saveLastSearchQuery(query: string): void {
   if (typeof window === "undefined") return;
 
@@ -113,7 +90,7 @@ export function saveLastSearchQuery(query: string): void {
     cachedQuery = normalized;
     emit();
   } catch {
-    // حالت private یا پر بودن حافظه — بی‌صدا نادیده گرفته می‌شود
+    //* حالت private یا پر بودن حافظه — بی‌صدا نادیده گرفته می‌شود
   }
 }
 
@@ -123,7 +100,7 @@ export function clearLastSearch(): void {
   try {
     window.localStorage.removeItem(STORAGE_KEY);
   } catch {
-    // بی‌صدا
+    //* بی‌صدا
   }
 
   cachedQuery = null;

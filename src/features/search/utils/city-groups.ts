@@ -1,16 +1,9 @@
-/**
- * گروه‌بندی شهرها بر اساس منطقه.
- *
- * دسته‌بندی کاملاً داده‌محور است: هر شهر `regionId` عددی دارد که از بک‌اند
- * می‌آید و با شناسه‌ی عددیِ منطقه تطبیق داده می‌شود. هیچ نگاشت «نام شهر →
- * منطقه» در فرانت‌اند وجود ندارد (نسخه‌ی قبلی این کار را با یک نقشه‌ی دستی
- * انجام می‌داد و هر شهر جدیدی که در بک‌اند اضافه می‌شد، در «سایر شهرها»
- * می‌افتاد).
- */
-
 import type { City } from "@/features/cabins/types/city.types";
-import { REGION_IDS } from "../constants/regions";
-import type { Region } from "../types/search.types";
+import { REGION_IDS } from "@/features/search/constants/regions";
+import type { Region } from "@/features/search/types/search.types";
+
+//* گروه‌بندی شهرها بر اساس منطقه — کاملاً داده‌محور (`city.regionId` از بک‌اند).
+//* هیچ نگاشت «نام شهر → منطقه» در فرانت‌اند وجود ندارد؛ شهر جدید بک‌اند خودکار جای درستش می‌نشیند.
 
 export type CityGroup = {
   region: Region;
@@ -19,16 +12,11 @@ export type CityGroup = {
 
 export type GroupedCities = {
   groups: CityGroup[];
-  /** شهرهایی که `regionId` آن‌ها با هیچ منطقه‌ی شناخته‌شده‌ای تطبیق نداد */
+  //* شهرهایی که `regionId` آن‌ها با هیچ منطقه‌ی شناخته‌شده‌ای تطبیق نداد
   others: City[];
 };
 
-/**
- * شهرها را بر اساس `regionId` کنار هم می‌گذارد.
- *
- * ترتیب گروه‌ها از ترتیب `regions` می‌آید (که خودش ترتیب `displayOrder`
- * بک‌اند است) و شهرهای داخل هر گروه بر اساس نام فارسی مرتب می‌شوند.
- */
+//* ترتیب گروه‌ها از ترتیب `regions` می‌آید (خودش `displayOrder` بک‌اند) و شهرهای داخل هر گروه بر اساس نام فارسی مرتب می‌شوند.
 export function groupCitiesByRegion(
   cities: City[],
   regions: Region[],

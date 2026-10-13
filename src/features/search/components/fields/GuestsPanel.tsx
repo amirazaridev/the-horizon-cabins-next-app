@@ -3,22 +3,17 @@
 import { Users } from "lucide-react";
 
 import Counter from "@/components/ui/Counter";
-import { GUESTS_MAX, GUESTS_MIN } from "../../types/search.types";
+import { GUESTS_MAX, GUESTS_MIN } from "@/features/search/constants/search-limits";
 
 type Props = {
-  /** مقدار واقعی draft؛ `null` یعنی کاربر هنوز مهمان انتخاب نکرده */
+  //* مقدار واقعی draft؛ `null` یعنی کاربر هنوز مهمان انتخاب نکرده
   value: number | null;
   onChange: (value: number) => void;
   onDone: () => void;
 };
 
-/**
- * انتخاب تعداد مهمان با شمارنده — بازه‌ی سرچ اصلی: ۱ تا ۱۰ نفر.
- *
- * نکته‌ی مهم: اگر مقدار `null` باشد، شمارنده حداقل (۱) را نشان می‌دهد.
- * برای اینکه نمایش و مقدار واقعی از هم جدا نمانند، دکمه‌ی «تایید» همان
- * مقدار نمایش‌داده‌شده را ثبت می‌کند و بعد پنل را می‌بندد.
- */
+//* انتخاب تعداد مهمان با شمارنده — بازه‌ی سرچ اصلی: ۱ تا ۱۰ نفر.
+//* اگر مقدار `null` باشد شمارنده حداقل (۱) را نشان می‌دهد؛ برای اینکه نمایش و مقدار واقعی از هم جدا نمانند، دکمه‌ی «تایید» همان مقدار نمایش‌داده‌شده را ثبت می‌کند و بعد پنل را می‌بندد.
 export default function GuestsPanel({ value, onChange, onDone }: Props) {
   const shown = value ?? GUESTS_MIN;
 

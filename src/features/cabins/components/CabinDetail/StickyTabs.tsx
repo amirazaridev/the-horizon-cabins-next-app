@@ -158,7 +158,7 @@ export default function StickyTabs(): ReactNode {
       ref={wrapperRef}
       className="border-foreground/10 bg-background-2/90 sticky top-[var(--hz-navbar-h)] z-30 border-b backdrop-blur-xl"
     >
-      <Container variant="cabin-detail">
+      <Container size="wide">
         <nav
           ref={listRef}
           aria-label="بخش‌های این اقامتگاه"

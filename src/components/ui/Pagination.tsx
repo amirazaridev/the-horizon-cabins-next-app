@@ -2,25 +2,22 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  buildPageUrl,
-  getPaginationRange,
-  type SearchParamsInput,
-} from "@/libs/utils/pagination";
+import { getPaginationRange } from "@/libs/utils/pagination";
+import { buildPageUrl, type SearchParamsInput } from "@/libs/utils/url-params";
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  /** مسیر صفحه، مثل '/cabins' یا '/admin/bookings' */
+  //* مسیر صفحه، مثل '/cabins' یا '/admin/bookings'
   basePath: string;
-  /** searchParams فعلی صفحه — برای حفظ فیلترهای دیگر (سرچ، سورت و ...) */
+  //* searchParams فعلی صفحه — برای حفظ فیلترهای دیگر (سرچ، سورت و ...)
   searchParams?: SearchParamsInput;
-  /** تعداد صفحات کناری فعلی که همیشه نمایش داده می‌شوند */
+  //* تعداد صفحات کناری فعلی که همیشه نمایش داده می‌شوند
   siblingCount?: number;
-  /** اگر جایی از یک کلید دیگر به‌جای 'page' استفاده می‌کنی */
+  //* اگر جایی از یک کلید دیگر به‌جای 'page' استفاده می‌کنی 
   pageParamName?: string;
   dir?: "rtl" | "ltr";
-  /** اسکرول به بالای صفحه هنگام تغییر صفحه — برای جدول‌های ادمین معمولاً false بهتر است */
+  //* اسکرول به بالای صفحه هنگام تغییر صفحه — برای جدول‌های ادمین معمولاً false بهتر است
   scroll?: boolean;
   className?: string;
 }

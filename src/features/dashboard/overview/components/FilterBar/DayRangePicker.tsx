@@ -12,6 +12,7 @@ import {
   formatJalaliDayMonth,
   formatJalaliFull,
 } from "../../lib/date-range";
+import { toDateObject, toJsDate } from "./date-picker-helpers";
 import { DATE_PICKER_INPUT_CLASS } from "./date-picker-input-class";
 
 interface DayRangePickerProps {
@@ -21,23 +22,6 @@ interface DayRangePickerProps {
 }
 
 type SingleValue = DateObject | null;
-
-function toDateObject(date: Date): DateObject {
-  return new DateObject({
-    date,
-    calendar: persian,
-    locale: persian_fa,
-  });
-}
-
-function toJsDate(value: unknown): Date | null {
-  if (!value || typeof value !== "object" || !("toDate" in value)) {
-    return null;
-  }
-
-  const date = (value as { toDate: () => Date }).toDate();
-  return date instanceof Date && !Number.isNaN(date.getTime()) ? date : null;
-}
 
 /**
  * انتخاب بازه‌ی «روز» برای فیلتر داشبورد.

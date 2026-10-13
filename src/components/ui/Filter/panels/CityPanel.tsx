@@ -25,18 +25,18 @@ export type CityPanelGroup = {
 };
 
 type CityPanelCommonProps = {
-  /** لیست تخت گزینه‌ها */
+  //* لیست تخت گزینه‌ها
   cities?: CityPanelOption[];
-  /** لیست گروه‌بندی‌شده (مثل گروه‌بندی بر اساس منطقه) */
+  //* لیست گروه‌بندی‌شده (مثل گروه‌بندی بر اساس منطقه)
   groups?: CityPanelGroup[];
-  /** نمایش سطر «همه شهرها» در حالت تخت */
+  //* نمایش سطر «همه شهرها» در حالت تخت
   showAll?: boolean;
   allLabel?: string;
   allHint?: string;
   emptyMessage?: string;
   defaultIcon?: ReactNode;
   className?: string;
-  /** نمایش کادر جستجوی کوچک بالای لیست (فیلتر سمت کلاینت، بدون درخواست) */
+  //* نمایش کادر جستجوی کوچک بالای لیست (فیلتر سمت کلاینت، بدون درخواست)
   searchable?: boolean;
   searchPlaceholder?: string;
 };
@@ -57,21 +57,6 @@ type CityPanelProps = CityPanelCommonProps &
 
 const DEFAULT_ICON = <MapPin className="text-primary-400 size-4 shrink-0" />;
 
-/**
- * پنل انتخاب مقصد — reusable برای همه‌جا (landing، cabins، dashboard).
- *
- * دو حالت داده:
- *   - تخت (`cities`) با اختیار «همه شهرها»
- *   - گروه‌بندی‌شده (`groups`) با اختیار «همه شهرهای …» برای هر گروه
- *
- * در حالت گروه‌بندی‌شده، هر گروه یک ردیف **آکاردئونی** است: با کلیک روی
- * عنوان منطقه، شهرهای همان منطقه باز می‌شود و منطقه‌ی قبلی بسته می‌شود
- * (تک‌باز). موقع جستجو، همه‌ی منطقه‌های دارای نتیجه خودکار باز می‌شوند تا
- * نتیجه داخل ردیف بسته پنهان نماند.
- *
- * مقدار در حالت تکی `string | null` و در حالت چندتایی `string[]` است.
- * کنترل کامل با والد است (داخل FilterCard یا هر جای دیگر).
- */
 export default function CityPanel(props: CityPanelProps) {
   const {
     cities = [],
@@ -115,7 +100,7 @@ export default function CityPanel(props: CityPanelProps) {
 
   const listClass = `flex flex-col gap-2 ${className}`;
 
-  /* ------------------------- حالت چندتایی ------------------------- */
+  // * حالت چندتایی 
   if (props.multiple) {
     const selected = props.value;
     const toggle = (itemValue: string) =>
@@ -171,7 +156,7 @@ export default function CityPanel(props: CityPanelProps) {
     );
   }
 
-  /* -------------------------- حالت تک‌تایی -------------------------- */
+  // * حالت تک‌تایی 
   const select = (next: string | null) => props.onChange(next);
 
   return (
@@ -241,13 +226,7 @@ export default function CityPanel(props: CityPanelProps) {
 
 /* ------------------------------------------------------------------ */
 
-/**
- * مناطق به‌صورت آکاردئون.
- *
- * دو حالت باز بودن:
- *   - مرور عادی: تک‌باز (`openId`) — با باز کردن یک منطقه، قبلی بسته می‌شود
- *   - جستجو: چندباز (`openIds`) — همه‌ی منطقه‌های دارای نتیجه خودکار بازند
- */
+// * مناطق به‌صورت آکاردئون.
 function GroupAccordion({
   groups,
   term,
@@ -264,16 +243,10 @@ function GroupAccordion({
 
   const isSearching = term.length > 0;
 
-  /** منطقه‌هایی که با عبارت جستجو نتیجه دارند */
+  //* منطقه‌هایی که با عبارت جستجو نتیجه دارند
   const matchingIds = useMemo(() => groups.map((group) => group.id), [groups]);
 
-  /**
-   * شناسه‌های باز در حالت جستجو.
-   *
-   * همگام‌سازی با «تنظیم state هنگام تغییر prop» انجام می‌شود (الگوی رسمی
-   * React) تا نیازی به effect نباشد. وقتی کاربر عبارت را عوض کند، دوباره
-   * همه‌ی نتیجه‌ها باز می‌شوند؛ ولی بستن دستی یک ردیف وسط جستجو باقی می‌ماند.
-   */
+ 
   const [searchState, setSearchState] = useState<{
     term: string;
     openIds: string[];

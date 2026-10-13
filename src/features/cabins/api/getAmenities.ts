@@ -1,5 +1,5 @@
 import { apiFetch } from "@/libs/api/apiFetch";
-import { ApiResponse } from "@/types/api-response";
+import { type ApiResponse } from "@/types/api-response";
 
 export async function getAmenities(): Promise<string[]> {
   const res = await apiFetch("cabins/amenities");

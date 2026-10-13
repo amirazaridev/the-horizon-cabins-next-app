@@ -3,6 +3,7 @@ import "server-only";
 import { authFetch } from "@/libs/api/authFetch";
 import type { PaginationMeta } from "@/types/api-response";
 import type { GuestBooking } from "@/features/guest/bookings/types/guest-booking.types";
+import { fetchFilterOptions } from "../../shared/api/filter-options.api";
 
 /**
  * لایه‌ی داده‌ی صفحه‌ی رزروهای داشبورد — **سرور-ساید**.
@@ -47,33 +48,15 @@ export interface BookingsFilterOptions {
 
 /**
  * گزینه‌های فیلتر (اقامتگاه و شهر) — مستقل از بازه و وضعیت.
- * هر دو endpoint عمومی‌اند، ولی برای یکدستی از `authFetch` استفاده می‌شود.
+ *
+ * ⭐ واکشی خام از `../../shared/api/filter-options.api` است (مشترک با
+ * سرویس داشبورد overview)؛ همان دو اندپوینت با همان کش.
  */
 export async function fetchBookingsFilterOptions(): Promise<BookingsFilterOptions> {
-  const [cabinsRes, citiesRes] = await Promise.all([
-    authFetch("cabins?limit=100", {
-      cache: "force-cache",
-      next: { revalidate: 300, tags: ["cabins-data"] },
-    }),
-    authFetch("locations/cities", {
-      cache: "force-cache",
-      next: { revalidate: 300, tags: ["cities-data"] },
-    }),
-  ]);
+  const { cabins, cities } = await fetchFilterOptions<
+    BookingsFilterOption,
+    BookingsFilterOption
+  >();
 
-  if (!cabinsRes.ok || !citiesRes.ok) {
-    throw new Error("دریافت گزینه‌های فیلتر رزروها ناموفق بود.");
-  }
-
-  const cabinsJson = (await cabinsRes.json()) as {
-    data?: { cabins?: BookingsFilterOption[] };
-  };
-  const citiesJson = (await citiesRes.json()) as {
-    data?: { cities?: BookingsFilterOption[] };
-  };
-
-  return {
-    cabins: cabinsJson.data?.cabins ?? [],
-    cities: citiesJson.data?.cities ?? [],
-  };
+  return { cabins, cities };
 }

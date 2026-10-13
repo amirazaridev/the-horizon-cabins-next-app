@@ -10,7 +10,7 @@ export function isFilterValueActive(value: unknown): boolean {
   return true;
 }
 
-/** آیا شیء از نوع plain object است (نه Date/Map/کلاس سفارشی)؟ */
+//* آیا شیء از نوع plain object است (نه Date/Map/کلاس سفارشی)؟
 function isPlainObject(value: object): value is Record<string, unknown> {
   const proto = Object.getPrototypeOf(value);
   return proto === Object.prototype || proto === null;

@@ -18,7 +18,8 @@
  * که `to + 1` نقش «شب بعد از آخرین روز بازه» را بازی می‌کند.
  */
 
-const MS_PER_DAY = 86_400_000;
+/** تعداد میلی‌ثانیه در یک روز — مرجع واحد برای همه‌ی محاسبات شب‌شماری. */
+export const MS_PER_DAY = 86_400_000;
 
 /** برش به ابتدای روز و حذف ساعت (timezone-local). */
 export function startOfDay(date: Date): Date {

@@ -14,6 +14,7 @@ import {
 
 import CardDashContainer from "@/components/ui/CardDashContainer";
 import { WidgetEmpty } from "../WidgetStates";
+import LegendItem from "./_shared/LegendItem";
 import { formatBucketLabel } from "../../lib/date-range";
 import {
   occupancyAdrSeries,
@@ -195,25 +196,5 @@ export default function OccupancyAdrChart({
         {hasAdr && <LegendItem color={CHART_COLORS.primary} label="ADR" />}
       </div>
     </CardDashContainer>
-  );
-}
-
-function LegendItem({
-  color,
-  label,
-  square,
-}: {
-  color: string;
-  label: string;
-  square?: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className={`shrink-0 ${square ? "size-2.5 rounded-sm" : "size-2.5 rounded-full"}`}
-        style={{ backgroundColor: color }}
-      />
-      <span className="text-text text-sm">{label}</span>
-    </div>
   );
 }

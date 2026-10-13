@@ -1,24 +1,23 @@
-import { ComponentProps, type ReactNode } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
 type Props = ComponentProps<"div"> & {
+  /** غیرفعال‌کردن انیمیشن بالا‌آمدن در hover (مثلاً داخل فرم‌ها). */
   noTransition?: boolean;
 };
 
-/**
- * کارت پایه‌ی پنل‌های داخلی (داشبورد مدیریت و ناحیه‌ی مهمان).
- *
- * ⚠️ از `features/dashboard/shared` به `components/ui` منتقل شد تا هر دو
- * ناحیه بتوانند از یک کارت مشترک استفاده کنند و ظاهرشان یکدست بماند.
- */
 export default function CardDashContainer({
   children,
-  className,
-  noTransition,
+  className = "",
+  noTransition = false,
   ...otherProps
 }: Props): ReactNode {
+  const transition = noTransition
+    ? ""
+    : "transition-all duration-300 hover:-translate-y-0.75";
+
   return (
     <div
-      className={`border-border bg-background-2 shadow-shadow-soft hover:border-border-strong rounded-2xl p-5 ${noTransition ? "" : "transition-all duration-300 hover:-translate-y-0.75"} ${className}`}
+      className={`border-border bg-background-2 shadow-shadow-soft hover:border-border-strong rounded-2xl p-5 ${transition} ${className}`}
       {...otherProps}
     >
       {children}

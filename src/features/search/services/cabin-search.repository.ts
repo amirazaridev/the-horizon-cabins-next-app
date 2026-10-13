@@ -1,46 +1,26 @@
-/**
- * repository جستجوی اقامتگاه — لایه‌ی کلاینت.
- *
- * ═══════════════════════════════════════════════════════════════════
- *  نقطه‌ی واحد دسترسی UI به داده‌ی جستجو  ←  همین فایل
- * ═══════════════════════════════════════════════════════════════════
- *
- * هیچ کامپوننتی (SearchPreview, CabinCard, …) نمی‌داند داده از کجا می‌آید؛
- * همه فقط `cabinSearchRepository.search(...)` را صدا می‌زنند.
- *
- * زنجیره‌ی کامل:
- *   UI → cabinSearchRepository (اینجا، کلاینت)
- *      → GET /api/search/cabins  (Route Handler، سرور)
- *      → searchCabinsFromApi     (آداپتور API، server-only)
- *      → queryCabins             (getCabins)
- *      → API بک‌اند
- *
- * داده‌ی ماک کاملاً حذف شده است؛ تنها منبع نتیجه‌ها API است.
- */
-
 import type { CabinDto } from "@/features/cabins/types/cabin.types";
 import { mapCabin } from "@/features/cabins/utils/mapCabin";
-import {
-  SEARCH_PREVIEW_LIMIT,
-  type CabinSearchResult,
-  type SearchFilters,
-} from "../types/search.types";
-import { serializeSearchFilters } from "../utils/search-params";
+import { SEARCH_PREVIEW_LIMIT } from "@/features/search/constants/search-limits";
+import type {
+  CabinSearchResult,
+  SearchFilters,
+} from "@/features/search/types/search.types";
+import { serializeSearchFilters } from "@/features/search/utils/search-params";
 
-/** مسیر داخلی پروکسی؛ تنها جایی که ساخته می‌شود همین فایل است */
+//* repository جستجو — لایه‌ی کلاینت و **نقطه‌ی واحد دسترسی UI به داده**.
+//* هیچ کامپوننتی نمی‌داند داده از کجا می‌آید؛ همه فقط `cabinSearchRepository.search(...)` را صدا می‌زنند.
+//* زنجیره: UI → cabinSearchRepository → GET /api/search/cabins (Route Handler) → searchCabinsFromApi → queryCabins → API بک‌اند.
+//* داده‌ی ماک حذف شده؛ تنها منبع نتیجه‌ها API است.
+
+//* مسیر داخلی پروکسی؛ تنها جایی که ساخته می‌شود همین فایل است
 export const CABIN_SEARCH_ENDPOINT = "/api/search/cabins";
 
 export interface CabinSearchRepository {
-  /**
-   * جستجوی اقامتگاه.
-   *
-   * @param filters فیلترهای هسته‌ی سرچ (همان `SearchFilters` دامنه)
-   * @param limit   حداکثر تعداد کارت برگشتی (پیش‌فرض: ۶ کارت پیش‌نمایش)
-   */
+  //* فیلترهای هسته‌ی سرچ + حداکثر تعداد کارت برگشتی (پیش‌فرض: ۶ کارت پیش‌نمایش)
   search(filters: SearchFilters, limit?: number): Promise<CabinSearchResult>;
 }
 
-/** شکل پاسخ JSON مسیر داخلی — تاریخ‌ها بعد از JSON رشته‌اند */
+//* شکل پاسخ JSON مسیر داخلی — تاریخ‌ها بعد از JSON رشته‌اند
 type SearchResponseDto = {
   cabins: CabinDto[];
   total: number;

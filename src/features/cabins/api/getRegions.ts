@@ -1,6 +1,6 @@
 import { apiFetch } from "@/libs/api/apiFetch";
-import { ApiResponse } from "@/types/api-response";
-import { Region } from "../types/city.types";
+import { type ApiResponse } from "@/types/api-response";
+import { type Region } from "../types/city.types";
 
 /**
  * لیست مناطق ثابت ایران همراه با تعداد شهرهای هر منطقه.

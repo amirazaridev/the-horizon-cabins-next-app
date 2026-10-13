@@ -5,7 +5,8 @@ import CabinListOperations from "@/features/dashboard/cabins/components/CabinLis
 import CabinListDashboard from "@/features/dashboard/cabins/components/CabinListDashboard";
 import CabinCardsSkeleton from "@/features/cabins/components/CabinCardsSkeleton";
 import type { CabinsSearchParams } from "@/features/dashboard/cabins/lib/operations";
-import { parseLimitParam } from "@/libs/utils/pagination";
+import { parseLimitParam } from "@/libs/utils/url-params";
+import { CABINS_LIMIT_BOUNDS } from "@/constants/cabins";
 
 export const metadata = { title: "مدیریت اقامتگاهها" };
 
@@ -40,7 +41,7 @@ export default async function CabinsPage({
         key={JSON.stringify(sp)}
         fallback={
           <CabinCardsSkeleton
-            count={parseLimitParam(sp.limit)}
+            count={parseLimitParam(sp.limit, CABINS_LIMIT_BOUNDS)}
             variant="dashboard"
             gridClassName="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3"
           />

@@ -1,29 +1,23 @@
 "use client";
 
 import type { City } from "@/features/cabins/types/city.types";
+import Search from "@/features/search/components/Search";
+import { usePersistLastSearch } from "@/features/search/hooks/useLastSearch";
+import { useUrlSearchController } from "@/features/search/hooks/useUrlSearchController";
+import type { Region } from "@/features/search/types/search.types";
 import type { RawSearchParams } from "@/hooks/useUrlQuery";
-import { usePersistLastSearch } from "../hooks/useLastSearch";
-import { useUrlSearchController } from "../hooks/useUrlSearchController";
-import type { Region } from "../types/search.types";
-import Search from "./Search";
 
 type Props = {
   cities: City[];
-  /** مناطق واقعی از API */
+  //* مناطق واقعی از API
   regions: Region[];
-  /** searchParams خام سرور — منبع حقیقت این صفحه */
+  //* searchParams خام سرور — منبع حقیقت این صفحه
   searchParams: RawSearchParams;
-  /** افق رزرو (روز) از تنظیمات عمومی — سقف تقویم جستجو */
+  //* افق رزرو (روز) از تنظیمات عمومی — سقف تقویم جستجو
   bookingWindowDays?: number;
 };
 
-/**
- * نوار جستجوی صفحه‌ی `/cabins`.
- *
- * عمداً «چسبان» (sticky) نیست: فقط FilterBar پیشرفته sticky می‌ماند تا
- * ویوپورت را اشغال نکند. در موبایل همین کامپوننت خودش خلاصه‌ی جستجو +
- * دکمه‌ی «تغییر جستجو» را به‌صورت باتم‌شیت نشان می‌دهد.
- */
+//* نوار جستجوی صفحه‌ی `/cabins`. عمداً sticky نیست تا ویوپورت اشغال نشود (فقط FilterBar پیشرفته sticky می‌ماند). در موبایل خودش خلاصه‌ی جستجو + دکمه‌ی «تغییر جستجو» را به‌شکل باتم‌شیت نشان می‌دهد.
 export default function SearchBar({
   cities,
   regions,
@@ -32,7 +26,7 @@ export default function SearchBar({
 }: Props) {
   const controller = useUrlSearchController(searchParams);
 
-  // جستجوی این صفحه هم به‌عنوان «آخرین جستجو» ذخیره می‌شود
+  //* جستجوی این صفحه هم به‌عنوان «آخرین جستجو» ذخیره می‌شود
   usePersistLastSearch(controller.applied);
 
   return (

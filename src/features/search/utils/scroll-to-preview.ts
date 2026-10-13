@@ -1,10 +1,4 @@
-/**
- * اسکرول نرم به بخش «پیش‌نمایش جستجو» در لندینگ.
- *
- * چرا اینجا؟ چون هم کامپوننت سرچ (بعد از اعمال) و هم هر جای دیگری که
- * بخواهد کاربر را به نتیجه‌ی جستجو برساند، به یک شناسه‌ی پایدار نیاز دارد.
- * این شناسه روی `<section>` پیش‌نمایش نشسته است.
- */
+//* اسکرول نرم به بخش «پیش‌نمایش جستجو» در لندینگ — شناسه روی همان `<section>` نشسته است و هر مصرف‌کننده‌ای از آن استفاده می‌کند.
 
 export const SEARCH_PREVIEW_ID = "search-preview";
 
@@ -16,18 +10,13 @@ export function prefersReducedMotion(): boolean {
 }
 
 type ScrollOptions = {
-  /** فقط در عرض موبایل اسکرول کن */
+  //* فقط در عرض موبایل اسکرول کن
   onlyMobile?: boolean;
-  /** اگر بخش پیش‌نمایش همین حالا در دید است، اسکرول نکن */
+  //* اگر بخش پیش‌نمایش همین حالا در دید است، اسکرول نکن
   skipIfVisible?: boolean;
 };
 
-/**
- * اسکرول به بخش پیش‌نمایش.
- *
- * `block: "start"` به `scroll-mt-20` روی خود سکشن احترام می‌گذارد، پس هدر
- * زیر نوبارِ fixed پنهان نمی‌شود.
- */
+//* `block: "start"` به `scroll-mt-20` روی سکشن احترام می‌گذارد، پس هدر زیر نوبارِ fixed پنهان نمی‌شود.
 export function scrollToSearchPreview(options: ScrollOptions = {}): void {
   const { onlyMobile = false, skipIfVisible = true } = options;
 
@@ -37,7 +26,7 @@ export function scrollToSearchPreview(options: ScrollOptions = {}): void {
   const target = document.getElementById(SEARCH_PREVIEW_ID);
   if (!target) return;
 
-  /* اگر کاربر همین حالا نتیجه را می‌بیند، جابه‌جایی بی‌فایده و آزاردهنده است */
+  //* اگر کاربر همین حالا نتیجه را می‌بیند، جابه‌جایی بی‌فایده و آزاردهنده است
   if (skipIfVisible) {
     const rect = target.getBoundingClientRect();
     const comfortablyVisible =
@@ -51,12 +40,8 @@ export function scrollToSearchPreview(options: ScrollOptions = {}): void {
   });
 }
 
-/**
- * نسخه‌ی «تأخیردار» برای بعد از اعمال جستجو.
- *
- * چرا تأخیر؟ در موبایل باتم‌شیت با انیمیشن ۴۰۰ms بسته می‌شود و قفل اسکرولِ
- * body باید اول آزاد شود؛ وگرنه اسکرول نرم اجرا نمی‌شود.
- */
+//* نسخه‌ی «تأخیردار» برای بعد از اعمال جستجو.
+//* در موبایل باتم‌شیت با انیمیشن ۴۰۰ms بسته می‌شود و قفل اسکرول body باید اول آزاد شود، وگرنه اسکرول نرم اجرا نمی‌شود.
 export function scheduleScrollToSearchPreview(
   delayMs = 180,
   options: ScrollOptions = {},

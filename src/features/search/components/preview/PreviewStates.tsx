@@ -3,8 +3,10 @@
 import { RefreshCw, SearchX, TriangleAlert } from "lucide-react";
 
 import CabinCardsSkeleton from "@/features/cabins/components/CabinCardsSkeleton";
-import { SEARCH_PREVIEW_LIMIT } from "../../types/search.types";
+import { SEARCH_PREVIEW_LIMIT } from "@/features/search/constants/search-limits";
 
+//* اسکلتون پیش‌نمایش — همان چیدمان نتایج واقعی (موبایل کاروسل، از `sm` به بالا گرید).
+//* اسکلتون‌ها هم‌ابعاد `CabinCard` (واریانت landing) هستند، پس تبدیل لودینگ به محتوا هیچ پرشی در ارتفاع سکشن ایجاد نمی‌کند.
 export function PreviewSkeleton() {
   return (
     <div>
@@ -16,11 +18,6 @@ export function PreviewSkeleton() {
         در حال پیدا کردن اقامتگاه…
       </div>
 
-      {/*
-        همان چیدمان نتایج واقعی: موبایل کاروسل، از `sm` به بالا گرید.
-        اسکلتون‌ها هم‌ابعاد `CabinCard` (واریانت landing) هستند، پس تبدیل
-        لودینگ به محتوا هیچ پرشی در ارتفاع سکشن ایجاد نمی‌کند.
-      */}
       <CabinCardsSkeleton
         count={SEARCH_PREVIEW_LIMIT}
         variant="landing"
@@ -34,6 +31,7 @@ export function PreviewSkeleton() {
   );
 }
 
+//* حالت «نتیجه‌ای پیدا نشد»
 export function PreviewEmpty() {
   return (
     <div className="border-foreground/10 bg-surface flex flex-col items-center gap-3 rounded-3xl border border-dashed px-6 py-12 text-center">
@@ -51,6 +49,7 @@ export function PreviewEmpty() {
   );
 }
 
+//* حالت خطا + دکمه‌ی «تلاش دوباره»
 export function PreviewError({ onRetry }: { onRetry: () => void }) {
   return (
     <div

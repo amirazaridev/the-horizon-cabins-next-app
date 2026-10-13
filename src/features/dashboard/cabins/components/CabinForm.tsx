@@ -117,7 +117,6 @@ export default function CabinForm({ mode, cities, cabin }: CabinFormProps) {
 
   async function onSubmit(values: CabinFormValues) {
     const formData = buildFormData(values);
-    // console.log(values);
 
     // 🔑 کلاینت فقط server action رو صدا می‌زنه — نه API، نه توکن، هیچی
     const result =
