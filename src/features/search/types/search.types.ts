@@ -41,8 +41,6 @@ export type Destination = CityDestination | RegionDestination;
 
 //* فیلترهای هسته (تنها چیزی که در استور گلوبال می‌نشیند)
 
-//* بازه‌ی بودجه (تومان). `null` = «بدون محدودیت»، نه بازه‌ی کامل.
-//* ⚠️ واحدش به حالت بودجه بستگی دارد: بدون تاریخ «هر شب» (`price`)، با تاریخ «کل سفر» (`totalPrice`).
 export type BudgetRange = {
   min: number;
   max: number;

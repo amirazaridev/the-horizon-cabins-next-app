@@ -4,16 +4,6 @@ import { authFetch } from "@/libs/api/authFetch";
 import type { PaginationMeta } from "@/types/api-response";
 import type { AdminUser } from "../types/user.types";
 
-/**
- * لایه‌ی داده‌ی صفحه‌ی کاربران داشبورد — **سرور-ساید**.
- *
- * صفحه‌ی `dashboard/users/page.tsx` (Server Component) این تابع را صدا
- * می‌زند؛ توکن از کوکی سرور با `authFetch` فوروارد می‌شود.
- *
- * ⚠️ روتر کاربران در بک‌اند روی مسیر مفرد `/user` مانت شده است (همان مسیری
- * که `/user/me` از آن می‌آید).
- */
-
 export interface UsersPage {
   users: AdminUser[];
   meta: PaginationMeta;

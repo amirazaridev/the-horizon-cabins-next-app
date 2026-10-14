@@ -3,11 +3,6 @@ import type { ReactNode } from "react";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
 import CardDashContainer from "@/components/ui/CardDashContainer";
 
-/**
- * جایگاه نمایش موقعیت مکانی — آماده برای نقشه.
- * وقتی فیلد location از API آمد، بلوک if اجرا می‌شود؛
- * تا آن زمان Placeholder نمایش داده می‌شود.
- */
 export default function CabinLocation({ cabin }: { cabin: Cabin }): ReactNode {
   // بکند فیلد location ندارد؛ موقعیت از مختصات + نام شهر ساخته میشود
   const hasCoords = cabin.latitude !== null && cabin.longitude !== null;

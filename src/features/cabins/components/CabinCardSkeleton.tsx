@@ -16,16 +16,6 @@ export interface CabinCardSkeletonProps {
 const baseClasses =
   "relative overflow-hidden rounded-3xl border border-foreground/5 bg-surface";
 
-/**
- * اسکلتون هم‌ابعاد `CabinCard`.
- *
- * هر واریانت، دقیقاً همان درختِ کلاس‌های کارت واقعی را بازتولید می‌کند:
- * همان `aspect-video`، همان پدینگ‌ها (`p-3.5` / `sm:p-4` / `p-5`) و همان
- * `gap`ها. به‌جای متن، بلوکی با **ارتفاعِ برابر line-height متن واقعی**
- * می‌نشیند (text-xs → `h-4`، text-sm → `h-5`، text-base → `h-6`،
- * text-lg → `h-7`) تا جمعِ ارتفاع‌ها یکی در بیاید و لحظه‌ی تبدیل لودینگ
- * به محتوا هیچ پرشی رخ ندهد.
- */
 export default function CabinCardSkeleton({
   variant = "default",
   showPrice = false,

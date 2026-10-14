@@ -6,10 +6,6 @@ import { useCabinQuery } from "../useCabinQuery";
 const OPTIONS = [1, 2, 3, 4];
 
 type Props = {
-  /**
-   * حالت controlled (داخل FilterCard دسکتاپ).
-   * اگر onChange داده نشود، پنل خودش مستقیم با useCabinQuery کار می‌کند (موبایل).
-   */
   value?: string | null;
   onChange?: (value: string | null) => void;
 };

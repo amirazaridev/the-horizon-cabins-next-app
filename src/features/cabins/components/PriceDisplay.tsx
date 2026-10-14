@@ -4,23 +4,12 @@ import type { ReactNode } from "react";
 type Props = {
   /** مبلغ اصلی که بزرگ نمایش داده می‌شود */
   amount: number;
-  /**
-   * مبلغ بدون تخفیف. اگر بزرگ‌تر از `amount` باشد، خط‌خورده و همراه با
-   * درصد تخفیف نشان داده می‌شود.
-   */
   originalAmount?: number | null;
   /** برچسب کوچک زیر مبلغ (مثل «قیمت هر شب» یا «مبلغ نهایی») */
   caption?: string;
   className?: string;
 };
 
-/**
- * بلوک مبلغ — فشرده و تک‌خطی.
- *
- * ⚠️ اندازه‌ها عمداً کوچک‌اند (`text-2xl`): این بلوک داخل aside چسبان
- * رزرو می‌نشیند و قبلاً با `text-4xl` + فاصله‌های بزرگ ارتفاع زیادی
- * می‌گرفت و پنل را از دید بیرون می‌برد.
- */
 export default function PriceDisplay({
   amount,
   originalAmount,

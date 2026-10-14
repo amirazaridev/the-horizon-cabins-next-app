@@ -1,14 +1,5 @@
 import type { GaugeRange } from "./types";
 
-/**
- * ریاضیات خالص اسلایدر — بدون React.
- *
- * ⚠️ پیش از این همه‌ی این‌ها تابع/کلوژر داخل بدنه‌ی کامپوننت `RangeGauge`
- * (۵۱۲ خط) بودند و با `minValue`/`maxValue`/`step`/`span` از closure
- * تغذیه می‌شدند. حالا خالص‌اند، جدا قابل تست‌اند، و کامپوننت فقط state و
- * رویدادها را مدیریت می‌کند.
- */
-
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
@@ -28,12 +19,6 @@ export function parseDigits(raw: string): number {
   return normalized === "" ? Number.NaN : Number(normalized);
 }
 
-/**
- * مرتب‌سازی + کلمپ یک بازه.
- *
- * با `sort` ترتیب دستگیره‌ها هم اصلاح می‌شود و فاصلهٔ حداقل (`gap`) بین
- * دو سر بازه تضمین می‌ماند.
- */
 export function normalizeRange(
   range: GaugeRange,
   {
@@ -56,13 +41,6 @@ export function normalizeRange(
   };
 }
 
-/**
- * تبدیل مختصات افقی یک رویداد اشاره‌گر به مقدار اسلایدر.
- *
- * - صفحه RTL: مبدأ از سمت راست است، پس جهت محاسبه برگردانده می‌شود.
- * - اسنپ نسبت به `min` انجام می‌شود، نه نسبت به صفر — وگرنه وقتی `min`
- *   مضرب `step` نباشد مقدار از خودِ `min` بیرون می‌زند.
- */
 export function valueFromClientX(
   clientX: number,
   track: HTMLElement | null,

@@ -3,22 +3,6 @@ import Container from "@/components/ui/Container";
 import { HORIZON_IMAGES } from "@/features/landing/constants";
 import { EXPERIENCE_BANNER_ITEMS } from "@/features/landing/constants/experience-banner";
 
-/**
- * بنر «چرا هورایزن؟».
- *
- * ⚠️ اصلاح ساختاری: `<section>` اکنون `relative` است. کارت بنر
- * `absolute inset-x-0` است و قبلاً هیچ والدِ positioned نداشت؛ یعنی
- * موقعیتش به initial containing block (viewport) گره می‌خورد. با
- * `relative` روی سکشن، موقعیت‌یابی صریح و پایدار شد (چون سکشن تمام‌عرض
- * است، خروجی بصری تغییر نمی‌کند).
- *
- * ⚠️ ارتفاع‌های `h-150` / `sm:h-80` / `lg:h-50` یک انتخاب طراحیِ عمدی
- * هستند (بنر روی موبایل بلندتر است) و دست‌نخورده ماندند.
- *
- * ⚠️ داده‌ی سه کارت از `EXPERIENCE_BANNER_ITEMS` می‌آید؛ قبلاً همین لیست
- * دو بار وجود داشت (یک‌بار در constants که بی‌استفاده بود، یک‌بار hardcode
- * همین‌جا).
- */
 export default function ExperienceBanner() {
   return (
     <section

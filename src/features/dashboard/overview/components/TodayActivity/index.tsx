@@ -38,19 +38,6 @@ const TABS: readonly { key: TabKey; label: string; icon: typeof LogIn }[] = [
   { key: "departure", label: "خروج‌ها", icon: LogOut },
 ];
 
-/**
- * ویجت «عملیات امروز» — ورود و خروج‌های امروز با اکشن check-in/check-out.
- *
- * ### بازطراحی‌شده (فاز ۵)
- * نسخه‌ی قبلی یک لیست تخت با داده‌ی هاردکد بود. این نسخه:
- * - **از لایه‌ی داده** تغذیه می‌شود (`TodayActivityItem[]`).
- * - **تب‌بندی ورود/خروج** با شمارنده — کاربر در یک نگاه می‌بیند امروز
- *   چند تحویل و چند تخلیه دارد.
- * - **اکشن واقعی** با mutation + وضعیت loading روی همان ردیف + پیام خطا.
- * - **به‌روزرسانی خوش‌بینانه**: بعد از موفقیت، ردیف فوراً از لیست
- *   «در انتظار اقدام» خارج می‌شود بدون نیاز به refetch.
- * - اطلاعات کامل: مهمان، اقامتگاه، تعداد مهمان، تعداد شب، وضعیت.
- */
 export default function TodayActivity({
   todayBookings,
   today,
@@ -58,11 +45,6 @@ export default function TodayActivity({
   const [tab, setTab] = useState<TabKey>("arrival");
   const { pendingId, error, run, clearError } = useTodayActivity();
 
-  /**
-   * وضعیت محلی «انجام‌شده» — رزروهایی که در همین نشست check-in/out شدند.
-   * ⚠️ عمداً به‌جای فیلترکردن، آن‌ها را نشان می‌دهیم ولی به‌عنوان «انجام‌شده»
-   * تا اپراتور ببیند عملیات موفق بوده.
-   */
   const [doneIds, setDoneIds] = useState<Set<number>>(() => new Set());
   /** وضعیت جدید هر رزرو انجام‌شده — برای نمایش نشان درست. */
   const [statusOverrides, setStatusOverrides] = useState<
@@ -211,10 +193,6 @@ export default function TodayActivity({
     </CardDashContainer>
   );
 }
-
-/* ==========================================================================
-   کمکی‌ها
-   ========================================================================== */
 
 function MiniStat({
   icon: Icon,

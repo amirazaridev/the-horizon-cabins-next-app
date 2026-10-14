@@ -1,12 +1,3 @@
-/**
- * لایه‌ی دسترسی به داده‌ی داشبورد — `DashboardRepository`.
- *
- * کامپوننت‌ها و hookها **فقط** این interface را می‌شناسند؛ پیاده‌سازی فعلی
- * `ApiDashboardRepository` است (از `GET /api/dashboard/snapshot` می‌خواند).
- *
- * ⚠️ این ماژول **client-safe** است و هیچ import سرور-محوری ندارد.
- */
-
 import type {
   DashboardBooking,
   DashboardCabin,
@@ -17,10 +8,6 @@ import type {
 import { ACTIVE_BOOKING_STATUSES } from "../types/dashboard.types";
 import { toEpochDay } from "../lib/metrics/range";
 
-/**
- * نتیجه‌ی کامل یک درخواست داشبورد — همان چیزی که endpoint بک‌اند
- * (`GET /dashboard/snapshot`) برمی‌گرداند.
- */
 export interface DashboardSnapshot {
   /** رزروهای داخل بازه (شامل عبوری‌ها) — پایه‌ی KPI اصلی */
   bookings: DashboardBooking[];
@@ -49,26 +36,11 @@ export interface DashboardRepository extends DashboardMutations {
   getSnapshot(filters: DashboardFilters): Promise<DashboardSnapshot>;
 }
 
-/**
- * گزینه‌های فیلتر — از بک‌اند (`GET /locations/cities` و `GET /cabins`)
- * خوانده می‌شوند تا dropdown فیلتر مستقل از بازه‌ی تاریخ کار کند.
- */
 export interface DashboardFilterOptions {
   cities: DashboardCity[];
   cabins: DashboardCabin[];
 }
 
-/* ==========================================================================
-   کمکی‌های مشترک — فقط چیزهایی که در کلاینت لازم‌اند
-   ========================================================================== */
-
-/**
- * نگاشت یک رزرو امروزی به «آیتم فعالیت امروز».
- *
- * ⚠️ یک رزرو ممکن است **هم‌زمان** ورود و خروج امروز باشد؛ اگر هم ورود و
- * هم خروج امروز بودند (رزرو تک‌شبه‌ی نامتعارف)، **ورود** اولویت می‌گیرد
- * چون اکشن اصلی روز است.
- */
 export function toTodayActivityItem(
   booking: DashboardBooking,
   today: Date,

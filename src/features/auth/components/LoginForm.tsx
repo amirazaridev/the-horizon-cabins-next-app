@@ -18,18 +18,6 @@ import StateField from "@/components/ui/StateField";
 import SubmitButton from "./SubmitButton";
 import toast from "react-hot-toast";
 
-/**
- * فرم ورود.
- *
- * ⚠️ این کامپوننت مستقیماً `loginAction` (Server Action) را صدا می‌زند؛
- * لایه‌ی سرویس کلاینت حذف شد چون صرفاً یک پوسته‌ی نازک دور همین اکشن بود
- * و هیچ منطق مستقلی نداشت.
- *
- * حالت اعتبارسنجی: `mode: "onTouched"` — خطا بعد از اولین خروج از فیلد
- * نشان داده می‌شود، نه با هر کاراکتر (که تجربه‌ی تایپ را آزار می‌دهد)
- * و نه فقط بعد از submit (که دیر است). بعد از اولین خطا `reValidateMode`
- * روی `onChange` است تا کاربر همان لحظه‌ی اصلاح، تایید ببیند.
- */
 export default function LoginForm(): ReactNode {
   const [formError, setFormError] = useState<AuthError | null>(null);
   const [succeeded, setSucceeded] = useState(false);

@@ -1,9 +1,3 @@
-/**
- * تنظیمات مؤثر سامانه — آینه‌ی پاسخ `GET /settings` بک‌اند.
- *
- * `priceCalendarHorizonDays` و `bookedDatesMaxRangeDays` مقادیر **مشتق‌شده**
- * هستند (در دیتابیس ذخیره نمی‌شوند) و بک‌اند محاسبه‌شان می‌کند.
- */
 export interface AppSettings {
   // Booking
   minBookingLength: number;
@@ -32,11 +26,6 @@ export interface AppSettings {
 /** کلیدهای قابل‌نمایش در صفحه‌ی تنظیمات. */
 export type SettingKey = keyof AppSettings;
 
-/**
- * کلیدهای **قابل ویرایش** — مقادیر مشتق‌شده (`priceCalendarHorizonDays` و
- * `bookedDatesMaxRangeDays`) در دیتابیس ذخیره نمی‌شوند و از سقف‌های دیگر
- * محاسبه می‌شوند، پس قابل ویرایش نیستند.
- */
 export type EditableSettingKey = Exclude<
   SettingKey,
   "priceCalendarHorizonDays" | "bookedDatesMaxRangeDays"

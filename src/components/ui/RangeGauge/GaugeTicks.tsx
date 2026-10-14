@@ -8,12 +8,6 @@ type Props = {
   span: number;
 };
 
-/**
- * تیک‌های راهنمای زیر ترک.
- *
- * ⚠️ مبدأ ترک سمت راست است (RTL)، پس موقعیت با `right` تنظیم می‌شود تا
- * تیک‌ها با دستگیره‌ها هم‌راستا شوند.
- */
 export default function GaugeTicks({ ticks, span }: Props) {
   if (!ticks.length || span <= 0) return null;
 

@@ -7,11 +7,6 @@ import SectionHeading from "@/features/landing/components/SectionHeading";
 import Carousel from "@/components/ui/Carousel";
 
 export type BudgetStaysProps = {
-  /**
-   * اقامتگاه‌های اقتصادی — از قبل **مرتب‌شده بر اساس ارزان‌ترین قیمت مؤثر
-   * (`?sort=price_asc`) و محدودشده** توسط API می‌آید؛ پس اینجا سورت کلاینتی
-   * انجام نمی‌شود.
-   */
   cabins: Cabin[];
 };
 

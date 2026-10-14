@@ -1,15 +1,5 @@
 import type { Cabin } from "../types/cabin.types";
 
-/**
- * قیمت مؤثر یک اقامتگاه برای نمایش روی کارت.
- *
- * ⚠️ زمینه: مدل `Cabin` بک‌اند **هیچ فیلد `discount` ندارد**؛ تخفیف‌ها در
- * `PriceRule` و read-model `CabinDailyPrice` هستند. اندپوینت لیست فقط شیء
- * `pricing` را برمی‌گرداند که در حالت بدون تاریخ `startingPrice` (کمینه‌ی
- * قیمت مؤثر پس از تخفیف/افزایش) را دارد.
- *
- * پس به‌جای فیلد ناموجود `discount`، قیمت را از `pricing` استخراج می‌کنیم.
- */
 export type CabinPriceInfo = {
   /** قیمت پایه‌ی اقامتگاه (قبل از تخفیف) — برای نمایش خط‌خورده. */
   originalPrice: number;
@@ -21,12 +11,6 @@ export type CabinPriceInfo = {
   discountPercent: number;
 };
 
-/**
- * قیمت مؤثر را از `pricing` (حالت `startingFrom`) محاسبه می‌کند.
- *
- * حالت `stay` (با تاریخ) اینجا مدیریت نمی‌شود؛ کارت‌ها برای آن حالت جمع کل
- * بازه را جداگانه نشان می‌دهند.
- */
 export function resolveCabinPrice(cabin: Cabin): CabinPriceInfo {
   const originalPrice = cabin.regularPrice;
 

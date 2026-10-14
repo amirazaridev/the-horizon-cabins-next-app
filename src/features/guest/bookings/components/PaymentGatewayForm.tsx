@@ -45,13 +45,6 @@ function InfoRow({ label, value }: { label: string; value: string }): ReactNode 
 const INPUT_CLASS =
   "border-foreground/10 bg-background-2 text-text placeholder:text-text-gray/50 focus:border-primary-400 w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition-colors";
 
-/**
- * فرم درگاه پرداخت **نمونه** — فقط طرح و ظاهر.
- *
- * ⚠️ اعتبارسنجی ندارد (طبق درخواست): حتی با فیلدهای خالی هم دکمه کار می‌کند.
- * هیچ داده‌ی کارتی جایی ارسال نمی‌شود؛ فقط `payBookingAction` صدا زده می‌شود
- * که `POST /bookings/:id/pay` را می‌زند و رزرو را «تأییدشده» می‌کند.
- */
 export default function PaymentGatewayForm({
   bookingId,
   merchantName,

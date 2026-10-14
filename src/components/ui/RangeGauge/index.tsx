@@ -30,20 +30,6 @@ export type {
   RangeGaugeProps,
 } from "./types";
 
-/**
- * اسلایدر دو-دستگیره‌ای بازه (قیمت، سال، …).
- *
- * ⚠️ تفکیک‌های انجام‌شده (پیش‌تر همه در یک فایل ۵۱۲ خطی بودند):
- *  - ریاضیات خالص (`clamp`, `parseDigits`, `normalizeRange`,
- *    `valueFromClientX`) ⇒ `geometry.ts`
- *  - دستگیره‌ها (دو نمونه‌ی عیناً یکسان) ⇒ `GaugeHandle.tsx`
- *  - ورودی‌های عددی (دو نمونه‌ی یکسان) ⇒ `GaugeNumberInput.tsx`
- *  - تیک‌ها ⇒ `GaugeTicks.tsx`
- *  - تایپ‌ها ⇒ `types.ts`
- *
- * ⚠️ `committedRef` حذف شد: در نسخه‌ی قبلی چند جا **نوشته** می‌شد ولی
- * هیچ‌جا **خوانده** نمی‌شد (state مرده).
- */
 export default function RangeGauge({
   minValue,
   maxValue,
@@ -97,8 +83,6 @@ export default function RangeGauge({
     return normalized;
   }
 
-  // در ref نگه داشته می‌شود تا APIـی که به مصرف‌کننده می‌دهیم همیشه
-  // تازه‌ترین onCommit را صدا بزند (بدون وابستگی کهنیِ effect)
   const onCommitRef = useRef(onCommit);
   useEffect(() => {
     onCommitRef.current = onCommit;
@@ -124,13 +108,6 @@ export default function RangeGauge({
     });
   }
 
-  /**
-   * اگر کلیک مستقیماً روی خودِ دستگیره شروع شده باشد، همان قفل می‌شود.
-   *
-   * این مهم است چون هنگام گرفتن دستگیره با موس، نقطهٔ کلیک روی بدنهٔ همان
-   * دستگیره است و در RTL (که start سمت راست است) ممکن است نقطهٔ محاسبه‌شده
-   * به دستگیرهٔ مقابل نزدیک‌تر باشد و اشتباهاً همان را بکشد.
-   */
   function getClickedHandle(target: EventTarget | null): DragHandle | undefined {
     const el = (target as HTMLElement | null)?.closest<HTMLElement>(
       "[data-gauge-handle]",
@@ -273,8 +250,6 @@ export default function RangeGauge({
     handleInputCommit(handle);
   }
 
-  // آخرین مقادیر مرزی در ref — تا API پایدار بماند و effect هر بار
-  // به‌خاطر تغییر تابع‌های محلی دوباره ساخته نشود
   const boundsRef = useRef({ minValue, maxValue });
   useEffect(() => {
     boundsRef.current = { minValue, maxValue };
@@ -308,11 +283,6 @@ export default function RangeGauge({
 
   const isFullRange = range.start === minValue && range.end === maxValue;
 
-  /**
-   * ترک `dir="rtl"` است، پس مبدأ بصری سمت راست است.
-   * موقعیت عناصر باید با `right` تنظیم شود تا مقدار min روی لبهٔ راست و
-   * مقدار max روی لبهٔ چپ بنشیند — هم‌راستا با `valueFromClientX`.
-   */
   const startOffset = { right: `${startPercent}%` } as const;
   const endOffset = { right: `${endPercent}%` } as const;
 

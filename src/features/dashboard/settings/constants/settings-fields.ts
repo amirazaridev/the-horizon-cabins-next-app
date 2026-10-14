@@ -20,13 +20,6 @@ export type SettingUnit =
 /** بیشترین مقدار قابل‌ذخیره در یک ستون int4 پستگرس. */
 export const INT4_MAX = 2_147_483_647;
 
-/**
- * کران مجاز هر فیلد — **آینه‌ی `BOUNDS` در `setting.validation.ts` بک‌اند**.
- *
- * ⚠️ هر تغییری در بک‌اند باید اینجا هم اعمال شود؛ این مقادیر هم برای
- * اعتبارسنجی سمت کلاینت و هم برای راهنمای «بازه‌ی مجاز» زیر هر فیلد
- * استفاده می‌شوند. اعتبارسنجی نهایی همیشه سمت سرور است.
- */
 export const SETTING_BOUNDS: Record<EditableSettingKey, { min: number; max: number }> = {
   minBookingLength: { min: 1, max: 365 },
   maxBookingLength: { min: 1, max: 365 },
@@ -71,10 +64,6 @@ export interface SettingGroup {
   fields: readonly SettingField[];
 }
 
-/**
- * گروه‌بندی و برچسب فارسی تنظیمات — **تک‌منبع** صفحه‌ی تنظیمات.
- * هیچ برچسب/واحدی داخل کامپوننت نیست.
- */
 export const SETTING_GROUPS: readonly SettingGroup[] = [
   {
     id: "booking",

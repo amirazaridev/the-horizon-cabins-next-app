@@ -14,12 +14,6 @@ export interface UserGuestProfile {
   gender: UserGender | null;
 }
 
-/**
- * یک ردیف کاربر در صفحه‌ی «کاربران» داشبورد.
- *
- * ⚠️ دقیقاً هم‌شکل پاسخ `GET /user` بک‌اند است؛ تاریخ‌ها رشته‌ی ISO‌اند
- * (JSON تاریخ را رشته می‌کند) و قالب‌بندی جلالی در لایه‌ی نمایش انجام می‌شود.
- */
 export interface AdminUser {
   id: number;
   email: string;

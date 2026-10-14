@@ -5,11 +5,6 @@ type Props = {
   autoHide?: boolean;
 };
 
-/**
- * Shimmer مشترک اسکلتون‌ها.
- * رنگ درخشش از رنگ اصلی برند گرفته می‌شود و در هر دو تم
- * روی سطح روشن یا تیره قابل مشاهده است.
- */
 const SHIMMER_BAR_CLASS = [
   "relative block isolate overflow-hidden",
   "after:absolute after:inset-0 after:content-['']",

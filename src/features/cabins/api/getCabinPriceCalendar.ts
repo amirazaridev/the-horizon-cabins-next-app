@@ -14,16 +14,6 @@ type ApiCalendar = {
   days: (Omit<CabinCalendarDay, "date"> & { date: string })[];
 };
 
-/**
- * تقویم قیمت یک کابین را می‌خواند (`GET /cabins/:id/price-calendar` — عمومی).
- *
- * ⚠️ این اندپوینت کل پنجره‌ی افق رزرو (پیش‌فرض ۱۲۰ روز) را یک‌جا برمی‌گرداند؛
- * پس یک درخواست برای پرکردن قیمتِ همه‌ی سلول‌های تقویم کافی است و لازم نیست
- * برای هر ماه درخواست جدا بزنیم.
- *
- * ⚠️ `null` یعنی «تقویم در دسترس نیست» (خطای شبکه/HTTP)؛ مصرف‌کننده باید
- * تقویم را بدون قیمت نمایش دهد، نه اینکه صفحه را بترکاند.
- */
 export async function getCabinPriceCalendar(
   cabinId: number,
 ): Promise<CabinPriceCalendar | null> {

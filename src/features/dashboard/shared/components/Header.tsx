@@ -33,13 +33,6 @@ const ROLE_LABELS: Record<UserRole, string> = {
   guest: "مهمان",
 };
 
-/**
- * هدر پنل مدیریت.
- *
- * ⚠️ مسیر جاری و «بازکردن دراور» از خود پوسته می‌آید (`usePathname` +
- * `ShellMenuButton`)، پس این کامپوننت فقط به داده‌ی نقش/کاربر نیاز دارد و
- * از هر پوسته‌ای قابل استفاده است.
- */
 export default function Header({ role, userId }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();

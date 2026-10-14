@@ -1,24 +1,5 @@
-/**
- * منطق خالص رندر بازه‌ی شماره‌صفحه.
- *
- * بدون وابستگی به React — قابل استفاده هم در Server Component ها و هم هر
- * جای دیگر (بدون نیاز به `'use client'`).
- *
- * ⚠️ توابع مربوط به URL صفحه‌بندی (`parsePageParam`, `parseLimitParam`,
- * `buildPageUrl`) به `url-params.ts` منتقل شدند.
- *
- * ⚠️ دو مورد حذف شد: (۱) بلوک کامنت‌شده‌ی `parsePaginationParams`،
- * (۲) تایپ `PaginationMeta` که تکراری و بی‌استفاده بود — منبع رسمی آن
- * `@/types/api-response` است.
- */
-
 const DOTS = "dots" as const;
 
-/**
- * لیست شماره‌صفحه‌ها برای رندر را می‌سازد، با «...» برای بازه‌های بلند.
- * نمونه خروجی برای currentPage=5, totalPages=20, siblingCount=1:
- *   [1, 'dots', 4, 5, 6, 'dots', 20]
- */
 export function getPaginationRange(
   currentPage: number,
   totalPages: number,

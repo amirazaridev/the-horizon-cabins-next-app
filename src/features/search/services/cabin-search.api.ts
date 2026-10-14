@@ -1,4 +1,3 @@
-
 import "server-only";
 
 import { queryCabins } from "@/features/cabins/api/getCabins";

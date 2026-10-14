@@ -19,10 +19,6 @@ export default function Stays({ cabins }: { cabins: Cabin[] }) {
         />
         <Carousel>
           {cabins.map((cabin) => (
-            /* ⚠️ قلاب انیمیشن روی یک پوششِ بیرونی می‌نشیند، نه روی خود
-               `CabinCard`؛ چون `CabinCardProps` یک تایپ بسته است و
-               `data-animate` را به DOM نمی‌رساند (بی‌صدا دور می‌افتاد و
-               انیمیشن ورود کارت‌ها هرگز اجرا نمی‌شد). */
             <div key={cabin.id} data-animate="stay-card" className="h-full">
               <CabinCard
                 cabin={cabin}

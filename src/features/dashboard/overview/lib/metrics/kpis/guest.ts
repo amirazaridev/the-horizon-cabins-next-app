@@ -1,19 +1,8 @@
-/**
- * KPIهای مهمان/رزرو — نرخ لغو، میانگین اقامت، شمارش‌ها و Δ% نسبت به
- * دوره‌ی مقایسه. همه pure؛ تعریف دقیق در `docs/dashboard-metrics.md`.
- */
-
 import type { DashboardBooking } from "../../../types/dashboard.types";
 import { CANCELLED_STATUSES } from "../../../types/dashboard.types";
 import { type DateRange, createdAtInRange, nightsInRange } from "../range";
 import { soldBookings } from "./shared";
 
-/**
- * `CancellationRate = رزروهای لغوشده / کل رزروهای ثبت‌شده در بازه`
- *
- * ⚠️ مخرج **ثبت‌شده در بازه** است، نه شروع‌شده در بازه. یعنی معیار
- * `createdAt` داخل بازه است. لغو هرگز مخرج را عوض نمی‌کند.
- */
 export function cancellationRate(
   bookings: readonly DashboardBooking[],
   range: DateRange,
@@ -30,10 +19,6 @@ export function cancellationRate(
   return cancelled / created.length;
 }
 
-/**
- * میانگین شب‌های رزروهای فروخته‌شده در بازه.
- * ⚠️ `null` وقتی هیچ رزرو فروخته‌شده‌ای نیست (نه صفر).
- */
 export function averageStay(
   bookings: readonly DashboardBooking[],
   range: DateRange,
@@ -71,13 +56,6 @@ export function createdBookingCount(
   ).length;
 }
 
-/**
- * `Δ% = (current - previous) / previous`
- *
- * ⚠️ اگر مقدار مبنا `0` یا `null` باشد، `null` برمی‌گردد (نه 0 و نه
- * Infinity). این تصمیم عمدی است: «رشد نسبت به صفر» بی‌معناست و UI باید
- * به‌جای `+∞٪` متن «بدون مقایسه» نشان دهد.
- */
 export function deltaPercent(
   current: number | null,
   previous: number | null,

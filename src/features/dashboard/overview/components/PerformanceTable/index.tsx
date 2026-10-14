@@ -24,10 +24,6 @@ import type {
   DashboardCabin,
 } from "../../types/dashboard.types";
 
-/* ==========================================================================
-   پیکربندی ستون‌ها — تک‌منبع (بدون عدد جادویی در JSX)
-   ========================================================================== */
-
 type SortKey =
   | "label"
   | "revenue"
@@ -116,10 +112,6 @@ const COLUMNS: readonly ColumnDef[] = [
   },
 ];
 
-/* ==========================================================================
-   کامپوننت
-   ========================================================================== */
-
 type EntityMode = "cabin" | "city";
 type RangeMode = "all" | "top5" | "bottom5";
 
@@ -143,12 +135,6 @@ const RANGE_TABS: readonly { value: RangeMode; label: string }[] = [
 
 const TOP_N = 5;
 
-/**
- * جدول عملکرد اقامتگاه/شهر — مرتب‌ساز، با نمای Top5/Bottom5.
- *
- * ⭐ همه‌ی اعداد از `cabinPerformance`/`cityPerformance` می‌آیند؛ این
- * کامپوننت فقط **مرتب می‌کند و نشان می‌دهد**، هیچ محاسبه‌ای ندارد.
- */
 export default function PerformanceTable({
   bookings,
   cabins,
@@ -325,10 +311,6 @@ export default function PerformanceTable({
     </CardDashContainer>
   );
 }
-
-/* ==========================================================================
-   کمکی‌ها
-   ========================================================================== */
 
 function compareRows(a: PerformanceRow, b: PerformanceRow, key: SortKey): number {
   if (key === "label") return a.label.localeCompare(b.label, "fa");

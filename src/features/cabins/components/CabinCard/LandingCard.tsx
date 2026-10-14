@@ -7,13 +7,6 @@ import { animationClasses, baseClasses, CARD_IMAGE_SIZES } from "./classes";
 import { CardImage } from "./primitives";
 import type { CardVariantProps } from "./types";
 
-/**
- * کارت واریانت `landing` — کارت‌های سکشن‌های لندینگ.
- *
- * ⚠️ پیش از این همین کارت به‌همراه نشان و پاورقی قیمت در `OfferCard` به
- * شکل «کارت + یک لایه‌ی بیرونی با سلکتور `[&>a]`» ساخته می‌شد. حالا نشان
- * (`badge`) و قیمت دستی (`price`/`originalPrice`) پراپِ خود کارت‌اند.
- */
 export default function LandingCard({
   cabin,
   imageOverride,
@@ -87,8 +80,6 @@ export default function LandingCard({
                 </span>
               </>
             ) : (
-              /* بدون تاریخ: قیمت، «کمینه‌ی پنجره» است نه قیمت ثابت — پس با
-                 «از» می‌آید تا کاربر بفهمد ممکن است شب‌های دیگر گران‌تر باشد. */
               <>
                 {hasDiscount && (
                   <span className="text-text-gray/60 text-[11px] line-through">

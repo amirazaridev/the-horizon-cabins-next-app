@@ -9,13 +9,6 @@ import { resolveCabinPrice } from "@/features/cabins/utils/cabin-price";
 import { formatCurrency } from "@/libs/utils/format";
 import { IMAGE_HOVER_SCALE } from "./classes";
 
-/**
- * ناحیه‌ی تصویر کارت + جایگزین «تصویر موجود نیست».
- *
- * ⚠️ پیش از این این بلوک در هر سه واریانت کپی شده بود، و واریانت داشبورد
- * جایگزین نداشت (`src={image || ""}` ⇒ `src` خالی به `next/image`) —
- * یعنی رفتارشان ناهمگون بود. حالا یک پیاده‌سازی مشترک دارند.
- */
 export function CardImage({
   image,
   alt,

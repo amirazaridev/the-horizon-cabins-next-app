@@ -1,14 +1,3 @@
-/**
- * قالب‌بندی اعداد و مبالغ برای کارت‌های KPI.
- *
- * ⭐ **تک‌منبع** — هیچ کامپوننتی خودش `toLocaleString` یا `٪` دستی نمی‌زند.
- * همه‌ی خروجی‌ها با اعداد فارسی و واحد تومان تولید می‌شوند.
- *
- * ⚠️ `formatCurrency` مشترک در `libs/utils/format.ts` برای جدول‌ها/فرم‌ها
- * استفاده می‌شود؛ این ماژول نسخه‌ی فشرده‌ی مخصوص KPI است (مثلاً
- * «۱٫۲ میلیارد» برای کارت درآمد).
- */
-
 const FA = "fa-IR";
 
 /** عدد صحیح/اعشاری با اعداد فارسی. */
@@ -25,10 +14,6 @@ export function formatPercent(ratio: number | null, fractionDigits = 0): string 
   return `${formatNumber(ratio * 100, fractionDigits)}٪`;
 }
 
-/**
- * مقدار **درصدی آماده** (مثل ۲۷ به‌معنی ۲۷٪) با علامت ٪.
- * ⚠️ با `formatPercent` اشتباه نشود: آن یکی نسبت ۰..۱ می‌گیرد.
- */
 export function formatPercentValue(value: number | null, fractionDigits = 0): string {
   if (value === null || !Number.isFinite(value)) return "—";
   return `${formatNumber(value, fractionDigits)}٪`;
@@ -41,10 +26,6 @@ export function formatDelta(ratio: number | null, fractionDigits = 0): string {
   return `${sign}${formatNumber(Math.abs(ratio) * 100, fractionDigits)}٪`;
 }
 
-/**
- * مبلغ تومان فشرده — برای کارت‌های KPI.
- * مثال: ۱٫۲ میلیارد · ۸۵۰ میلیون · ۴۵ هزار.
- */
 export function formatTomanShort(value: number): string {
   const n = value;
   if (!Number.isFinite(n)) return "—";
@@ -85,12 +66,6 @@ export function formatCount(value: number | null): string {
   return formatNumber(value);
 }
 
-/* ==========================================================================
-   شمارنده‌ی واحددار — «۳ شب»، «۵ رزرو»، «۲ اقامتگاه»
-   ⚠️ تک‌منبع برای الگوی «عدد + واحد» در همه‌ی ویجت‌ها؛ هیچ‌جای UI
-   `toLocaleString` خام نزنید.
-   ========================================================================== */
-
 export const COUNT_UNITS = {
   night: "شب",
   guest: "مهمان",
@@ -102,10 +77,6 @@ export const COUNT_UNITS = {
 
 export type CountUnit = keyof typeof COUNT_UNITS;
 
-/**
- * «عدد + واحد». برای واحد `item` فقط خود عدد برمی‌گردد.
- * مثال: `formatCountWithUnit(3, "night")` → «۳ شب».
- */
 export function formatCountWithUnit(
   value: number | null,
   unit: CountUnit,

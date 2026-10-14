@@ -16,10 +16,6 @@ type FilterMobileSheetProps = {
   footer?: ReactNode;
 };
 
-/**
- * باتم‌شیت موبایل — انیمیشن خالص CSS (بدون درگ).
- * ورود/خروج ۴۰۰ms با ease-out؛ موقع بسته شدن اول fade/slide بعد unmount.
- */
 export default function FilterMobileSheet({
   open,
   title = "فیلترها",
@@ -27,11 +23,6 @@ export default function FilterMobileSheet({
   children,
   footer,
 }: FilterMobileSheetProps) {
-  /**
-   * visible = شیت «نشان داده شود» (بعد از یک فریم از mount تا انیمیشن ورود اجرا شود)
-   * mounted = open || visible یعنی تا پایان انیمیشن خروج در DOM می‌ماند.
-   * همه‌ی setState‌ها داخل callback (rAF/timeout) اجرا می‌شوند، نه در بدنه‌ی افکت.
-   */
   const [visible, setVisible] = useState(false);
   const mounted = open || visible;
 

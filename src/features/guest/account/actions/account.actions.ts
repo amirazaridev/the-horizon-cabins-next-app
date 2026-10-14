@@ -6,14 +6,6 @@ import { authFetch } from "@/libs/api/authFetch";
 import { jalaliToIsoDate } from "@/features/guest/shared/lib/jalali";
 import { accountSchema, type AccountFormValues } from "../schemas/account.schema";
 
-/**
- * Server Action ویرایش پروفایل مهمان.
- *
- * جریان: فرم کلاینت → این Action (BFF) → `PATCH /user/me` روی Express.
- * مرورگر هرگز مستقیم با بک‌اند حرف نمی‌زند و توکن هم از کوکی httpOnly
- * خوانده می‌شود (`authFetch`).
- */
-
 /** خروجی قابل serialize برای کلاینت. */
 export type AccountActionResult =
   | { ok: true; message: string }
@@ -45,8 +37,6 @@ export async function updateGuestProfileAction(input: unknown): Promise<AccountA
 
   const { fullName, gender, phoneNumber, nationalId, dateOfBirth } = parsed.data;
 
-  // تاریخ تولد در فرم جلالی است؛ بک‌اند میلادی (`YYYY-MM-DD`) می‌خواهد.
-  // خالی یعنی «پاک کن» → null.
   let isoDateOfBirth: string | null = null;
   if (dateOfBirth !== "") {
     isoDateOfBirth = jalaliToIsoDate(dateOfBirth);

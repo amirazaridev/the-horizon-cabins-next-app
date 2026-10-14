@@ -2,9 +2,6 @@ import type { City } from "@/features/cabins/types/city.types";
 import { REGION_IDS } from "@/features/search/constants/regions";
 import type { Region } from "@/features/search/types/search.types";
 
-//* گروه‌بندی شهرها بر اساس منطقه — کاملاً داده‌محور (`city.regionId` از بک‌اند).
-//* هیچ نگاشت «نام شهر → منطقه» در فرانت‌اند وجود ندارد؛ شهر جدید بک‌اند خودکار جای درستش می‌نشیند.
-
 export type CityGroup = {
   region: Region;
   cities: City[];

@@ -21,26 +21,11 @@ type Props = {
   cabinId: number;
 };
 
-/**
- * نظرات کاربران.
- *
- * ⚠️ TODO(backend): اندپوینت نظرات وجود ندارد؛ داده از `buildReviews`
- * می‌آید. با اضافه‌شدن `GET /cabins/:id/reviews`، فقط منبع `data` عوض
- * می‌شود (به‌ترجیح با `useEffect`/`Suspense` و اسکلتون مستقل) و کل UI
- * مرتب‌سازی و «مشاهده‌ی بیشتر» دست‌نخورده می‌ماند.
- */
 export default function ReviewsSection({ cabinId }: Props): ReactNode {
   const data = useMemo(() => buildReviews(cabinId), [cabinId]);
   const [sort, setSort] = useState<SortId>("newest");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
 
-  /**
-   * تغییر مرتب‌سازی، فهرست را از ابتدا نشان می‌دهد.
-   *
-   * عمداً در handler انجام می‌شود و نه در یک `useEffect` با وابستگی
-   * `sort`؛ چون setState در بدنه‌ی effect باعث رندر آبشاری می‌شود و lint
-   * پروژه هم آن را خطا می‌گیرد.
-   */
   const handleSortChange = (next: SortId) => {
     setSort(next);
     setVisibleCount(INITIAL_VISIBLE_COUNT);

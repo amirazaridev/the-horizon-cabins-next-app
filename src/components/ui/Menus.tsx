@@ -24,12 +24,6 @@ interface AnchorInfo {
 interface MenuContextValue {
   openId: string;
   anchor: RefObject<AnchorInfo | null>;
-  /**
-   * المان دکمه‌ی تریگر منوی باز.
-   *
-   * ⚠️ لازم است تا «کلیک بیرون» کلیک روی خودِ تریگر را نبَرد؛ در غیر این
-   * صورت منو بسته و بی‌درنگ با `onClick` همان دکمه دوباره باز می‌شود.
-   */
   toggleRef: RefObject<HTMLElement | null>;
   close: () => void;
   open: (id: string, info: AnchorInfo) => void;
@@ -54,13 +48,6 @@ function Menus({ children }: { children: ReactNode }) {
     setOpenId(id);
   }, []);
 
-  /**
-   * بستن منو با اسکرول/تغییر اندازه و Escape.
-   *
-   * منو نسبت به `getBoundingClientRect` تریگر (یعنی نسبت به viewport)
-   * موقعیت‌دهی می‌شود؛ با اسکرول یا ریسایز آن مستطیل بی‌اعتبار می‌شود، پس
-   * به‌جای تعقیب موقعیت، منو را می‌بندیم.
-   */
   useEffect(() => {
     if (!openId) return;
 
@@ -90,12 +77,6 @@ interface ToggleProps {
   id: string;
   icon?: ReactNode;
   justBottom?: boolean;
-  /**
-   * کلاس‌های اضافی دکمه‌ی تریگر.
-   *
-   * ⚠️ برای بازنویسی رنگ استفاده می‌شود (مثلاً `text-inherit!` در نوار بالا،
-   * تا رنگ متن نوار — سفید روی هیرو / تیره روی پس‌زمینه‌ی جامد — حفظ شود).
-   */
   className?: string;
 }
 
@@ -145,12 +126,6 @@ function List({ id, children, className = "" }: ListProps) {
   const isOpen = openId === id;
   const [style, setStyle] = useState<CSSProperties>({ visibility: "hidden" });
 
-  /**
-   * بستن با کلیک بیرون.
-   *
-   * ⚠️ `toggleRef` نادیده گرفته می‌شود تا کلیک روی دکمه‌ی پروفایل منو را
-   * نبندد؛ toggle را کامل به `onClick` خودِ دکمه می‌سپاریم.
-   */
   const ref = useOutsideClick<HTMLUListElement>(close, {
     ignore: [toggleRef],
     event: "pointerdown",
@@ -257,10 +232,6 @@ interface HeaderProps {
   className?: string;
 }
 
-/**
- * سرصفحه‌ی غیرکلیکی منو — برای نمایش اطلاعات زمینه‌ای (مثلاً پروفایل کاربر)
- * بالای آیتم‌ها. کلیک روی آن منو را نمی‌بندد.
- */
 function Header({ children, className = "" }: HeaderProps) {
   return (
     <li

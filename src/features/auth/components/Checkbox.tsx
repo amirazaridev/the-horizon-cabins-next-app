@@ -10,14 +10,6 @@ type Props = Omit<ComponentProps<"input">, "type" | "className"> & {
   className?: string;
 };
 
-/**
- * چک‌باکس سفارشی با input بومی.
- *
- * ⚠️ عمداً از `<input type="checkbox">` واقعی استفاده می‌شود (نه div با
- * onClick): تا کیبورد، screen reader، `Space` و `form.reset` همه بی‌دردسر
- * کار کنند و `register()` در React Hook Form مستقیم به آن وصل شود.
- * خود چک‌باکس با `appearance-none` پنهان و نشانگر سفارشی جایش می‌نشیند.
- */
 const Checkbox = forwardRef<HTMLInputElement, Props>(function Checkbox(
   { children, error, className = "", id, ...otherProps },
   ref,

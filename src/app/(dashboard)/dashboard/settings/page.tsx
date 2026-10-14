@@ -7,12 +7,6 @@ import { fetchSettings } from "@/features/dashboard/settings/services/settings.a
 
 export const metadata = { title: "تنظیمات" };
 
-/**
- * صفحه‌ی «تنظیمات» داشبورد.
- *
- * - **owner**: فرم ویرایش (Server Action → `PATCH /settings`).
- * - **admin**: نمایش فقط‌خواندنی (خواندن تنظیمات برای admin مجاز است، ویرایش نه).
- */
 export default async function SettingsPage(): Promise<ReactNode> {
   const user = await requireDashboardAccess("/dashboard/settings");
   const settings = await fetchSettings();

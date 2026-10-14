@@ -50,12 +50,6 @@ function computeDelta(
   return deltaPercent(current[key], previous[key]);
 }
 
-/**
- * ردیف ۸ کارت KPI.
- *
- * همه‌ی محاسبات (KPI، Δ، sparkline) اینجا از توابع pure `lib/metrics`
- * می‌آید. کامپوننت هیچ عددی را خودش محاسبه نمی‌کند.
- */
 export default function KpiRow({
   bookings,
   compareBookings,

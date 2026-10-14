@@ -28,17 +28,6 @@ type Props = Omit<ComponentProps<"input">, "className"> & {
   onClear?: () => void;
 };
 
-/**
- * فیلد ورودی مشترک فرم‌های پروژه (احراز هویت، تنظیمات حساب کاربری، …).
- *
- * ⚠️ چرا `forwardRef`؟
- * `react-hook-form` با `register()` یک `ref` می‌فرستد. بدون forward، RHF
- * نمی‌تواند فوکوس/مقدار را مدیریت کند و validating لحظه‌ای از کار می‌افتد.
- *
- * الگوی label شناور: `value` + وضعیت فوکوس تعیین می‌کنند label بالا برود.
- * برای فیلدهای غیرمتنی (تاریخ/انتخاب) از `open` استفاده نکنید — این
- * کامپوننت فقط برای `<input>` است.
- */
 const Input = forwardRef<HTMLInputElement, Props>(function Input(
   {
     label,

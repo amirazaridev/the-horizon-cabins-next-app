@@ -1,11 +1,3 @@
-/**
- * کمکی‌های مشترک تقویم‌های فیلتر داشبورد — تبدیل بین `Date` و `DateObject`
- * کتابخانه‌ی `react-multi-date-picker`.
- *
- * ⭐ هر دو `DayRangePicker` و `MonthRangePicker` از همین توابع استفاده
- * می‌کنند تا منطق تبدیل یک‌جا و هم‌راستا بماند.
- */
-
 import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";

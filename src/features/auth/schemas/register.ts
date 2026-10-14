@@ -17,13 +17,6 @@ export const registerVerificationSchema = z.object({
   code: otpField,
 });
 
-/**
- * مرحله‌ی ۳ — رمز عبور.
- *
- * ⚠️ سخت‌گیری عمداً روی «قدرت» است نه فقط طول: هر چهار قاعده باید برقرار
- * شوند. قواعد از `ruleOf(...)` می‌آیند نه `PASSWORD_RULES[1]` — پس
- * جابه‌جایی ترتیب آرایه هیچ‌وقت اعتبارسنجی را بی‌سروصدا عوض نمی‌کند.
- */
 export const registerPasswordSchema = z
   .object({
     password: z

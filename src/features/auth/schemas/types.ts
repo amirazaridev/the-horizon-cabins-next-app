@@ -10,14 +10,6 @@ import {
   type registerVerificationSchema,
 } from "./register";
 
-/**
- * تایپ‌های مشتق‌شده از اسکیماها.
- *
- * ⚠️ از `z.input` استفاده می‌کنیم نه `z.infer`: فرم‌های React Hook Form
- * با «ورودی» کار می‌کنند (قبل از transform). اگر `z.infer` بدهیم، فیلدهایی
- * که `transform` دارند (مثل کد تایید) تایپ خروجی می‌گیرند و RHF خطا می‌دهد.
- */
-
 type StepOneSchema = typeof registerStepOneSchema;
 type VerificationSchema = typeof registerVerificationSchema;
 type PasswordSchema = typeof registerPasswordSchema;

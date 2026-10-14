@@ -14,11 +14,6 @@ type Props = {
   className?: string;
 };
 
-/**
- * رنگ هر سطح قدرت. کلید = امتیاز (۰..۴).
- * ⚠️ رنگ «خوب/عالی» سبز است نه قرمز؛ در این UI سبز = معتبر، مستقل از
- * قرارداد رنگ بازار سرمایه که فقط به نمودارهای قیمت مربوط است.
- */
 const LEVEL_STYLES = [
   { bar: "bg-danger-strong", text: "text-danger", glow: "shadow-danger-strong/30" },
   { bar: "bg-orange-500", text: "text-orange-500", glow: "shadow-orange-500/30" },
@@ -27,18 +22,6 @@ const LEVEL_STYLES = [
   { bar: "bg-emerald-500", text: "text-emerald-600", glow: "shadow-emerald-500/30" },
 ] as const;
 
-/**
- * نشانگر قدرت رمز عبور.
- *
- * دو لایه بازخورد می‌دهد:
- *  1. نوار چهاربخشی + برچسب کلامی (خیلی ضعیف … عالی).
- *  2. چک‌لیست قواعد با علامت ✓/✗ — کاربر دقیقاً می‌داند چه کم است،
- *     به‌جای حدس‌زدن از روی رنگ.
- *
- * ⭐ برچسب هر قاعده از خودِ `PASSWORD_RULES[i].label` می‌آید — نه یک
- * نگاشت محلی. قبلاً این‌جا یک `RULE_LABELS` جدا بود که با کوچک‌ترین
- * تغییر در ماژول قواعد، بی‌سروصدا از آن جدا می‌شد.
- */
 export default function PasswordStrength({
   password,
   showRules = true,

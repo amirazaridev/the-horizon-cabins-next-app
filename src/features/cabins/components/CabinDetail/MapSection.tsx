@@ -8,16 +8,6 @@ type Props = {
   cabin: Cabin;
 };
 
-/**
- * نقشه — فعلاً یک پنل خالی با نسبت تصویر مناسب.
- *
- * ارتفاع رزرو شده (`aspect-16/9`) عمدی است: وقتی نقشه‌ی واقعی اضافه شد،
- * چیدمان صفحه جهش نمی‌کند. مختصات اقامتگاه از بک‌اند می‌آید و همین حالا
- * نمایش داده می‌شود تا پنل کاملاً توخالی نباشد.
- *
- * TODO(feature): جای این پنل، کامپوننت نقشه (بدون کتابخانه‌ی جدید، مثلاً
- * `iframe` نقشه یا SVG سبک) قرار می‌گیرد.
- */
 export default function MapSection({ cabin }: Props): ReactNode {
   const hasCoordinates =
     typeof cabin.latitude === "number" && typeof cabin.longitude === "number";

@@ -3,14 +3,6 @@
 import { parsePriceRange } from "@/libs/utils/price-range";
 import { safeParseNumber } from "./safeParseNumber";
 
-/**
- * کلیدهای فیلترهای پیشرفته‌ی `/cabins` — همان‌هایی که دکمه‌ی
- * «حذف فیلترها» پاک می‌کند.
- *
- * توجه: مقصد، تاریخ، تعداد نفرات و بازه‌ی بودجه حالا در نوار جستجوی همین
- * صفحه هستند؛ پس اینجا نیستند تا «حذف فیلترها» جستجوی کاربر را پاک نکند.
- * (کلیدهای جستجو در `SEARCH_PARAM_KEYS` فهرست شده‌اند.)
- */
 export const CABIN_FILTER_KEYS = ["bedrooms", "amenities"] as const;
 
 export type CabinFilters = {
@@ -66,9 +58,4 @@ export function parseCabinFilters(sp: RawSearchParams): CabinFilters {
   };
 }
 
-/**
- * قالب فشرده‌ی قیمت — پیاده‌سازی به `@/libs/utils/format` منتقل شد تا
- * کامپوننت‌های مشترک `components/ui` هم بتوانند بدون وابستگی به فیچر
- * از آن استفاده کنند. این re-export برای سازگاری با importهای قبلی است.
- */
 export { formatPriceShort } from "@/libs/utils/format";

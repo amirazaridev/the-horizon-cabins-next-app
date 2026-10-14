@@ -37,10 +37,6 @@ interface UserRoleModalProps {
   onFeedback: (feedback: UserActionFeedback) => void;
 }
 
-/**
- * مودال «تغییر نقش» — فقط برای مالک نمایش داده می‌شود (کنترل دسترسی نهایی
- * سمت بک‌اند با `restrictTo("owner")` است).
- */
 export default function UserRoleModal({
   user,
   isOpen,
@@ -52,13 +48,6 @@ export default function UserRoleModal({
 
   const hasChange = selected !== user.role;
 
-  /**
-   * بستن مودال.
-   *
-   * ⚠️ انتخاب را همین‌جا (در event handler، نه effect) به نقش فعلی برمی‌گردانیم
-   * تا باز شدن بعدی با مقدار درست شروع شود؛ این الگو از `setState` در effect
-   * پرهیز می‌کند.
-   */
   function handleClose() {
     if (isPending) return;
     setSelected(user.role);

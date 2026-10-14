@@ -1,13 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 
-
 export type ShellNavItem = {
   name: string;
   href: string;
   icon: LucideIcon;
   group?: string;
 };
-
 
 export function findActiveNavItem<T extends ShellNavItem>(
   items: readonly T[],
@@ -26,7 +24,6 @@ export interface ShellNavSection<T extends ShellNavItem> {
   title: string | null;
   items: T[];
 }
-
 
 export function groupNavItems<T extends ShellNavItem>(
   items: readonly T[],

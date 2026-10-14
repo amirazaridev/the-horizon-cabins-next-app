@@ -10,17 +10,6 @@ import { GUEST_NAV_ITEMS } from "@/features/guest/shared/constants/guest-nav-ite
 import { ROLE_LABELS } from "./constants";
 import type { NavbarUser } from "./types";
 
-/**
- * حالت پروفایل نوار بالا — جایگزین دکمه‌ی «ورود | ثبت‌نام» برای کاربر
- * وارد‌شده.
- *
- * ⚠️ تریگر فقط «عکس پروفایل + فلش» است و ایمیل کامل در نوار بالا نمایش
- * داده نمی‌شود (جمع‌وجورتر و کم‌سروصداتر)؛ ایمیل داخل سرصفحه‌ی خودِ منو
- * می‌آید تا همچنان در دسترس باشد.
- *
- * ⚠️ از `Menus` مشترک استفاده می‌کند (Portal + بستن با کلیک بیرون + تنظیم
- * موقعیت نسبت به viewport) تا نسخه‌ی دومی از دراپ‌داون ساخته نشود.
- */
 export default function ProfileMenu({ email, role }: NavbarUser): ReactNode {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();

@@ -12,8 +12,6 @@ type Props = {
   className?: string;
 };
 
-//* دکمه‌ی نهایی سرچ (دسکتاپ). قبلاً یک `Link` بود؛ حالا اکشن است چون «اعمال» در لندینگ باعث ناوبری نمی‌شود و فقط پیش‌نمایش را فعال می‌کند.
-//* در حالت pending محتوا `invisible` می‌شود و spinner روی همان مرکز می‌نشیند تا **عرض دکمه تغییر نکند** (جلوگیری از پرش چیدمان).
 export default function SearchAction({
   label,
   disabled = false,

@@ -27,16 +27,6 @@ import type {
   DashboardFilters,
 } from "../types/dashboard.types";
 
-/* ==========================================================================
-   بازگرداندن مقادیر خام URL → فیلترهای تایپ‌شده
-   ========================================================================== */
-
-/**
- * فیلترهای داشبورد را از URL می‌سازد.
- *
- * ⭐ URL **منبع حقیقت** است؛ این تابع pure است و هیچ state داخلی ندارد، پس
- * خروجی آن با یک `useMemo` روی `searchParams` پایدار می‌ماند.
- */
 function readFilters(searchParams: Pick<URLSearchParams, "get">): DashboardFilters {
   const { from, to } = resolveDashboardDateRange(searchParams);
 
@@ -61,10 +51,6 @@ function readFilters(searchParams: Pick<URLSearchParams, "get">): DashboardFilte
     compare: parseCompareParam(searchParams.get(PARAM_COMPARE)),
   };
 }
-
-/* ==========================================================================
-   هوک
-   ========================================================================== */
 
 export interface UseDashboardFiltersResult {
   /** فیلترهای تایپ‌شده که از URL مشتق شده‌اند */
@@ -98,19 +84,6 @@ const INITIAL_LOAD_STATE: LoadState = {
   updatedAt: null,
 };
 
-/**
- * بارگذاری داده‌ی داشبورد بر اساس فیلترهای URL.
- *
- * ### چرا این ساختار؟
- * - فیلترها هرگز در state محلی **نگه داشته نمی‌شوند**؛ از URL خوانده
- *   می‌شوند تا لینک قابل اشتراک بماند و back/forward مرورگر کار کند.
- * - فقط نتیجه‌ی `getSnapshot` در state می‌نشیند.
- * - کلید وابستگی افکت، یک **توکن نسل** (`filtersKey`) است — نه خودِ آبجکت
- *   فیلتر (که هر رندر هویت تازه می‌گیرد و افکت را بی‌نهایت می‌چرخاند).
- * - `isLoading` **مشتق** است (`state.key !== filtersKey`) — پس هیچ
- *   `setState` همگامی در بدنه‌ی افکت لازم نیست (قاعده‌ی
- *   `react-hooks/set-state-in-effect`).
- */
 export function useDashboardFilters(): UseDashboardFiltersResult {
   const searchParams = useSearchParams();
 
@@ -133,17 +106,8 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
 
   const [state, setState] = useState<LoadState>(INITIAL_LOAD_STATE);
 
-  /**
-   * شمارنده‌ی «نسل بارگذاری» — با هر `refresh()` یک واحد جلو می‌رود و
-   * باعث اجرای دوباره‌ی افکت fetch می‌شود، **بدون** تغییر URL.
-   * ⚠️ نمی‌تواند جای `filtersKey` را بگیرد؛ هر دو در وابستگی‌اند.
-   */
   const [refreshToken, setRefreshToken] = useState(0);
 
-  /**
-   * شناسه‌ی آخرین درخواست — از نوشتن نتیجه‌ی یک درخواست کهنه جلوگیری
-   * می‌کند (race condition).
-   */
   const requestIdRef = useRef(0);
 
   useEffect(() => {
@@ -179,8 +143,6 @@ export function useDashboardFilters(): UseDashboardFiltersResult {
     return () => {
       cancelled = true;
     };
-    // ⚠️ `filtersKey` و `refreshToken` تنها وابستگی‌ها هستند — `filters`
-    // هر رندر هویت تازه دارد.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtersKey, refreshToken]);
 

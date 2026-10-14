@@ -21,16 +21,6 @@ type Props = {
   amenities: string[];
 };
 
-/**
- * امکانات و ویژگی‌ها.
- *
- * در صفحه فقط `AMENITIES_PREVIEW_COUNT` مورد اول به‌شکل چیپ نمایش داده
- * می‌شود و بقیه پشت دکمه‌ی «مشاهده‌ی همه» می‌مانند — لیست کامل داخل مودال
- * و **دسته‌بندی‌شده** است (فضای باز، فضای داخلی، خدمات، سایر).
- *
- * دکمه با `aria-expanded` وضعیتش را اعلام می‌کند و مودال خودش تله‌ی
- * فوکوس و بستن با Esc را دارد.
- */
 export default function AmenitiesSection({ amenities }: Props): ReactNode {
   const [isOpen, setOpen] = useState(false);
 

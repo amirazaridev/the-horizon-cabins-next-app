@@ -4,8 +4,6 @@ import Carousel from "@/components/ui/Carousel";
 import CabinCard from "@/features/cabins/components/CabinCard";
 import type { Cabin } from "@/features/cabins/types/cabin.types";
 
-//* نتایج پیش‌نمایش — گرید دسکتاپ + کاروسل موبایل. کارت مشترک `PreviewCard` تکرار props را حذف می‌کند.
-//* ⚠️ صفت `data-preview-card` فقط روی آیتم‌های گرید دسکتاپ است، چون `useSearchPreviewAnimation` با همان انتخابگر کارت‌ها را برای انیمیشن پیدا می‌کند و رفتار قبلی باید حفظ شود.
 export default function PreviewGrid({ cabins }: { cabins: Cabin[] }) {
   return (
     <>

@@ -23,10 +23,6 @@ type Props = {
   className?: string;
 };
 
-/**
- * شمارنده‌ی افزایشی/کاهشی قابل استفاده در هر جایی (مثل تعداد مهمان).
- * دکمه‌ها در دو سرِ حدِ مجاز غیرفعال می‌شوند.
- */
 export default function Counter({
   value,
   onChange,

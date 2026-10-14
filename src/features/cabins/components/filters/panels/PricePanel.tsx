@@ -12,13 +12,6 @@ type Props = {
   onChange?: (value: string | null) => void;
 };
 
-/**
- * آداپتور «بازه‌ی قیمت» برای `/cabins` و داشبورد.
- *
- * منطق نمایش به `PriceRangePanel` مشترک سپرده شده؛ اینجا فقط تبدیل
- * قرارداد رشته‌ای `lo-hi` ↔ بازه انجام می‌شود و اگر کنترل‌شده نباشد،
- * مقدار از URL خوانده/نوشته می‌شود.
- */
 export default function PricePanel({ value, onChange }: Props) {
   const { searchParams, setParam } = useCabinQuery();
   const current = onChange ? (value ?? null) : searchParams.get("price");

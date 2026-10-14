@@ -37,10 +37,6 @@ export default function CabinsExplorer({
 
   return (
     <>
-      {/*
-        نوار جستجو در جریان عادی صفحه است (sticky نیست) تا با FilterBar
-        چسبان رقابت نکند و ویوپورت را اشغال نکند.
-      */}
       <SearchBar
         cities={cities}
         regions={regions}

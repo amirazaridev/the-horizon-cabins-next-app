@@ -6,19 +6,6 @@ import { getBookingPanelLabels } from "../../utils/booking";
 import BookingSummary from "./BookingSummary";
 import { useBooking } from "./BookingProvider";
 
-/**
- * باتم‌شیت رزرو موبایل.
- *
- * فقط از نوار ثابت موبایل باز می‌شود، پس روی دسکتاپ هیچ‌وقت `open` نمی‌شود
- * و نیازی به گارد media query ندارد.
- *
- * عنوان شیت همان عنوان شرطی پنل است («نرخ هر شب» / «صورت‌حساب») و به
- * `BookingSummary` می‌گوییم عنوان را دوباره رندر نکند (`showHeading={false}`).
- *
- * کلیک روی فیلد تاریخ داخل شیت، اول شیت را می‌بندد و بعد صفحه را به سکشن
- * تقویم می‌برد؛ اگر برعکس عمل شود، شیت روی تقویم باز می‌ماند و کاربر آن را
- * نمی‌بیند.
- */
 export default function BookingSheet(): ReactNode {
   const { isSheetOpen, closeSheet, scrollToRateSection, isComplete } =
     useBooking();

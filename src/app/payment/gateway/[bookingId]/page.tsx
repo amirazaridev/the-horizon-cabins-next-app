@@ -14,17 +14,6 @@ export const metadata: Metadata = { title: "درگاه پرداخت" };
 
 type Props = { params: Promise<{ bookingId: string }> };
 
-/**
- * درگاه پرداخت **نمونه** (فقط طرح و ظاهر).
- *
- * ⚠️ چرا یک روت مستقل و بیرون از گروه‌های `(guest)`/`(main)`؟ چون در واقعیت
- * کاربر از سایت پذیرنده به **دامنه‌ی بانک** منتقل می‌شود. این روت فقط لِی‌اوت
- * ریشه را می‌گیرد، پس نوبار سایت و پوسته‌ی داشبورد را ندارد و همان حس
- * «بیرون از سایت» را می‌دهد.
- *
- * ⚠️ هیچ داده‌ی کارتی به بک‌اند نمی‌رود؛ فقط `POST /bookings/:id/pay` صدا زده
- * می‌شود (بک‌اند درگاه را شبیه‌سازی می‌کند) و رزرو `confirmed` می‌شود.
- */
 export default async function PaymentGatewayPage({
   params,
 }: Props): Promise<ReactNode> {

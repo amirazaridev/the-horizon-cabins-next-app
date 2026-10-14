@@ -1,8 +1,3 @@
-/**
- * KPIهای اشغال — شب‌های فروخته‌شده، شب‌های قابل‌فروش، نرخ اشغال و سری‌های
- * مرتبط. همه pure؛ تعریف دقیق در `docs/dashboard-metrics.md`.
- */
-
 import type { DashboardBooking } from "../../../types/dashboard.types";
 import {
   type DateRange,
@@ -21,11 +16,6 @@ import {
   type TrendGranularity,
 } from "./shared";
 
-/**
- * مجموع شب‌های فروخته‌شده داخل بازه.
- *
- * رزرو عبوری از مرز **فقط به‌اندازه‌ی تداخل** شمرده می‌شود (نه کل شب‌ها).
- */
 export function soldNights(
   bookings: readonly DashboardBooking[],
   range: DateRange,
@@ -38,10 +28,6 @@ export function soldNights(
   );
 }
 
-/**
- * مجموع شب‌های فروخته‌شده برای یک اقامتگاه خاص.
- * برای جدول عملکرد اقامتگاه‌ها.
- */
 export function soldNightsByCabin(
   bookings: readonly DashboardBooking[],
   cabinId: number,
@@ -57,14 +43,6 @@ export function soldNightsByCabin(
     );
 }
 
-/**
- * تعداد شب‌های قابل‌فروش = (تعداد اقامتگاه‌های فعال بعد از فیلتر) × (روزهای بازه)
- *
- * ⚠️ فرض صریح: هر اقامتگاه **هر شب** قابل‌فروش است. تعطیلی/بلوک دستی در
- * اسکیمای فعلی وجود ندارد (جدول `cabin_blocks` نیست). اگر اضافه شد، این
- * تابع باید شب‌های بلوک‌شده را کم کند.
- * // TODO(supabase): کسر شب‌های بلوک‌شده از جدول cabin_availability
- */
 export function availableNights(
   cabinCount: number,
   range: DateRange,
@@ -84,10 +62,6 @@ export function occupancy(
   return safeRatio(sold, available);
 }
 
-/**
- * سری زمانی شب‌های فروخته‌شده — برای sparkline.
- * همان منطق `revenueSeries` ولی روی تعداد شب به‌جای مبلغ.
- */
 export function soldNightsSeries(
   bookings: readonly DashboardBooking[],
   range: DateRange,
@@ -118,13 +92,6 @@ export interface OccupancyAdrPoint {
   adr: number | null;
 }
 
-/**
- * سری شاخص‌های ترکیبی (اشغال + ADR) در بازه — برای نمودار ترکیبی.
- *
- * ⚠️ اینجا ADR **به‌ازای هر باکت** حساب می‌شود (نه کل بازه): درآمد آن
- * باکت ÷ شب‌های آن باکت. اگر باکتی شب فروخته‌شده نداشته باشد، `adr`
- * آن `null` می‌شود (نه صفر) تا خط ADR شکسته شود، نه اینکه به کف بچسبد.
- */
 export function occupancyAdrSeries(
   bookings: readonly DashboardBooking[],
   cabinCount: number,

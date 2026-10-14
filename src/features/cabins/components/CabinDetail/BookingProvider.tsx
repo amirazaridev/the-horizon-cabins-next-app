@@ -107,24 +107,6 @@ function addDays(date: Date, days: number): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
 }
 
-/**
- * نگه‌دارنده‌ی state رزرو صفحه‌ی جزئیات.
- *
- * چرا Context و نه state محلی؟ چون یک بازه‌ی تاریخ روی چهار جای مختلف
- * اثر دارد: تقویم داخل صفحه، aside چسبان دسکتاپ، نوار ثابت موبایل و
- * باتم‌شیت/مودال خلاصه. اگر state در هر کدام جدا نگه داشته شود، باید
- * بین‌شان prop-drill و همگام‌سازی دستی انجام شود.
- *
- * ⚠️ داده‌ی رزرو (تنظیمات، قیمت شب‌ها و روزهای رزرو‌شده) در **سرور** واکشی
- * می‌شود و به‌عنوان prop به این Provider می‌رسد؛ پس هیچ درخواستی از سمت
- * کلاینت زده نمی‌شود و تقویم در همان رندر اول پر است.
- *
- * ⚠️ این Provider فقط state **درون‌صفحه‌ای** (باز/بسته بودن لایه‌ها) را نگه
- * می‌دارد. خودِ **بازه‌ی تاریخ و تعداد نفرات** در استور `booking-draft`
- * (zustand + `sessionStorage`) زندگی می‌کنند، چون باید از یک ناوبری کامل
- * (ورود / تکمیل پروفایل) جان سالم به در ببرند و Context با unmount از بین
- * می‌رود.
- */
 export default function BookingProvider({
   cabin,
   settings,
@@ -141,34 +123,12 @@ export default function BookingProvider({
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [isSummaryOpen, setSummaryOpen] = useState(false);
 
-  /**
-   * پیش‌نویس رزرو — **منبع حقیقتِ** تاریخ‌ها و تعداد نفرات.
-   *
-   * ⚠️ چرا بازه در state محلی نیست؟ چون این مقدار باید از یک ناوبری کامل
-   * (رفتن به `/login` یا `/account/settings` و برگشتن) جان سالم به در ببرد؛
-   * state محلی و Context با unmount شدن صفحه از بین می‌روند. استور zustand
-   * روی `sessionStorage` می‌نشیند و همان مقدار را برمی‌گرداند.
-   *
-   * ⚠️ چرا برای «بازگرداندن» پیش‌نویس `useEffect` نداریم؟ استور خودش یک
-   * external store است و zustand آن را با `useSyncExternalStore` می‌خواند؛
-   * React هنگام هیدریشن از snapshot سرور (تهی) استفاده می‌کند و بلافاصله بعد
-   * از آن مقدار واقعی می‌نشیند. نتیجه: نه hydration mismatch داریم و نه
-   * `setState` داخل effect (که رندر آبشاری می‌سازد و لینتر هم آن را رد
-   * می‌کند).
-   */
   const draft = useBookingDraftStore((state) => state.draft);
   const saveDraft = useBookingDraftStore((state) => state.saveDraft);
 
   /** پیش‌نویس فقط وقتی معتبر است که مربوط به **همین** کابین باشد. */
   const cabinDraft = draft && draft.cabinId === cabin.id ? draft : null;
 
-  /**
-   * بازه‌ی انتخاب‌شده — از پیش‌نویس خوانده می‌شود.
-   *
-   * ⚠️ وابستگی `useMemo` عمداً خودِ `cabinDraft` است (نه فیلدهایش): React
-   * Compiler به فیلدهای تودرتو ایراد می‌گیرد و چون `cabinDraft` یا همان
-   * آبجکت پایدارِ استور است یا `null`، این وابستگی درست و ارزان است.
-   */
   const range = useMemo<DateRange>(
     () => ({
       from: cabinDraft?.checkIn ? parseDateParam(cabinDraft.checkIn) : null,
@@ -181,13 +141,6 @@ export default function BookingProvider({
     ? Math.min(maxCapacity, Math.max(1, cabinDraft.guests))
     : Math.min(2, maxCapacity);
 
-  /**
-   * نوشتن پیش‌نویس — تنها مسیر تغییر بازه و نفرات.
-   *
-   * ⚠️ تاریخ‌ها عمداً به‌شکل **میلادی** `YYYY-MM-DD` ذخیره می‌شوند: هم
-   * JSON-safe است، هم همان قالبی است که API می‌پذیرد، و هم با
-   * `parseDateParam` دوباره به `Date` محلی برمی‌گردد.
-   */
   const persist = useCallback(
     (next: DateRange, nextGuests: number) => {
       saveDraft({
@@ -207,9 +160,6 @@ export default function BookingProvider({
     [bookedRanges],
   );
 
-  //* پنجره‌ی مجاز انتخاب: از «امروزِ مقصد» (اولین روز تقویم) تا سقف افق رزرو.
-  //* ⚠️ از داده‌ی تقویم استفاده می‌کنیم نه ساعت مرورگر، تا با افق بک‌اند
-  //* (که به وقت تهران حساب می‌شود) یکی بماند.
   const minDate = useMemo(() => {
     const first = calendarDays[0]?.date;
     return (first ? parseDateParam(first) : null) ?? startOfToday();
@@ -220,13 +170,6 @@ export default function BookingProvider({
     [minDate, settings.maxAdvanceBookingDays],
   );
 
-  /**
-   * وضعیت اشغال نیمه‌های هر روز (ورود ۱۴:۰۰ / خروج ۱۲:۰۰).
-   *
-   * ⚠️ `bookedSet` (شب‌های اشغال) برای اعتبارسنجی «آیا بازه آزاد است» می‌ماند،
-   * ولی برای **نمایش** از نقشه‌ی نیمه‌روزی استفاده می‌کنیم تا روزِ ورود/خروجِ
-   * یک رزرو هاشور نصفه بگیرد و همچنان قابل انتخاب بماند.
-   */
   const occupancyMaps = useMemo(
     () => buildOccupancyMaps(bookedRanges),
     [bookedRanges],
@@ -237,18 +180,10 @@ export default function BookingProvider({
     [occupancyMaps],
   );
 
-  /**
-   * امضای آخرین بازه‌ی کاملی که مودال خلاصه برایش باز شده.
-   * بدون این، هر رندر مجدد یا هر تغییر ناکامل بعدی دوباره مودال را
-   * باز می‌کرد.
-   */
   const completedRangeRef = useRef<string | null>(null);
 
   const setRange = useCallback(
     (next: DateRange) => {
-      //* روزِ ورود باید نیمه‌ی بعدازظهرش آزاد باشد. روزِ شروعِ یک رزرو دیگر
-      //* فقط به‌عنوان «تاریخ خروج» معنا دارد (نیمه‌ی صبحش آزاد است) و نمی‌تواند
-      //* تاریخ ورود باشد، چون ساعت ورود ۱۴:۰۰ است.
       if (next.from && occupancyMaps.afternoon.has(toDateKey(next.from))) {
         toast.error(
           "این روز به‌عنوان تاریخ ورود در دسترس نیست؛ می‌توانید آن را به‌عنوان تاریخ خروج انتخاب کنید.",
@@ -268,8 +203,6 @@ export default function BookingProvider({
       if (completedRangeRef.current === signature) return;
       completedRangeRef.current = signature;
 
-      //* بازه‌ای که از روی یک شب رزرو‌شده می‌گذرد معتبر نیست: انتخاب را به
-      //* «تاریخ ورود» برمی‌گردانیم تا کاربر تاریخ خروج دیگری انتخاب کند.
       if (!isRangeAvailable(next, bookedSet)) {
         toast.error("بازه‌ی انتخاب‌شده شامل روزهای رزرو‌شده است.");
         completedRangeRef.current = null;
@@ -277,8 +210,6 @@ export default function BookingProvider({
         return;
       }
 
-      //* طول اقامت: همان قاعده‌ی سرور (`validateStayRange`) را همان‌جا به
-      //* کاربر نشان می‌دهیم تا انتخاب غیرمجاز به خطای انتهای مسیر تبدیل نشود.
       const selectedNights = countNights(next);
       if (selectedNights < settings.minBookingLength) {
         toast.error(`حداقل طول اقامت ${settings.minBookingLength} شب است.`);
@@ -297,8 +228,6 @@ export default function BookingProvider({
 
       persist(next, guests);
 
-      // ⚠️ باتم‌شیت رزرو هم‌زمان با خلاصه باز نمی‌ماند: دو لایه‌ی شناور
-      // هم‌زمان یعنی دو تله‌ی فوکوس روی هم و ناوبری کیبورد شکسته.
       setSheetOpen(false);
       setSummaryOpen(true);
     },

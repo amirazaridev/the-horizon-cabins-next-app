@@ -12,7 +12,6 @@ import {
 } from "@/constants/footer";
 import Image from "next/image";
 
-
 export default function Footer() {
   return (
     <footer className="bg-background-2 text-text-gray border-border border-t px-4 py-10 shadow-lg md:px-6 md:py-12">

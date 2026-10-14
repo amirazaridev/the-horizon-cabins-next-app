@@ -44,7 +44,6 @@ export type MobileFilterBranchProps = {
   setFieldValue: (id: string, next: unknown) => void;
 };
 
-
 export default function MobileFilterBranch({
   triggerClass,
   customTrigger,

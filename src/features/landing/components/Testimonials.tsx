@@ -4,13 +4,6 @@ import Container from "@/components/ui/Container";
 import { TESTIMONIALS_HOME } from "@/features/landing/constants";
 import SectionHeading from "@/features/landing/components/SectionHeading";
 
-/**
- * نمایش امتیاز با اعداد فارسی و یک رقم اعشار — «۵٫۰».
- *
- * ⚠️ پیش از این `rating` یک **رشته‌ی فارسی** («۵.۰») در ثابت‌ها بود؛ حالا
- * عدد است و اینجا قالب‌بندی می‌شود. توجه: جداکننده‌ی اعشار حالا «٫»
- * (فارسی) است، نه «.» لاتین.
- */
 function formatRating(rating: number): string {
   return rating.toLocaleString("fa-IR", {
     minimumFractionDigits: 1,

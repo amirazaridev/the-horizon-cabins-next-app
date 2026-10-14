@@ -5,8 +5,6 @@ import { RefreshCw, SearchX, TriangleAlert } from "lucide-react";
 import CabinCardsSkeleton from "@/features/cabins/components/CabinCardsSkeleton";
 import { SEARCH_PREVIEW_LIMIT } from "@/features/search/constants/search-limits";
 
-//* اسکلتون پیش‌نمایش — همان چیدمان نتایج واقعی (موبایل کاروسل، از `sm` به بالا گرید).
-//* اسکلتون‌ها هم‌ابعاد `CabinCard` (واریانت landing) هستند، پس تبدیل لودینگ به محتوا هیچ پرشی در ارتفاع سکشن ایجاد نمی‌کند.
 export function PreviewSkeleton() {
   return (
     <div>

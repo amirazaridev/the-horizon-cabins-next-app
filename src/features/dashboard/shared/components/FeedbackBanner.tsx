@@ -12,12 +12,6 @@ interface FeedbackBannerProps {
   onDismiss: () => void;
 }
 
-/**
- * بنر بازخورد مشترک فرم‌های داشبورد — موفق (سبز) / خطا (قرمز).
- *
- * ⭐ پیش‌تر در `BookingsTable`، `UsersTable` و `SettingsForm` سه‌بار کپی
- * شده بود؛ اکنون تنها این نسخه وجود دارد.
- */
 export default function FeedbackBanner({
   feedback,
   onDismiss,

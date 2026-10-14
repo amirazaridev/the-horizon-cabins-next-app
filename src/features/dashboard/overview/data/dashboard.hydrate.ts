@@ -4,14 +4,6 @@ import type {
 } from "../types/dashboard.types";
 import type { DashboardSnapshot } from "./dashboard.repository";
 
-/**
- * بازسازی تایپ‌های دامنه از پاسخ JSON.
- *
- * ⚠️ JSON همه‌ی تاریخ‌ها را به **رشته** تبدیل می‌کند. بدون بازسازی،
- * مقایسه‌ی `getTime()` و توابع metrics می‌شکنند. این تنها لایه‌ای است که
- * شکل «خام» (string) را به شکل دامنه (`Date`) تبدیل می‌کند.
- */
-
 /** شکل JSON رزرو — تاریخ‌ها رشته‌اند. */
 export type DashboardBookingJson = Omit<
   DashboardBooking,

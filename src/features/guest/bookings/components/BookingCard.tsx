@@ -32,16 +32,6 @@ function paymentHref(bookingId: number): string {
   return `/account/bookings/${bookingId}/pay`;
 }
 
-/**
- * کارت یک رزرو — کامپوننت **نمایشی** و بدون state/fetch.
- *
- * همه‌ی متن‌ها از توابع قالب‌بندی می‌آیند و رنگ/برچسب وضعیت از
- * `BOOKING_STATUS_META` تا هیچ‌جا متن یا رنگ هاردکد نشود.
- *
- * ⚠️ رزرو «در انتظار پرداخت» یک مسیر کنشی جدا دارد: هشدار مهلت + دو کنش
- * «پرداخت» (اصلی) و «لغو رزرو» (مخرب). «مشاهده اقامتگاه» هم عمداً از یک
- * دکمه‌ی هم‌وزن به یک لینک کم‌رنگ تنزل کرده تا با کنش اصلی رقابت نکند.
- */
 export default function BookingCard({ booking }: Props): ReactNode {
   const meta = BOOKING_STATUS_META[booking.status];
   const StatusIcon = meta.icon;
@@ -131,13 +121,6 @@ export default function BookingCard({ booking }: Props): ReactNode {
   );
 }
 
-/**
- * پاورقی کارت رزرو «در انتظار پرداخت».
- *
- * چیدمان: مبلغ + لینک کم‌رنگ «مشاهده اقامتگاه» در یک ردیف، و کنش‌ها در
- * ردیف پایین. در RTL کنش اصلی («پرداخت») سمت راست می‌نشیند و «لغو» کنارش
- * می‌آید؛ در موبایل تمام‌عرض و روی هم می‌آیند تا هدف لمسی بزرگ بماند.
- */
 function PendingFooter({ booking }: { booking: GuestBooking }): ReactNode {
   return (
     <footer className="border-foreground/10 flex flex-col gap-4 border-t pt-4">

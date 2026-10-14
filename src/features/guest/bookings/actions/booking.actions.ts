@@ -9,15 +9,6 @@ export type BookingActionResult = {
   message: string;
 };
 
-/**
- * لغو رزرو «در انتظار پرداخت» توسط خودِ مهمان.
- *
- * ⚠️ از طریق `GuestBookingsRepository` انجام می‌شود که پیاده‌سازی‌اش روی
- * بک‌اند واقعی است (`POST /bookings/:id/cancel` با `authFetch`). بک‌اند هم
- * فقط رزروِ `pending` را می‌پذیرد (`cancelBooking` → «Only pending bookings
- * can be cancelled»)، پس همان قاعده‌ی این UI را دوباره اعمال می‌کند؛ اگر
- * رزرو قابل لغو نباشد `null` برمی‌گردد و پیام درست نمایش داده می‌شود.
- */
 export async function cancelPendingBookingAction(
   bookingId: number,
 ): Promise<BookingActionResult> {
@@ -31,8 +22,6 @@ export async function cancelPendingBookingAction(
       };
     }
 
-    // هر دو مسیری که این رزرو در آن‌ها دیده می‌شود تازه‌سازی می‌شوند:
-    // لیست رزروها (کارت عوض می‌شود) و صفحه‌ی پرداخت (حالا بی‌اعتبار است).
     revalidatePath("/account/bookings");
     revalidatePath(`/account/bookings/${bookingId}/pay`);
 
@@ -45,16 +34,6 @@ export async function cancelPendingBookingAction(
   }
 }
 
-/**
- * پرداخت یک رزرو «در انتظار پرداخت» از طریق درگاه.
- *
- * ⚠️ درگاه **شبیه‌سازی‌شده** است: هیچ داده‌ی کارتی جایی نمی‌رود. فقط
- * `POST /bookings/:id/pay` صدا زده می‌شود و بک‌اند رزرو را `confirmed`
- * می‌کند (همان چیزی که در تب «جاری» دیده می‌شود).
- *
- * ⚠️ چرا آرگومان کارت نمی‌گیرد؟ چون درگاه واقعی هم این داده‌ها را به
- * پذیرنده نمی‌دهد؛ اطلاعات کارت فقط داخل خود درگاه مصرف می‌شود.
- */
 export async function payBookingAction(
   bookingId: number,
 ): Promise<BookingActionResult> {
@@ -69,8 +48,6 @@ export async function payBookingAction(
       };
     }
 
-    // رزرو از «در انتظار پرداخت» به «جاری» می‌رود؛ هر دو مسیر تازه‌سازی
-    // می‌شوند تا شمارنده‌ی تب‌ها و صفحه‌ی پرداخت هم درست بمانند.
     revalidatePath("/account/bookings");
     revalidatePath(`/account/bookings/${bookingId}/pay`);
 

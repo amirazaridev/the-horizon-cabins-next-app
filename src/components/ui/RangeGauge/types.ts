@@ -37,11 +37,6 @@ export interface RangeGaugeProps {
   formatValue: (value: number) => string;
   startAriaLabel: string;
   endAriaLabel: string;
-  /**
-   * خروجی گرفتن از بازهٔ انتخاب‌شده:
-   * - `change` => با هر رها کردن موس / تغییر دستگیره (رفتار زندهٔ قبلی)
-   * - `apply`  => فقط وقتی مصرف‌کننده `submit()` را صدا بزند یا روی دکمهٔ اعمال بزند
-   */
   onCommit: (range: GaugeRange) => void;
   /** `change` (پیش‌فرض) یا `apply` */
   commitOn?: CommitMode;

@@ -21,12 +21,6 @@ interface DurationChartProps {
   range: DateRange;
 }
 
-/**
- * خلاصه‌ی توزیع مدت اقامت.
- *
- * ⭐ باکت‌ها **تک‌منبع**اند: از `durationDistribution()` می‌آیند، نه
- * منطق تکراری داخل کامپوننت. پس برچسب‌ها و مرزهای سطل‌ها همه‌جا یکی است.
- */
 export default function DurationChart({ bookings, range }: DurationChartProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";

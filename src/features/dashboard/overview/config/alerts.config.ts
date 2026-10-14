@@ -1,12 +1,3 @@
-/**
- * قواعد نوار «نیازمند توجه» (Alerts) — **تنظیم‌پذیر در یک فایل**.
- *
- * هیچ آستانه‌ای در کامپوننت hardcode نشود؛ همه از اینجا می‌آید.
- * منطق ارزیابی در `lib/metrics/alerts.ts` است.
- *
- * // TODO(supabase): خواندن آستانه‌ها از جدول تنظیمات
- */
-
 /** انواع هشدار — هر کدام یک قاعده‌ی مستقل. */
 export type AlertKind =
   | "occupancy-drop"
@@ -26,14 +17,6 @@ export interface AlertRule {
   enabled: boolean;
 }
 
-/**
- * قواعد پیش‌فرض نوار Alerts.
- *
- * معنی هر آستانه:
- * - `occupancy-drop`: افت اشغال بیش از X **درصد** نسبت به دوره‌ی مقایسه
- * - `high-cancellation`: نرخ لغو بالای X (نسبت ۰..۱)
- * - `idle-cabins`: اقامتگاه بدون رزرو در X روز آینده
- */
 export const ALERT_RULES: readonly AlertRule[] = [
   {
     kind: "occupancy-drop",

@@ -18,12 +18,6 @@ interface StatusDistributionChartProps {
   range: DateRange;
 }
 
-/**
- * توزیع وضعیت رزروها — بر اساس **زمان ثبت** (`createdAt`) داخل بازه.
- *
- * ⚠️ مبنای `createdAt` است نه `startDate` — چون این نمودار «چه رزروهایی
- * در این بازه ثبت شدند» را نشان می‌دهد، نه «چه اقامت‌هایی در بازه بودند».
- */
 export default function StatusDistributionChart({
   bookings,
   range,

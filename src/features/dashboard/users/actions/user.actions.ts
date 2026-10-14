@@ -6,18 +6,6 @@ import { authFetch } from "@/libs/api/authFetch";
 import type { UserRole } from "@/features/auth/constants/auth-cookie";
 import type { UserActionFeedback } from "../types/user.types";
 
-/**
- * Server Actionهای عملیات مدیریتی کاربران.
- *
- * - فعال/غیرفعال‌کردن حساب → `PATCH /user/:id/status` (admin|owner؛ admin فقط مهمان).
- * - تغییر نقش → `PATCH /user/:id/role` (فقط owner).
- * - حذف حساب → `DELETE /user/:id` (فقط owner).
- *
- * همه از `authFetch` استفاده می‌کنند تا توکن از کوکی سرور فوروارد شود؛
- * گاردهای سیاست نهایی سمت بک‌اند اعمال می‌شوند و اینجا فقط پیام مناسب
- * به کاربر نشان داده می‌شود.
- */
-
 /** مسیرهایی که لیست کاربران را نشان می‌دهند و بعد از هر عملیات تازه می‌شوند. */
 const USER_LIST_PATHS = ["/dashboard/users", "/dashboard/admins"] as const;
 

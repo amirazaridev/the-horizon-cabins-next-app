@@ -10,27 +10,6 @@ import {
 
 import Input from "./Input";
 
-/**
- * فیلد فرم متصل به React Hook Form.
- *
- * ⭐ چرا یک کامپوننت و نه یک تابع کمکی؟
- * الگوی تکراری فعلی در همه‌ی فرم‌ها این است:
- *
- *   <Input
- *     label="ایمیل"
- *     error={form.formState.errors.email?.message}
- *     {...form.register("email")}
- *   />
- *
- * که سه ایراد دارد: (۱) نام فیلد دو بار نوشته می‌شود و امکان غلط‌نویسی
- * دارد، (۲) تایپ‌اسکریپت نمی‌تواند ثابت کند `"email"` روی فرم وجود دارد،
- * (۳) دکمه‌ی پاک‌کردن باید `setValue` را دستی صدا بزند.
- *
- * با `useController` نام فیلد **یک بار** می‌آید و `<FieldPath<T>>` تضمین
- * می‌کند فقط فیلدهای واقعی همان فرم پذیرفته شوند؛ غلط‌نویسی حالا خطای
- * کامپایل است نه باگ زمان اجرا.
- */
-
 type Props<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,

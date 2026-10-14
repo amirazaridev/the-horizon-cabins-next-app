@@ -9,21 +9,6 @@ import type { CabinCardProps } from "./types";
 
 export type { CabinCardProps, CabinCardVariant } from "./types";
 
-/**
- * کارت اقامتگاه — سه واریانت مستقل در سه فایل، و اینجا فقط انتخاب‌کننده.
- *
- * ⚠️ پیش از این هر سه واریانت + اجزای کمکی در یک فایل ۵۵۵ خطی بودند و
- * بلوک تصویر/مشخصات/قیمت سه بار تکرار شده بود. حالا:
- *  - `LandingCard` / `DefaultCard` / `DashboardCard` ⇒ هر کدام یک فایل
- *  - اجزای مشترک (`CardImage`, `AmenityChip`, `SpecTile`, `PriceRow`,
- *    `PriceBadge`) ⇒ `primitives.tsx`
- *  - قاب/انیمیشن/اندازه‌ی تصویر ⇒ `classes.ts`
- *  - تایپ‌ها ⇒ `types.ts`
- *
- * ⚠️ لینک ریشه اکنون `h-full` است. پیش از این `block` بود و مصرف‌کننده‌ها
- * برای هم‌ارتفاع‌کردنش مجبور می‌شدند با سلکتور `[&>a]` به DOM کارت نفوذ
- * کنند (`OfferCard`).
- */
 export default function CabinCard({
   cabin,
   variant = "default",
@@ -53,8 +38,6 @@ export default function CabinCard({
   }
 
   return (
-    /* قلب بیرون از لینک و به‌شکل خواهر (sibling) رندر می‌شود تا نه HTML
-       نامعتبر بسازیم (دکمه داخل لینک) و نه کلیک روی قلب صفحه را عوض کند. */
     <div className="relative h-full">
       <Link href={href} className="block h-full">
         {card}

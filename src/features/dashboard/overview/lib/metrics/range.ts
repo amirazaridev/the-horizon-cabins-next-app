@@ -1,23 +1,3 @@
-/**
- * محاسبات پایه‌ی بازه‌ی تاریخ برای metrics.
- *
- * همه‌ی توابع این ماژول **pure** هستند: فقط ورودی می‌گیرند و خروجی
- * می‌دهند، بدون side effect و بدون وابستگی به `new Date()` ضمنی.
- *
- * ### قاعده‌ی شب‌شماری (مهم‌ترین قرارداد این داشبورد)
- * یک رزرو از `checkIn` (شب اول) تا `checkOut` (روز خروج، **شب نمی‌گیرد**)
- * ادامه دارد. یعنی شب‌های رزرو:
- * ```
- * [checkIn, checkOut)  →  checkIn, checkIn+1, …, checkOut-1
- * ```
- * تداخل با بازه‌ی `[from, to]` (که هر دو شامل‌اند) با فرمول رسمی
- * درخواست کاربر محاسبه می‌شود:
- * ```
- * max(0, min(checkOut, to + 1) - max(checkIn, from))
- * ```
- * که `to + 1` نقش «شب بعد از آخرین روز بازه» را بازی می‌کند.
- */
-
 /** تعداد میلی‌ثانیه در یک روز — مرجع واحد برای همه‌ی محاسبات شب‌شماری. */
 export const MS_PER_DAY = 86_400_000;
 
@@ -59,23 +39,6 @@ export interface DateRange {
 /** برچسب‌های کمکی برای محاسبه‌ی بازه‌ی مقایسه. */
 export type CompareMode = "prev-period" | "prev-year" | "none";
 
-/**
- * تعداد شب‌های یک رزرو که **داخل** بازه‌ی داده‌شده می‌افتد.
- *
- * فرمول: `max(0, min(checkOut, to+1) - max(checkIn, from))`
- *
- * ### چرا `to + 1`؟
- * چون `to` یک **روز** است ولی شب‌شماری در مرز خروج. اگر بازه `۱ تا ۳` و
- * رزرو `۱ تا ۳` باشد، شب‌های داخل بازه باید ۲ باشد (شب ۱ و شب ۲)، نه ۳.
- * با فرمول: `min(3, 4) - max(1, 1) = 3 - 1 = 2` ✅
- *
- * ### حالت‌های لبه‌ی پوشش‌داده‌شده
- * - بازه‌ی خالی (`from > to`) → صفر
- * - رزرو کاملاً بیرون بازه → صفر
- * - رزرو عبوری از مرز (شروع قبل از `from` یا پایان بعد از `to`) → فقط
- *   شب‌های داخل شمرده می‌شوند
- * - رزرو یک‌شبه (`checkIn = checkOut - 1`)
- */
 export function nightsInRange(
   checkIn: Date,
   checkOut: Date,
@@ -100,10 +63,6 @@ export function nightsInRange(
   return Math.max(0, hi - lo);
 }
 
-/**
- * آیا رزرو با بازه **هم‌پوشانی** دارد؟ (هر شبی داخل بازه بیفتد)
- * برای فیلترکردن رزروهای عبوری از مرز استفاده می‌شود.
- */
 export function overlapsRange(
   checkIn: Date,
   checkOut: Date,
@@ -113,10 +72,6 @@ export function overlapsRange(
   return nightsInRange(checkIn, checkOut, from, to) > 0;
 }
 
-/**
- * آیا رزرو **در** بازه ثبت شده است؟ (بر اساس `createdAt`)
- * مبنای `CancellationRate` (کاربر: نرخ لغو = لغوشده‌های ثبت‌شده در بازه).
- */
 export function createdAtInRange(
   createdAt: Date,
   from: Date,
@@ -144,17 +99,6 @@ export function inclusiveDayCount(from: Date, to: Date): number {
   return Math.max(0, toEpochDay(to) - toEpochDay(from) + 1);
 }
 
-/**
- * ساخت بازه‌ی مقایسه.
- *
- * - `prev-period`: بازه‌ی قبل به همان طول، بی‌درنگ پیش از `from`
- * - `prev-year`: همان بازه یک سال قبل (۳۶۵ روز عقب، برای YoY)
- * - `none`: `null`
- *
- * ⚠️ «سال قبل» عمداً با `365` روز محاسبه می‌شود نه با تغییر سال تقویمی،
- * چون ماه‌های شمسی ۲۹/۳۰/۳۱ روزه‌اند و مقایسه‌ی طول‌برابر معنادارتر است.
- * // TODO(supabase): اگر بک‌اند تقویم جلالی داد، این را به `addYears` شمسی تبدیل کنید
- */
 export function resolveCompareRange(
   range: DateRange,
   mode: CompareMode,
@@ -176,10 +120,6 @@ export function resolveCompareRange(
   return { from: prevFrom, to: prevTo };
 }
 
-/**
- * آیا مقدار `value` روزِ «امروز» است؟
- * برای بخش «عملیات امروز» و Pace مستقل از فیلتر تاریخ.
- */
 export function isSameDay(a: Date, b: Date): boolean {
   return toEpochDay(a) === toEpochDay(b);
 }

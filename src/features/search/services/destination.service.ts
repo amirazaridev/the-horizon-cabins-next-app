@@ -28,8 +28,6 @@ function regionNumericId(regionId: RegionId): number {
   return REGION_IDS[regionId];
 }
 
-//* بدون عبارت: همه‌ی مناطق (به ترتیب `displayOrder` بک‌اند) با شهرهایشان.
-//* با عبارت: منطقه‌هایی که نامشان شامل عبارت است + شهرهای منطبق.
 export function searchDestinations(
   cities: City[],
   regions: Region[],

@@ -28,9 +28,6 @@ type Props = {
   onChange: (destination: Destination | null) => void;
 };
 
-//* انتخاب مقصد سرچ اصلی — غنی‌تر از فیلتر شهرِ `/cabins`. دو مسیر کشف مقصد: (الف) جستجو/لیست (ب) نقشه.
-//* انتخاب هر منطقه یعنی «همه شهرهای آن منطقه» و به‌صورت معنایی ذخیره می‌شود (`region=north`)، نه فهرست ده‌ها `cityId`.
-//* گروه‌بندی شهرها بر اساس `city.regionId` است و نام شهر هیچ نقشی در تشخیص منطقه ندارد. رندر لیست به `CityPanel` مشترک سپرده شده تا دو پیاده‌سازی موازی نداشته باشیم.
 export default function DestinationPanel({
   cities,
   regions,

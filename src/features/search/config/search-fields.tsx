@@ -23,8 +23,6 @@ import {
 } from "@/features/search/utils/search-summary";
 import { todayInTehran } from "@/libs/utils/tehran-date";
 
-//* تعریف پنج فیلد نوار جستجو (مقصد، ورود، خروج، مهمان، بودجه).
-//* منطق مشترک لندینگ و `/cabins` اینجاست؛ تفاوتشان فقط «کنترلر» (Zustand در برابر URL) و رنگ/برچسب است.
 export type SearchFieldsContext = {
   cities: City[];
   //* مناطق واقعی از API — برای گروه‌بندی شهرها در پنل مقصد

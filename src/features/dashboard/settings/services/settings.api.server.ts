@@ -3,11 +3,6 @@ import "server-only";
 import { authFetch } from "@/libs/api/authFetch";
 import type { AppSettings } from "../types/settings.types";
 
-/**
- * لایه‌ی داده‌ی صفحه‌ی تنظیمات — **سرور-ساید**.
- *
- * `GET /settings` برای admin|owner مجاز است (ویرایش فقط owner و در فاز بعد).
- */
 export async function fetchSettings(): Promise<AppSettings> {
   const res = await authFetch("settings", { cache: "no-store" });
   if (!res.ok) {

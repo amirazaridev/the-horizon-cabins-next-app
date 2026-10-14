@@ -30,9 +30,6 @@ import {
 } from "@/features/search/constants/search-mobile-texts";
 import { FALLBACK_PUBLIC_SETTINGS } from "@/features/settings/types/public-settings.types";
 
-//* کلاس‌های چیدمان — فقط در همین فایل استفاده می‌شوند، پس محلی‌اند (نه در `constants`).
-//* ⚠️ اگر روزی کامپوننت دومی همین رشته‌ها را خواست، آن‌وقت به `constants/` منتقل شوند.
-
 //* واریانت‌های همین کامپوننت: لندینگ (`hero`) و `/cabins` (`results`)
 type SearchVariant = "hero" | "results";
 
@@ -57,7 +54,6 @@ type Props = {
   bookingWindowDays?: number;
 };
 
-
 export default function Search({
   cities,
   regions,
@@ -81,8 +77,6 @@ export default function Search({
 
   const mobileDateSummary = formatDateRangeSummary(draft.checkIn, draft.checkOut) ?? null;
 
-  //* خلاصه‌ی یک‌خطی زیر عنوان تریگر موبایل — ترتیب قطعات: مقصد · تاریخ · مهمان · بودجه.
-  //* هر قطعه فقط با مقدار واقعی می‌آید؛ بازه‌ی بودجه‌ی کامل «بدون محدودیت» است و عمداً نمایش داده نمی‌شود تا کاربر بازه‌ی پیش‌فرض را «فیلتر» نپندارد.
   const mobileSummaryRaw = buildSearchSummary({
     filters: draft,
     cities,
@@ -91,8 +85,6 @@ export default function Search({
 
   const mobileSummary = mobileSummaryRaw || MOBILE_SEARCH_EMPTY_HINT;
 
-  //* نگاشت تایپ‌شده‌ی «شناسه‌ی فیلد ⇒ ثبت مقدار».
-  //* `Record<keyof SearchFilters, …>` تضمین می‌کند هر فیلتر یک setter داشته باشد و کست‌ها فقط در همین یک نقطه (مرز `unknown` ورودی `FilterCard`) متمرکز بمانند.
   const fieldSetters: Record<
     keyof SearchFilters,
     (value: unknown) => void
@@ -118,7 +110,6 @@ export default function Search({
     guests: draft.guests,
     budget: draft.budget,
   };
-
 
   const handleApply = (patch?: Partial<SearchFilters>) => {
     apply(patch);

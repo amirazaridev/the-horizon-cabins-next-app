@@ -8,25 +8,6 @@ import { toFaNumber } from "../../utils/booking";
 import { useBooking } from "./BookingProvider";
 import styles from "./CabinDatePicker.module.css";
 
-/**
- * تقویم شمسی داخل صفحه‌ی جزئیات (سکشن «نرخ و رزرو»).
- *
- * روی همان هسته‌ی مشترک `DateRangePanel` سوار است — دقیقاً همان
- * کامپوننتی که سرچ لندینگ و فیلتر `/cabins` استفاده می‌کنند. پس تقویم،
- * تم، دکمه‌ی «حذف تاریخ» و تفاوت یک‌ماه/دوماه موبایل و دسکتاپ همه
- * تک‌نسخه‌اند و اینجا فقط قاب و سرتیتر اضافه شده است.
- *
- * ⚠️ اینجا سه چیز از داده‌ی سرور به تقویم تزریق می‌شود:
- *   ۱) `minDate`/`maxDate` — افق رزرو از تنظیمات بک‌اند؛ روزهای بعد از سقف
- *      غیرفعال می‌شوند.
- *   ۲) `dayOccupancy` — وضعیت اشغال هر روز (هاشور کامل/نصفه).
- *   ۳) `dayPrice` — نرخ شب هر روز؛ با دادنش تقویم وارد حالت «دارای نرخ»
- *      می‌شود و زیر شماره‌ی روز، قیمت (و برای روزهای دارای تخفیف، نرخ پایه‌ی
- *      خط‌خورده + نرخ نهایی) نمایش داده می‌شود.
- *
- * state رزرو از `useBooking` می‌آید؛ پس انتخاب اینجا بلافاصله در aside،
- * نوار موبایل و خلاصه‌ی قیمت دیده می‌شود.
- */
 export default function CabinDatePicker(): ReactNode {
   const {
     range,
@@ -41,13 +22,6 @@ export default function CabinDatePicker(): ReactNode {
     settings,
   } = useBooking();
 
-  /**
-   * نگاشت قیمت دامنه به شکل عمومیِ تقویم.
-   *
-   * ⚠️ `RangeDatePicker` یک کامپوننت `components/ui` است و نباید تایپ دامنه‌ی
-   * کابین را بشناسد؛ پس همین‌جا `CabinCalendarDay` به `CalendarDayPrice`
-   * تبدیل می‌شود.
-   */
   const dayPrice = useCallback(
     (date: Date): CalendarDayPrice | null => {
       const day = priceForDate(date);
@@ -77,15 +51,6 @@ export default function CabinDatePicker(): ReactNode {
       </div>
 
       <div className="p-4 sm:p-6">
-        {/*
-          ⚠️ `styles.reserveCalendar` ارتفاع تقویم را رزرو می‌کند
-          (`react-multi-date-picker` فقط روی کلاینت رندر می‌شود؛ در HTML
-          سرور جعبه‌اش خالی است و بدون این رزرو، صفحه بعد از hydration
-          حدود ۳۳۰ پیکسل جهش می‌کرد). تعریفش در
-          `CabinDatePicker.module.css` است — چون تنها مصرف‌کننده‌اش همین
-          صفحه است — و عمداً از بیرون اعمال می‌شود تا سرچ لندینگ و فیلتر
-          `/cabins` که همین هسته را استفاده می‌کنند تغییری نبینند.
-        */}
         <DateRangePanel
           className={styles.reserveCalendar}
           value={range}

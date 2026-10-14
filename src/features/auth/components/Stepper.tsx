@@ -31,7 +31,6 @@ const LABEL_STYLES: Record<StepState, string> = {
   upcoming: "text-text/35",
 };
 
-
 function Stepper({ current, maxReached, onStepClick }: Props) {
   const currentIndex = getRegisterStepIndex(current);
   const lastIndex = REGISTER_STEPS.length - 1;

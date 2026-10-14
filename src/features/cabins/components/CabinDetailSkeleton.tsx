@@ -49,32 +49,6 @@ const SPEC_TILE =
 const PANEL_FRAME =
   "border-foreground/10 bg-surface/60 overflow-hidden rounded-3xl border shadow-md";
 
-/**
- * اسکلتون صفحه‌ی جزئیات اقامتگاه (`/cabins/[cabinId]`).
- *
- * ⚠️ این کامپوننت مستقل و مخصوص همین صفحه است و هیچ ربطی به اسکلتون گرید
- * اقامتگاه‌ها (`CabinCardsSkeleton`) ندارد؛ هر بلوکش آینه‌ی یکی از بخش‌های
- * واقعی `CabinDetail` است — با همان گرید، همان ارتفاع‌های رزرو‌شده و همان
- * کلاس‌های قاب:
- *
- *   CabinGallery        → `aspect-square` → `sm:aspect-video` →
- *                         `lg:aspect-21/9` + گرادیان + دکمه‌های ناوبری +
- *                         شمارنده‌ی تصویر + هدر روی گالری
- *   بندانگشتی‌ها        → `grid-cols-4 sm:grid-cols-5 lg:grid-cols-6`
- *   StickyTabs          → نوار تب با دکمه‌های `h-11`
- *   سکشن‌ها             → `border-t pt-10` با سرتیتر یکسان
- *   SpecsGrid           → `grid-cols-2 lg:grid-cols-4` با همان پدینگ `p-8`
- *   SpecsGrid           → `grid-cols-2 lg:grid-cols-4` با همان پدینگ `p-8`
- *   AmenitiesSection    → `sm:grid-cols-2` + دکمه‌ی «مشاهده‌ی همه»
- *   CabinDatePicker     → دو فیلد ورود/خروج + تقویم دوقلو + دکمه‌ی حذف
- *   RulesSection        → `md:grid-cols-2`
- *   MapSection          → `aspect-16/9`
- *   ReviewsSection      → خلاصه‌ی امتیاز + `md:grid-cols-2` کارت نظر
- *   BookingAside        → `lg:grid-cols-[minmax(0,1fr)_25rem]`
- *   MobileBookingBar    → نوار ثابت پایین (`lg:hidden`)
- *
- * پس عبور از حالت لودینگ به محتوا هیچ جهشی در چیدمان ایجاد نمی‌کند.
- */
 export default function CabinDetailSkeleton(): ReactNode {
   return (
     <>
@@ -347,12 +321,6 @@ export default function CabinDetailSkeleton(): ReactNode {
           </div>
 
           {/* ---------- aside رزرو دسکتاپ (BookingAside) ---------- */}
-          {/*
-            آینه‌ی چیدمان فشرده‌ی `BookingSummary`:
-            عنوان text-base → بلوک مبلغ → دو فیلد تاریخ → شمارنده‌ی نفرات →
-            قاب «جزییات حساب» → دکمه‌ها. پدینگ `p-5` (نه `p-8 md:p-10`) و
-            بدون باکس «مزایای رزرو» که حذف شد.
-          */}
           <aside className="hidden lg:sticky lg:top-[calc(var(--hz-navbar-h)+var(--hz-tabs-h)+1rem)] lg:block lg:self-start">
             <div className="from-primary-400/40 via-foreground/10 relative rounded-3xl bg-linear-to-br to-transparent p-px">
               <div className="bg-surface/80 relative h-full overflow-hidden rounded-3xl p-5 backdrop-blur-sm">

@@ -10,12 +10,6 @@ export interface TableSortState {
   direction: TableSortDirection;
 }
 
-/**
- * تعریف یک ستون جدول.
- *
- * ⚠️ چون `render` یک تابع است، جدول فقط داخل **کلاینت‌کامپوننت** قابل
- * استفاده است (توابع از مرز سرور→کلاینت رد نمی‌شوند).
- */
 export interface TableColumn<T> {
   /** شناسه‌ی یکتا — برای `key` و وضعیت مرتب‌سازی. */
   key: string;
@@ -28,10 +22,6 @@ export interface TableColumn<T> {
   headerClassName?: string;
   /** پنهان‌کردن ستون در صفحه‌های کوچک (`hidden md:table-cell`). */
   hideOnMobile?: boolean;
-  /**
-   * مقدار مرتب‌سازی — اگر داده شود ستون **مرتب‌شدنی** می‌شود.
-   * `null` همیشه در انتهای لیست قرار می‌گیرد.
-   */
   sortValue?: (row: T) => string | number | null;
   /** محتوای سلول. */
   render: (row: T) => ReactNode;

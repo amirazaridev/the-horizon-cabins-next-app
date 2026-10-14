@@ -29,29 +29,9 @@ import GenderField from "./GenderField";
 
 type Props = {
   profile: GuestAccountProfile;
-  /**
-   * مسیر بازگشت بعد از ذخیره‌ی موفق (جریان رزرو).
-   *
-   * ⚠️ وقتی ست باشد (کاربر از دکمه‌ی «رزرو» به تنظیمات آمده)، بعد از ذخیره
-   * خودکار به همان صفحه‌ی اقامتگاه برمی‌گردد؛ تاریخ‌ها و نفرات از پیش‌نویس
-   * `sessionStorage` دوباره نشانده می‌شوند. در بازدید عادی تنظیمات این مقدار
-   * `null` است و رفتار قبلی (ماندن در صفحه + تازه‌سازی) حفظ می‌شود.
-   */
   returnTo?: string | null;
 };
 
-/**
- * فرم تنظیمات حساب کاربری.
- *
- * ⚠️ مقادیر با اعتبارسنجی کامل (`accountSchema`) جمع می‌شوند و به Server
- * Action پاس داده می‌شوند؛ Action تاریخ تولد جلالی را به میلادی تبدیل و
- * `PATCH /user/me` را صدا می‌زند. بعد از موفقیت، فرم «پاک» (clean) و
- * سرصفحه‌ی پروفایل با `router.refresh()` تازه می‌شود.
- *
- * ⚠️ چیدمان: کارت به دو بخش («مشخصات فردی» و «اطلاعات حساب») تقسیم شده تا
- * چشم سریع‌تر فیلد مرتبط را پیدا کند؛ نوار کنش‌ها در پایین، وضعیت ذخیره‌شدن
- * را هم‌زمان نشان می‌دهد.
- */
 export default function AccountForm({
   profile,
   returnTo = null,
@@ -91,9 +71,6 @@ export default function AccountForm({
 
     toast.success(result.message);
 
-    //* جریان رزرو: به همان صفحه‌ی اقامتگاه برگرد؛ تاریخ‌ها و نفرات از
-    //* پیش‌نویس `sessionStorage` دوباره نشانده می‌شوند. عمداً `reset` و
-    //* `refresh` صدا زده نمی‌شوند چون صفحه در حال ترک‌شدن است.
     if (returnTo) {
       router.push(returnTo);
       return;
@@ -176,8 +153,6 @@ export default function AccountForm({
         <section className="border-border/70 mt-6 border-t pt-5">
           <SectionHeading icon={<Mail className="size-4" />} title="اطلاعات ورود" />
 
-          {/* ایمیل هویت حساب است: فقط‌خواندنی (نه disabled) تا هنوز قابل
-              انتخاب/کپی باشد؛ آیکون قفل سیگنال «غیرقابل تغییر» می‌دهد. */}
           <Input
             label="ایمیل"
             value={profile.email}
@@ -201,8 +176,6 @@ export default function AccountForm({
             {isDirty ? "تغییرات ذخیره‌نشده دارید." : "همه‌ی تغییرات ذخیره شده است."}
           </p>
 
-          {/* در RTL کنش اصلی («ذخیره») سمت راست می‌نشیند و «بازنشانی» کنارش؛
-              در موبایل (ستونی معکوس) ذخیره پایین‌ترین و در دسترس‌ترین است. */}
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
             <Button
               type="submit"

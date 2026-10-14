@@ -15,16 +15,6 @@ import {
 } from "./dashboard.hydrate";
 import type { DashboardRepository, DashboardSnapshot } from "./dashboard.repository";
 
-/**
- * پیاده‌سازی API لایه‌ی داده‌ی داشبورد — **client-safe**.
- *
- * خواندن از Route Handler داخلی (`/api/dashboard/snapshot`) عبور می‌کند که
- * خودش با `authFetch` سرور-ساید به بک‌اند می‌زند؛ پس توکن/`API_URL` هرگز به
- * باندل مرورگر نمی‌رسد و درگیر CORS نمی‌شویم (همان الگوی `search/cabins`).
- *
- * نوشتن (check-in/out) از Server Actionها عبور می‌کند.
- */
-
 const SNAPSHOT_ENDPOINT = "/api/dashboard/snapshot";
 
 /** ساخت query string از فیلترها — نام پارامترها همان قرارداد بک‌اند است. */

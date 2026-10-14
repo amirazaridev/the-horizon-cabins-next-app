@@ -1,10 +1,3 @@
-/**
- * نقطه‌ی ورود لایه‌ی داده‌ی داشبورد.
- *
- * ⭐ مصرف‌کننده‌ها (hookها/کامپوننت‌ها) **همیشه از این‌جا** import می‌کنند.
- * `getDashboardRepository()` تنها نقطه‌ی تعویض پیاده‌سازی است.
- */
-
 import { ApiDashboardRepository } from "./dashboard.repository.api";
 import type { DashboardRepository } from "./dashboard.repository";
 

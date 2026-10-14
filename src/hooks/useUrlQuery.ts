@@ -22,17 +22,6 @@ export function toURLSearchParams(sp: RawSearchParams): URLSearchParams {
   return params;
 }
 
-/**
- * خواندن/نوشتن پارامترهای URL **بدون** `useSearchParams`.
- *
- * مقدار فعلی از props سرور (searchParams) میآید — دقیقاً مثل صفحهٔ /cabins —
- * بنابراین کامپوننت نیازی به bailout سمت کلاینت ندارد.
- *
- * نکته: چون props سرور فقط بعد از کامل شدن navigation بهروز میشود، آخرین
- * query stringـی که خودمان push کردهایم در یک ref نگه داشته میشود. این کار
- * از گم شدن تغییر جلوگیری میکند وقتی کاربر پشتسرهم روی چند فیلتر کلیک میکند
- * (باگی که در نسخهٔ قبلیِ داشبورد وجود داشت).
- */
 export function useUrlQuery(searchParams: RawSearchParams) {
   const router = useRouter();
   const pathname = usePathname();

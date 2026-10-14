@@ -13,11 +13,6 @@ type Props = {
   resultCount: number;
 };
 
-/**
- * پنل کشویی نقشه — فقط موبایل (`lg:hidden`).
- * حالت جمع: پیش‌نمایش کوچک زیر فیلتر (بازشو با کلیک یا کشیدن به پایین).
- * حالت باز: اورلی تمام‌صفحه با دکمه‌ی «مشاهده نتایج» برای بازگشت به لیست.
- */
 export default function CabinsMobileMapSheet({ resultCount }: Props) {
   const [mounted, setMounted] = useState(false);
   const [shown, setShown] = useState(false);

@@ -30,11 +30,6 @@ export function useCabinQuery() {
     [searchParams, replace],
   );
 
-  /**
-   * به‌روزرسانی دسته‌ای چند پارامتر با یک navigation واحد.
-   * برای فیلترهای چندکلیدی (مثل checkIn/checkOut تاریخ) لازم است چون
-   * فراخوانی پشت‌سرهم setParam با snapshot قدیمی، تغییر قبلی را گم می‌کند.
-   */
   const setParams = useCallback(
     (updates: Record<string, string | null>) => {
       const params = new URLSearchParams(searchParams.toString());

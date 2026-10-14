@@ -14,13 +14,6 @@ type Props = {
   children: ReactNode;
 };
 
-/**
- * پوسته‌ی ناحیه‌ی مهمان — همان `AppShell` پنل مدیریت با تنظیمات مهمان.
- *
- * ⚠️ ناحیه‌ی مهمان از `(main)` جدا شده و نوبار/فوتر سایت را ندارد؛
- * چیدمانش عیناً مانند داشبورد است (سایدبار + هدر + ناحیه‌ی محتوا) تا هر
- * دو ناحیه یک تجربه‌ی واحد بدهند.
- */
 export default function GuestShell({ email, children }: Props): ReactNode {
   return (
     <AppShell

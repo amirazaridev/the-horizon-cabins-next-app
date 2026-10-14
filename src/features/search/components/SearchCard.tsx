@@ -42,9 +42,6 @@ type Props = {
   className?: string;
 };
 
-//* کارت جستجو — هم‌ارز `FilterCard` برای سرچ، ولی با تریگر موبایل مخصوص خودش و «اعمال» مبتنی بر پیش‌نویس.
-//* منطق پنل/شیت/شمارش فیلترها با `useFilterController` مشترک است؛ اینجا فقط ترکیب و تصمیم‌های مخصوص سرچ می‌نشیند.
-//* هیچ‌جای این کامپوننت fetch نمی‌زند؛ فقط draft را عوض می‌کند و `onApply` را صدا می‌زند.
 export default function SearchCard({
   items,
   values,

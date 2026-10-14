@@ -1,9 +1,6 @@
 import type { Region, RegionId } from "@/features/search/types/search.types";
 import type { Region as ApiRegion } from "@/features/cabins/types/city.types";
 
-//* لایه‌ی نمایش مناطق. منبع حقیقتِ «لیست مناطق» و «دسته‌بندی شهرها» بک‌اند است؛
-//* این فایل فقط دو چیز را نگه می‌دارد که بک‌اند ندارد: متن `hint` فارسی و نام منطقه به‌عنوان fallback.
-
 //* توضیح کوتاه هر منطقه — فقط نمایشی
 export const REGION_HINTS: Record<RegionId, string> = {
   north: "جنگل، دریا و کوهستان",

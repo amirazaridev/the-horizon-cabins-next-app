@@ -14,19 +14,6 @@ import type {
 
 type Props = { booking: GuestBooking };
 
-/**
- * صورت‌حساب رزرو — اقلام، جمع اقامت و مبلغ کل.
- *
- * ⚠️ اقلام از `booking.nights[]` ساخته می‌شوند (همان `BookingNight` بک‌اند)،
- * چون موتور قیمت‌گذاری برای هر شب می‌تواند افزایش آخر هفته یا تخفیف اقامت
- * بلند اعمال کند. `cabinPrice` **جمع کل اقامت** است، نه نرخ شب.
- *
- * ⚠️ وقتی نرخ همه‌ی شب‌ها یکسان است، فهرست شب‌به‌شب نمایش داده نمی‌شود
- * (تکرار بی‌فایده) و به‌جایش یک ردیف خلاصه با «N شب × نرخ» می‌آید.
- *
- * TODO(backend): با اضافه‌شدن کارمزد خدمات/مالیات به پاسخ، هر کدام یک
- * `<BillRow>` جدید در همین لیست می‌شوند.
- */
 export default function BookingBill({ booking }: Props): ReactNode {
   const { cabin, cabinPrice, numNights, totalPrice } = booking;
   const nights = booking.nights ?? [];

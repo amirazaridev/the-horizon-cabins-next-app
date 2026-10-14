@@ -1,9 +1,3 @@
-/**
- * شاخص‌های تحلیلی تکمیلی — جدول عملکرد، سهم کانال، Pace، توزیع‌ها.
- *
- * همه pure و strict، بدون `any`. تعریف‌ها در `docs/dashboard-metrics.md`.
- */
-
 import type {
   DashboardBooking,
   DashboardCabin,
@@ -17,10 +11,6 @@ import {
 import { safeRatio } from "./money";
 
 const SOLD = new Set<string>(SOLD_STATUSES);
-
-/* ==========================================================================
-   جدول عملکرد (شهر / اقامتگاه)
-   ========================================================================== */
 
 /** یک ردیف عملکرد — برای جدول قابل‌مرتب‌سازی. */
 export interface PerformanceRow {
@@ -151,10 +141,6 @@ export function topBottom<T>(
   };
 }
 
-/* ==========================================================================
-   توزیع وضعیت رزرو
-   ========================================================================== */
-
 export interface StatusDistributionRow {
   status: DashboardBooking["status"];
   count: number;
@@ -186,10 +172,6 @@ export function statusDistribution(
     }))
     .sort((a, b) => b.count - a.count);
 }
-
-/* ==========================================================================
-   توزیع مدت اقامت
-   ========================================================================== */
 
 export interface DurationBucket {
   label: string;
@@ -233,10 +215,6 @@ export function durationDistribution(
     };
   });
 }
-
-/* ==========================================================================
-   کمکی داخلی
-   ========================================================================== */
 
 function nightsInRangeSafe(booking: DashboardBooking, range: DateRange): boolean {
   return overlapsRange(booking.startDate, booking.endDate, range.from, range.to);

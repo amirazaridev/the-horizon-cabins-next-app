@@ -9,14 +9,6 @@ import {
 } from "@/features/landing/utils/countdown";
 
 export type CountdownProps = {
-  /**
-   * مهلت انقضا (ISO).
-   *
-   * ⚠️ اگر ندهید (یا تاریخ نامعتبر باشد) **هیچ تایمری رندر نمی‌شود**.
-   * پیش از این یک `demoDurationSeconds = 7200` پیش‌فرض وجود داشت که در
-   * نبودِ `expiresAt` یک شمارش **ساختگی ۲ ساعته** نشان می‌داد؛ حالا حذف
-   * شده تا رفتار پروداکشن صادق باشد.
-   */
   expiresAt?: string;
   /** وقتی شمارش به صفر رسید، **یک‌بار** صدا زده می‌شود (مثلاً برای revalidate). */
   onExpire?: () => void;
@@ -39,10 +31,6 @@ export default function Countdown({ expiresAt, onExpire }: CountdownProps) {
       }
     };
 
-    /*
-     * اولین تیک با `setTimeout(0)` و نه مستقیم: `setState` در بدنه‌ی
-     * `useEffect` خطای lint `react-hooks/set-state-in-effect` می‌دهد.
-     */
     const initialTick = window.setTimeout(update, 0);
     const interval = window.setInterval(update, 1000);
 

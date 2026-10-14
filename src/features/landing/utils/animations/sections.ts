@@ -3,7 +3,6 @@ import { ANIM } from "@/features/landing/utils/animations/selectors";
 
 //? انیمیشن‌های سکشن‌های لندینگ.
 
-
 //* reveal عمومی — `batch` شده تا تعداد تریگرها کم بماند.
 export function buildRevealBatch(): void {
   const items = gsap.utils.toArray<HTMLElement>(ANIM.reveal);
@@ -63,10 +62,6 @@ export function buildCardGridReveal(): void {
   });
 }
 
-/*
- * بعد از لود کامل عکس‌ها/فونت‌ها، موقعیت تریگرها را دوباره حساب می‌کند.
- * تابع cleanup برمی‌گرداند تا `matchMedia` بتواند پاکش کند.
- */
 export function refreshScrollTriggersOnLoad(): () => void {
   const onLoad = () => ScrollTrigger.refresh();
 

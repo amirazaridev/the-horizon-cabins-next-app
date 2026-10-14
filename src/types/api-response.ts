@@ -20,8 +20,6 @@ type ApiSuccessData<T extends string, K> = {
   data: { [P in T]: K };
 };
 
-// ---- حالت paginated ----
-// data شامل کلید داینامیک (مثلاً cabins) به‌صورت آرایه + فیلد meta هم‌سطح با آن است
 type ApiSuccessPaginatedData<T extends string, K> = {
   status: "success";
   data: { [P in T]: K[] } & { meta: PaginationMeta };
@@ -45,6 +43,4 @@ export type ApiResponse<T extends string, K> =
 
 export type ApiPaginatedResponse<T extends string, K> =
   ApiSuccessPaginatedData<T, K> | ApiFailStatus | ApiErrorStatus;
-
-
 

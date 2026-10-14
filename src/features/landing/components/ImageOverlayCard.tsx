@@ -2,12 +2,6 @@ import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 
-/**
- * ⚠️ پراپ‌های `Link` (مثل `data-animate` یا `aria-*`) از این تایپ عبور
- * می‌کنند و روی خود `<a>` می‌نشینند. بدون این، صفت‌هایی مثل
- * `data-animate="reveal"` **بی‌صدا دور ریخته می‌شدند** و انیمیشن ورود
- * کارت‌ها هرگز اجرا نمی‌شد.
- */
 type Props = Omit<ComponentProps<typeof Link>, "className"> & {
   image: string | StaticImageData;
   imageAlt: string;

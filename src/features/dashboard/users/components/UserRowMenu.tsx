@@ -26,13 +26,6 @@ interface UserRowMenuProps {
   onFeedback: (feedback: UserActionFeedback) => void;
 }
 
-/**
- * منوی ردیف کاربر — «جزییات کاربر»، «فعال/غیرفعال کردن حساب»، «تغییر نقش»
- * و «حذف کاربر».
- *
- * ⚠️ آیتم‌هایی که سیاست اجازه نمی‌دهد **پنهان** می‌شوند (نه غیرفعال)، چون
- * کاربر هیچ‌وقت نباید بتواند آن‌ها را اجرا کند. گارد نهایی سمت بک‌اند است.
- */
 export default function UserRowMenu({
   user,
   actorRole,

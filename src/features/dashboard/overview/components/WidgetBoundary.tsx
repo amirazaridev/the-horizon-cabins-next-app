@@ -15,18 +15,6 @@ interface WidgetBoundaryState {
   error: Error | null;
 }
 
-/**
- * مرز خطای **هر ویجت** داشبورد.
- *
- * ### چرا؟
- * بدون این، یک خطای رندر در یک نمودار کل صفحه‌ی داشبورد را سفید می‌کند
- * (Next.js error boundary در سطح مسیر). با این wrapper، هر ویجت مستقل
- * شکست می‌خورد و بقیه سالم می‌مانند — اصل «تخریب محدود».
- *
- * ⚠️ این یک **class component** است چون Error Boundary در React فقط با
- * `getDerivedStateFromError`/`componentDidCatch` کار می‌کند و معادل hook
- * ندارد.
- */
 export default class WidgetBoundary extends Component<
   WidgetBoundaryProps,
   WidgetBoundaryState
@@ -38,8 +26,6 @@ export default class WidgetBoundary extends Component<
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
-    // لاگ توسعه — در پروداکشن می‌توان به سرویس رصد فرستاد.
-    // TODO(observability): ارسال به سرویس خطا (Sentry/…)
     console.error(`[dashboard:${this.props.name}] render failed`, error, info);
   }
 

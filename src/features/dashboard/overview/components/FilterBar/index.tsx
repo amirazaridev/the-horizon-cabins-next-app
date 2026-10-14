@@ -58,10 +58,6 @@ import type {
   DashboardCity,
 } from "../../types/dashboard.types";
 
-/* ==========================================================================
-   گزینه‌های فیلتر — همه از enumهای دامنه ساخته می‌شوند (تک‌منبع)
-   ========================================================================== */
-
 const STATUS_OPTIONS: MultiOptionListOption[] = (
   Object.keys(BOOKING_STATUS_LABELS) as BookingStatus[]
 ).map((value) => ({ value, label: BOOKING_STATUS_LABELS[value] }));
@@ -93,16 +89,6 @@ interface FilterBarProps {
   cabins: DashboardCabin[];
 }
 
-/**
- * نوار فیلتر داشبورد.
- *
- * ⭐ همه‌ی حالت در **URL** است؛ این کامپوننت هیچ draft محلی ندارد و مقدار
- * هر فیلتر را مستقیم از `searchParams` می‌خواند. این کار:
- * - باگ «گم‌شدن کلیک پشت‌سرهم» را حذف می‌کند (قبلاً draft در effect همگام
- *   می‌شد و خطای `set-state-in-effect` می‌داد)،
- * - لینک را قابل اشتراک نگه می‌دارد،
- * - back/forward مرورگر را درست می‌کند.
- */
 export default function FilterBar({
   startTransition,
   cities,

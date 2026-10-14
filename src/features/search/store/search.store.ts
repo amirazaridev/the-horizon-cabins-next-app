@@ -5,8 +5,6 @@ import { create } from "zustand";
 import { EMPTY_SEARCH_FILTERS } from "@/features/search/constants/search-defaults";
 import type { SearchFilters } from "@/features/search/types/search.types";
 
-
-
 type SearchStoreState = {
   draft: SearchFilters;
   applied: SearchFilters;

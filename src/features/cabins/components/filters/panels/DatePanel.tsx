@@ -12,11 +12,6 @@ import {
 import { useCabinQuery } from "../useCabinQuery";
 
 type Props = {
-  /**
-   * حالت controlled (داخل FilterCard دسکتاپ):
-   * value از searchParams می‌آید و onChange به URL می‌نویسد.
-   * اگر onChange داده نشود، پنل خودش مستقیم با useCabinQuery کار می‌کند (موبایل).
-   */
   value?: CabinDateValue;
   onChange?: (next: CabinDateValue) => void;
   /** بعد از کامل شدن بازه (انتخاب خروج) صدا زده می‌شود — معمولاً بستن پنل */
@@ -30,12 +25,6 @@ function toRange(value: CabinDateValue): DateRange {
   };
 }
 
-/**
- * تاریخ سفر — آداپتور cabins روی هسته مشترک DateRangePanel.
- * برخلاف سرچ لندینگ (state محلی)، هر کلیک روی تقویم بلافاصله در
- * checkIn/checkOut آدرس ثبت می‌شود تا با URL همگام بماند.
- * فعلاً روی نتایج اثر نمی‌گذارد (دیتای اشغال نداریم).
- */
 export default function DatePanel({ value, onChange, onDone }: Props) {
   const { searchParams, setParams } = useCabinQuery();
 
@@ -49,8 +38,6 @@ export default function DatePanel({ value, onChange, onDone }: Props) {
     else setParams({ checkIn: next.checkIn, checkOut: next.checkOut });
   };
 
-  // درفت محلی برای پاسخ آنی UI؛ همگام‌سازی با URL ناوبری async است.
-  // وقتی مقدار بیرونی (URL) عوض شد — مثلاً دکمه «حذف فیلترها» — درفت ریست می‌شود.
   const [draft, setDraft] = useState<DateRange>(() => toRange(external));
   const [lastSynced, setLastSynced] = useState(external);
   if (

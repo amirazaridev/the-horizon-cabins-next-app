@@ -8,27 +8,14 @@ import { normalizeText } from "../schemas";
 import type { AuthError, AuthErrorCode } from "../types/auth.types";
 import { canAccessDashboard, type UserRole } from "../constants/auth-cookie";
 
-/**
- * Server Actions احراز هویت — لایه‌ی BFF.
- *
- * ⚠️ جریان معماری:
- *   مرورگر → Server Action (اینجا) → Express API → برگشت توکن → ست کوکی روی مرورگر
- *
- * مرورگر هرگز مستقیم با Express حرف نمی‌زند و توکن هم هرگز در جاوااسکریپت
- * کلاینت دیده نمی‌شود؛ کوکی `httpOnly` را همین Server Action ست می‌کند.
- */
-
-/** خروجی یک Server Action — قابل serialize برای کلاینت. */
 export type AuthActionResult =
   | {
       ok: true;
       user: { id: number; email: string; role: UserRole };
-      /** مسیری که کلاینت باید برود (بر اساس نقش). */
       redirectTo: string;
     }
   | { ok: false; error: AuthError };
 
-/** شکل پاسخ بک‌اند برای login/signup. */
 type ApiAuthResponse = {
   status: "success" | "fail" | "error";
   message?: string;
@@ -58,11 +45,6 @@ function mapBackendError(status: number, message?: string): AuthError {
   };
 }
 
-/**
- * ورود با ایمیل و رمز عبور.
- *
- * @param input ایمیل/رمزی که فرم کلاینت فرستاده (already validated).
- */
 export async function loginAction(input: {
   email: string;
   password: string;
@@ -102,13 +84,6 @@ export async function loginAction(input: {
   };
 }
 
-/**
- * ثبت‌نام کاربر جدید.
- *
- * ⚠️ پیش‌شرط: ایمیل باید قبلاً با `verifyOtpAction` تایید شده باشد و
- * `verificationToken` یک‌بارمصرف همراه بیاید. بک‌اند بدون این توکن
- * ثبت‌نام را رد می‌کند (جلوگیری از ساخت حساب بدون تایید ایمیل).
- */
 export async function registerAction(input: {
   fullName: string;
   email: string;

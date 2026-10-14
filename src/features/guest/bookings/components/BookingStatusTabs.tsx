@@ -13,23 +13,12 @@ type Props = {
   counts: GuestBookingsCounts;
 };
 
-/**
- * آدرس هر تب — «همه» بدون پارامتر می‌ماند تا URL پیش‌فرض تمیز باشد و
- * انتخاب تب هم قابل‌اشتراک/بوکمارک باشد (URL تنها منبع حقیقت).
- */
 function tabHref(tabId: GuestBookingsTabId): string {
   return tabId === "all"
     ? "/account/bookings"
     : `/account/bookings?status=${tabId}`;
 }
 
-/**
- * نوار تب وضعیت — **لینک‌محور**.
- *
- * ⚠️ چرا لینک و نه دکمه‌ی state؟ وضعیت فعال از URL خوانده می‌شود؛ با لینک،
- * هر تب یک آدرس مستقل دارد، صفحه‌ی رزروها کاملاً سروری می‌ماند و دکمه‌ی
- * back مرورگر هم درست کار می‌کند.
- */
 export default function BookingStatusTabs({ active, counts }: Props): ReactNode {
   return (
     <nav

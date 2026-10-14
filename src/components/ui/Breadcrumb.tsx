@@ -5,10 +5,6 @@ import { Fragment, type ReactNode } from "react";
 export type BreadcrumbItem = {
   //* برچسب نمایشی. */
   label: string;
-  /*
-   * اگر بدهید آیتم لینک می‌شود.
-   * آخرین آیتم را معمولاً بدون `href` بگذارید تا به‌شکل متن جاری رندر شود.
-   */
   href?: string;
 };
 

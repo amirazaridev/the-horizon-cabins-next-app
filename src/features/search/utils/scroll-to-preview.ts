@@ -40,8 +40,6 @@ export function scrollToSearchPreview(options: ScrollOptions = {}): void {
   });
 }
 
-//* نسخه‌ی «تأخیردار» برای بعد از اعمال جستجو.
-//* در موبایل باتم‌شیت با انیمیشن ۴۰۰ms بسته می‌شود و قفل اسکرول body باید اول آزاد شود، وگرنه اسکرول نرم اجرا نمی‌شود.
 export function scheduleScrollToSearchPreview(
   delayMs = 180,
   options: ScrollOptions = {},

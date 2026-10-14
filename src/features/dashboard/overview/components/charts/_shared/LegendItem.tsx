@@ -9,12 +9,6 @@ interface LegendItemProps {
   square?: boolean;
 }
 
-/**
- * آیتم راهنمای نمودارها — دایره/مربع/خط‌چین.
- *
- * ⭐ پیش‌تر در `RevenueTrendChart` (با `dashed`) و `OccupancyAdrChart`
- * (با `square`) دوبار پیاده شده بود؛ اکنون یک نسخه‌ی واحد است.
- */
 export default function LegendItem({
   color,
   label,

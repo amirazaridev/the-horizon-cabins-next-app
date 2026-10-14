@@ -14,17 +14,6 @@ type Props = {
   isDone?: boolean;
 };
 
-/**
- * مرحله‌ی ۳ (پایانی) — تایید ایمیل با کد شش‌رقمی.
- *
- * ⭐ این مرحله در جریان جدید **دروازه‌ی نهایی** است: با تایید کد، هم
- * `verifyOtpAction` (بررسی کد و گرفتن توکن یک‌بارمصرف) و هم
- * `registerAction` (ساخت حساب با آن توکن) اجرا می‌شوند. به همین دلیل
- * دکمه‌اش «تایید و ساخت حساب» است، نه فقط «تایید کد».
- *
- * شامل سه بخش: کارت ایمیل مقصد (با «ویرایش» که به مرحله‌ی ۱ برمی‌گردد)،
- * بلوک کد + تایمر ارسال مجدد، و ردیف دکمه‌ها.
- */
 export default function VerificationStep({ form, isDone = false }: Props): ReactNode {
   const { identity, verificationForm, codeValue, action, resendTimer, isBusy } = form;
   const isVerifying = action.is("verifyingCode");

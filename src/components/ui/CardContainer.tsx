@@ -7,7 +7,6 @@ type Props = ComponentProps<"div"> & {
   contentClassName?: string;
 };
 
-
 const frame: Record<CardVariant, string> = {
   default:
     "rounded-2xl border border-foreground/5 bg-surface-raised/50 transition-all duration-500",

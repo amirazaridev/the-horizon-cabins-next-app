@@ -35,15 +35,6 @@ interface CityDatum {
   revenue: number;
 }
 
-/**
- * نمودار درآمد به تفکیک شهر.
- *
- * ⭐ از `cityPerformance` می‌آید (نه محاسبه‌ی دستی داخل کامپوننت) تا
- * تعریف درآمد با بقیه‌ی داشبورد یکسان بماند (شب‌به‌شب/prorated).
- *
- * شهرهای خارج از Top-N در یک باکت «سایر شهرها» تجمیع می‌شوند تا محور X
- * شلوغ نشود.
- */
 export default function CityRevenueChart({
   bookings,
   cabins,

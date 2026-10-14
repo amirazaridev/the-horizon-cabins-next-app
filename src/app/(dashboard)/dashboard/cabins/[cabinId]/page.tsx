@@ -34,8 +34,6 @@ export default async function DashboardCabinDetailPage({
 
   if (!cabin) notFound();
 
-  //* ⚠️ فیلد `discount` در API وجود ندارد؛ اندپوینت جزئیات هم `pricing` نمی‌دهد،
-  //* پس قیمت مؤثر = قیمت پایه. (نمایش تخفیف داشبورد در فاز بعدی اصلاح می‌شود.)
   const { originalPrice, finalPrice, hasDiscount } = resolveCabinPrice(cabin);
   const createdAt = formatJalali(new Date(cabin.createdAt), "d MMMM yyyy", {
     locale: faIR,

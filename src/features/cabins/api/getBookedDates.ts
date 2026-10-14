@@ -2,17 +2,6 @@ import { apiFetch } from "@/libs/api/apiFetch";
 import type { ApiResponse } from "@/types/api-response";
 import type { BookedRange } from "../types/cabin-booking.types";
 
-/**
- * بازه‌های رزروشده‌ی یک کابین را می‌خواند
- * (`GET /bookings/cabin/:id/booked-dates` — عمومی).
- *
- * ⚠️ عمداً `no-store` است: موجودبودن تاریخ لحظه‌ای است و کش‌کردنش باعث
- * می‌شود کاربر روزی را آزاد ببیند که دیگر آزاد نیست.
- *
- * ⚠️ آرایه‌ی خالی یعنی «هیچ روزی رزرو نشده» یا «اندپوینت در دسترس نبود»؛ در
- * هر دو حالت تقویم بدون روز غیرفعال کار می‌کند و اعتبارسنجی نهایی در سرور
- * انجام می‌شود.
- */
 export async function getBookedDates(cabinId: number): Promise<BookedRange[]> {
   try {
     const res = await apiFetch(`bookings/cabin/${cabinId}/booked-dates`, {

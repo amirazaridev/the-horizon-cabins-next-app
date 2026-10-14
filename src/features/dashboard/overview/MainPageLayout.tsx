@@ -38,30 +38,10 @@ type Props = {
   cabins: DashboardCabin[];
 };
 
-/**
- * نگاشت drill-down کارت‌های KPI به پارامترهای URL.
- *
- * ⚠️ فعلاً فقط شاخص‌هایی که فیلتر معادل دارند به URL نگاشت می‌شوند؛
- * بقیه بدون اقدام‌اند (کلیک بی‌اثر، نه خطا).
- */
 const DRILL_DOWN_PARAMS: Partial<Record<KpiKey, Record<string, string>>> = {
   cancellationRate: { [PARAM_STATUS]: "cancelled" },
 };
 
-/**
- * چیدمان صفحه‌ی داشبورد.
- *
- * ⭐ از فاز ۴، **همه‌ی** ویجت‌ها از لایه‌ی داده‌ی `DashboardRepository`
- * تغذیه می‌شوند؛ آداپتور موقت legacy حذف شد.
- *
- * ### لایه‌ی کیفیت (فاز ۶)
- * - هر ویجت داخل `WidgetBoundary` است ⇒ خطای یک ویجت کل صفحه را سفید
- *   نمی‌کند.
- * - در اولین بارگذاری، هر ویجت **اسکلتون هم‌شکل خودش** را نشان می‌دهد
- *   (به‌جای یک اسپینر تمام‌صفحه که تمام چیدمان را پاک می‌کند).
- * - خطای داده یک بنر با دکمه‌ی «تلاش دوباره» دارد.
- * - «آخرین به‌روزرسانی» در سرصفحه با اکشن بازخوانی.
- */
 export default function MainPageLayout({ cities, cabins }: Props) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -97,25 +77,12 @@ export default function MainPageLayout({ cities, cabins }: Props) {
     [filters.from, filters.to],
   );
 
-  /**
-   * ⚠️ رزروهای امروز باید از **کل** دیتاست بیایند، نه فیلترشده — وگرنه
-   * با فیلتر شهر/وضعیت، عملیات امروز ناقص می‌شود. `snapshot.bookings`
-   * فیلترشده است، پس برای این ویجت از `snapshot.todayBookings` (مستقل)
-   * استفاده می‌کنیم.
-   */
   const todayItems = useMemo(
     () =>
       snapshot ? pickTodayActivity(snapshot.todayBookings, snapshot.today) : [],
     [snapshot],
   );
 
-  /**
-   * آیا هنوز **اولین** داده نرسیده است؟ (چیست که اسکلتون بدهیم)
-   *
-   * ⚠️ `isLoading` با هر تغییر فیلتر هم true می‌شود؛ اگر در آن حالت هم
-   * اسکلتون بدهیم، کاربر هنگام تغییر فیلتر صحنه را از دست می‌دهد. پس
-   * اسکلتون فقط وقتی است که **هیچ snapshot قبلی نداریم**.
-   */
   const isInitialLoad = isLoading && snapshot === null;
   const isRefreshing = (isLoading || isPending) && snapshot !== null;
 
@@ -267,11 +234,6 @@ export default function MainPageLayout({ cities, cabins }: Props) {
             />
           </WidgetBoundary>
 
-          {/*
-            ویجت‌های مستقل از بازه‌ی انتخابی — همیشه از «امروز» محاسبه
-            می‌شوند. برچسب «مستقل از بازهٔ انتخابی» در خود کامپوننت‌ها
-            نمایش داده می‌شود.
-          */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
             <div className="lg:col-span-3">
               <WidgetBoundary name="عملیات امروز">
@@ -298,10 +260,6 @@ export default function MainPageLayout({ cities, cabins }: Props) {
     </div>
   );
 }
-
-/* ==========================================================================
-   اسکلتون سطر‌به‌سطر صفحه — آینه‌ی چیدمان واقعی
-   ========================================================================== */
 
 function DashboardSkeleton() {
   return (

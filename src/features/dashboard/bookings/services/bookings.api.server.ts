@@ -5,13 +5,6 @@ import type { PaginationMeta } from "@/types/api-response";
 import type { GuestBooking } from "@/features/guest/bookings/types/guest-booking.types";
 import { fetchFilterOptions } from "../../shared/api/filter-options.api";
 
-/**
- * لایه‌ی داده‌ی صفحه‌ی رزروهای داشبورد — **سرور-ساید**.
- *
- * صفحه‌ی `dashboard/bookings/page.tsx` (Server Component) این توابع را صدا
- * می‌زند؛ توکن از کوکی سرور با `authFetch` فوروارد می‌شود.
- */
-
 export interface BookingsPage {
   bookings: GuestBooking[];
   meta: PaginationMeta;
@@ -46,12 +39,6 @@ export interface BookingsFilterOptions {
   cities: BookingsFilterOption[];
 }
 
-/**
- * گزینه‌های فیلتر (اقامتگاه و شهر) — مستقل از بازه و وضعیت.
- *
- * ⭐ واکشی خام از `../../shared/api/filter-options.api` است (مشترک با
- * سرویس داشبورد overview)؛ همان دو اندپوینت با همان کش.
- */
 export async function fetchBookingsFilterOptions(): Promise<BookingsFilterOptions> {
   const { cabins, cities } = await fetchFilterOptions<
     BookingsFilterOption,

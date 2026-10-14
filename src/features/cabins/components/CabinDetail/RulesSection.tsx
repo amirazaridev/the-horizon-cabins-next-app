@@ -54,15 +54,6 @@ function RuleList({ items }: { items: CabinRuleItem[] }) {
   );
 }
 
-/**
- * قوانین و مقررات.
- *
- * ⚠️ منبع داده `CABIN_RULES` است (ماک تایپ‌شده و مشترک بین همه‌ی
- * کابین‌ها). بک‌اند فعلاً قوانین ندارد؛ با اضافه‌شدن فیلد `rules` در پاسخ
- * کابین، فقط همین یک import عوض می‌شود.
- *
- * این سکشن سروری است و هیچ state ندارد، پس در HTML اولیه رندر می‌شود.
- */
 export default function RulesSection(): ReactNode {
   return (
     <SectionShell

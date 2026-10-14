@@ -88,10 +88,6 @@ export function formatJalaliFull(date: Date): string {
   return formatJalali(date, "d MMMM yyyy", { locale: faIR });
 }
 
-/**
- * ساعت و دقیقه با اعداد فارسی — برای نشانگر «آخرین به‌روزرسانی».
- * ⚠️ ساعت ۲۴ساعته است تا در RTL با «ق.ظ/ب.ظ» قاطی نشود.
- */
 export function formatJalaliTime(date: Date): string {
   return formatJalali(date, "HH:mm", { locale: faIR });
 }
@@ -108,16 +104,6 @@ export function formatJalaliYear(date: Date): string {
   return formatJalali(date, "yyyy", { locale: faIR });
 }
 
-/**
- * برچسب باکت سری‌های زمانی — بسته به سطح تجمیع.
- *
- * - `daily`   → «۱۲ مهر» (روز + ماه)
- * - `weekly`  → «۱۲ مهر» (ابتدای هفته)
- * - `monthly` → «مهر ۱۴۰۵» (ماه + سال)
- *
- * ⚠️ ورودی `date` همان `date` هر `RevenuePoint`/`OccupancyAdrPoint` است
- * (ابتدای باکت) — پس هیچ تبدیل اضافه‌ای لازم نیست.
- */
 export function formatBucketLabel(
   date: Date,
   granularity: "daily" | "weekly" | "monthly",
@@ -194,15 +180,6 @@ function findMatchingPreset(
   return null;
 }
 
-/**
- * بازه‌ی تاریخ داشبورد را از URL می‌خواند.
- *
- * ⭐ از فاز دوم، **بازه می‌تواند به آینده کشیده شود** (برای ویجت‌های
- * Forward/Pace و سناریوهای «رزروهای پیش‌رو»). بنابراین دیگر به «امروز»
- * کلمپ نمی‌شود؛ فقط ترتیب `from <= to` تضمین می‌شود.
- *
- * اگر پارامترها نامعتبر باشند، به preset پیش‌فرض (`last-30-days`) برمی‌گردد.
- */
 export function resolveDashboardDateRange(
   searchParams: Pick<URLSearchParams, "get">,
 ): ResolvedDateRange {
@@ -291,10 +268,6 @@ export function getJalaliMonthTicks(domain: DateRange): MonthTick[] {
   return ticks;
 }
 
-/* ==================================================================
-   تب‌های ماه / سال — دامین و تبدیل ایندکس (تقویم جلالی)
-   ================================================================== */
-
 export type DateFilterTab = "day" | "month" | "year";
 
 export function isDateFilterTab(value: string | null): value is DateFilterTab {
@@ -307,10 +280,6 @@ export interface DateFilterValue {
   to: string;
   tab: DateFilterTab;
 }
-
-/* ==================================================================
-   دکمه‌های دسترسی سریع
-   ================================================================== */
 
 export type QuickRangePreset =
   | "last-7"
@@ -351,17 +320,6 @@ export function getPresetDateRangeFromDays(
   };
 }
 
-/* ==================================================================
-   محدود کردن تاریخ‌ها به امروز
-   ================================================================== */
-
-/**
- * اگر تاریخ بعد از امروز باشد، امروز را برمی‌گرداند.
- *
- * ⚠️ از فاز دوم، داشبورد **بازه را به آینده باز می‌گذارد**، پس این تابع
- * دیگر در مسیر فیلتر تاریخ استفاده نمی‌شود. فقط برای سازگاری با کدهای
- * قدیمی نگه داشته شده (مثل presetهای سالانه).
- */
 export function clampToToday(date: Date, today: Date = getToday()): Date {
   const d = toDateOnly(date);
   const t = toDateOnly(today);
@@ -408,13 +366,6 @@ export function getMonthGaugeDomain(
   return { start, count };
 }
 
-/**
- * دامنه‌ی گژی سال.
- *
- * ⭐ از فاز دوم یک سال **بعد از** پایان انتخاب‌شده هم به دامنه اضافه می‌شود
- * (`FUTURE_YEAR_MARGIN`) تا دستگیره‌ی پایان فضای کشیده‌شدن به آینده داشته
- * باشد و کاربر برای انتخاب سال پیش‌رو گیر نکند.
- */
 export function getYearGaugeDomain(
   today: Date,
   selectedFrom: Date,
@@ -468,10 +419,6 @@ export function yearRangeAtIndices(
     to: endOfYear(yearAtIndex(domainStart, end)),
   };
 }
-
-/* ==================================================================
-   هلپرهای جدید برای گژی روز (۱-۳۱ با طول ماه متغیر)
-   ================================================================== */
 
 /** تعداد روزهای ماه جلالی برای یک تاریخ داده */
 export function getDaysInJalaliMonth(date: Date): number {

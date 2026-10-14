@@ -80,12 +80,6 @@ export function hasActiveBookingsFilters(filters: BookingsFilters): boolean {
   );
 }
 
-/**
- * ساخت کوئری API از فیلترها.
- *
- * ⚠️ `guestQuery` فقط با حداقل ۲ کاراکتر فرستاده می‌شود (قرارداد اعتبارسنجی
- * بک‌اند) تا درخواست بی‌دلیل ۴۰۰ نگیرد.
- */
 export function toBookingsApiQuery(filters: BookingsFilters): string {
   const params = new URLSearchParams();
   params.set("page", String(filters.page));

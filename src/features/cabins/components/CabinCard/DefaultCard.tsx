@@ -7,10 +7,6 @@ import { animationClasses, baseClasses, CARD_IMAGE_SIZES } from "./classes";
 import { AmenityChip, CardImage } from "./primitives";
 import type { CardVariantProps } from "./types";
 
-/**
- * کارت پیش‌فرض — کارت صفحه‌ی «اقامتگاه‌ها» و پیش‌نمایش جستجو.
- * (تنها واریانتی که قلب «علاقه‌مندی» رویش می‌آید.)
- */
 export default function DefaultCard({
   cabin,
   imageOverride,
@@ -125,8 +121,6 @@ export default function DefaultCard({
               </span>
             </div>
           ) : (
-            /* بدون تاریخ: قیمت، «کمینه‌ی پنجره» است نه قیمت ثابت — پس با
-               «از» می‌آید تا کاربر بفهمد ممکن است شب‌های دیگر گران‌تر باشد. */
             <div className="flex flex-col">
               {hasDiscount && (
                 <span className="text-text-gray/70 text-[11px] line-through">

@@ -23,13 +23,6 @@ interface DayRangePickerProps {
 
 type SingleValue = DateObject | null;
 
-/**
- * انتخاب بازه‌ی «روز» برای فیلتر داشبورد.
- *
- * ⭐ از فاز دوم **آینده هم قابل انتخاب است** (بدون سقف بالا)، چون داشبورد
- * علاوه بر گذشته، رزروهای پیش‌رو و Pace را هم نشان می‌دهد. فقط این قید
- * می‌ماند که «پایان» نباید قبل از «شروع» بیفتد.
- */
 export default function DayRangePicker({
   from,
   to,

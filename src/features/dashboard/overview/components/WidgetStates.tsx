@@ -4,12 +4,6 @@ import { Inbox } from "lucide-react";
 import Skeleton from "@/components/ui/Skeleton";
 import CardDashContainer from "@/components/ui/CardDashContainer";
 
-/**
- * حالت خالی استاندارد ویجت‌های داشبورد.
- *
- * ⭐ تک‌منبع برای «داده‌ای برای این فیلتر نیست» — تا هر ویجت پیام و
- * آیکون خودش را جدا نسازد. رنگ/چیدمان همه‌جا یکی می‌ماند.
- */
 export function WidgetEmpty({
   label,
   description,
@@ -41,12 +35,6 @@ export function WidgetEmpty({
   );
 }
 
-/**
- * اسکلتون ساختارمند کارت‌های ویجت — برای حالت بارگذاری هر ویجت.
- *
- * ⚠️ چیدمان عمداً آینه‌ی `CardDashContainer` است (پدینگ، شعاع، فاصله) تا
- * سوئیچ از لودینگ به محتوا بدون جهش انجام شود.
- */
 export function WidgetSkeleton({
   rows = 3,
   chart = false,

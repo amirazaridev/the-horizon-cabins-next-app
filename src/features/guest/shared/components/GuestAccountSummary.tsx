@@ -5,12 +5,6 @@ type Props = {
   email: string;
 };
 
-/**
- * بلوک «اطلاعات اکانت» سایدبار مهمان — نمایشی و بدون state.
- *
- * ⚠️ از صفحه‌ی تنظیمات (`AccountProfileHeader`) جدا است: آن یکی سرصفحه‌ی
- * صفحه با نام کامل است، این یکی خلاصه‌ی همیشه‌حاضر سایدبار.
- */
 export default function GuestAccountSummary({ email }: Props): ReactNode {
   const initial = email.trim().charAt(0).toUpperCase() || "؟";
 

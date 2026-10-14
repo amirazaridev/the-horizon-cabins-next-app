@@ -24,12 +24,6 @@ interface TodayItemRowProps {
   onAction: () => void;
 }
 
-/**
- * ردیف یک ورود/خروج امروز.
- *
- * ⚠️ دو چیدمان عمدی: زیر `sm` عمودی (اطلاعات، سپس اکشن)، از `sm` بالا
- * سه‌ستونی (`1fr auto auto`). تصمیم ریسپانسیو با CSS گرفته می‌شود، نه JS.
- */
 export default function TodayItemRow({
   item,
   pending,

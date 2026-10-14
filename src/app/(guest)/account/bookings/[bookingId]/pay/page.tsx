@@ -16,16 +16,6 @@ export const metadata: Metadata = { title: "پرداخت رزرو" };
 
 type Props = { params: Promise<{ bookingId: string }> };
 
-/**
- * صفحه‌ی پرداخت نهایی یک رزرو — Server Component.
- *
- * چیدمان (طبق اصول checkout): هشدار مهلت در بالای صفحه تا اولین چیزی باشد
- * که دیده می‌شود، سپس جزئیات در ستون اصلی و کنش‌ها (مبلغ، پرداخت، لغو) در
- * ستون کنارِ چسبان.
- *
- * ⚠️ این صفحه فقط برای رزرو «در انتظار پرداخت» معنا دارد؛ بقیه به لیست
- * رزروها برگردانده می‌شوند تا کاربر در صفحه‌ی بی‌ربط سرگردان نشود.
- */
 export default async function BookingPaymentPage({
   params,
 }: Props): Promise<ReactNode> {
@@ -38,8 +28,6 @@ export default async function BookingPaymentPage({
 
   if (booking.status !== "pending") redirect("/account/bookings");
 
-  // اطلاعات کاربر از پروفایل واقعی می‌آید؛ اگر در دسترس نبود، نام ثبت‌شده
-  // روی خود رزرو نمایش داده می‌شود (صفحه نباید به‌خاطر این ناقص بماند).
   const profile = await getGuestAccountProfile();
 
   const user = {

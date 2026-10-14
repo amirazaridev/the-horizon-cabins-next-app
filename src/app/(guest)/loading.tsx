@@ -2,12 +2,6 @@ import type { ReactNode } from "react";
 
 import Skeleton from "@/components/ui/Skeleton";
 
-/**
- * اسکلتون ناحیه‌ی مهمان.
- *
- * ⚠️ چیدمان را هم‌شکل پوسته (سایدبار + هدر + محتوا) رزرو می‌کند تا هنگام
- * بارگذاری پرش بصری نداشته باشیم.
- */
 export default function Loading(): ReactNode {
   return (
     <section className="bg-background min-h-screen md:flex">

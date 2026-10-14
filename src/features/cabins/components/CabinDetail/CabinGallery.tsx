@@ -48,11 +48,6 @@ export default function CabinGallery({
     };
   }, [emblaApi, onSelect]);
 
-  /**
-   * اقامتگاهی که تصویر ندارد: قابِ گالری بدون هیچ اسلایدی جمع می‌شد و
-   * صفحه با یک نوار خالی شروع می‌شد. حالا همان نسبت ابعاد با یک حالت خالی
-   * نگه داشته می‌شود تا چیدمان ثابت بماند و سرتیتر روی آن بنشیند.
-   */
   if (images.length === 0) {
     return (
       <div className="group border-foreground/5 from-background-2 to-surface relative aspect-square overflow-hidden rounded-3xl border bg-linear-to-br sm:aspect-video lg:aspect-21/9">
@@ -83,8 +78,6 @@ export default function CabinGallery({
                   src={image}
                   alt={`${altBase} - تصویر ${i + 1}`}
                   fill
-                  /* هر اسلاید ۱۰۰٪ عرض کاروسل است؛ کاروسل داخل Container
-                     با `max-w-[86rem]` (۱۳۷۶px) قرار دارد. */
                   sizes="(min-width: 1376px) 1376px, 100vw"
                   preload={i == 0}
                   // placeholder="blur"

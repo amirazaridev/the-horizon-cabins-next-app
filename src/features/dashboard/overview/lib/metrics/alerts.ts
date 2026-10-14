@@ -1,10 +1,3 @@
-/**
- * ارزیابی قواعد نوار «نیازمند توجه» (Alerts).
- *
- * قواعد و آستانه‌ها از `config/alerts.config.ts` می‌آیند — این فایل فقط
- * **منطق** است. pure و strict.
- */
-
 import type { DashboardBooking, DashboardCabin } from "../../types/dashboard.types";
 import { type DateRange } from "./range";
 import {
@@ -37,11 +30,6 @@ export interface AlertInput {
   today: Date;
 }
 
-/**
- * ارزیابی همه‌ی قواعد فعال و بازگشت هشدارهای برانگیخته.
- *
- * ترتیب خروجی = ترتیب `ALERT_RULES` (کنترل اولویت در config).
- */
 export function evaluateAlerts(input: AlertInput): ActiveAlert[] {
   const { bookings, compareBookings, cabins, range, compareRange, today } = input;
   const alerts: ActiveAlert[] = [];
@@ -53,9 +41,6 @@ export function evaluateAlerts(input: AlertInput): ActiveAlert[] {
     const meta = ALERT_META[rule.kind];
 
     switch (rule.kind) {
-      /* ---------------------------------------------------------------
-         ۱) افت اشغال بیش از X نسبت به دوره‌ی مقایسه
-         --------------------------------------------------------------- */
       case "occupancy-drop": {
         if (!compareRange) break;
 
@@ -75,9 +60,6 @@ export function evaluateAlerts(input: AlertInput): ActiveAlert[] {
         break;
       }
 
-      /* ---------------------------------------------------------------
-         ۲) نرخ لغو بالای آستانه
-         --------------------------------------------------------------- */
       case "high-cancellation": {
         const rate = cancellationRate(bookings, range);
         if (rate === null || rate <= rule.threshold) break;
@@ -91,9 +73,6 @@ export function evaluateAlerts(input: AlertInput): ActiveAlert[] {
         break;
       }
 
-      /* ---------------------------------------------------------------
-         ۳) اقامتگاه‌های بدون رزرو در افق پیش‌رو
-         --------------------------------------------------------------- */
       case "idle-cabins": {
         const idle = findIdleCabins(bookings, cabins, today, IDLE_CABIN_HORIZON_DAYS);
         if (idle.length === 0) break;
@@ -113,10 +92,6 @@ export function evaluateAlerts(input: AlertInput): ActiveAlert[] {
   return alerts.slice(0, MAX_VISIBLE_ALERTS);
 }
 
-/**
- * اقامتگاه‌هایی که در `horizonDays` روز آینده هیچ رزرو فعالی ندارند.
- * برای هشدار «اقامتگاه بی‌رزرو».
- */
 export function findIdleCabins(
   bookings: readonly DashboardBooking[],
   cabins: readonly DashboardCabin[],

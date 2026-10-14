@@ -1,15 +1,3 @@
-/**
- * پیکربندی کارت‌های KPI — **تک‌منبع** برای ردیف ۶ کارتی.
- *
- * ⭐ هیچ عدد/رنگ/برچسبی داخل کامپوننت نیست. هر کارت از این پیکربندی
- * ساخته می‌شود و مقدارش از `KpiSnapshot` خوانده می‌شود.
- *
- * شش شاخص (طبق spec فاز ۳):
- *   ۱. درآمد کل        ۴. ADR
- *   ۲. تعداد رزرو       ۵. نرخ لغو
- *   ۳. نرخ اشغال        ۶. میانگین اقامت
- */
-
 import type { ReactNode } from "react";
 import {
   BedDouble,
@@ -34,12 +22,6 @@ import {
 /** رنگ‌بندی کارت — کلاس‌های تِیل‌ویند (روشن/تیره). */
 export type KpiTone = "amber" | "indigo" | "emerald" | "sky" | "violet" | "rose";
 
-/**
- * جهت مطلوب شاخص — تعیین‌کننده‌ی رنگ Δ نسبت به دوره‌ی مقایسه.
- * - `higher-is-better`: افزایش خوب است (درآمد، رزرو، اشغال، ADR، اقامت)
- * - `lower-is-better`: کاهش خوب است (نرخ لغو)
- * - `neutral`: بی‌جهت (رنگ خنثی)
- */
 export type KpiPolarity = "higher-is-better" | "lower-is-better" | "neutral";
 
 export const KPI_TONE_CLASSES: Record<
@@ -93,18 +75,9 @@ export interface KpiCardDef {
   hint: string;
   icon: ReactNode;
   tone: KpiTone;
-  /**
-   * جهت مطلوب شاخص — رنگ‌بندی Δ از همین مشتق می‌شود.
-   * (یافته‌ی قبلی: این منطق به‌صورت آرایه‌های hardcode در کامپوننت بود.)
-   */
   polarity: KpiPolarity;
   /** استخراج مقدار عددی از snapshot */
   value: (kpi: KpiSnapshot) => number | null;
-  /**
-   * مقدار هدف برای نمایش و نوار پیشرفت.
-   * ⚠️ از `KPI_TARGETS` می‌آید؛ اگر هدف null باشد، نوار پیشرفت نمایش داده
-   * نمی‌شود.
-   */
   target: number | null;
   /** قالب‌بندی مقدار هدف برای نمایش در tooltip («هدف: …») */
   formatTarget?: (value: number) => string;
@@ -112,20 +85,11 @@ export interface KpiCardDef {
   format: (value: number | null) => string;
   /** قالب‌بندی مقدار کامل (tooltip) */
   formatFull?: (value: number | null) => string;
-  /**
-   * آیا از این کارت sparkline نشان داده شود؟
-   * (فقط شاخص‌هایی که سری زمانی معنادار دارند)
-   */
   sparkline?: boolean;
   /** نوع sparkline: درآمد یا شب‌های فروخته‌شده */
   sparklineKind?: "revenue" | "nights";
 }
 
-/**
- * شش کارت KPI به‌ترتیب نمایش.
- *
- * ⚠️ ترتیب این آرایه مستقیماً ترتیب رندر است.
- */
 export const KPI_CARDS: readonly KpiCardDef[] = [
   {
     key: "totalRevenue",

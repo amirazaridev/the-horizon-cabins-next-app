@@ -11,22 +11,11 @@ import { cancelPendingBookingAction } from "../actions/booking.actions";
 
 type Props = {
   bookingId: number;
-  /**
-   * اگر بدهید، بعد از لغو موفق به این مسیر منتقل می‌شوید.
-   * (صفحه‌ی پرداخت بعد از لغو دیگر معنایی ندارد.)
-   */
   redirectTo?: string;
   className?: string;
   fullWidth?: boolean;
 };
 
-/**
- * دکمه‌ی «لغو رزرو» برای رزروهای «در انتظار پرداخت».
- *
- * ⚠️ چون لغو یک کنش **مخرب و بازگشت‌ناپذیر** است، همیشه از یک مودال
- * تأیید می‌گذرد؛ و دکمه با واریانت `danger` از کنش اصلی («پرداخت») به‌وضوح
- * جدا می‌شود تا کاربر اشتباهی آن را نزند.
- */
 export default function CancelBookingButton({
   bookingId,
   redirectTo,
@@ -40,8 +29,6 @@ export default function CancelBookingButton({
     const result = await cancelPendingBookingAction(bookingId);
 
     if (!result.success) {
-      // ConfirmModal خطا را می‌گیرد و مودال را باز نگه می‌دارد تا کاربر
-      // بتواند دوباره تلاش کند.
       toast.error(result.message);
       throw new Error(result.message);
     }

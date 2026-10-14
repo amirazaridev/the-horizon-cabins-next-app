@@ -1,7 +1,3 @@
-//* ذخیره‌ی «آخرین جستجو» در localStorage — عمداً روی خودِ استور Zustand `persist()` نگذاشته‌ایم تا استور فقط «تداوم ناوبری در حافظه» بماند.
-//* چرا query string ذخیره می‌شود و نه شیء فیلتر؟ چون همان قرارداد URL است (با `parseSearchFilters` خوانده می‌شود) و فشرده و مقاوم در برابر تغییر شکل مدل است.
-//* این ماژول مثل یک «استور خارجی» رفتار می‌کند (subscribe/getSnapshot) تا با `useSyncExternalStore` خوانده شود — بدون effect و بدون setState درون effect.
-
 const STORAGE_KEY = "horizon:last-search";
 const STORAGE_VERSION = 1;
 
@@ -37,7 +33,6 @@ function readFromStorage(): string | null {
 function emit(): void {
   for (const listener of listeners) listener();
 }
-
 
 export function subscribeLastSearch(listener: () => void): () => void {
   listeners.add(listener);
