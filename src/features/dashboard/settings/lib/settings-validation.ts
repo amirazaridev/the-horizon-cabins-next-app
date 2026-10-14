@@ -63,12 +63,6 @@ export function settingsToDraft(settings: AppSettings): SettingsDraft {
   return draft;
 }
 
-/**
- * اعتبارسنجی کامل پیش‌نویس: کران هر فیلد + قواعد بین‌فیلدی.
- *
- * ⚠️ آینه‌ی اعتبارسنجی بک‌اند است (`setting.validation.ts`). هدف این است که
- * کاربر **قبل از ارسال** خطا را ببیند؛ اما منبع نهایی صحت، سرور است.
- */
 export function validateSettingsDraft(draft: SettingsDraft): SettingsValidationResult {
   const fieldErrors: SettingsFieldErrors = {};
   const values: Partial<SettingsColumns> = {};
@@ -104,10 +98,6 @@ export function validateSettingsDraft(draft: SettingsDraft): SettingsValidationR
   return { fieldErrors: {}, values: resolved };
 }
 
-/**
- * قواعد بین‌فیلدی — آینه‌ی `assertConsistent` بک‌اند.
- * هر خطا به مرتبط‌ترین فیلد می‌چسبد تا کاربر بداند کدام را اصلاح کند.
- */
 function crossFieldErrors(values: SettingsColumns): SettingsFieldErrors {
   const errors: SettingsFieldErrors = {};
 

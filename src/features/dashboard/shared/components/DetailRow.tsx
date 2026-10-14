@@ -6,11 +6,6 @@ interface DetailRowProps {
   children: ReactNode;
 }
 
-/**
- * یک ردیف «برچسب / مقدار» در مودال‌های جزئیات داشبورد.
- *
- * ⭐ پیش‌تر در `BookingDetailsModal` و `UserDetailsModal` دوبار کپی شده بود.
- */
 export default function DetailRow({
   icon,
   label,

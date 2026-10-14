@@ -6,13 +6,6 @@ import { useEffect, useRef, type RefObject } from "react";
 type EventName = "click" | "pointerdown" | "mousedown" | "touchstart";
 
 type Options = {
-  /**
-   * المان‌هایی که کلیک روی آن‌ها «کلیک بیرون» شمرده نمی‌شود.
-   *
-   * ⚠️ برای دراپ‌داون‌ها حیاتی است: بدون نادیده‌گرفتن دکمه‌ی تریگر،
-   * شنونده‌ی بیرونی منو را می‌بندد و بعد `onClick` خودِ همان دکمه بلافاصله
-   * دوباره بازش می‌کند؛ نتیجه این‌که منو با کلیک روی دکمه هرگز بسته نمی‌شود.
-   */
   ignore?: readonly RefObject<HTMLElement | null>[];
   /** نوع رویداد — پیش‌فرض `click`. برای منوها `pointerdown` واکنش سریع‌تری می‌دهد. */
   event?: EventName | readonly EventName[];
@@ -22,10 +15,6 @@ type Options = {
   enabled?: boolean;
 };
 
-/**
- * با کلیک خارج از المانِ ref شده، handler اجرا می‌شود.
- * (مورد استفاده: بستن دراپ‌داون‌ها و منوها)
- */
 export default function useOutsideClick<T extends HTMLElement = HTMLElement>(
   handler: () => void,
   {
@@ -39,9 +28,6 @@ export default function useOutsideClick<T extends HTMLElement = HTMLElement>(
   const handlerRef = useRef(handler);
   const ignoreRef = useRef(ignore);
 
-  // نگه‌داشتن آخرین مقادیر بدون ثبت‌مجدد شنونده‌ها در هر رندر.
-  // ⚠️ در effect انجام می‌شود (نه در بدنه‌ی رندر) چون نوشتن ref در فاز
-  // رندر توسط قواعد React منع شده است.
   useEffect(() => {
     handlerRef.current = handler;
     ignoreRef.current = ignore;

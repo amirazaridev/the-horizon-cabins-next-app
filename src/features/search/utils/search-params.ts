@@ -13,10 +13,6 @@ import type {
 import { nightsBetween } from "@/features/search/utils/budget";
 import { formatPriceRange, parsePriceRange } from "@/libs/utils/price-range";
 
-//* سریال‌سازی و پارس فیلترهای هسته‌ی جستجو ↔ URL. تنها منبع حقیقت برای نام پارامترها همین فایل است؛ هیچ کامپوننتی نباید خودش query بسازد یا بخواند.
-//* قرارداد: `city=<id>` · `region=<slug>` · `checkIn`/`checkOut`=`yyyy-MM-dd` · `guests=<int>` · `price=lo-hi` · `totalPrice=lo-hi`
-//* ⭐ بودجه یک مقدار است با دو نام پارامتر: بدون تاریخ `price` (هر شب)، با تاریخ `totalPrice` (کل سفر). این دو هرگز با هم نمی‌آیند و هر دو مستقیم به پارامتر هم‌نام API نگاشت می‌شوند.
-
 export const SEARCH_PARAM_KEYS = [
   "city",
   "region",

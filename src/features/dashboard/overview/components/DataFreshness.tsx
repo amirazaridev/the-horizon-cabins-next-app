@@ -17,18 +17,6 @@ interface DataFreshnessProps {
 const SECONDS = 1000;
 const MINUTES = 60 * SECONDS;
 
-/**
- * نشانگر «آخرین به‌روزرسانی داده».
- *
- * ⭐ دو چیز را نشان می‌دهد:
- * ۱. **زمان نسبی** («۲ دقیقه پیش») — از `useEffect` با یک تیک هر ۳۰ ثانیه
- *    به‌روز می‌شود و در RTL/فارسی خواناست.
- * ۲. **زمان دقیق** (تاریخ+ساعت شمسی) به‌عنوان tooltip.
- *
- * ⚠️ مقدار نسبی **کلاینت‌محور** است (وابسته به ساعت کاربر) ⇒ برای جلوگیری
- * از hydration mismatch، تا اولین اجرای افکت `null` رندر می‌شود و در SSR
- * فقط زمان دقیق (قطعی از data) نشان داده می‌شود.
- */
 export default function DataFreshness({
   updatedAt,
   loading = false,

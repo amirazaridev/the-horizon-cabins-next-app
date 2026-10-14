@@ -40,19 +40,6 @@ export interface TableProps<T> {
   className?: string;
 }
 
-/**
- * جدول عمومی داشبورد — **قابل استفاده در چند بخش**.
- *
- * - ستون‌ها با `TableColumn` توصیف می‌شوند (بدون JSX تکراری در هر صفحه).
- * - مرتب‌سازی **کلاینت‌ساید** فقط روی ستون‌هایی که `sortValue` دارند فعال
- *   می‌شود؛ `null` همیشه آخر می‌آید.
- * - حالت‌های `loading`/`empty` استاندارد هستند.
- * - روی موبایل به‌صورت افقی اسکرول می‌شود و ستون‌های `hideOnMobile` پنهان‌اند.
- * - دسترس‌پذیری: `caption` (sr-only)، `scope="col"` و `aria-sort`.
- *
- * ⚠️ چون `columns` تابع `render` دارد، این کامپوننت فقط داخل کلاینت‌کامپوننت
- * قابل استفاده است.
- */
 export default function Table<T>({
   columns,
   rows,

@@ -50,12 +50,6 @@ export function parseSortParam(
     : undefined;
 }
 
-/**
- * تبدیل searchParams صفحه به پارامترهای کوئریِ API.
- *
- * تمام فیلترها (شهر، ظرفیت، خواب، امکانات، قیمت، دسته‌بندی) سمت بکند اعمال
- * میشوند — دیگر نیازی به فیلتر کردن محلی روی کل لیست نیست.
- */
 export function buildCabinsQuery(
   params: CabinsSearchParams,
 ): CabinsQueryParams {
@@ -73,12 +67,6 @@ export function buildCabinsQuery(
   };
 }
 
-/**
- * مرتبسازی محلی روی آیتمهای همین صفحه.
- *
- * بکند پارامتر sort را پشتیبانی نمیکند، بنابراین ترتیب فقط در محدودهٔ صفحهٔ
- * فعلی معتبر است. برای مرتبسازی روی کل مجموعه باید sort به بکند اضافه شود.
- */
 export function sortCabins(
   cabins: Cabin[],
   sortBy?: CabinSortValue,

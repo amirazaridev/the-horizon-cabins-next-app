@@ -50,18 +50,7 @@ export type FilterCardItem = {
   panel?: FilterPanelConfig;
   //* در موبایل (تریگر + آکاردئون شیت) نمایش داده نشود — مثلاً تاریخ خروج
   hideOnMobile?: boolean;
-  /*
-   * گروه‌بندی برای شمارش فیلترهای فعال.
-   * آیتم‌های هم‌گروه (مثل تاریخ ورود و خروج) در badge فقط **یک‌بار**
-   * شمرده می‌شوند، حتی اگر هر دو پر باشند.
-   */
   group?: string;
-};
-
-export type MobileTriggerRenderProps = {
-  activeCount: number;
-  getValue: (id: string) => unknown;
-  open: () => void;
 };
 
 export type FilterCardProps = {
@@ -73,18 +62,9 @@ export type FilterCardProps = {
   defaultOpenId?: string | null;
   className?: string;
   //* موبایل
-
-  mobileBreakpoint?: string;
   mobileTitle?: string;
   mobileTriggerLabel?: string;
-  renderMobileTrigger?:
-    React.ReactNode | ((ctx: MobileTriggerRenderProps) => React.ReactNode);
-  mobileTriggerClassName?: string;
   mobileApplyLabel?: string;
-  onMobileApply?: () => void;
-  mobileApplyDisabled?: boolean;
-  //* در حال اعمال — متن دکمه با spinner جایگزین می‌شود
-  mobileApplyPending?: boolean;
   resultCount?: number;
   onClearFilters?: () => void;
 };

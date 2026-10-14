@@ -6,12 +6,10 @@ import { gsap } from "@/features/landing/utils/gsap";
 import {
   buildHeroIntro,
   buildHeroParallax,
-  buildScrollIndicatorFade,
   clearHeroProps,
 } from "@/features/landing/utils/animations/hero";
 import {
   buildCardGridReveal,
-  buildCategoryHeading,
   buildRevealBatch,
   refreshScrollTriggersOnLoad,
 } from "@/features/landing/utils/animations/sections";
@@ -35,8 +33,6 @@ export default function useLandingAnimation(enabled = true) {
         () => {
           buildHeroIntro();
           buildHeroParallax();
-          buildScrollIndicatorFade();
-          buildCategoryHeading();
           buildRevealBatch();
           buildCardGridReveal();
 

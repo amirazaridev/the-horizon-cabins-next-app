@@ -9,13 +9,6 @@ import { resolveCabinPrice } from "@/features/cabins/utils/cabin-price";
 import { formatCurrency } from "@/libs/utils/format";
 import { IMAGE_HOVER_SCALE } from "./classes";
 
-/**
- * ناحیه‌ی تصویر کارت + جایگزین «تصویر موجود نیست».
- *
- * ⚠️ پیش از این این بلوک در هر سه واریانت کپی شده بود، و واریانت داشبورد
- * جایگزین نداشت (`src={image || ""}` ⇒ `src` خالی به `next/image`) —
- * یعنی رفتارشان ناهمگون بود. حالا یک پیاده‌سازی مشترک دارند.
- */
 export function CardImage({
   image,
   alt,
@@ -110,8 +103,9 @@ export function PriceBadge({ cabin }: { cabin: Cabin }): ReactNode {
 
   return (
     <div className="absolute top-4 right-2 flex items-center justify-between gap-2 sm:right-4">
+      {/* «از» چون این مبلغ کمینه‌ی پنجره‌ی «شروع از» است، نه قیمت ثابت. */}
       <span className="bg-primary-400 max-w-27 truncate rounded-full px-4 py-1.5 text-xs font-bold text-black sm:max-w-max md:text-sm">
-        {formatCurrency(finalPrice)} تومان/هر شب
+        از {formatCurrency(finalPrice)} تومان/هر شب
       </span>
       {hasDiscount && (
         <>

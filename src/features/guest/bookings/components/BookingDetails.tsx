@@ -26,12 +26,6 @@ type Props = {
   user: { fullName: string; email: string; phoneNumber?: string };
 };
 
-/**
- * اطلاعات رزرو و کاربر — دو کارت خوانا برای صفحه‌ی پرداخت.
- *
- * ⚠️ همه‌ی تاریخ‌ها با توابع `lib/format` جلالی می‌شوند تا این صفحه هم مثل
- * کارت رزرو، یک زبان نمایش واحد داشته باشد.
- */
 export default function BookingDetails({ booking, user }: Props): ReactNode {
   return (
     <>

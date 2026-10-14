@@ -5,10 +5,6 @@ import { Fragment, type ReactNode } from "react";
 export type BreadcrumbItem = {
   //* برچسب نمایشی. */
   label: string;
-  /*
-   * اگر بدهید آیتم لینک می‌شود.
-   * آخرین آیتم را معمولاً بدون `href` بگذارید تا به‌شکل متن جاری رندر شود.
-   */
   href?: string;
 };
 
@@ -25,7 +21,7 @@ export default function Breadcrumb({
   return (
     <nav
       aria-label="مسیر صفحه"
-      className={`text-text-gray flex items-center gap-1.5 text-sm ${className}`}
+      className={`text-text-gray flex items-center gap-1.5 text-xs lg:text-sm ${className}`}
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;

@@ -27,7 +27,6 @@ export type SearchPreviewState = {
   retry: () => void;
 };
 
-
 export function useSearchPreview(
   filters: SearchFilters,
   limit: number = SEARCH_PREVIEW_LIMIT,

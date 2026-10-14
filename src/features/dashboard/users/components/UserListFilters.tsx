@@ -35,13 +35,6 @@ interface UserListFiltersProps {
   mobileTitle?: string;
 }
 
-/**
- * نوار فیلتر مشترک لیست کاربران (صفحه‌ی «افراد و مهمانان» و «مدیران»).
- *
- * ⭐ منبع حقیقت **URL** است؛ این کامپوننت state فیلتری نگه نمی‌دارد و با هر
- * تغییر یک navigation می‌زند تا لینک قابل اشتراک بماند و back/forward درست
- * کار کند (همان الگوی نوار فیلتر رزروها).
- */
 export default function UserListFilters({
   mobileTitle = "فیلتر کاربران",
 }: UserListFiltersProps): ReactNode {

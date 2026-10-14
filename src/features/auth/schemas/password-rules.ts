@@ -1,13 +1,5 @@
 import { AUTH_LIMITS, PASSWORD_STRENGTH_SEGMENTS } from "../constants/auth-limits";
 
-/**
- * قواعدی که «قدرت رمز عبور» را می‌سازند.
- *
- * ⭐ این‌جا **تک‌منبع** است: هم اسکیمای zod همین قواعد را اجرا می‌کند، هم
- * نوار قدرت و چک‌لیست UI از همین آرایه ساخته می‌شوند. قبلاً برچسب‌ها در
- * `PasswordStrength.tsx` دوباره تعریف شده بودند و با کوچک‌ترین تغییر در
- * یکی، دیگری بی‌سروصدا از قافله جا می‌ماند.
- */
 export const PASSWORD_RULES = [
   {
     id: "length",
@@ -33,13 +25,6 @@ export const PASSWORD_RULES = [
 
 export type PasswordRuleId = (typeof PASSWORD_RULES)[number]["id"];
 
-/**
- * دسترسی به قاعده با شناسه — بدون اندیس عددی جادویی.
- *
- * قبلاً اسکیما با `PASSWORD_RULES[1]` و `[2]` و `[3]` کار می‌کرد؛ با
- * جابه‌جایی ترتیب آرایه، اعتبارسنجی بی‌سروصدا عوض می‌شد. `ruleOf("case")`
- * این ریسک را حذف می‌کند.
- */
 export function ruleOf(id: PasswordRuleId): (typeof PASSWORD_RULES)[number] {
   const rule = PASSWORD_RULES.find((item) => item.id === id);
   if (!rule) throw new Error(`قاعده‌ی رمز ناشناخته: ${id}`);

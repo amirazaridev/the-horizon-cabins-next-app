@@ -15,12 +15,6 @@ type Props = {
   brand: ReactNode;
   /** محتوای اختیاری بالای دکمه‌ی خروج در سایدبار. */
   profile?: ReactNode;
-  /**
-   * نوار بالای ناحیه‌ی محتوا.
-   *
-   * ⚠️ عنصر است و نه تابع؛ هدرها با `useShellSidebar` خودشان دراور را باز
-   * می‌کنند تا نیازی به پاس‌دادن callback از Server Component نباشد.
-   */
   header?: ReactNode;
   children: ReactNode;
 };

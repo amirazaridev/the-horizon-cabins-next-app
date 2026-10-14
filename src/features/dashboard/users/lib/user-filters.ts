@@ -44,12 +44,6 @@ export function hasActiveUsersFilters(filters: UsersFilters): boolean {
   return filters.active !== null;
 }
 
-/**
- * ساخت کوئری API از فیلترها.
- *
- * `roles` دامنه‌ی لیست را تعیین می‌کند: صفحه‌ی «افراد و مهمانان» مقدار
- * `["guest"]` و صفحه‌ی «مدیران» مقدار `["admin","owner"]` می‌فرستد.
- */
 export function toUsersApiQuery(
   filters: UsersFilters,
   roles: readonly UserRole[],

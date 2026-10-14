@@ -5,25 +5,9 @@ import type { Cabin } from "@/features/cabins/types/cabin.types";
 
 type Props = {
   cabin: Cabin;
-  /**
-   * نام شهر که صفحه در سمت سرور حل کرده است.
-   *
-   * ⚠️ اندپوینت جزئیات کابین به‌جای آبجکت `city` فقط `cityId` می‌دهد،
-   * پس `cabin.city` روی این صفحه همیشه `undefined` بود و بج مقصد هیچ‌وقت
-   * نمایش داده نمی‌شد. حالا نام از `cityName` می‌آید و `cabin.city` فقط
-   * به‌عنوان fallback (برای وقتی که داده از اندپوینت لیست بیاید) می‌ماند.
-   */
   cityName?: string | null;
 };
 
-/**
- * سرتیتر روی گالری: مقصد، نام اقامتگاه و امتیاز.
- *
- * ⚠️ هر دو مقدار اختیاری‌اند و قبلاً بدون بررسی رندر می‌شدند:
- * `cabin.city` ممکن است نباشد و `cabin.rating` می‌تواند `null` باشد — که
- * در آن حالت متن «null» روی گالری چاپ می‌شد. حالا هر کدام نبود، بج آن هم
- * نمایش داده نمی‌شود.
- */
 export default function GalleryHeader({ cabin, cityName }: Props): ReactNode {
   const destination = cityName ?? cabin.city?.name;
   const rating =

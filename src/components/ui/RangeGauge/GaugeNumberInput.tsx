@@ -12,12 +12,6 @@ type Props = {
   onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
 };
 
-/**
- * ورودی عددی یک سر بازه.
- *
- * ⚠️ پیش از این همین بلوک ۱۳ خطی دو بار («از» و «تا») در `RangeGauge`
- * تکرار شده بود.
- */
 export default function GaugeNumberInput({
   label,
   ariaLabel,

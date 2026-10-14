@@ -20,10 +20,6 @@ type Props = {
   className?: string;
 };
 
-/**
- * پنل انتخاب تکی از بین یک لیست گزینه — reusable برای
- * نفرات، خواب، بازه قیمت، مرتب‌سازی و موارد مشابه.
- */
 export default function SingleOptionPanel({
   options,
   value,

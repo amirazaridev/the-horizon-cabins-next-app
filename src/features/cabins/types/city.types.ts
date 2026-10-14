@@ -1,10 +1,3 @@
-/**
- * انواع موقعیت مکانی — هم‌خوان با ماژول `location` در بک‌اند.
- *
- * ساختار بک‌اند: `Region ──1:N──> City ──1:N──> Cabin`
- * اندپوینت‌ها: `GET /locations/regions` و `GET /locations/cities`
- */
-
 /** ارجاع سبک منطقه که همراه هر شهر برمی‌گردد */
 export type CityRegionRef = {
   id: number;
@@ -15,10 +8,6 @@ export type CityRegionRef = {
 export type City = {
   id: number;
   name: string;
-  /**
-   * شناسه‌ی عددی منطقه — منبع حقیقت برای دسته‌بندی شهرها.
-   * (نام شهر دیگر مبنای تشخیص منطقه نیست.)
-   */
   regionId: number;
   /** تصویر شاخص شهر — ممکن است نباشد (`null`)؛ فرانت به عکس داخلی fallback می‌کند. */
   imageUrl?: string | null;
@@ -28,12 +17,6 @@ export type City = {
   updatedAt?: string;
 };
 
-/**
- * شهر پرطرفدار برای سکشن «مقاصد محبوب» لندینگ.
- *
- * از اندپوینت `GET /locations/cities/popular` می‌آید؛ مرتب بر اساس بیشترین
- * تعداد رزرو. `cabinsCount` برای متن کارت («N اقامتگاه») است.
- */
 export type PopularCity = {
   id: number;
   name: string;

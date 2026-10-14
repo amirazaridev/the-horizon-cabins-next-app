@@ -2,9 +2,6 @@ import type { City } from "@/features/cabins/types/city.types";
 import { isRegionId, regionName } from "@/features/search/constants/regions";
 import type { Destination } from "@/features/search/types/search.types";
 
-//* کدگذاری «مقصد» به یک رشته‌ی واحد، چون `CityPanel` مشترک با `string | null` کار می‌کند و ما دو نوع مقصد داریم:
-//* `city:12` ⇒ شهر با شناسه‌ی ۱۲ · `region:north` ⇒ همه‌ی شهرهای شمال
-
 export const CITY_VALUE_PREFIX = "city:";
 export const REGION_VALUE_PREFIX = "region:";
 

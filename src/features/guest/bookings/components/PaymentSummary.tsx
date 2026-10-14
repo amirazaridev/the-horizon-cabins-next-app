@@ -9,14 +9,6 @@ import CancelBookingButton from "./CancelBookingButton";
 
 type Props = { booking: GuestBooking };
 
-/**
- * ستون کنش‌های صفحه‌ی پرداخت — مبلغ نهایی، دکمه‌ی پرداخت و لغو رزرو.
- *
- * ⚠️ دکمه‌ی پرداخت کاربر را به **درگاه نمونه** می‌برد
- * (`/payment/gateway/[bookingId]`). آن صفحه فقط طرح و ظاهر یک درگاه ایرانی
- * است؛ با زدن «پرداخت» همان‌جا، `POST /bookings/:id/pay` صدا زده می‌شود و
- * رزرو «تأییدشده» می‌گردد (تب «جاری»).
- */
 export default function PaymentSummary({ booking }: Props): ReactNode {
   return (
     <CardDashContainer noTransition className="flex flex-col gap-5 p-5 sm:p-6">

@@ -6,14 +6,6 @@ import type DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 
-/**
- * ⚠️ import جانبی (side-effect) است و هیچ نامی از آن استفاده نمی‌شود.
- *
- * دلیلش: استایل‌های مخصوص همین کامپوننت با `:global()` نوشته شده‌اند (چون
- * کلاس‌های `rmdp-*` متعلق به کتابخانه‌اند و نباید hash شوند)، پس مقدار
- * export‌شده‌ای نداریم؛ ولی همچنان باید این فایل import شود تا CSS آن در
- * باندل بیاید و با خودِ کامپوننت کد-اسپلیت شود.
- */
 import "./style.module.css";
 
 import RangeStageFields from "./RangeStageFields";
@@ -52,19 +44,6 @@ const RangeCalendarAny = RangeCalendar as unknown as ComponentType<{
   }) => Record<string, unknown>;
 }>;
 
-/**
- * کارت انتخاب بازه تاریخ — یک تقویم دوقلو (شمسی) برای ورود و خروج.
- *
- * ⚠️ تفکیک‌های انجام‌شده (پیش‌تر همه در یک فایل ۴۲۳ خطی بودند):
- *  - کمک‌تابع‌های تاریخ + `formatJalaliDate` ⇒ `dates.ts`
- *  - پراپ‌های هر سلول روز (`mapDays`) ⇒ `day-props.tsx`
- *  - دو فیلد ورود/خروج + راهنما ⇒ `RangeStageFields.tsx`
- *  - تایپ‌ها ⇒ `types.ts`
- *
- * استایل‌هایش در `./style.module.css` کنار همین فایل است؛ فقط
- * `.horizon-date-picker` (پایه‌ی مشترک هر سه تقویم پروژه) در
- * `globals.css` می‌ماند.
- */
 export default function RangeDatePicker({
   value,
   onChange,
@@ -101,12 +80,6 @@ export default function RangeDatePicker({
     [disabledDates],
   );
 
-  /**
-   * اگر نه تاریخ غیرفعالی باشد و نه قیمتی، `mapDays` اصلاً پاس داده
-   * نمی‌شود؛ چون `react-multi-date-picker` با دیدن `mapDays` کل روزها را
-   * از مسیر رندر سفارشی عبور می‌دهد و ما نمی‌خواهیم مصرف‌کننده‌های فعلی
-   * (سرچ لندینگ و فیلتر `/cabins`) هیچ تغییری نبینند.
-   */
   const hasCustomDays =
     disabledSet.size > 0 ||
     Boolean(dayTitle) ||

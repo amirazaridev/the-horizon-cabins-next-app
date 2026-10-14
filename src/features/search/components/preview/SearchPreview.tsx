@@ -20,8 +20,6 @@ import {
 } from "@/features/search/utils/search-params";
 import { buildPreviewHeading } from "@/features/search/utils/search-summary";
 
-//* بخش «پیش‌نمایش جستجو» در لندینگ. رفتار: در حالت اولیه کاملاً بسته است (ارتفاع صفر، بدون فضای خالی)، فقط به مقدار «اعمال‌شده» واکنش نشان می‌دهد (نه draft)، با GSAP سبک باز/بسته می‌شود (بدون پرش layout) و حداکثر ۶ کارت نشان می‌دهد.
-//* این کامپوننت فقط «ارکستراسیون» است؛ اجزای نمایشی‌اش در `PreviewHeader` / `PreviewGrid` / `PreviewCta` و حالت‌ها در `PreviewStates` زندگی می‌کنند.
 export default function SearchPreview() {
   const applied = useSearchStore((state) => state.applied);
   const appliedToken = useSearchStore((state) => state.appliedToken);
@@ -35,9 +33,6 @@ export default function SearchPreview() {
 
   const hasFilters = hasAnySearchFilter(applied);
 
-  //* «باز بودن» **فقط** به «اعمال‌شدنِ جستجو» بستگی دارد، نه به وضعیت fetch.
-  //* اگر شرط `status !== "idle"` بود، رندرِ اولِ بعد از اعمال `open=false` می‌داد و شاخه‌ی «بستن» با «باز شدن» می‌جنگید؛ بدتر آنکه با اجرا نشدن fetch، سکشن برای همیشه بسته می‌ماند.
-  //* `appliedToken > 0` یعنی «کاربر حداقل یک‌بار جستجو را اعمال کرده» — حتی بدون فیلتر (یعنی «همه‌ی اقامتگاه‌ها»)؛ `reset` توکن را صفر و سکشن را می‌بندد. پس `open` تابعیِ قطعی از state است و هرگز گیر نمی‌کند.
   const open = hasFilters || appliedToken > 0;
 
   //* در همان رندرِ اولِ بعد از اعمال هم اسکلتی نشان بده (هم ارتفاع می‌دهد هم بازخورد)

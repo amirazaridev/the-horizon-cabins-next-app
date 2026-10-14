@@ -16,10 +16,6 @@ type MultiOptionListProps = {
   onChange: (next: string[]) => void;
 };
 
-/**
- * لیست گزینه‌های چندانتخابی برای استفاده داخل پنل FilterCard.
- * آیتم‌های انتخاب‌شده به‌صورت چیپ (با دکمه حذف) در بالای لیست نشان داده می‌شوند.
- */
 export default function MultiOptionList({
   options,
   value,

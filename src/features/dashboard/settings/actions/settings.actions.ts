@@ -5,14 +5,6 @@ import { revalidatePath } from "next/cache";
 import { authFetch } from "@/libs/api/authFetch";
 import type { AppSettings, SettingsColumns } from "../types/settings.types";
 
-/**
- * Server Action ذخیره‌ی تنظیمات — `PATCH /settings` (فقط owner).
- *
- * ⚠️ اعتبارسنجی سمت کلاینت (`lib/settings-validation.ts`) فقط برای بازخورد
- * سریع است؛ اعتبارسنجی نهایی و الزام‌آور سمت بک‌اند انجام می‌شود. اینجا
- * خطاهای بک‌اند به پیام فارسی قابل‌فهم نگاشت می‌شوند.
- */
-
 export interface SettingsActionResult {
   success: boolean;
   message: string;

@@ -7,20 +7,10 @@ import {
 } from "../types/cabin.types";
 import { mapCabin } from "../utils/mapCabin";
 
-/**
- * پیشنهادهای «تخفیف لحظه‌آخری» — تخفیف‌هایی که امروز یا فردا منقضی می‌شوند.
- *
- * `limit` از سمت Next قابل تنظیم است (پیش‌فرض ۵).
- *
- * ### استراتژی کش
- * پنجره‌ی بک‌اند `[today, today+1]` (به وقت تهران) است؛ پس `revalidate` را
- * دقیقاً تا «پایان فردا» تنظیم می‌کنیم تا با چرخش پنجره، داده‌ی تازه بیاید.
- * علاوه بر آن، تگ `last-minute-data` اجازه می‌دهد وقتی تایمر سمت کلاینت به
- * صفر رسید، داده فوراً باطل شود (Server Action `revalidateLastMinute`).
- */
-
 /** آفست ثابت تهران (+۰۳:۳۰). ایران از ۲۰۲۲ ساعت تابستانی ندارد. */
 const TEHRAN_OFFSET_MS = 3.5 * 60 * 60 * 1000;
+
+const LAST_MINUTE_MAX_CACHE_SECONDS = 300;
 
 /** ثانیه‌های باقی‌مانده تا پایان پنجره (شروع «پس‌فردا» به وقت تهران). */
 function secondsUntilWindowEnd(now: Date = new Date()): number {
@@ -52,7 +42,10 @@ export async function getLastMinuteCabins(limit = 5): Promise<LastMinuteCabin[]>
   const res = await apiFetch(`cabins/last-minute?limit=${limit}`, {
     cache: "force-cache",
     next: {
-      revalidate: secondsUntilWindowEnd(),
+      revalidate: Math.min(
+        secondsUntilWindowEnd(),
+        LAST_MINUTE_MAX_CACHE_SECONDS,
+      ),
       tags: ["last-minute-data"],
     },
   });

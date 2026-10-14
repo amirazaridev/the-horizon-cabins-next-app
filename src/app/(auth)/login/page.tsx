@@ -8,8 +8,6 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage(): ReactNode {
-  // `LoginForm` از `useSearchParams` استفاده می‌کند؛ در Next.js باید داخل
-  // یک مرز Suspense قرار بگیرد تا رندر استاتیک صفحه fail نکند.
   return (
     <Suspense fallback={<AuthFormSkeleton />}>
       <LoginForm />

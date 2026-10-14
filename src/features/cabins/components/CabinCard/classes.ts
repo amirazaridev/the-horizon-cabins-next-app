@@ -17,10 +17,6 @@ export const CARD_IMAGE_SIZES = {
   dashboard: "(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw",
 } as const;
 
-/**
- * ⚠️ کلاس بزرگ‌نمایی به‌صورت **کامل** نوشته می‌شود؛ Tailwind کلاسِ
- * ساخته‌شده با template-string را تولید نمی‌کند (قاعده‌ی پروژه).
- */
 export const IMAGE_HOVER_SCALE = {
   sm: "group-hover:scale-105",
   lg: "group-hover:scale-110",

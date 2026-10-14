@@ -27,24 +27,6 @@ const sizeClass: Record<NonNullable<ModalProps["size"]>, string> = {
   xl: "max-w-2xl",
 };
 
-/**
- * مودال عمومی پروژه.
- *
- * ساختار سه‌تکه‌ی ثابت:
- *  ۱) **هدر** (`title`/`description`) — `shrink-0` با جداکننده‌ی پایین،
- *     پس هنگام اسکرول سر جای خودش می‌ماند.
- *  ۲) **بدنه** — تنها ناحیه‌ی اسکرولی؛ `overscroll-contain` می‌گذارد
- *     اسکرول به صفحه‌ی پشت سرایت نکند.
- *  ۳) **دکمه‌ی بستن** — `absolute` روی پنل (نه داخل بدنه)، پس هرگز با
- *     اسکرول جابه‌جا نمی‌شود.
- *
- * نسبت به نسخه‌ی اولیه: تله‌ی فوکوس، بازگرداندن فوکوس به عنصر بازکننده،
- * `aria-labelledby`/`aria-describedby`، انیمیشن خروج و هدر ثابت اضافه شد.
- *
- * ⚠️ API عمومی دست‌نخورده مانده (`isOpen`/`onClose`/`title`/`description`/
- * `size`/`children`) تا مصرف‌کننده‌های فعلی — `ConfirmModal` و صفحات
- * داشبورد — بدون تغییر کار کنند. فقط `size="xl"` و `className` اضافه شده‌اند.
- */
 export default function Modal({
   isOpen,
   onClose,

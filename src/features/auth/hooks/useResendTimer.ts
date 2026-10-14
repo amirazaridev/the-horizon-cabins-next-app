@@ -5,10 +5,6 @@ import { useEffect, useState } from "react";
 type UseResendTimerOptions = {
   /** مدت انتظار به ثانیه. */
   seconds: number;
-  /**
-   * مبدأ شمارش (timestamp). هر بار که کد ارسال می‌شود عوض می‌شود، پس
-   * تایمر از نو شروع می‌کند. `null` ⇒ تایمری در جریان نیست.
-   */
   startedAt: number | null;
 };
 
@@ -26,23 +22,6 @@ function computeRemaining(startedAt: number | null, seconds: number): number {
   return Math.max(0, Math.ceil((startedAt + seconds * 1000 - Date.now()) / 1000));
 }
 
-/**
- * تایمر شمارش معکوس «ارسال مجدد کد».
- *
- * ⚠️ چرا `Date.now()` و نه کاهش یک عدد در هر تیک؟
- * `setInterval` زیر بار (تب پنهان، رندر سنگین) عقب می‌افتد و با کاهش شمارنده
- * تایمر طولانی‌تر از واقعیت می‌شود. اینجا مبدأ زمانی ذخیره و باقی‌مانده از
- * اختلاف ساعت واقعی حساب می‌شود، پس بعد از خواب رفتن تب هم درست برمی‌گردد.
- *
- * ⚠️ چرا مقدار از interval می‌آید و نه همگام‌سازی با prop؟
- * دو الگوی رایج در این پروژه lint می‌گیرند:
- *  - `setState` در بدنه‌ی افکت ⇒ `react-hooks/set-state-in-effect`
- *  - همگام‌سازی «state قبلی» در رندر ⇒ `react-hooks/refs`
- * راه‌حل: `startedAt` تغییر می‌کند ⇒ `computeRemaining` عوض می‌شود ⇒ افکت
- * دوباره اجرا می‌شود و `tick()` که داخلش یک `setState` می‌زند مقدار تازه
- * را می‌نشاند. مقدار اولیه‌ی `useState` هم همان تابع است، پس رندر اول
- * هرگز عدد کهنه نشان نمی‌دهد.
- */
 export function useResendTimer({
   seconds,
   startedAt,

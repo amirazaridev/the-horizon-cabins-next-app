@@ -1,11 +1,5 @@
 import { formatCurrency } from "@/libs/utils/format";
 
-/**
- * حدود و قواعد عددی احراز هویت — تک‌منبع.
- *
- * هم اعتبارسنجی و هم UI (شمارنده‌ها، نوار قدرت، تایمر) از همین‌جا می‌خوانند
- * تا هرگز بین «چه اجازه می‌دهد» و «چه نشان می‌دهد» فاصله نیفتد.
- */
 export const AUTH_LIMITS = {
   nameMin: 3,
   nameMax: 30,
@@ -25,10 +19,4 @@ export const AUTH_LIMITS = {
 /** تعداد بخش‌های نوار قدرت رمز — = تعداد قواعد قدرت. */
 export const PASSWORD_STRENGTH_SEGMENTS = 4;
 
-/**
- * ارقام فارسی داخل پیام‌های اعتبارسنجی.
- *
- * عمداً از `formatCurrency` مشترک پروژه استفاده می‌کند (نه تعریف محلی) تا
- * با بقیه‌ی اعداد فارسی UI یکدست بماند.
- */
 export const faCount = (value: number): string => formatCurrency(value);

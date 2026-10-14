@@ -3,20 +3,6 @@
 import { requestBookingStatusTransition } from "../../shared/api/bookings.api";
 import type { DashboardBookingJson } from "../data/dashboard.hydrate";
 
-/**
- * Server Actionهای عملیات امروز (check-in / check-out).
- *
- * ⚠️ چرا Server Action؟ چون `useTodayActivity` یک هوک **کلاینت** است و
- * نمی‌تواند `authFetch` (server-only) را صدا بزند. این اکشن‌ها همان
- * `PATCH /bookings/:id/status` بک‌اند را می‌زنند.
- *
- * ⚠️ خروجی، **JSON خام** رزرو است (تاریخ‌ها رشته) تا سمت کلاینت با همان
- * `hydrateBooking` بازسازی شود — یک قرارداد یکسان با مسیر snapshot.
- *
- * ⭐ تماس HTTP خام در `../../shared/api/bookings.api` است (مشترک با
- * اکشن‌های رزروِ bookings)؛ این‌جا فقط استخراج رزرو از پاسخ.
- */
-
 type BookingStatusTransition = "checkedIn" | "checkedOut";
 
 /** گذار وضعیت رزرو با اعتبارسنجی بک‌اند (فقط admin|owner). */

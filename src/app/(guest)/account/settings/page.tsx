@@ -22,19 +22,6 @@ function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
-/**
- * صفحه‌ی «تنظیمات حساب کاربری» — یک Server Component.
- *
- * مشخصات واقعی کاربر از `GET /user/me` خوانده و به دو کامپوننت نمایشی
- * تزریق می‌شود؛ خودِ فرم کلاینتی است چون `react-hook-form` می‌خواهد.
- *
- * ⚠️ **جریان رزرو (فاز ۲):** اگر کاربر با `?reason=booking` آمده باشد یعنی
- * از دکمه‌ی «رزرو» به اینجا هدایت شده تا پروفایلش را کامل کند. در آن حالت:
- *   ۱) یک توست نشان داده می‌شود که چرا اینجاست،
- *   ۲) بنر راهنما فیلدهای ناقص را فهرست می‌کند،
- *   ۳) `returnTo` (مسیر صفحه‌ی ویلا) به فرم پاس داده می‌شود تا بعد از ذخیره‌ی
- *      موفق، خودکار به همان صفحه برگردد و پیش‌نویس تاریخ‌ها/نفرات برگردد.
- */
 export default async function GuestAccountSettingsPage({
   searchParams,
 }: {
@@ -42,10 +29,6 @@ export default async function GuestAccountSettingsPage({
 }): Promise<ReactNode> {
   const sp = await searchParams;
 
-  /**
-   * ⚠️ مسیر بازگشت فقط اگر یک **مسیر داخلی** باشد پذیرفته می‌شود
-   * (`/...` و نه `//host`)، وگرنه به open redirect تبدیل می‌شود.
-   */
   const rawFrom = first(sp.from);
   const returnTo =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
@@ -61,8 +44,6 @@ export default async function GuestAccountSettingsPage({
   const missing = getMissingBookingFields(profile);
 
   return (
-    /* عرض محدود و وسط‌چین: فرم تنظیمات نباید تمام عرض پنل را بگیرد وگرنه
-       طول خطوط و فیلدها غیرخوانا می‌شود. */
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       {fromBooking && missing.length > 0 && (
         <BookingProfileToast

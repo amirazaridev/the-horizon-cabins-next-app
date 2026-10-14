@@ -13,20 +13,6 @@ import type {
 } from "../types/guest-booking.types";
 import type { GuestBookingsRepository } from "./guest-bookings.repository";
 
-/**
- * پیاده‌سازی APIِ مرز داده‌ی رزروهای مهمان — **server-only**.
- *
- * ⚠️ چرا server-only؟ چون با `authFetch` تماس می‌گیرد که توکن را از کوکی
- * سرور می‌خواند؛ نباید هرگز در باندل کلاینت بیاید.
- *
- * ⚠️ قرارداد داده با بک‌اند:
- *   - `GET  /bookings?page&limit&status` → `{ data: { bookings, meta } }`
- *     و چون نقش `guest` است، بک‌اند خودکار به رزروهای خودِ کاربر محدود می‌کند.
- *   - `GET  /bookings/:id`  → `{ data: { booking } }` (شامل `nights[]`)
- *   - `POST /bookings/:id/cancel` → رزرو به‌روزشده؛ فقط `pending` را می‌پذیرد.
- *   - `cabinPrice` جمع کل اقامت است (نه نرخ شب) و اقلام واقعی در `nights[]`.
- */
-
 /** همه‌ی وضعیت‌های ممکن — آینه‌ی enum بک‌اند؛ برای شمارش تب‌ها لازم است. */
 const ALL_STATUSES: readonly GuestBookingStatus[] = [
   "pending",
@@ -95,10 +81,6 @@ export function createApiGuestBookingsRepository(): GuestBookingsRepository {
         return fetchBookingsPage(statuses.length === 1 ? statuses[0] : undefined, page, limit);
       }
 
-      // تب چندوضعیتی (فقط «جاری» = confirmed + checkedIn):
-      // API فقط یک `status` می‌پذیرد، پس هر وضعیت را تا انتهای صفحه‌ی جاری
-      // می‌خوانیم، ادغام و برش می‌زنیم. تعداد رزروهای یک مهمان کم است، پس
-      // این ساده‌ترین راهِ درست است.
       const take = Math.min(page * limit, MAX_LIMIT);
       const pages = await Promise.all(statuses.map((status) => fetchBookingsPage(status, 1, take)));
 
@@ -146,8 +128,6 @@ export function createApiGuestBookingsRepository(): GuestBookingsRepository {
     },
 
     async cancel(id: number): Promise<GuestBooking | null> {
-      // بک‌اند فقط رزرو `pending` را می‌پذیرد؛ 404/409 ⇒ null یعنی
-      // «قابل لغو نبود» (قبلاً لغو/پرداخت‌شده یا مهلتش گذشته).
       const res = await authFetch(`bookings/${id}/cancel`, {
         method: "POST",
         cache: "no-store",
@@ -159,8 +139,6 @@ export function createApiGuestBookingsRepository(): GuestBookingsRepository {
     },
 
     async pay(id: number): Promise<GuestBooking | null> {
-      // بک‌اند فقط رزرو `pending` با مهلتِ نگذشته را تأیید می‌کند؛ 409 ⇒
-      // null یعنی «قابل پرداخت نبود» (قبلاً پرداخت‌شده یا منقضی).
       const res = await authFetch(`bookings/${id}/pay`, {
         method: "POST",
         cache: "no-store",

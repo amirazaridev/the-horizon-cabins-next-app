@@ -3,9 +3,6 @@ import type { ReactNode } from "react";
 import { BOOKING_STATUS_META } from "@/features/guest/bookings/constants/booking-status";
 import type { GuestBookingStatus } from "@/features/guest/bookings/types/guest-booking.types";
 
-/**
- * چیپ وضعیت رزرو — رنگ/آیکون/برچسب از `BOOKING_STATUS_META` (تک‌منبع).
- */
 export default function BookingStatusBadge({
   status,
 }: {

@@ -27,7 +27,6 @@ const toCss = (value?: Length): string | undefined =>
       ? `${value}px`
       : value;
 
-
 export default function Skeleton({
   count = 1,
   width,

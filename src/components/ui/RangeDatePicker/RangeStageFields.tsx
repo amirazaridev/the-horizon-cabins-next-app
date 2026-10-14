@@ -16,12 +16,6 @@ type Props = {
   activeStage: RangeStage;
 };
 
-/**
- * دو فیلد «ورود/خروج» بالای تقویم + راهنمای مرحله‌ی فعلی.
- *
- * ⚠️ این بلوک پیش‌تر داخل `RangeDatePicker` بود و با منطق تقویم/نرمال‌سازی
- * بازه قاطی شده بود؛ حالا فقط نمایش است.
- */
 export default function RangeStageFields({ value, activeStage }: Props) {
   const stages = [
     {

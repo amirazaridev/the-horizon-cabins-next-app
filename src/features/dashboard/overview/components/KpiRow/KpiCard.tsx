@@ -13,21 +13,10 @@ import {
 import { meetsTarget, targetProgress } from "../../config/targets";
 import { formatDelta } from "../../lib/metrics/format";
 
-/* ==========================================================================
-   Sparkline — SVG سبک بدون کتابخانه
-   ========================================================================== */
-
 interface SparklineProps {
   points: number[];
 }
 
-/**
- * نمودار جرقه‌ای کوچک.
- *
- * ⚠️ از SVG خام استفاده می‌شود نه `recharts` — چون sparkline فقط به یک
- * path نیاز دارد و ResponsiveContainer برای این اندازه overkill است.
- * رنگ از والد (`text-*` روی `tone.spark`) با `currentColor` ارث می‌برد.
- */
 function Sparkline({ points }: SparklineProps): ReactNode {
   const path = useMemo(() => {
     if (points.length < 2) return null;
@@ -69,10 +58,6 @@ function Sparkline({ points }: SparklineProps): ReactNode {
   );
 }
 
-/* ==========================================================================
-   KpiCard
-   ========================================================================== */
-
 export interface KpiCardProps {
   def: KpiCardDef;
   /** مقدار فعلی */
@@ -89,12 +74,6 @@ export interface KpiCardProps {
   onClick?: () => void;
 }
 
-/**
- * کارت KPI.
- *
- * شامل: مقدار، Δ نسبت به دوره‌ی مقایسه (رنگ بر اساس **جهت مطلوب**)،
- * نوار پیشرفت نسبت به هدف، sparkline اختیاری، و tooltip متدولوژی.
- */
 export default function KpiCard({
   def,
   value,
@@ -204,10 +183,6 @@ export default function KpiCard({
   );
 }
 
-/* ==========================================================================
-   کمکی‌ها
-   ========================================================================== */
-
 /** خط Δ با رنگ بر اساس جهت مطلوب شاخص. */
 function DeltaLine({
   delta,
@@ -248,12 +223,6 @@ function DeltaLine({
   );
 }
 
-/**
- * جهت خروجی Δ بر اساس **جهت مطلوب** شاخص (از پیکربندی کارت):
- * - `higher-is-better` ⇒ افزایش = خوب
- * - `lower-is-better` ⇒ کاهش = خوب
- * - `neutral` (یا Δ صفر/نامعلوم) ⇒ خنثی
- */
 function deltaDirectionOf(
   polarity: KpiPolarity,
   delta: number | null,

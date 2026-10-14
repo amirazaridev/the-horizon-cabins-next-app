@@ -1,6 +1,3 @@
-//* منطق «بودجه» — یک بازه‌ی تک‌مقداری با دو معنا: بدون تاریخ «هر شب» (`price`)، با تاریخ «کل سفر» (`totalPrice`).
-//* مقدار `SearchFilters.budget` همیشه در واحدِ حالت فعال است؛ برای حفظ قصد «هر شب» هنگام تغییر تعداد شب، `rescaleBudgetBetween` مقیاسش می‌کند.
-
 import {
   BUDGET_MAX,
   BUDGET_MIN,
@@ -46,9 +43,6 @@ function roundToStep(value: number): number {
   return Math.round(value / BUDGET_STEP) * BUDGET_STEP;
 }
 
-//* مقیاس‌بندی بودجه با حفظ قصد «هر شب» وقتی تعداد شب عوض می‌شود.
-//* ضریب: prev=۰,next>۰ ⇒ ×next · prev>۰,next=۰ ⇒ ÷prev · هر دو >۰ ⇒ ×next/prev · هر دو ۰ ⇒ بدون تغییر.
-//* نتیجه به پله‌ی اسلایدر گرد و داخل محدوده‌ی حالت جدید clamp می‌شود.
 export function rescaleBudgetBetween(
   prevNights: number,
   nextNights: number,
@@ -82,17 +76,6 @@ export function rescaleBudgetBetween(
   };
 }
 
-/**
- * زمانی که یکی از تاریخ‌ها عوض می‌شود، budget تازه را نسبت به تعداد شب
- * جدید مقیاس می‌دهد و کل فیلترها را برمی‌گرداند.
- *
- * منطق مشترک هر دو کنترلر (URL و استور) اینجا متمرکز است تا هنگام تغییر
- * تاریخ، قصد «هر شب» حفظ شود.
- *
- * @param prev فیلترهای قبلی
- * @param key کلید تاریخِ عوض‌شده (`checkIn` یا `checkOut`)
- * @param value مقدار تاریخ تازه
- */
 export function rescaleBudgetOnDateChange(
   prev: SearchFilters,
   key: "checkIn" | "checkOut",

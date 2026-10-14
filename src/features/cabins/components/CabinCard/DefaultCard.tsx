@@ -7,10 +7,6 @@ import { animationClasses, baseClasses, CARD_IMAGE_SIZES } from "./classes";
 import { AmenityChip, CardImage } from "./primitives";
 import type { CardVariantProps } from "./types";
 
-/**
- * کارت پیش‌فرض — کارت صفحه‌ی «اقامتگاه‌ها» و پیش‌نمایش جستجو.
- * (تنها واریانتی که قلب «علاقه‌مندی» رویش می‌آید.)
- */
 export default function DefaultCard({
   cabin,
   imageOverride,
@@ -132,6 +128,9 @@ export default function DefaultCard({
                 </span>
               )}
               <span className="text-text text-sm font-extrabold tabular-nums sm:text-base">
+                <span className="text-text-gray text-[10px] font-normal">
+                  از&nbsp;
+                </span>
                 {formatCurrency(finalPrice)}
                 <span className="text-text-gray mr-1 text-[10px] font-normal">
                   تومان/شب

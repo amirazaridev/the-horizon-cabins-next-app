@@ -12,16 +12,6 @@ export type DayPropsOptions = {
   dayOccupancy?: (date: Date) => DayOccupancy;
 };
 
-/**
- * محتوای سلول قیمت‌دار: شماره‌ی روز + نرخ شب (و نرخ پایه‌ی خط‌خورده اگر
- * تخفیف داشته باشد).
- *
- * ⚠️ عمداً از `<b>` و `<s>` استفاده می‌کنیم، نه `<span>`: کتابخانه قاعده‌ی
- * `.rmdp-day span { position:absolute; inset:3px }` را تزریق می‌کند و هر span
- * تودرتویی را روی هم می‌اندازد. این عناصر تحت تأثیر آن سلکتور نیستند و
- * به‌شکل flex-item داخل span بیرونی (که `display:flex; flex-direction:column`
- * دارد) زیر هم می‌نشینند.
- */
 function pricedDayContent(dayNumber: number, price: CalendarDayPrice) {
   return (
     <>
@@ -34,16 +24,6 @@ function pricedDayContent(dayNumber: number, price: CalendarDayPrice) {
   );
 }
 
-/**
- * پراپ‌های سفارشی یک سلول روز — همان چیزی که به `mapDays` کتابخانه
- * `react-multi-date-picker` برمی‌گردانیم.
- *
- * ⚠️ نکته‌ی کتابخانه: `className` که از `mapDays` برگردد روی روزهای
- * **غیرفعال** اعمال نمی‌شود (کتابخانه آن را فقط وقتی روز disabled نباشد
- * به span می‌چسباند). پس برای نشانه‌گذاری روز رزروشده از یک data-attribute
- * استفاده می‌کنیم که همیشه روی span می‌نشیند. در عوض `children` همیشه
- * رندر می‌شود، پس محتوای سلول قابل‌کنترل است.
- */
 export function buildDayProps(
   date: DateObject,
   { disabledSet, dayTitle, dayPrice, dayOccupancy }: DayPropsOptions,
@@ -64,16 +44,12 @@ export function buildDayProps(
     return props;
   }
 
-  //* روزِ ورودِ یک رزرو (نیمه‌ی بعدازظهر اشغال) — هاشور نیمه‌ی چپ.
-  //* نیمه‌ی صبحش آزاد است، پس می‌تواند «تاریخ خروج» رزرو جدید باشد.
   if (occupancy === "afternoon") {
     props["data-occupied"] = "afternoon";
     props.title = "نیمه‌ی صبح آزاد است — می‌تواند تاریخ خروج شما باشد";
     return props;
   }
 
-  //* روزِ خروجِ یک رزرو (نیمه‌ی صبح اشغال) — هاشور نیمه‌ی راست.
-  //* نیمه‌ی بعدازظهرش آزاد است، پس می‌تواند «تاریخ ورود» رزرو جدید باشد.
   if (occupancy === "morning") {
     props["data-occupied"] = "morning";
     props.title = "نیمه‌ی بعدازظهر آزاد است — می‌تواند تاریخ ورود شما باشد";

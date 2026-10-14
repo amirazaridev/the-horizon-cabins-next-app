@@ -40,8 +40,6 @@ export default function ConfirmModal({
       await onConfirm();
       onClose();
     } catch {
-      // خطا قبلاً توسط خود onConfirm (مثلاً toast.error) به کاربر نمایش داده شده؛
-      // فقط مودال رو باز نگه می‌داریم تا کاربر بتونه دوباره تلاش کنه
     } finally {
       setIsPending(false);
     }

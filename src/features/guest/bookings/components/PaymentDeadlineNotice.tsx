@@ -15,19 +15,6 @@ type Props = {
   variant?: "card" | "page";
 };
 
-/**
- * هشدار مهلت پرداخت + **زمان دقیق انقضا** (بدون شمارش معکوس).
- *
- * ⚠️ چرا شمارش معکوس حذف شد؟ لغو خودکار را کرون بک‌اند انجام می‌دهد
- * (`jobs/booking-expiration.job.ts`) و دیتابیس منبع حقیقت است. پس UI فقط
- * «زمان مهلت» را نشان می‌دهد و رزروِ لغوشده در بازدید/رفرش بعدی در تب
- * «لغوشده‌ها» ظاهر می‌شود.
- *
- * ⚠️ چرا Server Component (بدون `"use client"`)؟ وضعیت «گذشته/نگذشته» به
- * زمان وابسته است؛ اگر آن را در کلاینت با تایمر محاسبه کنیم، بین HTML سرور
- * و هیدریشن اختلاف می‌افتد. اینجا محاسبه **یک‌بار روی سرور** انجام می‌شود و
- * نتیجه پایدار است (هیچ پرش یا mismatch نداریم).
- */
 export default function PaymentDeadlineNotice({
   deadline,
   variant = "card",
@@ -49,8 +36,6 @@ export default function PaymentDeadlineNotice({
     >
       <NoticeIcon className="mt-0.5 size-4 shrink-0" />
 
-      {/* ⚠️ نقش هشدار روی متنِ ثابت است، نه روی زمان: زمان یک مقدار ثابت
-          است و اعلام دوباره‌ی آن به صفحه‌خوان لازم نیست. */}
       <div
         className={`min-w-0 flex-1 space-y-1 leading-relaxed ${
           isPage ? "text-sm" : "text-xs"

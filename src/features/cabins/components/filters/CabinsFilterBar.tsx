@@ -58,7 +58,7 @@ function MapToggle({
       >
         <span
           className={`absolute top-0.5 size-5 rounded-full bg-white shadow transition-all duration-200 ${
-            visible ? "right-0.5" : "right-[22px]"
+            visible ? "right-0.5" : "right-5.5"
           } `}
         />
       </span>

@@ -16,8 +16,6 @@ import {
 
 const fa = (value: number) => value.toLocaleString("fa-IR");
 
-//* دو سر بازه‌ی بودجه، فقط اگر واقعاً محدودکننده باشند؛ بازه‌ی کامل یعنی «بدون محدودیت».
-//* ⚠️ سقفِ «کامل» به تعداد شب وابسته است: بدون تاریخ ۳۰ میلیون، با تاریخ ۳۰ میلیون × تعداد شب.
 function budgetEdges(
   range: BudgetRange | null,
   nights: number,
@@ -45,8 +43,6 @@ export function budgetFieldLabel(nights: number): string {
     : "بودجه‌ی هر شب";
 }
 
-//* «۲ تا ۸ میلیون تومان / شب» · «تا ۸ …» · «از ۵ …»؛ با تاریخ پسوند «برای کل سفر» می‌شود.
-//* بازه‌ی کامل یا `null` یعنی بدون محدودیت ⇒ `undefined`.
 export function formatBudgetRangeLabel(
   range: BudgetRange | null,
   nights = 0,

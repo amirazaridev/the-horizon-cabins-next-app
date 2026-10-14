@@ -15,14 +15,6 @@ type Props = {
   closeMenu: () => void;
 };
 
-/**
- * بلوک پروفایل منوی موبایل — جایگزین دکمه‌ی «ورود | ثبت‌نام» برای کاربر
- * وارد‌شده. همان گزینه‌های منوی دسکتاپ را به‌شکل ردیف‌های تمام‌عرض
- * نشان می‌دهد (مناسب لمس).
- *
- * ⚠️ فهرست آیتم‌ها از `GUEST_NAV_ITEMS` می‌آید تا با سایدبار ناحیه‌ی مهمان
- * و منوی دسکتاپ یکی بماند.
- */
 export default function MobileProfile({ user, closeMenu }: Props): ReactNode {
   const [isPending, startTransition] = useTransition();
   const initial = user.email.trim().charAt(0).toUpperCase() || "؟";

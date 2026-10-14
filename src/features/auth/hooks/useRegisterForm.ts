@@ -24,40 +24,11 @@ import { useAsyncAction } from "./useAsyncAction";
 import { useResendTimer } from "./useResendTimer";
 import { useStepTransition } from "./useStepTransition";
 
-/**
- * تمام منطق فرم ثبت‌نام سه‌مرحله‌ای.
- *
- * ⚠️ چرا برای هر مرحله یک `useForm` جدا؟
- * چون هر مرحله قرارداد اعتبارسنجی خودش را دارد (`react-hook-form` یک
- * resolver در سطح فرم می‌پذیرد) و یک فرم واحد مجبور می‌شد در هر «بعدی»
- * فیلدهای مراحل دیگر را هم چک کند. اما برای عبور از مرحله باید فیلدهای
- * مراحل قبلی هم *معتبر بمانند* (کاربر می‌تواند برگردد و ایمیل را خراب
- * کند) ⇒ درست همین‌جاست که `goNext` اعتبارسنجی مراحل قبلی را دوباره
- * اجرا می‌کند.
- *
- * ⚠️ چرا داده در `useState` این هوک است و نه در فرم‌ها؟
- * فرم‌ها هنگام unmount شدن با تغییر مرحله از DOM می‌روند؛ اگر داده فقط
- * در آن‌ها بود، برگشت به مرحله‌ی قبل مقدارها را از دست می‌داد.
- *
- * ⚠️ چرا `useWatch` و نه `form.watch()`؟
- * `form.watch()` در این پروژه هشدار `react-hooks/incompatible-library`
- * می‌گیرد (خواندن state حین رندر از یک کتابخانه‌ی خارجی) و هر تایپ
- * کاراکتر کل فرم را رندر می‌کند. `useWatch` اشتراک‌محور است.
- */
-
 type Options = {
-  /**
-   * فراخوانی بعد از ساخت موفق حساب.
-   * `redirectTo` مسیر مقصد بر اساس نقش کاربر است (admin/owner → داشبورد،
-   * guest → صفحه اصلی) و از پاسخ Server Action می‌آید.
-   */
   onSuccess?: (redirectTo: string) => void;
 };
 
 export function useRegisterForm({ onSuccess }: Options = {}) {
-  /* ---------------------------------------------------------------- */
-  /* ویزارد مراحل                                                       */
-  /* ---------------------------------------------------------------- */
 
   const {
     step: stepIndex,
@@ -73,29 +44,15 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
   const [maxReached, setMaxReached] = useState(0);
   const [formError, setFormError] = useState<AuthError | null>(null);
   const [codeSentAt, setCodeSentAt] = useState<number | null>(null);
-  /**
-   * مدت تایمر ارسال مجدد — از پاسخ سرور می‌آید (`resendAfterSeconds`).
-   * مقدار اولیه از ثابت کلاینت می‌آید فقط تا قبل از اولین ارسال تایمر
-   * معنادار باشد؛ پس از آن منبع حقیقت پاسخ سرور است.
-   */
   const [resendSeconds, setResendSeconds] = useState<number>(AUTH_LIMITS.resendSeconds);
   const [identity, setIdentity] = useState<RegisterStepOneValues>({
     firstName: "",
     lastName: "",
     email: "",
   });
-  /**
-   * رمز عبور مرحله‌ی ۲ تا لحظه‌ی ساخت حساب در پایان نگه داشته می‌شود.
-   * عمداً فقط رمز است و نه کل مقادیر فرم: `confirmPassword` و
-   * `acceptedTerms` بعد از اعتبارسنجی دیگر مصرفی ندارند.
-   */
   const [credentials, setCredentials] = useState({ password: "" });
 
   const action = useAsyncAction();
-
-  /* ---------------------------------------------------------------- */
-  /* فرم‌های هر مرحله                                                   */
-  /* ---------------------------------------------------------------- */
 
   const identityForm = useForm<RegisterStepOneValues>({
     resolver: zodResolver(registerStepOneSchema) as Resolver<RegisterStepOneValues>,
@@ -127,18 +84,6 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
     startedAt: codeSentAt,
   });
 
-  /* ---------------------------------------------------------------- */
-  /* ارسال کد تایید                                                     */
-  /* ---------------------------------------------------------------- */
-
-  /**
-   * درخواست ارسال کد تایید به ایمیل.
-   *
-   * ⚠️ منبع حقیقت تایمر ارسال مجدد، پاسخ سرور است
-   * (`resendAfterSeconds`) نه ثابت کلاینت. این‌طور سیاست محدودیت نرخ
-   * سمت سرور و تایمر UI هم‌داستان می‌مانند و کاربر پیام «تلاش زیاد»
-   * نمی‌گیرد چون دکمه‌اش زودتر از سرور باز شده.
-   */
   const sendCode = useCallback(
     async (email: string, isResend: boolean) => {
       void isResend;
@@ -169,19 +114,6 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
     [action, goTo, identityForm, verificationForm],
   );
 
-  /* ---------------------------------------------------------------- */
-  /* جابه‌جایی مراحل                                                     */
-  /* ---------------------------------------------------------------- */
-
-  /**
-   * اعتبارسنجی همه‌ی مراحل قبل از مرحله‌ی جاری.
-   *
-   * ⭐ عمداً بر اساس **ترتیب** کار می‌کند نه شناسه‌های هاردکدشده. قبلاً این
-   * تابع می‌گفت «اگر در مرحله‌ی verification یا password هستیم، فرم تایید
-   * را هم چک کن» که با جابه‌جایی مراحل بی‌سروصدا غلط می‌شد. حالا با
-   * `getRegisterStepIndex` هر فرمی که اندیسش کمتر از مرحله‌ی جاری است
-   * اعتبارسنجی می‌شود؛ پس ترتیب مراحل هر چه باشد درست می‌ماند.
-   */
   const previousStepsAreValid = useCallback(async () => {
     const checks: Array<Promise<boolean>> = [];
 
@@ -199,14 +131,6 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
     return results.every(Boolean);
   }, [identityForm, passwordForm, stepIndex, verificationForm]);
 
-  /**
-   * مرحله‌ی ۱ (اطلاعات شخصی) → مرحله‌ی ۲ (رمز عبور).
-   *
-   * ⚠️ نکته‌ی مهم جریان جدید: این‌جا **کدی ارسال نمی‌شود**. ارسال کد حالا
-   * وظیفه‌ی آخرین مرحله است، چون تا وقتی کاربر رمز عبورش را نساخته،
-   * ارسال ایمیل تاییدیه بی‌معناست (حساب هنوز قابل فعال‌سازی نیست).
-   * تنها کاری که می‌کنیم نگه‌داشتن هویت نرمال‌شده برای مرحله‌های بعد است.
-   */
   const submitIdentity = identityForm.handleSubmit(async (values) => {
     const normalized = {
       firstName: normalizeText(values.firstName),
@@ -228,13 +152,6 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
     next();
   });
 
-  /**
-   * مرحله‌ی ۲ (رمز عبور) → مرحله‌ی ۳ (تایید ایمیل).
-   *
-   * این‌جا رمز فقط در state نگه داشته می‌شود و **حساب ساخته نمی‌شود**؛
-   * ساخت حساب در پایان و بعد از تایید کد انجام می‌شود تا اگر کاربر کد
-   * را وارد نکرد، هیچ حساب نیمه‌کاری در سرور ساخته نشود.
-   */
   const submitPassword = passwordForm.handleSubmit(async (values) => {
     setFormError(null);
     setCredentials({ password: values.password });
@@ -246,14 +163,6 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
     next();
   });
 
-  /**
-   * مرحله‌ی ۳ (تایید ایمیل) → پایان.
-   *
-   * شاه‌کلید: کد تایید می‌شود و **در همان لحظه** حساب با هویت و رمزی که
-   * در مراحل قبل جمع شده ساخته می‌شود. اگر کاربر بین راه برگردد و ایمیل
-   * یا رمز را عوض کند، `previousStepsAreValid` جلوی ارسال با داده‌ی
-   * نامعتبر را می‌گیرد.
-   */
   const submitVerification = useCallback(
     async (code: string) => {
       setFormError(null);
@@ -298,8 +207,6 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
         return false;
       }
 
-      // ✅ حساب ساخته شد و Server Action کوکی نشست را ست کرد؛
-      // حالا بر اساس نقش به مقصد درست هدایت می‌شویم.
       onSuccess?.(registered.redirectTo);
       return true;
     },
@@ -314,17 +221,6 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
     ],
   );
 
-  /* ---------------------------------------------------------------- */
-  /* هندلرهای ناوبری                                                    */
-  /* ---------------------------------------------------------------- */
-
-  /**
-   * «بعدی» — بسته به مرحله به یکی از تابع‌های ارسال می‌رسد.
-   *
-   * ⚠️ مرحله‌ی آخر (`verification`) عمداً این‌جا نیست: آن‌جا خودِ
-   * `submitVerification` هم کد را چک می‌کند و هم حساب را می‌سازد، پس
-   * با submit فرم صدا زده می‌شود، نه با دکمه‌ی «بعدی».
-   */
   const goNext = useCallback(async () => {
     if (isTransitioning) return;
     if (step === "identity") return submitIdentity();
@@ -358,10 +254,6 @@ export function useRegisterForm({ onSuccess }: Options = {}) {
     },
     [goTo, isTransitioning, maxReached, stepIndex],
   );
-
-  /* ---------------------------------------------------------------- */
-  /* خروجی                                                              */
-  /* ---------------------------------------------------------------- */
 
   const stepMeta = useMemo(() => REGISTER_STEPS[stepIndex], [stepIndex]);
 

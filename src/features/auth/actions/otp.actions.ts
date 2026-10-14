@@ -4,18 +4,6 @@ import { apiFetch } from "@/libs/api/apiFetch";
 import { normalizeDigits, normalizeText } from "../schemas";
 import type { AuthError, AuthErrorCode } from "../types/auth.types";
 
-/**
- * Server Actions کد تایید (OTP) — لایه‌ی BFF.
- *
- * ⚠️ جریان معماری:
- *   مرورگر → Server Action (اینجا) → Express `/otp/request` و `/otp/verify`
- *
- * چرا Server Action و نه فراخوانی مستقیم از کلاینت؟
- *  - مرورگر هرگز با Express حرف نمی‌زند (BFF)، پس کلید/آدرس API لو نمی‌رود.
- *  - خروجی اکشن دقیقاً همان چیزی است که UI لازم دارد، نه پاسخ خام API.
- */
-
-/** هدف‌های مجاز OTP — آینه‌ی enum بک‌اند. */
 export type OtpPurpose = "signup" | "passwordReset" | "login";
 
 /** خروجی اکشن ارسال کد. */
@@ -39,14 +27,6 @@ type ApiEnvelope<T> = {
   data?: T;
 };
 
-/**
- * نگاشت کد خطای بک‌اند به کد دامنه‌ی فرانت + فیلد مرتبط.
- *
- * ⚠️ چرا بر اساس `code` بک‌اند و نه فقط status؟
- * چند خطای متفاوت هم‌کد HTTP هستند (مثلاً `OTP_INVALID` و `OTP_EXPIRED`
- * هر دو 400). بدون خواندن `code` نمی‌توانیم پیام/رفتار درست را به کاربر
- * بدهیم (بازیابی تایمر، خطای فیلد کد، پیام «کد جدید بگیر»).
- */
 function mapOtpError(status: number, code?: string, message?: string): AuthError {
   let domainCode: AuthErrorCode = "UNKNOWN";
 
@@ -84,12 +64,6 @@ function mapOtpError(status: number, code?: string, message?: string): AuthError
   };
 }
 
-/**
- * درخواست ارسال کد تایید به ایمیل.
- *
- * @param email ایمیل مقصد (نرمال می‌شود).
- * @param purpose هدف کد — پیش‌فرض ثبت‌نام.
- */
 export async function requestOtpAction(
   email: string,
   purpose: OtpPurpose = "signup",
@@ -123,13 +97,6 @@ export async function requestOtpAction(
   return { ok: true, data: json.data };
 }
 
-/**
- * بررسی کد تایید. در صورت موفقیت، توکن یک‌بارمصرف ثبت‌نام برمی‌گردد.
- *
- * @param email ایمیل مقصد.
- * @param code کد ۶ رقمی (ارقام فارسی هم پذیرفته و نرمال می‌شوند).
- * @param purpose هدف کد — پیش‌فرض ثبت‌نام.
- */
 export async function verifyOtpAction(
   email: string,
   code: string,

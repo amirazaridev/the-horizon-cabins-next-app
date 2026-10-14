@@ -9,21 +9,6 @@ import {
   type UserRole,
 } from "../constants/auth-cookie";
 
-/**
- * سرویس نشست (Session Service) — لایه‌ی مجزای مدیریت کوکی و تشخیص کاربر.
- *
- * ⚠️ جداسازی مسئولیت:
- * - این فایل تنها جایی است که می‌داند «کوکی چطور خوانده/نوشته می‌شود» و
- *   «کاربر جاری چطور از API تشخیص داده می‌شود».
- * - Server Actions فقط `createSession`/`destroySession` را صدا می‌زنند.
- * - Server Components فقط `getCurrentUser`/`getCurrentRole` را صدا می‌زنند.
- *
- * ⚠️ تشخیص اعتبار از سمت سرور:
- * به‌جای decode یا verify محلی JWT، کوکی را به بک‌اند می‌فرستیم و نقش را
- * از پاسخ `/user/me` می‌خوانیم. این‌طور توکن یک‌جا (در بک‌اند) اعتبارسنجی
- * می‌شود و لایه‌ی فرانت هیچ دانشی از ساختار توکن ندارد.
- */
-
 const API_URL = process.env.API_URL;
 
 /** کاربر جاری — همان چیزی که همه‌ی لایه‌های UI لازم دارند. */
@@ -41,20 +26,6 @@ type ApiMeResponse = {
   };
 };
 
-/**
- * کاربر جاری را از API می‌خواند یا `null` اگر:
- *   - کوکی وجود نداشت،
- *   - کوکی نامعتبر/منقضی بود (بک‌اند 401),
- *   - یا تماس شبکه‌ای شکست خورد.
- *
- * ⚠️ نکته‌ی مهم: در بک‌اند برای نقش `guest` عمداً فیلد `role` حذف می‌شود
- * (خروجی `getUserProfile`). پس اینجا اگر `role` نبود، آن را «guest»
- * در نظر می‌گیریم تا رفتار تشخیص نقش درست بماند.
- *
- * ⚠️ با `cache()` پوشانده شده تا در یک درخواست، تماس‌های مکرر (مثلاً layout
- * و page هر دو `requireDashboardAccess` را صدا می‌زنند) فقط **یک** fetch به
- * `/user/me` بزنند.
- */
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
@@ -93,13 +64,6 @@ export async function canAccessDashboardAsCurrentUser(): Promise<boolean> {
   return canAccessDashboard((await getCurrentUser())?.role);
 }
 
-/**
- * ست‌کردن کوکی JWT روی مرورگر.
- *
- * ⚠️ نقش BFF: توکن از سرور Express می‌آید، اما کوکی را همین‌جا (Next.js)
- * روی مرورگر ست می‌کنیم. `httpOnly` یعنی جاوااسکریپت مرورگر هرگز توکن را
- * نمی‌بیند و XSS نمی‌تواند آن را بدزدد.
- */
 export async function createSession(token: string): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(AUTH_COOKIE_NAME, token, {

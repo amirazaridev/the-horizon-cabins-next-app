@@ -26,8 +26,6 @@ import {
   serializeSearchFiltersForUpdate,
 } from "@/features/search/utils/search-params";
 
-//* کنترلر سرچ بر پایه‌ی URL — برای `/cabins`. در این صفحه URL «منبع حقیقت» است:
-//* مقدار اعمال‌شده از URL پارس می‌شود، draft محلی است و فقط با «اعمال» در URL نوشته می‌شود، و اگر کاربر خودش پارامتری را از URL حذف کند draft هم‌گام می‌شود. جریان یک‌طرفه است و حلقه‌ی Store ↔ URL وجود ندارد.
 export function useUrlSearchController(
   searchParams: RawSearchParams,
 ): SearchController {
@@ -67,8 +65,6 @@ export function useUrlSearchController(
   const setField = useCallback(
     <K extends keyof SearchFilters>(key: K, value: SearchFilters[K]) => {
       setDraft((prev) => {
-        //* بودجه یک مقدار با دو معناست (هر شب / کل سفر)؛ با تغییر تاریخ باید مقیاس بگیرد تا قصد «هر شب» حفظ شود.
-        //* منطق مشترک در `rescaleBudgetOnDateChange` است تا با کنترلر لندینگ تکرار نشود. چون به‌روزرسانی تابعی است، `prev` همیشه تازه است و دو فراخوانی پشت‌سرهمِ پنل تقویم (checkIn و بعد checkOut) درست روی هم می‌نشینند.
         if (key === "checkIn" || key === "checkOut") {
           return rescaleBudgetOnDateChange(
             prev,

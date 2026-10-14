@@ -38,17 +38,6 @@ export function readDestinationParam(
   return null;
 }
 
-/**
- * فیلتر شهرِ صفحه‌ی `/cabins` — نسخه‌ی «پالایش»، نه «کشف مقصد».
- *
- * تفاوتش با انتخاب مقصد سرچ اصلی:
- *   - کوچک و درون‌فیلتری است (بدون تب نقشه)
- *   - شهرها بر اساس منطقه گروه‌بندی شده‌اند
- *   - فقط یک جستجوی متنی ساده دارد
- *
- * گروه‌بندی بر اساس `city.regionId` انجام می‌شود، نه نام شهر.
- * رندر لیست به `CityPanel` مشترک سپرده شده است.
- */
 export default function CityPanel({ cities, regions, value, onChange }: Props) {
   const { searchParams, setParams } = useCabinQuery();
 

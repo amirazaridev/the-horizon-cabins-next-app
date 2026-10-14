@@ -5,16 +5,6 @@ import {
   type PublicSettings,
 } from "../types/public-settings.types";
 
-/**
- * تنظیمات عمومی را از بک‌اند می‌خواند (`GET /settings/public`، بدون احراز هویت).
- *
- * ⚠️ نتیجه کش می‌شود (۵ دقیقه + تگ) چون این مقادیر فقط با `PATCH /settings`
- * توسط owner عوض می‌شوند و در هر رندر دوباره خواندنشان بی‌دلیل است.
- *
- * ⚠️ در خطای شبکه یا پاسخ نامعتبر به `FALLBACK_PUBLIC_SETTINGS` برمی‌گردیم
- * تا صفحه‌ی جزئیات کابین همچنان رندر شود؛ در آن حالت تقویم با افق پیش‌فرض
- * کار می‌کند و مسیر رزرو در سرور هم دوباره اعتبارسنجی می‌شود.
- */
 export async function getPublicSettings(): Promise<PublicSettings> {
   try {
     const res = await apiFetch("settings/public", {

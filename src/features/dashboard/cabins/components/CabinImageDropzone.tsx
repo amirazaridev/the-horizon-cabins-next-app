@@ -102,8 +102,6 @@ function ImageThumbnailItemBase({
   );
 }
 
-// Memoized so that unrelated re-renders of the parent form (e.g. typing in
-// another field) don't force every thumbnail to re-render/repaint.
 const ImageThumbnailItem = memo(ImageThumbnailItemBase);
 
 function CabinImageDropzoneBase({
@@ -116,10 +114,6 @@ function CabinImageDropzoneBase({
   const [isProcessing, setIsProcessing] = useState(false);
   const previousValueRef = useRef(value);
 
-  // Single source of truth for blob URL cleanup: revoke any URL that
-  // leaves `value`, whether that happens because the user removed an
-  // image OR because the parent reset the form (e.g. switching cabin in
-  // edit mode). This closes the leak the old removeImage-only cleanup had.
   useEffect(() => {
     const previous = previousValueRef.current;
     const currentIds = new Set(value.map((image) => image.id));
@@ -297,8 +291,4 @@ function CabinImageDropzoneBase({
   );
 }
 
-// Skips re-rendering the whole dropzone (and every thumbnail) when the
-// parent form re-renders for unrelated reasons (typing in another field,
-// validation state changes, etc.) as long as `value`/`onChange` haven't
-// actually changed.
 export default memo(CabinImageDropzoneBase);

@@ -9,12 +9,6 @@ type Props = {
   className?: string;
 };
 
-/**
- * عنوان بخش‌های صفحه‌ی جزئیات اقامتگاه.
- *
- * قبلاً به‌صورت تابع محلی داخل `CabinDescription` بود؛ چون چند بخش همین
- * سرتیتر را می‌خواهند، به فایل مستقل منتقل شد تا نسخه‌ی دومی ساخته نشود.
- */
 export default function SectionHeading({
   children,
   hint,

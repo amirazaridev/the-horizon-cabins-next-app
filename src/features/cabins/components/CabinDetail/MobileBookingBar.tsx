@@ -7,20 +7,6 @@ import { formatCurrency } from "@/libs/utils/format";
 import { toFaNumber } from "../../utils/booking";
 import { useBooking } from "./BookingProvider";
 
-/**
- * نوار ثابت رزرو در موبایل.
- *
- * دو نکته‌ی مهم:
- *  ۱) `hz-safe-b` فاصله‌ی امن پایین (safe-area) را رعایت می‌کند تا روی
- *     گوشی‌های notch‌دار دکمه زیر نوار خانه‌ی سیستم نرود. فضای اشغال‌شده‌ی
- *     این نوار هم در `CabinDetail` با padding-bottom رزرو شده است.
- *  ۲) وقتی فوتر وارد دید می‌شود نوار کنار می‌رود؛ وگرنه روی لینک‌های
- *     فوتر می‌افتاد و آن‌ها را غیرقابل کلیک می‌کرد.
- *
- * ⚠️ عدد نمایش‌داده‌شده با انتخاب بازه عوض می‌شود (مثل aside): تا وقتی بازه
- * ناقص است «شروع از» کمترین نرخ شب است و از لحظه‌ی کامل‌شدن بازه، مبلغ نهایی
- * اقامت. هر دو از قیمت واقعی تقویم می‌آیند.
- */
 export default function MobileBookingBar(): ReactNode {
   const { price, startingNight, isComplete, nights, isSheetOpen, openSheet } =
     useBooking();

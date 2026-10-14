@@ -120,7 +120,6 @@ export default function BookingsTable({ bookings }: BookingsTableProps): ReactNo
   );
 }
 
-
 function EmptyState(): ReactNode {
   return (
     <div className="text-text-gray flex flex-col items-center justify-center gap-3 py-12 text-center">

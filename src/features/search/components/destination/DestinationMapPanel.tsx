@@ -25,8 +25,6 @@ const PIN_SLOTS = [
   { top: "18%", right: "44%" },
 ];
 
-//* پنل نقشه‌ی مقصد — «جای‌گاه» نقشه، نه نقشه‌ی واقعی. هیچ کتابخانه‌ی نقشه‌ای نصب نشده و هیچ tile واقعی لود نمی‌شود.
-//* قاب و اسلاتِ نقشه از `CabinsMapPanel` موجود پروژه استفاده می‌کند تا بعداً فقط یک provider واقعی روی همین `slotId` سوار شود.
 export default function DestinationMapPanel({
   cities,
   destination,

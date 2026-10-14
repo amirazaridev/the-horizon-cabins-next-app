@@ -6,12 +6,6 @@ type Props = {
   value: string;
 };
 
-/**
- * سلول اطلاعات رزرو (بازه، مدت، مهمان…) — نمایشی و بدون state.
- *
- * ⚠️ از `BookingCard` استخراج شد تا صفحه‌ی پرداخت هم همان ظاهر را داشته
- * باشد و دو نسخه‌ی موازی از این بلوک نداشته باشیم.
- */
 export default function InfoCell({ icon, label, value }: Props): ReactNode {
   return (
     <div className="border-foreground/10 bg-foreground/5 flex items-center gap-3 rounded-2xl border px-3.5 py-3">

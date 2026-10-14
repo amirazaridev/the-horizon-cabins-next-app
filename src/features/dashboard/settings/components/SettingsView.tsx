@@ -5,12 +5,6 @@ import CardDashContainer from "@/components/ui/CardDashContainer";
 import { SETTING_GROUPS, formatSettingValue } from "../constants/settings-fields";
 import type { AppSettings } from "../types/settings.types";
 
-/**
- * نمایش **فقط‌خواندنی** تنظیمات سامانه.
- *
- * ⚠️ فرم ویرایش در فاز بعد اضافه می‌شود (ویرایش سمت بک‌اند فقط برای owner
- * مجاز است)؛ این صفحه فعلاً مقدار مؤثر هر تنظیم را نشان می‌دهد.
- */
 export default function SettingsView({ settings }: { settings: AppSettings }): ReactNode {
   return (
     <div className="flex flex-col gap-6">

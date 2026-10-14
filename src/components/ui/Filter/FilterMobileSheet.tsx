@@ -16,10 +16,6 @@ type FilterMobileSheetProps = {
   footer?: ReactNode;
 };
 
-/**
- * باتم‌شیت موبایل — انیمیشن خالص CSS (بدون درگ).
- * ورود/خروج ۴۰۰ms با ease-out؛ موقع بسته شدن اول fade/slide بعد unmount.
- */
 export default function FilterMobileSheet({
   open,
   title = "فیلترها",
@@ -27,11 +23,6 @@ export default function FilterMobileSheet({
   children,
   footer,
 }: FilterMobileSheetProps) {
-  /**
-   * visible = شیت «نشان داده شود» (بعد از یک فریم از mount تا انیمیشن ورود اجرا شود)
-   * mounted = open || visible یعنی تا پایان انیمیشن خروج در DOM می‌ماند.
-   * همه‌ی setState‌ها داخل callback (rAF/timeout) اجرا می‌شوند، نه در بدنه‌ی افکت.
-   */
   const [visible, setVisible] = useState(false);
   const mounted = open || visible;
 
@@ -73,20 +64,20 @@ export default function FilterMobileSheet({
       aria-modal="true"
       aria-label={title}
       inert={!shown}
-      className="fixed inset-0 z-70 md:hidden"
+      className="fixed inset-0 z-70 lg:hidden"
     >
       {/* Overlay — fade خالص */}
       <div
         aria-hidden="true"
         onClick={onClose}
-        className={`absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-[400ms] ease-out ${
+        className={`absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-400 ease-out ${
           shown ? "opacity-100" : "opacity-0"
         }`}
       />
 
       {/* Panel — slide-up خالص */}
       <div
-        className={`bg-surface absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-3xl shadow-2xl transition-transform duration-[400ms] ease-out motion-reduce:transition-none ${
+        className={`bg-surface absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-3xl shadow-2xl transition-transform duration-400 ease-out motion-reduce:transition-none ${
           shown ? "translate-y-0" : "translate-y-full"
         }`}
       >

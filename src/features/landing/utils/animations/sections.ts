@@ -3,22 +3,6 @@ import { ANIM } from "@/features/landing/utils/animations/selectors";
 
 //? انیمیشن‌های سکشن‌های لندینگ.
 
-//* تیتر بخش دسته‌بندی‌ها.
-export function buildCategoryHeading(): void {
-  gsap.from(`${ANIM.categoryHeading} > *`, {
-    y: 20,
-    autoAlpha: 0,
-    duration: 0.6,
-    stagger: 0.08,
-    ease: "power2.out",
-    scrollTrigger: {
-      trigger: ANIM.categoryHeading,
-      start: "top 88%",
-      toggleActions: "play none none none",
-    },
-  });
-}
-
 //* reveal عمومی — `batch` شده تا تعداد تریگرها کم بماند.
 export function buildRevealBatch(): void {
   const items = gsap.utils.toArray<HTMLElement>(ANIM.reveal);
@@ -78,10 +62,6 @@ export function buildCardGridReveal(): void {
   });
 }
 
-/*
- * بعد از لود کامل عکس‌ها/فونت‌ها، موقعیت تریگرها را دوباره حساب می‌کند.
- * تابع cleanup برمی‌گرداند تا `matchMedia` بتواند پاکش کند.
- */
 export function refreshScrollTriggersOnLoad(): () => void {
   const onLoad = () => ScrollTrigger.refresh();
 

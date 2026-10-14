@@ -18,13 +18,6 @@ export interface CabinCardsSkeletonProps {
   count?: number;
   /** واریانت کارت — هم‌خوان با `CabinCard` واقعی */
   variant?: CabinCardSkeletonVariant;
-  /**
-   * `grid`      : فقط گرید (دسکتاپ/تبلت)
-   * `carousel`  : فقط کاروسل افقی (موبایل)
-   * `responsive`: موبایل کاروسل، از `sm` به بالا گرید — دقیقاً مثل
-   *               بخش پیش‌نمایش جستجو، تا چیدمان اسکلتون با محتوای واقعی
-   *               یکی باشد.
-   */
   layout?: CabinCardsLayout;
   /** کلاس گرید (برای `grid` و `responsive`) — باید با گرید محتوای واقعی یکی باشد */
   gridClassName?: string;
@@ -36,13 +29,6 @@ export interface CabinCardsSkeletonProps {
   showPrice?: boolean;
 }
 
-/**
- * ردیفی از کارت‌های اسکلتی.
- *
- * چیدمان و تعداد کاملاً قابل تنظیم است و همان کلاس‌های گرید/اسلایدِ محتوای
- * واقعی به آن داده می‌شود تا ارتفاع رزرو‌شده با محتوای نهایی مو‌به‌مو یکی
- * باشد.
- */
 export default function CabinCardsSkeleton({
   count = 6,
   variant = "default",

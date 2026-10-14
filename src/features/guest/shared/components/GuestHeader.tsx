@@ -10,15 +10,6 @@ import ShellMenuButton from "@/components/layout/shell/ShellMenuButton";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { GUEST_NAV_ITEMS } from "../constants/guest-nav-items";
 
-/**
- * هدر ناحیه‌ی مهمان — همان ساختار هدر داشبورد (نوار چسبان، breadcrumb،
- * دکمه‌ی دراور موبایل) با اکشن‌های متناسب با مهمان.
- *
- * ⚠️ چرا پروفایل/خروج در هدر نیست؟ چون ناحیه‌ی مهمان سایدبار اختصاصی
- * دارد و اطلاعات اکانت + خروج همان‌جا (پایین سایدبار) قرار گرفته‌اند؛
- * تکرار آن‌ها در هدر فقط شلوغی می‌آورد. به‌جایش مسیر بازگشت به سایت آمده
- * است، چون این ناحیه از سایت جدا شده است.
- */
 export default function GuestHeader(): ReactNode {
   const pathname = usePathname();
   const activeItem = findActiveNavItem(GUEST_NAV_ITEMS, pathname);

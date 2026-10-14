@@ -44,15 +44,6 @@ interface ComboPoint {
   adr: number | null;
 }
 
-/**
- * نمودار ترکیبی اشغال + ADR.
- *
- * - **میله‌ها**: نرخ اشغال هر باکت (٪)
- * - **خط**: ADR هر باکت (تومان)
- *
- * ⭐ دو محور عمودی جدا: اشغال (٪) و ADR (تومان) مقیاس‌های متفاوتی دارند.
- * ترکیب‌شان در یک محور، خط ADR را به کف می‌چسباند.
- */
 export default function OccupancyAdrChart({
   bookings,
   cabinCount,

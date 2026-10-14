@@ -30,8 +30,8 @@ export default function SearchBar({
   usePersistLastSearch(controller.applied);
 
   return (
-    <div className="bg-background-2 border-foreground/10 border-b">
-      <div className="mx-auto max-w-[1800px] px-3 py-3 sm:px-4 lg:px-6">
+    <div className="bg-background">
+      <div className="mx-auto max-w-6xl px-3 pt-3 sm:px-4 lg:px-10">
         <Search
           cities={cities}
           regions={regions}

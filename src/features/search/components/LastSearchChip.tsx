@@ -13,7 +13,6 @@ type Props = {
   controller: SearchController;
 };
 
-//* چیپ «آخرین جستجو» زیر نوار جستجوی هیرو. فقط وقتی جستجوی فعالی وجود ندارد دیده می‌شود (بعد از ریلود یا «حذف جستجو»)؛ با کلیک، همان فیلترهای قبلی دوباره اعمال و پیش‌نمایش باز می‌شود.
 export default function LastSearchChip({ cities, controller }: Props) {
   const { applied, setFilters, apply } = controller;
   const { lastSearch, dismiss } = useLastSearch();
@@ -29,7 +28,7 @@ export default function LastSearchChip({ cities, controller }: Props) {
   if (!summary) return null;
 
   return (
-    <div className="flex max-w-full items-center gap-1 self-start rounded-full border border-white/15 bg-surface/80 py-1.5 ps-3.5 pe-1.5 shadow-lg shadow-black/15 backdrop-blur-md absolute -top-11.5">
+    <div className="flex max-w-full items-center gap-1 self-start rounded-full border border-white/15 bg-surface py-1.5 ps-3.5 pe-1.5 shadow-lg shadow-black/15 backdrop-blur-md absolute -top-8.5 lg:-top-10.75 right-2 lg:right-0">
       <button
         type="button"
         onClick={() => {

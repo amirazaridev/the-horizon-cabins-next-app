@@ -7,11 +7,6 @@ import type {
 } from "@/features/search/types/search.types";
 import { serializeSearchFilters } from "@/features/search/utils/search-params";
 
-//* repository جستجو — لایه‌ی کلاینت و **نقطه‌ی واحد دسترسی UI به داده**.
-//* هیچ کامپوننتی نمی‌داند داده از کجا می‌آید؛ همه فقط `cabinSearchRepository.search(...)` را صدا می‌زنند.
-//* زنجیره: UI → cabinSearchRepository → GET /api/search/cabins (Route Handler) → searchCabinsFromApi → queryCabins → API بک‌اند.
-//* داده‌ی ماک حذف شده؛ تنها منبع نتیجه‌ها API است.
-
 //* مسیر داخلی پروکسی؛ تنها جایی که ساخته می‌شود همین فایل است
 export const CABIN_SEARCH_ENDPOINT = "/api/search/cabins";
 

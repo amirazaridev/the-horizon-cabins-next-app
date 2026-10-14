@@ -14,10 +14,6 @@ import {
 
 type Props = {
   items: readonly ShellNavItem[];
-  /**
-   * آیتم‌های کاربردی پایین سایدبار (مثل «تنظیمات») — بالای دکمه‌ی خروج
-   * رندر می‌شوند تا از ناوبری اصلی جدا باشند.
-   */
   footerItems?: readonly ShellNavItem[];
   /** مسیر جاری — از `usePathname` در `AppShell` تزریق می‌شود. */
   pathname: string;

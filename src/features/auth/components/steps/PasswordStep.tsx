@@ -14,16 +14,6 @@ type Props = {
   form: UseRegisterFormReturn;
 };
 
-/**
- * مرحله‌ی ۲ — تعریف رمز عبور + پذیرش قوانین.
- *
- * ⭐ در جریان جدید، دکمه‌ی این مرحله **کد تایید را ارسال می‌کند** و بعد
- * به مرحله‌ی تایید می‌رود. حساب هنوز ساخته نمی‌شود؛ فقط رمز در state
- * هوک نگه داشته می‌شود تا در پایان (بعد از تایید کد) با هویت ترکیب شود.
- *
- * نوار قدرت رمز از `passwordValue` تغذیه می‌شود که با `useWatch` گرفته
- * شده؛ پس هر تایپ فقط همین زیردرخت را رندر می‌کند و نه کل فرم.
- */
 export default function PasswordStep({ form }: Props): ReactNode {
   const { passwordForm, passwordValue, action, isBusy } = form;
   const isSending = action.is("sendingCode");

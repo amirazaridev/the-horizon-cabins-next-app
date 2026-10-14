@@ -22,10 +22,6 @@ interface UsersTableProps {
   emptyMessage?: string;
 }
 
-/**
- * جدول کاربران — مشترک بین صفحه‌ی «افراد و مهمانان» و «مدیران».
- * ستون آخر منوی عملیات است (آیتم‌هایش با سیاست نقش فیلتر می‌شوند).
- */
 export default function UsersTable({
   users,
   actorRole,
@@ -120,10 +116,6 @@ export default function UsersTable({
     </CardDashContainer>
   );
 }
-
-/* ==========================================================================
-   کمکی‌ها
-   ========================================================================== */
 
 function EmptyState({ message }: { message: string }): ReactNode {
   return (

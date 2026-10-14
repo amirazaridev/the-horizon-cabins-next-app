@@ -3,14 +3,6 @@ import "server-only";
 import { authFetch } from "@/libs/api/authFetch";
 import type { GuestAccountProfile } from "../types/guest-account.types";
 
-/**
- * سرویس پروفایل حساب مهمان — **server-only**.
- *
- * ⚠️ چرا واقعی و نه ماک؟ چون همین اندپوینت (`GET /user/me`) از قبل توسط
- * سرویس نشست برای تشخیص نقش استفاده می‌شود؛ پس اتکای اضافه‌ای ایجاد نمی‌کند
- * و داده‌ی نمایش‌داده‌شده، مشخصات واقعی خودِ کاربر است.
- */
-
 type ApiMeResponse = {
   status: "success" | "fail" | "error";
   data?: {
@@ -37,8 +29,6 @@ export async function getGuestAccountProfile(): Promise<GuestAccountProfile | nu
 
     const guest = json?.data?.guest ?? null;
 
-    // جنسیت در بک‌اند `null` است اگر ثبت نشده باشد؛ در فرم به `""` نگاشت
-    // می‌شود که یعنی «ثبت‌نشده» — پس هیچ گزینه‌ای در کنترل جنسیت فعال نیست.
     const gender = guest?.gender === "male" || guest?.gender === "female" ? guest.gender : "";
 
     return {

@@ -3,16 +3,6 @@ import { faIR } from "date-fns-jalali/locale";
 
 import { formatCurrency } from "@/libs/utils/format";
 
-/**
- * قالب‌بندی تاریخ و مبلغ ناحیه‌ی مهمان — تنها نقطه‌ی تبدیل داده‌ی خام به
- * متن فارسی برای صفحات «رزروهای من» و «تنظیمات حساب کاربری».
- *
- * ⚠️ چرا تاریخ فقط‌تاریخی را دستی پارس می‌کنیم؟
- * بک‌اند برای فیلدهای `@db.Date` رشته‌ی ISO با زمان `00:00:00Z` می‌فرستد.
- * `new Date(iso)` آن را UTC می‌خواند و در تایم‌زون‌های منفی یک روز عقب
- * می‌افتد؛ با افزودن `T00:00:00` (بدون Z) به وقت محلی پارس می‌شود و
- * این خطای «یک روز عقب» از بین می‌رود.
- */
 export function parseDateOnly(value: string): Date {
   return new Date(`${value.slice(0, 10)}T00:00:00`);
 }
@@ -53,10 +43,6 @@ export function toFaNumber(value: number): string {
   return value.toLocaleString("fa-IR");
 }
 
-/**
- * تاریخ ISO را به شکل ورودی جلالی (`۱۳۷۰/۰۵/۱۲`) درمی‌آورد — برای
- * پیش‌پرکردن فیلدهای تاریخ در فرم‌ها. ورودی خالی ⇒ رشته‌ی خالی.
- */
 export function toJalaliDateInput(value: string): string {
   if (!value) return "";
   return format(parseDateOnly(value), "yyyy/MM/dd", { locale: faIR });

@@ -16,14 +16,6 @@ export type StayLimits = {
 
 const DAY_MS = 86_400_000;
 
-/**
- * آیا این بازه‌ی اقامت با قواعد بک‌اند هم‌خوان است؟
- *
- * بک‌اند هر کدام از این‌ها را با ۴۰۰ رد می‌کند (`cabin.validation.ts`)؛ چون
- * `queryCabins` در غیر این صورت استثنا پرتاب می‌کند و صفحه را می‌ترکاند،
- * قبل از ارسال همین‌جا بررسی می‌کنیم تا در صورت نامعتبر بودن، تاریخ‌ها
- * نادیده گرفته شوند (تصمیم پروژه: بازه‌ی ناقص/نامعتبر = بدون تاریخ).
- */
 export function isValidStayRange(
   checkIn: string | null | undefined,
   checkOut: string | null | undefined,

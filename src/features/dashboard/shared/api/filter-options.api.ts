@@ -2,21 +2,6 @@ import "server-only";
 
 import { authFetch } from "@/libs/api/authFetch";
 
-/**
- * ترنسپورت مشترک «گزینه‌های فیلتر داشبورد» — دو اندپوینت عمومی و کش‌شده.
- *
- * ⭐ پیش‌تر همین دو تماس عیناً در دو سرویس تکرار شده بود:
- * - `overview/services/dashboard-api.server.ts`
- * - `bookings/services/bookings.api.server.ts`
- *
- * هر دو با همان `{ cache: "force-cache", revalidate: 300, tags }` بودند؛
- * تنها تفاوت، نگاشت خروجی بود (overview لازم دارد `cityId` را از
- * `cabin.city.id` بازسازی کند). پس فقط **واکشی** مشترک شد و شکل هر
- * مصرف‌کننده سرجای خودش ماند.
- *
- * ⚠️ `authFetch` (server-only) — فقط سرور-ساید استفاده شود.
- */
-
 /** کش/تگ مشترک گزینه‌های فیلتر — یکسان بین همه‌ی مصرف‌کننده‌ها. */
 const FILTER_OPTIONS_CACHE = {
   cache: "force-cache",
@@ -45,13 +30,6 @@ export interface RawFilterOptions<
   cabins: TCabin[];
 }
 
-/**
- * واکشی خام شهرها و اقامتگاه‌ها برای dropdownهای فیلتر.
- *
- * ⭐ **جنریک روی شکل خروجی** است: هر مصرف‌کننده می‌تواند تایپ کامل دامنه‌ی
- * خودش را بدهد (مثلاً `DashboardCity` با `region`، یا `DashboardCabin` با
- * `city` تودرتو) بدون نیاز به `as` ناایمن. هیچ نگاشتی انجام نمی‌شود.
- */
 export async function fetchFilterOptions<
   TCity extends RawCityOption = RawCityOption,
   TCabin extends RawCabinOption = RawCabinOption,

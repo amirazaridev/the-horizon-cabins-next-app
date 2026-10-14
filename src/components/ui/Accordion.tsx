@@ -3,12 +3,6 @@
 import { useId, useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 
-/* ==================================================================
-   Accordion — generic, animated, RTL-friendly
-   انیمیشن با ترفند grid-template-rows (۰fr → ۱fr) + opacity.
-   بدون وابستگی خارجی، سازگار با Tailwind v4.
-   ================================================================== */
-
 export type AccordionItemData = {
   id: string;
   /** عنوان ردیف (مثل «تاریخ سفر») */
@@ -27,11 +21,6 @@ type AccordionProps = {
   items: AccordionItemData[];
   /** حالت تک‌باز (پیش‌فرض) — فقط یک آیتم باز می‌ماند */
   openId?: string | null;
-  /**
-   * حالت چندباز کنترل‌شده — اگر داده شود بر `openId` اولویت دارد.
-   * برای جاهایی که باید چند ردیف هم‌زمان باز باشند (مثل نمایش نتایج جستجو
-   * در چند گروه).
-   */
   openIds?: string[];
   defaultOpenId?: string | null;
   /** در حالت تک‌باز: شناسه‌ی باز شده یا `null` */
@@ -77,8 +66,6 @@ export default function Accordion({
   );
 }
 
-/* Controlled-vs-uncontrolled per-row bridge:
-   اگر open از بیرون داده شده بود همان ملاک است، وگرنه state داخلی. */
 function AccordionRow({
   item,
   open,
@@ -167,8 +154,6 @@ function AccordionRow({
         id={panelId}
         role="region"
         aria-hidden={!isOpen}
-        // پنل بسته فقط با ارتفاع صفر پنهان می‌شود، پس بدون `inert` کاربر با
-        // Tab وارد محتوای نامرئی می‌شد.
         inert={!isOpen}
         className={`grid transition-[grid-template-rows,opacity] duration-400 ease-out ${
           isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"

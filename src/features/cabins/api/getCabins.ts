@@ -3,8 +3,6 @@ import { type ApiPaginatedResponse, type PaginationMeta } from "@/types/api-resp
 import { type Cabin, type CabinDto, type CabinsQueryParams } from "../types/cabin.types";
 import { mapCabin } from "../utils/mapCabin";
 
-
-
 export interface PaginatedCabins {
   cabins: Cabin[];
   meta: PaginationMeta;
@@ -53,13 +51,6 @@ function buildQueryString({
   return query ? `?${query}` : "";
 }
 
-/**
- * آیا این درخواست به «موجودی/قیمت زنده» وابسته است؟
- *
- * کوئری‌های تاریخ‌دار (و بودجه‌ی کل) نباید کش شوند: نتیجه‌ی موجودی و
- * قیمت هر لحظه ممکن است عوض شود و `revalidate: 300` یعنی تا ۵ دقیقه
- * ویلاهای اشغال‌شده/آزادشده را اشتباه نشان دهیم.
- */
 function needsFreshData(params?: CabinsQueryParams): boolean {
   return Boolean(params?.startDate || params?.endDate || params?.totalPrice);
 }

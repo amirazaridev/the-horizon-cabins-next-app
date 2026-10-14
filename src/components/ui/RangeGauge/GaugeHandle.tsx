@@ -14,13 +14,6 @@ type Props = {
   onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
 };
 
-/**
- * دستگیرهٔ اسلایدر (کمینه یا بیشینه).
- *
- * ⚠️ پیش از این همین بلوک ۱۸ خطی دو بار (برای `start` و `end`) در
- * `RangeGauge` کپی شده بود و فقط در `data-gauge-handle`، برچسب‌های
- * دسترس‌پذیری، `style` و `z-index` تفاوت داشتند.
- */
 export default function GaugeHandle({
   handle,
   value,

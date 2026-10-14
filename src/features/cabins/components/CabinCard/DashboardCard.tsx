@@ -14,10 +14,6 @@ import {
 } from "./primitives";
 import type { CardVariantProps } from "./types";
 
-/**
- * کارت واریانت `dashboard` — کارت مدیریت اقامتگاه‌ها.
- * هرگز لینک نیست (داخلش منوی دکمه‌دار داریم).
- */
 export default function DashboardCard({
   cabin,
   imageOverride,

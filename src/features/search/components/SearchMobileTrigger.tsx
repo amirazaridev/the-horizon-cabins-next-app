@@ -16,8 +16,6 @@ type Props = {
   summary: string;
 };
 
-//* تریگر موبایل نوار جستجو. دو نما: لندینگ (پرسش «مقصد، بودجه و تاریخ سفرت رو بگو» + خلاصه‌ی فیلترها + ذره‌بین) و `/cabins` (برچسب «جستجوی شما» + خلاصه + دکمه‌ی صریح «تغییر جستجو»).
-//* `w-full` روی ریشه‌ی هر دو شاخه تضمین می‌کند دکمه تا لبه‌ی کانتینر والد (خودِ `Search`) کشیده شود.
 export default function SearchMobileTrigger({
   isHero,
   summaryRaw,
@@ -25,7 +23,7 @@ export default function SearchMobileTrigger({
 }: Props) {
   if (isHero) {
     return (
-      <span className="flex w-full min-w-80 items-center gap-3 py-2 ps-4.5 pe-2">
+      <span className="flex w-90 items-center gap-3 py-2 ps-4.5 pe-2">
         <span className="flex min-w-0 flex-1 flex-col gap-1 text-start">
           <span className="text-text truncate text-[15px] leading-6 font-extrabold">
             {MOBILE_SEARCH_TITLE}

@@ -8,21 +8,6 @@ import {
   type BookingRequiredField,
 } from "@/features/guest/account/lib/profile-completeness";
 
-/**
- * Server Action ثبت رزرو — پل بین دکمه‌ی «رزرو» صفحه‌ی ویلا و
- * `POST /bookings` بک‌اند.
- *
- * ⚠️ چرا Server Action و نه fetch از مرورگر؟ چون مرورگر هرگز مستقیم با
- * Express حرف نمی‌زند (الگوی BFF) و توکن هم در کوکی httpOnly است؛
- * `authFetch` فقط سمت سرور آن را می‌خواند.
- *
- * ⚠️ **تبدیل تاریخ:** ورودی این اکشن باید تاریخ **میلادی** `YYYY-MM-DD`
- * باشد. تقویم صفحه شمسی است ولی مقدار زیرینش `Date` میلادی است و با
- * `toDateKey()` به همین قالب تبدیل می‌شود؛ پس اینجا هیچ تبدیل شمسی↔میلادی
- * لازم نیست (قالب ورودی دقیقاً همان چیزی است که `dateOnlySchema` بک‌اند
- * می‌پذیرد).
- */
-
 export type CreateBookingInput = {
   cabinId: number;
   /** تاریخ ورود میلادی `YYYY-MM-DD`. */
@@ -41,12 +26,6 @@ export type CreateBookingResult =
   | { status: "needs-profile"; missing: BookingRequiredField[] }
   | { status: "error"; message: string; code?: string };
 
-/**
- * ترجمه‌ی کدهای خطای بک‌اند به پیام فارسی قابل‌فهم.
- *
- * ⚠️ کلیدها آینه‌ی `ErrorCode` بک‌اند هستند (`constants/errorCodes.ts`).
- * هر کدی که اینجا نباشد، به پیام خود سرور برمی‌گردد.
- */
 const ERROR_MESSAGES: Record<string, string> = {
   BOOKING_DATE_OVERLAP:
     "این بازه دیگر آزاد نیست؛ صفحه را تازه کنید و تاریخ دیگری انتخاب کنید.",
@@ -66,8 +45,6 @@ export async function createBookingAction(
   const user = await getCurrentUser();
   if (!user) return { status: "needs-auth" };
 
-  //* رزرو فقط با حساب مهمان معنا دارد (admin/owner پروفایل مهمان ندارند و
-  //* بک‌اند هم با ۴۰۳ ردشان می‌کند).
   if (user.role !== "guest") {
     return {
       status: "error",
@@ -76,8 +53,6 @@ export async function createBookingAction(
     };
   }
 
-  //* پروفایل از همان سرویس صفحه‌ی تنظیمات خوانده می‌شود تا قاعده‌ی
-  //* «کامل بودن» یک‌جا بماند.
   const profile = await getGuestAccountProfile();
   if (!profile) {
     return {
@@ -94,11 +69,6 @@ export async function createBookingAction(
     res = await authFetch("bookings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      //* ⚠️ `expectedTotalPrice` عمداً فرستاده **نمی‌شود**: تقویم از read-model
-      //* ذخیره‌شده (`CabinDailyPrice`) خوانده می‌شود و اگر آن جدول با قواعد
-      //* زنده یک لحظه واگرا باشد، ارسال این مقدار رزرو کاربر را بی‌دلیل با
-      //* ۴۰۹ PRICE_CHANGED رد می‌کند. جمع نهایی را خودِ سرور محاسبه و در
-      //* صفحه‌ی پرداخت نمایش می‌دهد.
       body: JSON.stringify({
         cabinId: input.cabinId,
         startDate: input.startDate,

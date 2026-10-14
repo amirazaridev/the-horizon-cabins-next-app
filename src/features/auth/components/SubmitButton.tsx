@@ -19,14 +19,6 @@ type Props = Omit<ComponentProps<typeof Button>, "children" | "type"> & {
   type?: "button" | "submit";
 };
 
-/**
- * دکمه‌ی ارسال فرم که حالت loading را خودش مدیریت می‌کند.
- *
- * ⭐ چرا؟ الگوی `<Loader2 className="animate-spin" /> + متن` قبلاً پنج بار
- * در `RegisterForm` و `LoginForm` تکرار شده بود و هر بار متن و آیکون کمی
- * متفاوت بود. حالا یک نقطه‌ی واحد برای این رفتار وجود دارد و UI مرحله‌ها
- * فقط می‌گوید «در حال ارسال کد...».
- */
 export default function SubmitButton({
   label,
   loadingLabel,

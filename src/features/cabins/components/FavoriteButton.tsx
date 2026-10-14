@@ -9,17 +9,6 @@ type Props = {
   className?: string;
 };
 
-/**
- * دکمه‌ی «افزودن به علاقه‌مندی‌ها» روی کارت اقامتگاه.
- *
- * ⚠️ در این فاز **فقط نمایشی** است: وضعیت در state محلی نگه داشته می‌شود و
- * با کلیک، قلب قرمز و پُر می‌شود. هیچ درخواستی به سرور/دیتابیس زده
- * نمی‌شود.
- *
- * TODO(backend): با آماده‌شدن اندپوینت علاقه‌مندی‌ها، `cabinId` را در یک
- * Server Action به API بفرستید و وضعیت اولیه را از سرور بگیرید (پراپ
- * `defaultFavorite`). همین کامپوننت بدون تغییر ساختار قابل اتصال است.
- */
 export default function FavoriteButton({ cabinId, className = "" }: Props): ReactNode {
   const [isFavorite, setIsFavorite] = useState(false);
 

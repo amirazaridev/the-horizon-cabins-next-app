@@ -7,7 +7,6 @@ type Props = ComponentProps<"div"> & {
   contentClassName?: string;
 };
 
-
 const frame: Record<CardVariant, string> = {
   default:
     "rounded-2xl border border-foreground/5 bg-surface-raised/50 transition-all duration-500",
@@ -18,7 +17,7 @@ const frame: Record<CardVariant, string> = {
 };
 
 const contentPadding: Record<CardVariant, string> = {
-  default: "p-8",
+  default: "p-4",
   gradient: "p-8 md:p-10",
   primary: "p-6 md:p-7",
 };

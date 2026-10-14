@@ -3,12 +3,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-//* انیمیشن سبک باز/بسته شدن بخش پیش‌نمایش جستجو: wrapper (height 0→اندازه‌گیری‌شده + fade)، content (y 16→0)، کارت‌ها (stagger کوچک).
-//* ── سه تله‌ای که این پیاده‌سازی عمداً از آن‌ها دوری می‌کند ──
-//* ۱) توینِ «بستن» باید پیش از ساخت تایم‌لاینِ «باز شدن» کشته شود (`killTweensOf`). چون `overwrite` گزینه‌ی **tween** است نه **timeline**، توین بستن زنده می‌ماند و با تایم‌لاین می‌جنگد ⇒ سکشن باز می‌شود ولی ارتفاع صفر می‌ماند.
-//* ۲) هرگز `gsap.from()` نیست، فقط `fromTo()`. `from()` مقادیر شروع را فوراً inline می‌نویسد و اگر تایم‌لاین وسط راه `kill()` شود، محتوا برای همیشه نامرئی می‌ماند.
-//* ۳) هر شاخه‌ای که انیمیت نمی‌کند، حالت نهایی و «قابل‌دیدن» را صریحاً با `gsap.set` می‌نویسد.
-//* با `prefers-reduced-motion` کاملاً بی‌حرکت می‌شود.
 export function useSearchPreviewAnimation(open: boolean, revision: string) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);

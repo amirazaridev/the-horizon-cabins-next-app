@@ -17,18 +17,6 @@ const FOCUSABLE_SELECTOR = [
   "[tabindex]:not([tabindex='-1'])",
 ].join(",");
 
-/**
- * تله‌ی فوکوس برای لایه‌های مودال‌مانند (Modal و BottomSheet).
- *
- * سه کار انجام می‌دهد:
- *  ۱) با باز شدن، فوکوس را به اولین عنصر قابل فوکوس داخل لایه می‌برد
- *     (اگر چیزی نبود، به خود ظرف — پس ظرف باید `tabIndex={-1}` داشته باشد).
- *  ۲) با Tab و Shift+Tab فوکوس را داخل لایه نگه می‌دارد.
- *  ۳) با بسته شدن، فوکوس را به همان عنصری برمی‌گرداند که لایه را باز کرد.
- *
- * `active` را به «باز بودن» لایه وصل کنید؛ ref برگشتی باید روی ظرف پنل
- * قرار بگیرد، نه روی بک‌دراپ.
- */
 export default function useFocusTrap<T extends HTMLElement = HTMLElement>(
   active: boolean,
 ): RefObject<T | null> {
@@ -42,8 +30,6 @@ export default function useFocusTrap<T extends HTMLElement = HTMLElement>(
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
 
-    // `getClientRects()` روی عناصر `display:none` خالی است؛ پس برخلاف
-    // `offsetParent` برای عناصر position:fixed هم درست کار می‌کند.
     const getFocusable = (): HTMLElement[] =>
       Array.from(
         container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),

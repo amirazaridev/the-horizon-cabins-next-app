@@ -18,12 +18,6 @@ import {
   formatJalaliYear,
 } from "../../lib/date-range";
 
-/**
- * ⚠️ import جانبی (side-effect) — استایل‌های مخصوص همین کامپوننت با
- * `:global()` نوشته شده‌اند (کلاس‌های `rmdp-*` کتابخانه‌اند و نباید hash
- * شوند)، پس مقدار export‌شده‌ای ندارد؛ ولی باید import شود تا CSS در
- * باندل بیاید و با داشبورد کد-اسپلیت شود.
- */
 // import "./MonthRangePicker.module.css";
 import { toDateObject, toJsDate } from "./date-picker-helpers";
 import { DATE_PICKER_INPUT_CLASS } from "./date-picker-input-class";
@@ -36,13 +30,6 @@ interface MonthRangePickerProps {
 
 type DatePickerValue = DateObject | DateObject[] | null;
 
-/**
- * انتخاب بازهٔ ماه با دو فیلد مستقل: «ماه شروع» و «ماه پایان».
- *
- * ⭐ از فاز دوم ماه‌های آینده هم قابل انتخاب‌اند (بدون سقفِ «ماه جاری»)،
- * تا بازه بتواند تا آینده کشیده شود. تنها قید باقی‌مانده ترتیب منطقی
- * (شروع ≤ پایان) است.
- */
 export default function MonthRangePicker({
   from,
   to,
@@ -53,10 +40,6 @@ export default function MonthRangePicker({
   const fromValue = useMemo(() => toDateObject(startOfMonth(from)), [from]);
   const fromWindow = useMemo(() => toDateObject(startOfYear(from)), [from]);
 
-  /**
-   * سقفِ تقویم شروع = آخرین ماه سالِ شروع، ولی هرگز بعد از ماه پایان
-   * (بازه نباید برعکس شود).
-   */
   const fromMax = useMemo(() => {
     const yearEnd = startOfMonth(addMonths(startOfYear(from), 11));
     const rangeCap = startOfMonth(to);
@@ -126,10 +109,6 @@ export default function MonthRangePicker({
         </div>
       </div>
 
-      {/*
-        دو فیلد مستقل: در دسکتاپ کنار هم (`sm:grid-cols-2`) و در موبایل
-        زیر هم، تا هر تقویم روی فیلد خودش باز شود.
-      */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label className="text-text-gray mb-1.5 block text-xs font-medium">

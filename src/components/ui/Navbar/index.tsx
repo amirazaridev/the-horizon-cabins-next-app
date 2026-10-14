@@ -16,21 +16,10 @@ import {
 } from "@/libs/utils/app-ready";
 import Container from "../Container";
 
-/**
- * `useLayoutEffect` روی سرور هشدار می‌دهد؛ این نسخه در SSR به `useEffect`
- * برمی‌گردد. (الگوی شناخته‌شده‌ی isomorphic layout effect)
- */
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 type Props = {
-  /**
-   * کاربر وارد‌شده — از Server Component والد تزریق می‌شود.
-   *
-   * ⚠️ عمداً پراپ است و نه fetch کلاینتی: وضعیت ورود همان‌جا روی سرور
-   * مشخص است، پس نوار بالا بدون فلاش/لودینگ و بدون درخواست اضافه، حالت
-   * درست (پروفایل یا دکمه‌ی ورود) را از همان رندر اول نشان می‌دهد.
-   */
   user?: NavbarUser | null;
 };
 
@@ -41,15 +30,6 @@ export default function Navbar({ user = null }: Props) {
   const pathName = usePathname();
   const isLandingPage = pathName === "/";
 
-  /**
-   * ثبت ناوبری کلاینتی.
-   *
-   * پیش‌لودر لندینگ فقط در «بارگذاری سرد/رفرش» باید پخش شود. اولین مسیری که
-   * این کامپوننت با آن mount می‌شود همان بارگذاری سخت است؛ هر تغییرِ بعدیِ
-   * مسیر یعنی کاربر بدون رفرش جابه‌جا شده. صفت را روی `<html>` می‌گذاریم (نه
-   * state ری‌اکت) تا CSS پیش‌لودر را قبل از اولین paint پنهان کند و هیچ
-   * mismatch هیدریشنی هم پیش نیاید.
-   */
   const lastPathRef = useRef(pathName);
   useIsomorphicLayoutEffect(() => {
     if (lastPathRef.current === pathName) return;
@@ -57,16 +37,6 @@ export default function Navbar({ user = null }: Props) {
     document.documentElement.dataset.clientNav = "1";
   }, [pathName]);
 
-  /**
-   * ورود نوار بالا — هم‌زمان با ورود هیرو.
-   *
-   * قبلاً یک `delay` ثابتِ ۰.۵ ثانیه‌ای داشت و از پیش‌لودر جدا بود، پس نوار
-   * دیرتر از هیرو ظاهر می‌شد. حالا به سیگنالِ «لندینگ آماده است» وصل است.
-   *
-   * نکته‌ی مهم برای graceful degradation: پنهان‌کردن نوار (`gsap.set`) فقط
-   * داخل `play()` انجام می‌شود. اگر سیگنال هرگز نرسد (خطای JS/GSAP)، نوار
-   * دست‌نخورده و دیده‌شدنی می‌ماند.
-   */
   useEffect(() => {
     const nav = navRef.current;
     if (!nav || !isLandingPage) return;
@@ -113,9 +83,6 @@ export default function Navbar({ user = null }: Props) {
     <>
       <nav
         ref={navRef}
-        /* قلاب اندازه‌گیری: هوک `useNavbarHeight` ارتفاع واقعی را از اینجا
-           می‌خواند و در `--hz-navbar-h` می‌نویسد (نوار تب چسبان و
-           `scroll-margin-top` سکشن‌ها از آن استفاده می‌کنند). */
         data-navbar=""
         className={`${isLandingPage ? "fixed" : "sticky"} ${textColor} ${
           hasSolidBackground

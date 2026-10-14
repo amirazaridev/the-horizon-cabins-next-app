@@ -1,11 +1,3 @@
-/**
- * پیکربندی مشترک نمودارها — **تک‌منبع رنگ و استایل tooltip**.
- *
- * ⭐ هیچ کامپوننت نموداری رنگ هاردکد نمی‌کند؛ همه از اینجا می‌خوانند.
- * رنگ‌ها به‌صورت `var(--…)` هستند تا در تم روشن/تیره خودکار عوض شوند
- * (متغیرها در `src/styles/globals.css` تعریف شده‌اند).
- */
-
 /** رنگ‌های پایه‌ی نمودار — همه CSS variable برای سازگاری با تم. */
 export const CHART_COLORS = {
   /** کهربایی برند — سری اصلی درآمد */
@@ -62,10 +54,6 @@ export const STATUS_COLORS: Record<string, string> = {
   cancelled: "var(--color-rose-500)",
 };
 
-/**
- * استایل مشترک tooltip ری‌چارتس.
- * جهت RTL و رنگ‌ها از تم خوانده می‌شوند.
- */
 export const CHART_TOOLTIP_STYLE = {
   borderRadius: 10,
   border: "1px solid var(--color-border)",

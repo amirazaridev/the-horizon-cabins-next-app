@@ -6,12 +6,6 @@ import type { GuestAccountProfile } from "../types/guest-account.types";
 
 type Props = { profile: GuestAccountProfile };
 
-/**
- * فیلدهایی که «تکمیل پروفایل» را می‌سازند.
- *
- * ⚠️ عمداً همان فیلدهای قابل‌ویرایشِ فرم است؛ ایمیل حساب چون همیشه پر است
- * در محاسبه نمی‌آید تا درصد گمراه‌کننده نشود.
- */
 function profileCompleteness(profile: GuestAccountProfile): number {
   const fields = [
     profile.fullName,
@@ -24,21 +18,12 @@ function profileCompleteness(profile: GuestAccountProfile): number {
   return Math.round((filled / fields.length) * 100);
 }
 
-/**
- * سرصفحه‌ی پروفایل — کامپوننت نمایشی.
- *
- * این صفحه فقط برای نقش `guest` است (لایه‌ی گارد)، پس برچسب نقش ثابت
- * «مهمان» است. نوار «تکمیل پروفایل» بازخورد سریع می‌دهد که چه مقدار از
- * مشخصات ثبت شده و کاربر را به تکمیل فرم ترغیب می‌کند.
- */
 export default function AccountProfileHeader({ profile }: Props): ReactNode {
   const initial =
     (profile.fullName.trim() || profile.email).charAt(0).toUpperCase() || "؟";
   const percent = profileCompleteness(profile);
 
   return (
-    /* همان کارت مشترک پنل (`CardDashContainer`) تا ظاهر ناحیه‌ی مهمان با
-       داشبورد مدیریت یکدست بماند. */
     <CardDashContainer
       noTransition
       className="relative overflow-hidden p-5 sm:p-6"

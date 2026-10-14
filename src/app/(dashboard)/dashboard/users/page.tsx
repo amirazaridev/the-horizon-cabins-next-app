@@ -19,13 +19,6 @@ type SearchParams = Promise<UsersSearchParams>;
 /** دامنه‌ی این صفحه: فقط مهمان‌ها. */
 const LIST_ROLES: readonly UserRole[] = ["guest"];
 
-/**
- * صفحه‌ی «کاربران» داشبورد (افراد و مهمانان).
- *
- * ⚠️ فیلترها در URL می‌نشینند و سمت **سرور** به `GET /user?roles=guest`
- * بک‌اند (با `authFetch`) پاس می‌شوند؛ نتیجه به جدول کلاینت‌محور داده
- * می‌شود. صفحه‌بندی هم URL-محور است.
- */
 export default async function UsersPage({
   searchParams,
 }: {

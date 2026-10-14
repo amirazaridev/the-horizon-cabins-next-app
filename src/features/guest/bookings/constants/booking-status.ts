@@ -17,13 +17,6 @@ export type BookingStatusMeta = {
   /** برچسب فارسی وضعیت. */
   label: string;
   icon: LucideIcon;
-  /**
-   * کلاس کامل چیپ وضعیت.
-   *
-   * ⚠️ **رشته‌ی کامل و صریح** — Tailwind کلاس‌هایی که با `replace`/الحاق
-   * ساخته شوند را در JIT تولید نمی‌کند، پس هر ترکیب رنگ باید اینجا
-   * حرف‌به‌حرف نوشته شود.
-   */
   badgeClass: string;
   /** رنگ نوار/نقطه‌ی نشانگر وضعیت. */
   dotClass: string;
@@ -87,10 +80,6 @@ export const BOOKING_TABS: readonly {
 
 const BOOKING_TAB_IDS = BOOKING_TABS.map((tab) => tab.id);
 
-/**
- * مقدار `status` را از URL می‌خواند و اعتبارسنجی می‌کند.
- * هر مقدار ناشناخته/غایب ⇒ «همه».
- */
 export function parseBookingTab(value: unknown): GuestBookingsTabId {
   const raw = Array.isArray(value) ? value[0] : value;
   return BOOKING_TAB_IDS.includes(raw as GuestBookingsTabId)

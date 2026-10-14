@@ -16,15 +16,6 @@ import type { AlertSeverity } from "../../config/alerts.config";
 
 type AlertsBarProps = AlertInput;
 
-/**
- * نوار «نیازمند توجه» — هشدارهای فعال داشبورد.
- *
- * ⭐ همه‌ی قواعد و آستانه‌ها از `config/alerts.config.ts` می‌آیند؛ این
- * کامپوننت فقط خروجی `evaluateAlerts()` را رندر می‌کند.
- *
- * اگر هیچ هشداری فعال نباشد، **هیچ چیزی رندر نمی‌شود** (نه کارت خالی) تا
- * داشبورد شلوغ نشود.
- */
 export default function AlertsBar({
   bookings,
   compareBookings,
@@ -99,10 +90,6 @@ export default function AlertsBar({
     </section>
   );
 }
-
-/* ==========================================================================
-   نقشه‌ی رنگ/آیکون بر اساس شدت — تک‌منبع
-   ========================================================================== */
 
 const SEVERITY_CONTAINER: Record<AlertSeverity, string> = {
   critical: "border-danger/40 bg-danger/5",

@@ -12,8 +12,6 @@ type Props = {
   onDone: () => void;
 };
 
-//* انتخاب تعداد مهمان با شمارنده — بازه‌ی سرچ اصلی: ۱ تا ۱۰ نفر.
-//* اگر مقدار `null` باشد شمارنده حداقل (۱) را نشان می‌دهد؛ برای اینکه نمایش و مقدار واقعی از هم جدا نمانند، دکمه‌ی «تایید» همان مقدار نمایش‌داده‌شده را ثبت می‌کند و بعد پنل را می‌بندد.
 export default function GuestsPanel({ value, onChange, onDone }: Props) {
   const shown = value ?? GUESTS_MIN;
 

@@ -23,13 +23,6 @@ import {
 } from "../lib/settings-validation";
 import type { AppSettings, SettingKey } from "../types/settings.types";
 
-/**
- * فرم ویرایش تنظیمات — فقط برای **owner**.
- *
- * - اعتبارسنجی سمت کلاینت در `lib/settings-validation.ts` (آینه‌ی بک‌اند).
- * - فقط فیلدهای تغییرکرده به `PATCH /settings` فرستاده می‌شوند.
- * - مقادیر مشتق‌شده (گروه «تقویم») فقط‌خواندنی‌اند.
- */
 export default function SettingsForm({ settings }: { settings: AppSettings }): ReactNode {
   const [baseline, setBaseline] = useState<AppSettings>(settings);
   const [draft, setDraft] = useState<SettingsDraft>(() => settingsToDraft(settings));
@@ -171,10 +164,6 @@ export default function SettingsForm({ settings }: { settings: AppSettings }): R
     </div>
   );
 }
-
-/* ==========================================================================
-   کمکی‌ها
-   ========================================================================== */
 
 /** فیلد مشتق‌شده — قابل ویرایش نیست. */
 function ReadOnlyField({ label, value }: { label: string; value: string }): ReactNode {

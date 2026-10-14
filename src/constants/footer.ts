@@ -1,12 +1,3 @@
-/**
- * داده‌های محتوایی فوتر — تنها منبع حقیقت.
- *
- * ⚠️ پیش از این همه‌ی این لینک‌ها و شبکه‌های اجتماعی داخل JSX فوتر
- * hardcode بودند؛ نتیجه‌اش دو مشکل بود: (۱) برای عوض‌کردن یک لینک باید
- * داخل کامپوننت ویرایش می‌کردی، (۲) هر چهار شبکه‌ی اجتماعی با **یک**
- * آیکن (لوگوی فیسبوک) رندر می‌شدند که گمراه‌کننده بود.
- */
-
 export type FooterLink = {
   label: string;
   href: string;
@@ -20,8 +11,6 @@ export type FooterSocial = {
 };
 
 export const FOOTER_QUICK_LINKS: FooterLink[] = [
-  // TODO(content): این لنگرها فقط روی لندینگ وجود دارند؛ در بقیه‌ی
-  // صفحه‌ها باید به `/#…` تغییر کنند یا صفحه‌ی مستقل بگیرند.
   { label: "مقاصد", href: "#destinations" },
   { label: "اقامتگاه‌ها", href: "#stays" },
   { label: "تجربه‌ها", href: "#experiences" },
@@ -29,8 +18,6 @@ export const FOOTER_QUICK_LINKS: FooterLink[] = [
 ];
 
 export const FOOTER_SUPPORT_LINKS: FooterLink[] = [
-  // TODO(content): صفحه‌ی «قوانین و شرایط» و «سوالات متداول» وجود ندارد؛
-  // فعلاً هر دو به لیست اقامتگاه‌ها می‌رسند.
   { label: "قوانین و شرایط", href: "/cabins" },
   { label: "سوالات متداول", href: "/cabins" },
 ];

@@ -10,12 +10,6 @@ type Props = {
   children?: ReactNode;
 };
 
-/**
- * پنل نمایشی نقشه.
- * فعلاً فقط استایل و جایگاه (slot) آماده است؛ بدون نصب هیچ پکیجی.
- * برای اتصال نقشه‌ی واقعی کافیست آن را داخل `children`
- * یا روی `#slotId` سوار کنید.
- */
 export default function CabinsMapPanel({
   slotId = "cabins-map-slot",
   framed = true,

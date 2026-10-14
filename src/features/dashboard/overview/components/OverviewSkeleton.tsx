@@ -42,13 +42,6 @@ function ChartHeader(): ReactNode {
   );
 }
 
-/**
- * اسکلتون صفحه‌ی «داشبورد» (`MainPageLayout`).
- *
- * همان ظرف‌ها و همان شبکه‌بندی صفحه‌ی واقعی — نوار فیلتر، چهار کارت
- * آماری، دو ردیف نمودار و کارت فعالیت امروز — تا سوئیچ از لودینگ به محتوا
- * بدون جهش چیدمان انجام شود.
- */
 export default function OverviewSkeleton(): ReactNode {
   return (
     <div className="flex flex-col gap-6">

@@ -2,14 +2,6 @@ import { apiFetch } from "@/libs/api/apiFetch";
 import { type ApiResponse } from "@/types/api-response";
 import { type Region } from "../types/city.types";
 
-/**
- * لیست مناطق ثابت ایران همراه با تعداد شهرهای هر منطقه.
- *
- * `GET /api/v1/locations/regions` — پاسخ با `displayOrder` مرتب برمی‌گردد
- * و `citiesCount` شمارش داینامیک شهرهای همان منطقه است.
- *
- * توجه: منطقه فقط خواندنی است (CRUD ندارد).
- */
 export async function getRegions(): Promise<Region[]> {
   const res = await apiFetch("locations/regions");
   const json: ApiResponse<"regions", Region[]> = await res.json();

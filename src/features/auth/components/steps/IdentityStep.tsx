@@ -12,16 +12,6 @@ type Props = {
   form: UseRegisterFormReturn;
 };
 
-/**
- * مرحله‌ی ۱ — اطلاعات شخصی (نام، نام خانوادگی، ایمیل).
- *
- * ⚠️ در جریان جدید این مرحله **کدی ارسال نمی‌کند**؛ فقط هویت را
- * نرمال‌سازی و نگه می‌دارد. ارسال کد تایید به آخرین مرحله منتقل شده.
- *
- * کامپوننت کاملاً نمایشی است: هیچ state یا side-effect ندارد و همه‌ی
- * رفتار از `form` (خروجی `useRegisterForm`) تزریق می‌شود. همین آن را
- * بدون mock کردن سرویس و بدون شبیه‌سازی تایمر، قابل تست می‌کند.
- */
 export default function IdentityStep({ form }: Props): ReactNode {
   const { identityForm, isBusy } = form;
 

@@ -1,7 +1,3 @@
-/**
- * مجموعه‌ی کامل KPI در یک فراخوانی — تنها نقطه‌ی تجمیع.
- */
-
 import type { DashboardBooking } from "../../../types/dashboard.types";
 import { type DateRange } from "../range";
 import { roomRevenue, adr } from "./revenue";
@@ -30,12 +26,6 @@ export interface KpiSnapshot {
   createdCount: number;
 }
 
-/**
- * همه‌ی KPIها را یک‌جا حساب می‌کند.
- *
- * ⚠️ در کامپوننت‌ها هرگز مستقیم صدا زده نشود؛ فقط از داخل repository یا
- * hook. هدف: یک نقطه‌ی واحد برای memoization و تست.
- */
 export function computeKpis(
   bookings: readonly DashboardBooking[],
   cabinCount: number,

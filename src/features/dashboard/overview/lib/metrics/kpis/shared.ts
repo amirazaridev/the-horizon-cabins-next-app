@@ -1,11 +1,3 @@
-/**
- * حلقه‌ی مشترک پیمایش «شب‌های فروخته‌شده‌ی داخل بازه» — یک‌جا، تا
- * محاسبات درآمد/سری‌های زمانی از یک منطق پیروی کنند.
- *
- * همه‌ی توابع این ماژول **pure** هستند: بدون fetch، بدون state، بدون
- * وابستگی به `new Date()` ضمنی.
- */
-
 import type { DashboardBooking } from "../../../types/dashboard.types";
 import { SOLD_STATUSES } from "../../../types/dashboard.types";
 import {
@@ -34,14 +26,6 @@ export interface SoldNightContext {
   amount: number;
 }
 
-/**
- * همه‌ی شب‌های فروخته‌شده‌ی داخل بازه را پیمایش می‌کند و سهم دقیق هر شب
- * (`amount`) را به `visit` می‌دهد.
- *
- * ⭐ **تنها منبع شب‌شماری prorated** است — `roomRevenue`، `revenueSeries`،
- * `soldNightsSeries` و `occupancyAdrSeries` همه از این استفاده می‌کنند تا
- * منطق سه‌بار تکرار نشود.
- */
 export function forEachSoldNight(
   bookings: readonly DashboardBooking[],
   range: DateRange,
@@ -76,19 +60,9 @@ export function forEachSoldNight(
   }
 }
 
-/* ==========================================================================
-   HELPERهای داخلی باکت‌بندی
-   ========================================================================== */
-
 /** سطح تجمیع سری زمانی. */
 export type TrendGranularity = "daily" | "weekly" | "monthly";
 
-/**
- * انتخاب خودکار سطح تجمیع بر اساس طول بازه.
- * - ≤ ۳۱ روز → روزانه
- * - ≤ ۱۲۰ روز → هفتگی
- * - بیشتر → ماهانه
- */
 export function pickGranularity(range: DateRange): TrendGranularity {
   const days = inclusiveDays(range);
   if (days <= 31) return "daily";
@@ -133,10 +107,6 @@ export function bucketKey(
   return `${y}-${m}-${d}`;
 }
 
-/**
- * باکت‌های خالی را از ابتدای بازه می‌سازد تا نقاط صفر هم در نمودار
- * حضور داشته باشند — با شمارش روزهای هر باکت.
- */
 export function seedBuckets<T>(
   range: DateRange,
   granularity: TrendGranularity,

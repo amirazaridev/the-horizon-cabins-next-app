@@ -9,7 +9,6 @@ type Props = {
   className?: string;
 };
 
-
 export default function ErrorBanner({ message, className = "" }: Props): ReactNode {
   if (!message) return null;
 

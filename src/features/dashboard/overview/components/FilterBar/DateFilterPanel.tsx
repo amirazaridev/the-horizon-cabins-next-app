@@ -24,11 +24,6 @@ interface DateFilterPanelProps {
   onApply: (value: DateFilterValue) => void;
 }
 
-/**
- * محتوای کارت فیلتر تاریخ: دکمه‌های سریع + سه تب روز / ماه / سال + دکمه اعمال
- * انتخاب‌ها پیش‌نویس (draft) می‌مانند تا «اعمال» زده شود،
- * ولی دکمه‌های سریع مستقیم اعمال و بسته می‌شوند
- */
 export default function DateFilterPanel({
   initial,
   onApply,

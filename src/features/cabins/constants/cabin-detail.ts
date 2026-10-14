@@ -7,13 +7,6 @@ import type {
 
 /* =========================== بخش‌های صفحه =========================== */
 
-/**
- * ترتیب سکشن‌های صفحه‌ی جزئیات.
- *
- * همین آرایه منبع واحدِ «شناسه‌ی سکشن» است: نوار تب چسبان، Scroll Spy و
- * خودِ سکشن‌ها همه از اینجا می‌خوانند تا هیچ‌وقت شناسه‌ای در سه جا
- * جداگانه تکرار نشود.
- */
 export const CABIN_DETAIL_SECTIONS = [
   { id: "gallery", label: "تصاویر" },
   { id: "overview", label: "توضیحات" },
@@ -28,10 +21,6 @@ export const CABIN_DETAIL_SECTIONS = [
 
 export type CabinDetailSectionId = (typeof CABIN_DETAIL_SECTIONS)[number]["id"];
 
-/**
- * نگاشت شناسه‌ها به خودشان — تا در کد به‌جای رشته‌ی جادویی،
- * `SECTION_IDS.rate` نوشته شود و تغییر نام در یک جا کافی باشد.
- */
 export const SECTION_IDS = {
   gallery: "gallery",
   overview: "overview",
@@ -48,11 +37,6 @@ export const AMENITIES_PREVIEW_COUNT = 8;
 
 /* =========================== قوانین و مقررات =========================== */
 
-/**
- * ⚠️ TODO(backend): قوانین اقامتگاه در بک‌اند وجود ندارد و بین همه‌ی
- * کابین‌ها یکسان فرض شده است. با اضافه‌شدن فیلد `rules` در پاسخ کابین،
- * فقط همین ثابت با داده‌ی واقعی جایگزین می‌شود.
- */
 export const CABIN_RULES: CabinRules = {
   checkIn: "از ساعت ۱۴:۰۰",
   checkOut: "تا ساعت ۱۲:۰۰",
@@ -114,10 +98,6 @@ export const CABIN_RULES: CabinRules = {
 
 /* =============================== نظرات =============================== */
 
-/**
- * ⚠️ TODO(backend): اندپوینت نظرات وجود ندارد. این استخر ثابت است و بر
- * اساس `cabinId` جابه‌جا می‌شود تا هر اقامتگاه فهرست متفاوتی نشان دهد.
- */
 const REVIEW_POOL: Omit<CabinReview, "id">[] = [
   {
     authorName: "سارا محمدی",
@@ -212,8 +192,6 @@ export function buildReviews(cabinId: number): CabinReviewsData {
   const total = items.length;
   const sum = items.reduce((acc, review) => acc + review.rating, 0);
 
-  // امتیاز زیرمعیارها حول میانگین کلی با کمی اختلاف ثابت (تا داده‌ی ماک
-  // یکنواخت نباشد) ساخته می‌شود.
   const average = total ? round1(sum / total) : 0;
 
   return {
@@ -240,10 +218,6 @@ type AmenityGroupDefinition = {
   keywords: string[];
 };
 
-/**
- * ⚠️ TODO(backend): بک‌اند امکانات را به‌صورت رشته‌های توصیفی آزاد
- * برمی‌گرداند و دسته‌بندی ندارد. این نگاشت کلیدواژه‌ای جای آن را می‌گیرد.
- */
 const AMENITY_GROUP_DEFINITIONS: AmenityGroupDefinition[] = [
   {
     id: "outdoor",
@@ -287,11 +261,6 @@ const AMENITY_GROUP_DEFINITIONS: AmenityGroupDefinition[] = [
 
 const OTHER_GROUP_TITLE = "سایر امکانات";
 
-/**
- * امکانات را به گروه‌های نمایشی تقسیم می‌کند.
- * هر مورد فقط در اولین گروهی که کلیدواژه‌اش را دارد قرار می‌گیرد؛
- * موارد بی‌گروه در «سایر امکانات» می‌مانند.
- */
 export function groupAmenities(amenities: string[]): CabinAmenityGroup[] {
   const groups: CabinAmenityGroup[] = AMENITY_GROUP_DEFINITIONS.map(
     (definition) => ({ id: definition.id, title: definition.title, items: [] }),
