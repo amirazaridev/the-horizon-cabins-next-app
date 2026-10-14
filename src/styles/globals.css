@@ -3,7 +3,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-
 :root {
   color-scheme: light;
 
@@ -74,10 +73,10 @@
   }
   @keyframes hz-preloader-slide {
     from {
-      transform: translateX(130%);
+      transform: translateX(270%);
     }
     to {
-      transform: translateX(-230%);
+      transform: translateX(-105%);
     }
   }
 }
